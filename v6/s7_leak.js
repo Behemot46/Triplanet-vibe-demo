@@ -91,7 +91,7 @@ function vLeaks(){
   const sel=S.lkSel&&S.lkSel.split('|'),scopeName=sel&&sel[0]!=='sup'?lkLabel(sel[0],sel[1]):L('כל העונה','Whole season');
   const share=M.pp?M.leak/M.pp:0;
   const top=leakRows(M,'trip').at(0);
-  const finding=M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו (${pct(share)}). ${usd(M.rec)} עדיין ניתנים להחזרה.`,`${usd(M.leak)} of planned profit has leaked (${pct(share)}). ${usd(M.rec)} can still be recovered.`):L('אין דליפה בטווח הזה.','No leak in this scope.');
+  const finding=M.leak<0?L(`החשבוניות בטווח הזה נמוכות מההצעה ב-${usd(-M.leak)}.`,`Bills in this scope came in ${usd(-M.leak)} below the quotes.`):M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו (${pct(share)}). ${usd(M.rec)} עדיין ניתנים להחזרה.`,`${usd(M.leak)} of planned profit has leaked (${pct(share)}). ${usd(M.rec)} can still be recovered.`):L('אין דליפה בטווח הזה.','No leak in this scope.');
   const allRows=leakRows(M,dim),rows=S.lkAll?allRows:allRows.filter(r=>Math.abs(r.leak)>=.5||(r.got||0)>0),hidden=allRows.length-rows.length,mxL=Math.max(1,...rows.map(r=>r.leak));
   const th=dim==='sup'?`<th>${L('ספק','Supplier')}</th><th class="n">${L('טיולים','Trips')}</th><th>${L('חיוב ביתר','Overbilled')}</th><th class="n">${L('ניתן להחזרה','Recoverable')}</th><th class="n">${L('הוחזר','Recovered')}</th>`
     :`<th>${LK_DIMS.find(d=>d[0]===dim)[1][S.lang==='en'?1:0]}</th><th class="n">${L('טיולים','Trips')}</th><th class="n">${L('רווח מתוכנן','Planned')}</th><th>${L('דלף','Leaked')}</th><th class="n">${L('רווח צפוי','Expected')}</th><th class="n">${L('ניתן להחזרה','Recoverable')}</th>`;
@@ -101,14 +101,14 @@ function vLeaks(){
     const act=dim==='trip'?`data-act="open" data-v="${r.key}" data-pt="tfin"`:`data-act="lksel" data-v="${dim}|${esc(r.key)}"`;
     return `<tr class="${on?'on':''}"><td><button class="lk-name" ${act}>${esc(r.label)}</button>${dim==='trip'?`<span class="small muted"> · ${agn(r.ts[0].agent)}, ${stn(r.ts[0].stage)}</span>`:''}</td><td class="n">${r.n}</td><td class="n">${usd(r.pp)} <span class="small muted">${pct(r.rev?r.pp/r.rev:0)}</span></td><td>${bar(r)}</td><td class="n">${usd(r.fp)} <span class="small muted">${pct(r.rev?r.fp/r.rev:0)}</span></td><td class="n">${r.rec?usd(r.rec):'·'}</td></tr>`;}).join('');
   const risk=`<div class="card lk-risk"><h3>${L('בסיכון, עוד לא בספרים','At risk, not in the books yet')}</h3>
-    <div class="lk-ri"><span class="ic">▥</span><div><strong>${usd(M.release)}</strong> ${L('חדרים בבלוק שלא שוחררו','unreleased block rooms')}<div class="small muted">${M.rel.length?M.rel.map(x=>`${esc(x.t.name)}: ${x.n} ${L('חדרים','rooms')}, ${esc(x.t.room.hotel)}`).join(' · '):L('אין','None')}</div></div></div>
-    <div class="lk-ri"><span class="ic">⏱</span><div><strong>${usd(M.late)}</strong> ${L('תשלומי לקוחות באיחור','late client payments')}<div class="small muted">${M.lateN} ${L('קבוצות חיוב. סיכון מזומנים, לא רווח.','billing groups. A cash risk, not profit.')}</div></div></div>
-    <div class="lk-ri"><span class="ic">?</span><div><strong>${M.missing}</strong> ${L('חשבוניות ספק חסרות','missing supplier invoices')}<div class="small muted">${L('בטיולים שחזרו. הסכום ידוע רק כשהן מגיעות.','On returned trips. The amount is known only when they arrive.')}</div></div></div>
-    <div class="lk-ri ok"><span class="ic">✓</span><div><strong>${usd(M.got)}</strong> ${L('הוחזר מספקים העונה','recovered from suppliers this season')}<div class="small muted">${M.gotN} ${L('זיכויים','credits')}</div></div></div></div>`;
+    <div class="lk-ri"><span class="ic">${ic('bed')}</span><div><strong>${usd(M.release)}</strong> ${L('חדרים בבלוק שלא שוחררו','unreleased block rooms')}<div class="small muted">${M.rel.length?M.rel.map(x=>`${esc(x.t.name)}: ${x.n} ${L('חדרים','rooms')}, ${esc(x.t.room.hotel)}`).join(' · '):L('אין','None')}</div></div></div>
+    <div class="lk-ri"><span class="ic">${ic('clock')}</span><div><strong>${usd(M.late)}</strong> ${L('תשלומי לקוחות באיחור','late client payments')}<div class="small muted">${M.lateN} ${L('קבוצות חיוב. סיכון מזומנים, לא רווח.','billing groups. A cash risk, not profit.')}</div></div></div>
+    <div class="lk-ri"><span class="ic">${ic('danger')}</span><div><strong>${M.missing}</strong> ${L('חשבוניות ספק חסרות','missing supplier invoices')}<div class="small muted">${L('בטיולים שחזרו. הסכום ידוע רק כשהן מגיעות.','On returned trips. The amount is known only when they arrive.')}</div></div></div>
+    <div class="lk-ri ok"><span class="ic">${ic('check')}</span><div><strong>${usd(M.got)}</strong> ${L('הוחזר מספקים העונה','recovered from suppliers this season')}<div class="small muted">${M.gotN} ${L('זיכויים','credits')}</div></div></div></div>`;
   return head(L('דליפות רווח','Profit leaks'),pillF(L('חדש','New'),'green'))+
   `<p class="muted">${L('כל טיול, סוכן וסוג קבוצה: כמה מהרווח המתוכנן הגיע בפועל, ולאן השאר הלך.','Every trip, agent and group type: how much planned profit is still there, and where the rest went.')}</p>
   <div class="lk-hero">
-    <div class="lk-scope"><span class="small">${L('טווח','Scope')}</span> <strong>${esc(scopeName)}</strong> <span class="small">· ${M.n} ${L('טיולים','trips')}, ${M.pax} ${L('נוסעים','travelers')}</span>${sel?` <button class="lk-x" data-act="lksel" data-v="" aria-label="${L('הצגת כל העונה','Show whole season')}">✕ ${L('כל העונה','Whole season')}</button>`:''}</div>
+    <div class="lk-scope"><span class="small">${L('טווח','Scope')}</span> <strong>${esc(scopeName)}</strong> <span class="small">· ${M.n} ${L('טיולים','trips')}, ${M.pax} ${L('נוסעים','travelers')}</span>${sel?` <button class="lk-x" data-act="lksel" data-v="" aria-label="${L('הצגת כל העונה','Show whole season')}">${ic('x')} ${L('כל העונה','Whole season')}</button>`:''}</div>
     <div class="lk-ks">${lkKpi(L('רווח מתוכנן','Planned profit'),M.pp,`${pct(M.rev?M.pp/M.rev:0)} ${L('מההכנסות','of revenue')}`,'',M.pp)}
     ${lkKpi(L('רווח צפוי','Expected profit'),M.fp,`${pct(M.rev?M.fp/M.rev:0)} ${L('מההכנסות','of revenue')}`,'',M.fp)}
     ${lkKpi(L('דלף','Leaked'),M.leak,`${pct(share)} ${L('מהרווח המתוכנן','of planned profit')}`,'bad',M.leak)}
@@ -121,7 +121,7 @@ function vLeaks(){
    ${top&&dim==='trip'&&top.leak>0?`<p class="small muted" style="margin:8px 0 0">${L('הדליפה הגדולה:','Largest leak:')} <strong>${esc(top.label)}</strong>, ${usd(top.leak)}. ${L('לחיצה על שם טיול פותחת את בקרת החשבוניות שלו.','Click a trip name to open its invoice check.')}</p>`:''}</div>${lkHeat(Mall)}`;
 }
 /* ---------- wiring ---------- */
-NAV2.unshift(['leaks',['דליפות רווח','Profit leaks'],'%']);
+NAV2.unshift(['leaks',['דליפות רווח','Profit leaks'],ic('leaks')]);
 VIEWS.leaks=vLeaks;
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v;

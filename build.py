@@ -9,8 +9,8 @@ def read(p):
 
 css = read('v6/base.css')
 fonts = read('fonts.css')
-extra = read('v6/extra.css') + '\n' + read('v6/v7.css')
-JS_ORDER = ['s0_geo.js', 's1_core.js', 's1c_catalog.js', 's1b_labels.js', 's2_i18n.js',
+extra = read('v6/extra.css') + '\n' + read('v6/v7.css') + '\n' + read('v6/brand-fonts.css') + '\n' + read('v6/theme.css')
+JS_ORDER = ['s0_brand.js', 's0_geo.js', 's1_core.js', 's1c_catalog.js', 's1b_labels.js', 's2_i18n.js',
             's3_shell.js', 's4_views.js', 's5_fin.js', 's6_rest.js',
             's7_leak.js', 's8_gen.js', 's9_meet.js', 's9_boot.js']
 # optional modules may be absent while they are being built

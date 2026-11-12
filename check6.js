@@ -65,6 +65,8 @@ for(const lang of ['en','he']){S.lang=lang;S.role='manager';
       const P=X.genPlan(S.gen),c=calc(P.t);if(Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit)>0.05)fail('gen identity '+k);
       if(P.days.length!==S.gen.nights+1)fail('gen days '+k);if(!(P.margin>.05&&P.margin<.45))fail(`gen margin ${k} ${P.margin}`);
       if(!P.route.length||!P.route.every(c2=>X.GEO.cities[c2]))fail('gen route '+k);if(!P.hotel)fail('gen hotel '+k);
+      const nb=P.bases.reduce((q,b)=>q+b.nights,0),lq=P.lines.filter(l=>l.type==='Lodging'&&l.cost>0).reduce((q,l)=>q+l.qty,0);if(nb!==S.gen.nights)fail(`gen nights ${k} ${nb}`);if(lq!==P.rooms*S.gen.nights)fail(`gen lodging ${k} ${lq}`);
+      P.days.forEach(dy=>{const act=dy.items.filter(x=>x.k!=='travel'&&x.k!=='meal').reduce((q,x)=>q+x.h,0);if(act>9.6)fail(`gen day ${k} D${dy.i} ${act}h`);});
       if(lang==='en'&&i<16)console.log('GEN',k.padEnd(10),String(S.gen.pax).padStart(2),'pax',String(S.gen.nights).padStart(2),'n',S.gen.tier+'*',(P.hotel||{}).name,'| pp',Math.round(P.pp),'margin',(P.margin*100).toFixed(1),'| map',X.geoViewFor(P.route),P.route.join('>'));
     }catch(e){fail('studio '+k+' '+e.stack.split('\n').slice(0,3).join('|'));}});
 }

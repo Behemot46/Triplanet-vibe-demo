@@ -24,8 +24,8 @@ const avatarOf=n=>`<span class="avatar">${esc(trHe(String(n)).trim().charAt(0))}
 const NEWP=()=>pillF(L('חדש','New'),'green');
 
 /* ---------- shell ---------- */
-const NAV=[['home',['דף הבית','Home'],'⌂'],['quotes',['הצעות מחיר','Quotes'],'$'],['templates',['תבניות','Templates'],'▤'],['hotels',['מלונות','Hotels'],'▥'],['suppliers',['ספקים','Suppliers'],'☰'],['activities',['פעילויות','Activities'],'⚑'],['users',['משתמשים','Users'],'☺']];
-const NAV2=[['gaps',['בקרת חשבוניות','Invoice check'],'⚖'],['finance',['כספים','Finance'],'▦'],['ai',['מאיה, העוזרת החכמה','Maya, AI assistant'],'✦']];
+const NAV=[['home',['דף הבית','Home'],ic('home')],['quotes',['הצעות מחיר','Quotes'],ic('quotes')],['templates',['תבניות','Templates'],ic('templates')],['hotels',['מלונות','Hotels'],ic('hotels')],['suppliers',['ספקים','Suppliers'],ic('suppliers')],['activities',['פעילויות','Activities'],ic('activities')],['users',['משתמשים','Users'],ic('users')]];
+const NAV2=[['gaps',['בקרת חשבוניות','Invoice check'],ic('gaps')],['finance',['כספים','Finance'],ic('finance')],['ai',['מאיה, העוזרת החכמה','Maya, AI assistant'],ic('ai')]];
 const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g fill="#b22234">${[0,2,4,6,8,10,12].map(i=>`<rect y="${i*20/13}" width="30" height="${20/13}"/>`).join('')}</g><rect width="13" height="${20*7/13}" fill="#3c3b6e"/></svg>`,
   he:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#d6dbe3" stroke-width=".6"/><rect y="2.2" width="30" height="2.6" fill="#0038b8"/><rect y="15.2" width="30" height="2.6" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="1"><path d="M15 6.3l3.2 5.5h-6.4z"/><path d="M15 13.7l3.2-5.5h-6.4z"/></g></svg>`};
 const chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}px">${L('מ','M')}</span>`;
@@ -34,18 +34,18 @@ function render(){
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
   const user=S.role==='manager'?MGR():agn(S.role);
   const act=S.tab==='trip'?'quotes':S.tab;
-  const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${a[0]==='gaps'?' <span class="star">★</span>':''}</button>`;
+  const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
-  const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">▶ ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
+  const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
-     <button data-act="reset" role="menuitem" class="neg">↺ ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
+     <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
   const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
   app.innerHTML=trHtml(`<div class="app">
-   <aside class="side"><div class="brand"><i>R</i><div>Triplanet<small>${AGENCY}</small></div></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
    <main class="content"><div class="topbar">
-     <button class="btn sm tourbtn" data-act="tourgo">▶ ${L('סיור מודרך','Guided tour')}</button>
+     <button class="btn sm tourbtn" data-act="tourgo">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
      <span class="grow"></span>
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
      <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
@@ -53,8 +53,8 @@ function render(){
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
      <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
-     <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">🔔${nAl?`<b>${nAl}</b>`:''}</button>
-     <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">⚙</button>${menu}</span>
+     <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">${ic('bell')}${nAl?`<b>${nAl}</b>`:''}</button>
+     <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">${ic('settings')}</button>${menu}</span>
      ${avatarOf(user)}
    </div><div id="view">${view()}</div></main></div>${fab}${tourPanel()}`);
   window.scrollTo(0,y);
@@ -73,7 +73,7 @@ function chenSuggest(){
   return ids.map(i=>QS[i-1]);
 }
 function chenPanel(){
-  return `<aside class="chen" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm" data-act="chen" aria-label="${L('סגור','Close')}">✕</button></div>
+  return `<aside class="chen" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm" data-act="chen" aria-label="${L('סגור','Close')}">${ic('x')}</button></div>
    <div class="cb">${S.chat.length?chatLog():`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. אפשר לשאול אותי על פערי חשבוניות, רווחיות, תשלומים, משימות או לבקש טיוטה לטיול.','Hi, I am Maya. Ask me about invoice gaps, margins, payments or tasks, or ask me to draft a trip.')}</div>`}</div>
    <div class="cs">${chenSuggest().map(q=>`<button class="btn sm" data-act="ask" data-v="${q.id}">${esc(L(q.he,q.en))}</button>`).join('')}</div>
    <form class="row cf" data-form="ask"><input type="text" name="q" placeholder="${L('שאלו את מאיה...','Ask Maya...')}" aria-label="${L('שאלה','Question')}"><button class="btn pri" type="submit">${L('שלח','Send')}</button></form></aside>`;
@@ -106,7 +106,7 @@ const TOUR=[
 function tourPanel(){
   if(S.tour<0)return '';
   const st=TOUR[S.tour],[ti,tx]=st.tx(),last=S.tour===TOUR.length-1;
-  return `<div class="tour" role="dialog" aria-label="${L('סיור מודרך','Guided tour')}"><div class="tp"><span class="small muted">${L('שלב','Step')} ${S.tour+1} ${L('מתוך','of')} ${TOUR.length}</span><button class="btn sm" data-act="tourend" aria-label="${L('סיום הסיור','End tour')}">✕</button></div>
+  return `<div class="tour" role="dialog" aria-label="${L('סיור מודרך','Guided tour')}"><div class="tp"><span class="small muted">${L('שלב','Step')} ${S.tour+1} ${L('מתוך','of')} ${TOUR.length}</span><button class="btn sm" data-act="tourend" aria-label="${L('סיום הסיור','End tour')}">${ic('x')}</button></div>
    <div class="tbar"><div style="width:${(S.tour+1)/TOUR.length*100}%"></div></div><h3>${ti}</h3><p>${tx}</p>
    <div class="row" style="justify-content:space-between"><button class="btn" data-act="tourprev" ${S.tour===0?'disabled':''}>${L('הקודם','Back')}</button><button class="btn pri" data-act="${last?'tourend':'tournext'}">${last?L('סיום','Finish'):L('הבא','Next')}</button></div></div>`;
 }

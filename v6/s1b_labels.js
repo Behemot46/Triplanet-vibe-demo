@@ -4,7 +4,7 @@ const TH={Lodging:'מלונות',Transport:'הסעים וטיסות',Guide:'מו
 const TE={Lodging:'Hotels',Transport:'Transport & air',Guide:'Guide',Activities:'Activities',Meals:'Meals',Insurance:'Travel protection'};
 const tn=k=>TH[k]?L(TH[k],TE[k]):esc(k);
 const TCOL={Lodging:'#1f5fa8',Transport:'#d6457f',Guide:'#b5403a',Activities:'#6d4fd1',Meals:'#2f9aa0',Insurance:'#d99a1f'};
-const TICO={Lodging:'▥',Transport:'▣',Guide:'◉',Activities:'⚑',Meals:'◒',Insurance:'✚'};
+const TICO={Lodging:ic('bed'),Transport:ic('bus'),Guide:ic('users2'),Activities:ic('activities'),Meals:ic('meal'),Insurance:ic('shield')};
 const CTH={Church:'כנסייה',School:'בית ספר',Club:'מועדון',Choir:'מקהלה',Association:'איגוד',Agency:'סוכנות שותפה',Prospect:'ליד חדש'};
 const CTE={Church:'Church',School:'School',Club:'Club',Choir:'Choir',Association:'Association',Agency:'Partner agency',Prospect:'New lead'};
 const ctn=k=>L(CTH[k]||'',CTE[k]||'');

@@ -14,7 +14,7 @@ const {chromium}=require('playwright');
  await p.click('[data-act=ggo]');await p.waitForTimeout(1300);await sh('04_studio_busy');
  await p.waitForTimeout(2600);await sh('05_studio_nashville',true);
  await p.click('[data-act=gset][data-k=dest][data-v=HolyLand]');await p.waitForTimeout(400);await sh('06_studio_holyland',true);
- await p.click('[data-act=gset][data-k=dest][data-v=Rome]');await p.click('[data-act=gset][data-k=tier][data-v="5"]');await p.waitForTimeout(400);await sh('07_studio_rome');
+ await p.click('[data-act=gset][data-k=dest][data-v=Rome]');await p.click('[data-act=gset][data-k=tier][data-v="4"]');await p.waitForTimeout(400);await sh('07_studio_rome');
  await p.click('[data-act=gcreate]');await p.waitForTimeout(400);await sh('08_created_quote');
  await p.click('[data-act=lang]');await p.click('[data-act=go][data-v=studio]');await p.waitForTimeout(400);await sh('09_he_studio',true);
  await p.click('[data-act=go][data-v=leaks]');await p.waitForTimeout(1200);await sh('10_he_leaks');
