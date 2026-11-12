@@ -233,6 +233,7 @@ document.addEventListener('click',e=>{
     render();}
   else if(a==='rmitem'){t.items=t.items.filter(i=>i.id!==+v);render();}
   else if(a==='addcat'){const inp=document.getElementById('newcat');const val=inp.value.trim();if(val&&!S.cats.includes(val)){S.cats.push(val);render();toast(L('הקטגוריה נוספה','Category added'));}}
+  else if(a==='theme'){themeToggle();S.menu=false;render();}
   else if(a==='lang'){S.lang=S.lang==='en'?'he':'en';S.menu=false;render();}
   else if(a==='menu'){S.menu=!S.menu;render();}
   else if(a==='zoom'){S.zoom=+v;render();}

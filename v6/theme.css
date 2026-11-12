@@ -254,7 +254,7 @@ select:focus,input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 1px 
 .pj-stage{display:inline-flex;background:var(--recess);border-radius:10px;padding:4px;gap:2px;border:1px solid var(--line)}
 .pj-stage button{border:0;background:none;border-radius:8px;padding:7px 16px;font:600 14px var(--f-ui);color:var(--muted);cursor:pointer}
 .pj-stage button.on{background:var(--panel);color:var(--ink);box-shadow:var(--sh-card)}
-.pj-status{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:6px 10px 6px 12px;font:700 13px var(--f-ui);background:color-mix(in srgb,#FFAB00 18%,transparent);color:#7A4100}
+.pj-status{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:6px 10px 6px 12px;font:700 13px var(--f-ui);background:color-mix(in srgb,#FFAB00 18%,transparent);color:var(--amber)}
 .pj-status.s-Finance{background:color-mix(in srgb,#8E33FF 14%,transparent);color:var(--purple)}
 .pj-status.s-Closed{background:color-mix(in srgb,#22C55E 16%,transparent);color:var(--green)}
 .pj-status .ic{width:16px;height:16px}

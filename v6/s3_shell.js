@@ -54,6 +54,7 @@ function render(){
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
+     <button class="iconb themeb" data-act="theme" aria-label="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}" title="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}">${ic(themeGet()==='dark'?'sun':'moon')}</button>
      <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
      <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">${ic('bell')}${nAl?`<b>${nAl}</b>`:''}</button>
      <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">${ic('settings')}</button>${menu}</span>
@@ -133,3 +134,11 @@ function startReading(t){
   };
   setTimeout(tick,500);
 }
+
+/* day/night: an explicit choice on <html data-theme>. Kept per laptop outside the demo state,
+   so Reset and the idle kiosk reset keep it. Light is the default (the product's default). */
+const THEME_KEY='triplanet-theme';
+function themeGet(){try{return localStorage.getItem(THEME_KEY)==='dark'?'dark':'light';}catch(e){return 'light';}}
+function themeApply(t){try{document.documentElement.setAttribute('data-theme',t);}catch(e){}}
+function themeToggle(){const t=themeGet()==='dark'?'light':'dark';try{localStorage.setItem(THEME_KEY,t);}catch(e){}themeApply(t);}
+themeApply(themeGet());

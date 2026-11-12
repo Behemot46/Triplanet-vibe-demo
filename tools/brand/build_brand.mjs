@@ -30,6 +30,7 @@ const WANT = {
   ticket: ['ticket-bold-duotone'], receipt: ['bill-list-bold-duotone'], export: ['export-bold'], link: ['link-round-angle-bold', 'link-bold'], sync: ['refresh-circle-bold-duotone'],
   cloud: ['cloud-upload-bold-duotone'], card: ['card-bold-duotone'], plug: ['plug-circle-bold-duotone'], invoice: ['document-add-bold-duotone'], tag: ['tag-horizontal-bold-duotone'],
   copy: ['copy-bold'], userplus: ['user-plus-bold'], mapsq: ['map-point-wave-bold-duotone'], cash: ['dollar-minimalistic-bold'],
+  sun: ['sun-bold-duotone'], moon: ['moon-bold-duotone'],
   flag: ['flag-bold'], bus: ['bus-bold'], money: ['dollar-minimalistic-bold'], percent: ['sale-bold', 'tag-price-bold'], shield: ['shield-check-bold-duotone'],
 };
 const icons = {}, missing = [];
