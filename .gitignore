@@ -4,3 +4,4 @@ tools/brand/node_modules/
 tools/video/node_modules/
 tools/video/booth-loop/.hyperframes/
 tools/photos/raw/
+__pycache__/
