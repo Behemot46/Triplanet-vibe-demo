@@ -50,7 +50,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 
 ## File map (build order)
 - `v6/s0_brand.js` - GENERATED icons, `ic()`, logo
-- `v6/s0_avatars.js` - GENERATED staff portraits (`AVATARS`, used by `avatarOf`): illustrations of the fictional staff, Avataaars style by Pablo Stanley via DiceBear 9.4.3, every option fixed per person. `cd tools/avatars && npm install && node build_avatars.mjs`
+- `v6/s0_avatars.js` - GENERATED staff headshots (`AVATARS`, `AVATAR_KIND`, used by `avatarOf`). Since 13 Nov 2026 they are photoreal AI-generated images of people who do NOT exist, made on CPU with no API key: `tools/avatars/gen_headshots.py` (Realistic Vision 5.1 + LCM-LoRA, fixed seeds, CreativeML OpenRAIL-M / OpenRAIL++), chosen seeds and crop in `tools/avatars/embed_headshots.py`, 160 px WebP kept in `tools/avatars/out/`. `python3 tools/avatars/embed_headshots.py` rebuilds the JS from those files. The Photo credits screen says they are AI-generated. Never swap in photos of real people. The older illustrated set: `cd tools/avatars && npm install && node build_avatars.mjs`.
 - `v6/s0_geo.js` - GENERATED map data (US, Europe, Levant, Italy, Isles, Greece, Ontario; 48 cities) plus `geoMap`/`geoViewFor`
 - `v6/s1_core.js` - data model, generators, finance math, invoice-gap logic, trip specs (TRIP_SPECS), inbox files (NEN_INBOX)
 - `v6/s1c_catalog.js` - real hotels (65), venues (82), airlines, BRANDS, 5 extra destinations (NewYork, Smokies, SanAntonio, Chicago, NewOrleans), DEST_CITIES routes. Every entry has a `src` URL; rates and costs are illustrative.
