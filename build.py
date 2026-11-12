@@ -1,0 +1,32 @@
+# Builds the single-file demo: v6/triplanet-booth.html
+# Run from the repo root: python3 build.py
+import pathlib
+ROOT = pathlib.Path(__file__).resolve().parent
+V6 = ROOT / 'v6'
+
+def read(p):
+    return (ROOT / p).read_text(encoding='utf8')
+
+css = read('v6/base.css')
+fonts = read('fonts.css')
+extra = read('v6/extra.css')
+JS_ORDER = ['s1_core.js', 's1b_labels.js', 's2_i18n.js', 's3_shell.js',
+            's4_views.js', 's5_fin.js', 's6_rest.js']
+js = ''.join(read('v6/' + f) + '\n' for f in JS_ORDER)
+
+out = f'''<title>Triplanet Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Triplanet booth demo: group tour operations with automatic supplier invoice checking.">
+<style>
+{fonts}
+{css}
+{extra}
+</style>
+<div id="app"></div>
+<div id="toast" role="status"></div>
+<script>
+{js}
+</script>
+'''
+(V6 / 'triplanet-booth.html').write_text(out, encoding='utf8')
+print(len(out), 'bytes written to v6/triplanet-booth.html')
