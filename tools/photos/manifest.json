@@ -1,0 +1,22 @@
+{
+ "dest": {
+  "HolyLand": {
+   "file": "out/dest/HolyLand.webp",
+   "title": "File:Dome of the Rock Panorama.jpg",
+   "author": "Askii",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dome_of_the_Rock_Panorama.jpg"
+  },
+  "Rome": {
+   "file": "out/dest/Rome.webp",
+   "title": "File:Colosseum of Rome and Roman forum.jpg",
+   "author": "Wilfredor",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Colosseum_of_Rome_and_Roman_forum.jpg"
+  }
+ },
+ "venue": {},
+ "hotel": {}
+}
