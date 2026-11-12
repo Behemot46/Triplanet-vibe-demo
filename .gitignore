@@ -6,3 +6,4 @@ tools/video/booth-loop/.hyperframes/
 tools/photos/raw/
 __pycache__/
 tools/photos/work/
+tools/photos/contact_*.jpg

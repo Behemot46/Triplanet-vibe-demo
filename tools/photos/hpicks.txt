@@ -1,0 +1,19 @@
+hotel nash-hilton-downtown H_nash-hilton-downtown 2
+hotel nash-courtyard-downtown H_nash-courtyard-downtown 0 0.5 0.0
+hotel cany-sheraton-phx H_cany-sheraton-phx 2
+hotel ne-hilton-parkplaza H_ne-hilton-parkplaza 0
+hotel niag-marriott-fallsview H_niag-marriott-fallsview 1
+hotel cany-hyatt-phx H_cany-hyatt-phx 0
+hotel ny-sheraton-ts H_ny-sheraton-ts 0
+hotel ny-hyatt-jc H_ny-hyatt-jc 1
+hotel sa-hilton-palacio H_sa-hilton-palacio 1
+hotel chi-sheraton H_chi-sheraton 4
+hotel nola-sheraton H_nola-sheraton 0
+hotel nola-hyatt-reg H_nola-hyatt-reg 0
+hotel hl-dan-jer H_hl-dan-jer 0
+hotel hl-dan-tlv H_hl-dan-tlv 2
+hotel hl-cp-jer H_hl-cp-jer 1
+hotel hl-leo-tib H_hl-leo-tib 1
+hotel gr-hilton-athens H_gr-hilton-athens 0
+hotel ldn-hilton-metropole H_ldn-hilton-metropole 4
+hotel ldn-sheraton-pl H_ldn-sheraton-pl 0 0.5 0.4

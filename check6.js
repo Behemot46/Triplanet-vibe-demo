@@ -91,7 +91,7 @@ X.resetDemo();
 if(X.PH_){const n=Object.values(X.PH_).reduce((q,o)=>q+Object.keys(o).length,0);if(n!==X.PHC_.length)fail('photos without credits '+n+' vs '+X.PHC_.length);
   X.PHC_.forEach(c=>{if(!/^(public domain|pd|cc0|cc[- ]by)/i.test(c.license)||/\bNC\b|\bND\b/i.test(c.license))fail('photo license '+c.id+' '+c.license);if(!c.source_url||!c.author)fail('photo credit incomplete '+c.id);});
   console.log('PHOTOS',JSON.stringify(Object.fromEntries(Object.entries(X.PH_).map(([k,o])=>[k,Object.keys(o).length]))));}
-for(const lang of ['en','he']){S.lang=lang;S.tab='credits';const h=VIEWS.credits();chk(h,'credits');if(lang==='en')scan(h,'credits');}
+for(const lang of ['en','he']){S.lang=lang;S.tab='credits';const h=VIEWS.credits();chk(h,'credits');if(lang==='en')scan(h.replace(/<bdi class="cr-au">[^<]*<\/bdi>/g,''),'credits');/* author names stay as the author gave them (licence attribution) */}
 for(const lang of ['en','he']){S.lang=lang;S.tab='status';const h=VIEWS.status();chk(h,'status');if(lang==='en')scan(h,'status');}
 S.lang='en';
 const L=Object.entries(left);console.log('LEFTOVER',L.length);L.slice(0,40).forEach(x=>console.log('  ',x[1],'|',x[0],'=>',trChunk(x[0])));

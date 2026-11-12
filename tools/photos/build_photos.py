@@ -14,10 +14,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 PH = os.path.join(ROOT, 'tools', 'photos')
 OK = re.compile(r'^(public domain|pd|cc0|cc[- ]by( |-|$)|cc[- ]by[- ]sa)', re.I)
 
+# Reviewed by eye and left out: the subject is not the named place, or it is too small in frame.
+DROP = {('venue', 'chi-cac'), ('venue', 'gr-acropolis-museum'), ('hotel', 'chi-sheraton'), ('hotel', 'gr-hilton-athens')}
 man = json.load(open(os.path.join(PH, 'manifest.json'), encoding='utf-8'))
 photos, credits, skipped, size = {'dest': {}, 'venue': {}, 'hotel': {}}, [], [], 0
 for kind in ('dest', 'venue', 'hotel'):
     for key, m in sorted((man.get(kind) or {}).items()):
+        if (kind, key) in DROP:
+            skipped.append((kind, key, 'dropped on review')); continue
         lic = (m.get('license') or '').strip()
         if not OK.match(lic) or re.search(r'\bNC\b|\bND\b|noncommercial|noderiv', lic, re.I):
             skipped.append((kind, key, lic)); continue

@@ -9,7 +9,7 @@ def thumbdl(url,path):
         try: Image.open(path).verify(); return True
         except Exception: time.sleep(3)
     return False
-def run(id,queries,minw,landscape=False,per=5,maxc=8,allow_bad=False):
+def run(id,queries,minw,landscape=False,per=5,maxc=8,allow_bad=False,flt=None):
     seen={};
     for q in queries:
         for r in search(q,12):
@@ -17,6 +17,7 @@ def run(id,queries,minw,landscape=False,per=5,maxc=8,allow_bad=False):
             seen[r['title']]=r
         time.sleep(0.4)
     c=[r for r in seen.values() if r['ok'] and r['w']>=minw and (not landscape or r['w']>=1.3*r['h']) and (allow_bad or not BAD.search(r['title']))]
+    if flt: c=[r for r in c if flt(r)]
     c=c[:maxc]
     json.dump(c,open(f'work/{id}.json','w'))
     ims=[]

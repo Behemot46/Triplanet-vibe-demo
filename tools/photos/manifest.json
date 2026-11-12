@@ -98,13 +98,783 @@
   },
   "Nashville": {
    "file": "out/dest/Nashville.webp",
-   "title": "File:Nashville, TN skyline.jpg",
-   "author": "Quintin Soloviev",
-   "license": "CC BY 4.0",
-   "license_url": "https://creativecommons.org/licenses/by/4.0",
-   "source_url": "https://commons.wikimedia.org/wiki/File:Nashville,_TN_skyline.jpg"
+   "title": "File:Nashville pano Opry Broadway.jpg",
+   "author": "Daniel Schwen",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Nashville_pano_Opry_Broadway.jpg"
+  },
+  "NewOrleans": {
+   "file": "out/dest/NewOrleans.webp",
+   "title": "File:Jackson Square, The Cabildo, St. Louis Catherdral, Presbytere, New Orleans, LA.jpg",
+   "author": "Spatms",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Jackson_Square,_The_Cabildo,_St._Louis_Catherdral,_Presbytere,_New_Orleans,_LA.jpg"
+  },
+  "Branson": {
+   "file": "out/dest/Branson.webp",
+   "title": "File:Branson Belle Table Rock Lake 2012.jpg",
+   "author": "Doug Wertman from Rogers, AR, USA",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Branson_Belle_Table_Rock_Lake_2012.jpg"
+  },
+  "NewEngland": {
+   "file": "out/dest/NewEngland.webp",
+   "title": "File:Lake Winnipesaukee (8101428865).jpg",
+   "author": "KimonBerlin",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Lake_Winnipesaukee_(8101428865).jpg"
   }
  },
- "venue": {},
- "hotel": {}
+ "venue": {
+  "nash-opry": {
+   "file": "out/venue/nash-opry.webp",
+   "title": "File:Opry-house, Nashville.jpg",
+   "author": "Adam mcmaster at English Wikipedia",
+   "license": "Public domain",
+   "license_url": "",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Opry-house,_Nashville.jpg"
+  },
+  "nash-ryman": {
+   "file": "out/venue/nash-ryman.webp",
+   "title": "File:Ryman Auditorium.jpg",
+   "author": "Daniel Schwen",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ryman_Auditorium.jpg"
+  },
+  "nash-hermitage": {
+   "file": "out/venue/nash-hermitage.webp",
+   "title": "File:The Hermitage by Jim Bowen.jpg",
+   "author": "Jim Bowen from Zhenhai, China",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:The_Hermitage_by_Jim_Bowen.jpg"
+  },
+  "nash-showboat": {
+   "file": "out/venue/nash-showboat.webp",
+   "title": "File:Genera Jackson riverboat July 2018.jpg",
+   "author": "Eagledj",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Genera_Jackson_riverboat_July_2018.jpg"
+  },
+  "bran-sdc": {
+   "file": "out/venue/bran-sdc.webp",
+   "title": "File:Silver Dollar City.jpg",
+   "author": "Jeremy Thompson",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Silver_Dollar_City.jpg"
+  },
+  "bran-titanic": {
+   "file": "out/venue/bran-titanic.webp",
+   "title": "File:Titanic Museum Branson.jpg",
+   "author": "Brad A. Totman",
+   "license": "Public domain",
+   "license_url": "",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Titanic_Museum_Branson.jpg"
+  },
+  "dc-mountvernon": {
+   "file": "out/venue/dc-mountvernon.webp",
+   "title": "File:Mount Vernon Estate Mansion 2.JPG",
+   "author": "Martin Falbisoner",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Mount_Vernon_Estate_Mansion_2.JPG"
+  },
+  "dc-ford": {
+   "file": "out/venue/dc-ford.webp",
+   "title": "File:USA-Ford Theatre0.jpg",
+   "author": "Ingfbruno",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:USA-Ford_Theatre0.jpg"
+  },
+  "dc-arlington": {
+   "file": "out/venue/dc-arlington.webp",
+   "title": "File:Arlington House.jpg",
+   "author": "Protoant",
+   "license": "Public domain",
+   "license_url": "",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Arlington_House.jpg"
+  },
+  "cany-np": {
+   "file": "out/venue/cany-np.webp",
+   "title": "File:Grand Canyon Hopi Point with rainbow 2013.jpg",
+   "author": "Tuxyso",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_Hopi_Point_with_rainbow_2013.jpg"
+  },
+  "cany-railway": {
+   "file": "out/venue/cany-railway.webp",
+   "title": "File:Grand Canyon Railway 29 2015 003.jpg",
+   "author": "Photograph by Mike Peel (www.mikepeel.net).",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_Railway_29_2015_003.jpg"
+  },
+  "cany-pink": {
+   "file": "out/venue/cany-pink.webp",
+   "title": "File:Pink Jeep 2025.jpg",
+   "author": "Seasider53",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Pink_Jeep_2025.jpg"
+  },
+  "cany-chapel": {
+   "file": "out/venue/cany-chapel.webp",
+   "title": "File:Chapel of the Holy Cross, Sedona, AZ.jpg",
+   "author": "Matthew P. Del Buono",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Chapel_of_the_Holy_Cross,_Sedona,_AZ.jpg"
+  },
+  "cany-tlaq": {
+   "file": "out/venue/cany-tlaq.webp",
+   "title": "File:Patio de las Campañas, Tlaquepaque, Sedona.jpg",
+   "author": "Seasider53",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Patio_de_las_Campa%C3%B1as,_Tlaquepaque,_Sedona.jpg"
+  },
+  "ne-cog": {
+   "file": "out/venue/ne-cog.webp",
+   "title": "File:Mount Washington Cog Railway October 2021 024.jpg",
+   "author": "King of Hearts",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Mount_Washington_Cog_Railway_October_2021_024.jpg"
+  },
+  "ne-conway": {
+   "file": "out/venue/ne-conway.webp",
+   "title": "File:Conway Scenic Railroad 216 July 2016.jpg",
+   "author": "Todd Fowler",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Conway_Scenic_Railroad_216_July_2016.jpg"
+  },
+  "ne-benjerry": {
+   "file": "out/venue/ne-benjerry.webp",
+   "title": "File:Ben & Jerry's factory.jpg",
+   "author": "Ɱ",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ben_%26_Jerry%27s_factory.jpg"
+  },
+  "ne-freedom": {
+   "file": "out/venue/ne-freedom.webp",
+   "title": "File:Freedom Trail - 53257372108.jpg",
+   "author": "xiquinhosilva",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Freedom_Trail_-_53257372108.jpg"
+  },
+  "ne-acadia": {
+   "file": "out/venue/ne-acadia.webp",
+   "title": "File:Cadillac Mountain, Acadia National Park, Maine - 68554034.jpg",
+   "author": "Ken Lund",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Cadillac_Mountain,_Acadia_National_Park,_Maine_-_68554034.jpg"
+  },
+  "niag-cruise": {
+   "file": "out/venue/niag-cruise.webp",
+   "title": "File:Horseshoe Falls Niagara City Cruises.jpg",
+   "author": "Adam Bishop",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Horseshoe_Falls_Niagara_City_Cruises.jpg"
+  },
+  "niag-cntower": {
+   "file": "out/venue/niag-cntower.webp",
+   "title": "File:CN Tower, Toronto, Canada (Unsplash DJ kOgH5u0o).jpg",
+   "author": "Scott Webb scottwebb",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:CN_Tower,_Toronto,_Canada_(Unsplash_DJ_kOgH5u0o).jpg"
+  },
+  "niag-journey": {
+   "file": "out/venue/niag-journey.webp",
+   "title": "File:Observation deck of Journey Behind the Falls.jpg",
+   "author": "Gogerr",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Observation_deck_of_Journey_Behind_the_Falls.jpg"
+  },
+  "niag-rom": {
+   "file": "out/venue/niag-rom.webp",
+   "title": "File:Royal Ontario Museum in Fall 2021.jpg",
+   "author": "Maksim Sokolov (Maxergon)",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Royal_Ontario_Museum_in_Fall_2021.jpg"
+  },
+  "niag-ripley": {
+   "file": "out/venue/niag-ripley.webp",
+   "title": "File:Ripley's Aquarium Canada 2023.jpg",
+   "author": "Antony-22",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ripley%27s_Aquarium_Canada_2023.jpg"
+  },
+  "ny-liberty": {
+   "file": "out/venue/ny-liberty.webp",
+   "title": "File:Statue of Liberty, NY.jpg",
+   "author": "William Warby",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty,_NY.jpg"
+  },
+  "ny-esb": {
+   "file": "out/venue/ny-esb.webp",
+   "title": "File:View of Empire State Building from Rockefeller Center New York City dllu.jpg",
+   "author": "Dllu",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu.jpg"
+  },
+  "ny-911": {
+   "file": "out/venue/ny-911.webp",
+   "title": "File:North reflecting pool of the National September 11 Memorial, New York City.jpg",
+   "author": "Christian David",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:North_reflecting_pool_of_the_National_September_11_Memorial,_New_York_City.jpg"
+  },
+  "smok-dollywood": {
+   "file": "out/venue/smok-dollywood.webp",
+   "title": "File:Dollywood sign - October 2023 - Sarah Stierch.jpg",
+   "author": "Missvain",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dollywood_sign_-_October_2023_-_Sarah_Stierch.jpg"
+  },
+  "smok-ripley": {
+   "file": "out/venue/smok-ripley.webp",
+   "title": "File:Aquarium of the Smokies 2006.jpg",
+   "author": "Brent Moore from Smyrna, TN, USA",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Aquarium_of_the_Smokies_2006.jpg"
+  },
+  "smok-cades": {
+   "file": "out/venue/smok-cades.webp",
+   "title": "File:Cades Cove - October 2023 - Sarah Stierch 09.jpg",
+   "author": "Missvain",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Cades_Cove_-_October_2023_-_Sarah_Stierch_09.jpg"
+  },
+  "smok-titanic": {
+   "file": "out/venue/smok-titanic.webp",
+   "title": "File:Titanic model in Pigeon Forge, TN IMG 5058.JPG",
+   "author": "Billy Hathorn",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Titanic_model_in_Pigeon_Forge,_TN_IMG_5058.JPG"
+  },
+  "sa-alamo": {
+   "file": "out/venue/sa-alamo.webp",
+   "title": "File:The Alamo in San Antonio Texas.jpg",
+   "author": "KelliMays",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:The_Alamo_in_San_Antonio_Texas.jpg"
+  },
+  "sa-gorio": {
+   "file": "out/venue/sa-gorio.webp",
+   "title": "File:River boat entering Rivercenter Mall plaza - panoramio.jpg",
+   "author": "hakkun",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:River_boat_entering_Rivercenter_Mall_plaza_-_panoramio.jpg"
+  },
+  "sa-missions": {
+   "file": "out/venue/sa-missions.webp",
+   "title": "File:Mission San José San Antonio.JPG",
+   "author": "Liveon001 ©Travis Witt",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Mission_San_Jos%C3%A9_San_Antonio.JPG"
+  },
+  "sa-ncb": {
+   "file": "out/venue/sa-ncb.webp",
+   "title": "File:Natural bridge caverns bridge.jpg",
+   "author": "Larry D. Moore",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Natural_bridge_caverns_bridge.jpg"
+  },
+  "chi-shedd": {
+   "file": "out/venue/chi-shedd.webp",
+   "title": "File:Shedd Aquarium Front 1.JPG",
+   "author": "Setiawan Soekamtoputra",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Shedd_Aquarium_Front_1.JPG"
+  },
+  "chi-aic": {
+   "file": "out/venue/chi-aic.webp",
+   "title": "File:Art Institute of Chicago (51575570710).jpg",
+   "author": "ajay_suresh",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Art_Institute_of_Chicago_(51575570710).jpg"
+  },
+  "chi-field": {
+   "file": "out/venue/chi-field.webp",
+   "title": "File:Field Museum of Natural History.jpg",
+   "author": "Joe Ravi",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Field_Museum_of_Natural_History.jpg"
+  },
+  "nola-wwii": {
+   "file": "out/venue/nola-wwii.webp",
+   "title": "File:The National WWII Museum New Orleans Dec 2015.jpg",
+   "author": "ironypoisoning",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:The_National_WWII_Museum_New_Orleans_Dec_2015.jpg"
+  },
+  "nola-natchez": {
+   "file": "out/venue/nola-natchez.webp",
+   "title": "File:Natchez Steamboat, New Orleans, Louisiana.jpg",
+   "author": "Spatms",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Natchez_Steamboat,_New_Orleans,_Louisiana.jpg"
+  },
+  "nola-oakalley": {
+   "file": "out/venue/nola-oakalley.webp",
+   "title": "File:Oak Alley Plantation.JPG",
+   "author": "RonPaul86",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Oak_Alley_Plantation.JPG"
+  },
+  "nola-preservation": {
+   "file": "out/venue/nola-preservation.webp",
+   "title": "File:Preservation Hall Bass Drum.jpg",
+   "author": "Infrogmation of New Orleans",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Preservation_Hall_Bass_Drum.jpg"
+  },
+  "hl-masada": {
+   "file": "out/venue/hl-masada.webp",
+   "title": "File:ISR-2016-Masada 03.jpg",
+   "author": "Godot13",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:ISR-2016-Masada_03.jpg"
+  },
+  "hl-wwt": {
+   "file": "out/venue/hl-wwt.webp",
+   "title": "File:Western Wall Tunnel Hall.jpg",
+   "author": "איתי טיומקין",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Western_Wall_Tunnel_Hall.jpg"
+  },
+  "hl-yadvashem": {
+   "file": "out/venue/hl-yadvashem.webp",
+   "title": "File:Yad Vashem View.jpg",
+   "author": "Godot13",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Yad_Vashem_View.jpg"
+  },
+  "hl-nativity": {
+   "file": "out/venue/hl-nativity.webp",
+   "title": "File:Church of the Nativity (7703592746).jpg",
+   "author": "Neil Ward",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Church_of_the_Nativity_(7703592746).jpg"
+  },
+  "hl-yardenit": {
+   "file": "out/venue/hl-yardenit.webp",
+   "title": "File:Yardenit, Baptismal Site on the Jordan (25771960162).jpg",
+   "author": "Konrad Summers from Santa Clarita (Valencia) , California, USA",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Yardenit,_Baptismal_Site_on_the_Jordan_(25771960162).jpg"
+  },
+  "hl-sepulchre": {
+   "file": "out/venue/hl-sepulchre.webp",
+   "title": "File:Jerusalem Holy Sepulchre BW 19.JPG",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Jerusalem_Holy_Sepulchre_BW_19.JPG"
+  },
+  "rome-vatican": {
+   "file": "out/venue/rome-vatican.webp",
+   "title": "File:Spiral staircase in the Vatican Museums from bottom 02.jpg",
+   "author": "Wilfredor",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Spiral_staircase_in_the_Vatican_Museums_from_bottom_02.jpg"
+  },
+  "rome-colosseum": {
+   "file": "out/venue/rome-colosseum.webp",
+   "title": "File:Colosseum of Rome and Roman forum.jpg",
+   "author": "Wilfredor",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Colosseum_of_Rome_and_Roman_forum.jpg"
+  },
+  "rome-forum": {
+   "file": "out/venue/rome-forum.webp",
+   "title": "File:Forum romanum 6k (5760x2097).jpg",
+   "author": "BeBo86",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Forum_romanum_6k_(5760x2097).jpg"
+  },
+  "rome-stpeter": {
+   "file": "out/venue/rome-stpeter.webp",
+   "title": "File:Basilica di San Pietro in Vaticano September 2015-1a.jpg",
+   "author": "Alvesgaspar",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Basilica_di_San_Pietro_in_Vaticano_September_2015-1a.jpg"
+  },
+  "rome-assisi": {
+   "file": "out/venue/rome-assisi.webp",
+   "title": "File:Italy, Assisi, Basilica of St Francis BW 2021-09-25 07-55-19 1.jpg",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Italy,_Assisi,_Basilica_of_St_Francis_BW_2021-09-25_07-55-19_1.jpg"
+  },
+  "gr-acropolis": {
+   "file": "out/venue/gr-acropolis.webp",
+   "title": "File:20101024 Acropolis panoramic view from Areopagus hill Athens Greece.jpg",
+   "author": "Ggia",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:20101024_Acropolis_panoramic_view_from_Areopagus_hill_Athens_Greece.jpg"
+  },
+  "gr-acropolis-museum": {
+   "file": "out/venue/gr-acropolis-museum.webp",
+   "title": "File:Acropolis Museum in Athens with Acropolis View.jpg",
+   "author": "Pinterpandai.com",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Acropolis_Museum_in_Athens_with_Acropolis_View.jpg"
+  },
+  "gr-corinth": {
+   "file": "out/venue/gr-corinth.webp",
+   "title": "File:Korinth BW 2017-10-10 10-55-28.jpg",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Korinth_BW_2017-10-10_10-55-28.jpg"
+  },
+  "gr-sounion": {
+   "file": "out/venue/gr-sounion.webp",
+   "title": "File:Greece Cape Sounion BW 2017-10-09 10-06-31.jpg",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Greece_Cape_Sounion_BW_2017-10-09_10-06-31.jpg"
+  },
+  "ie-cliffs": {
+   "file": "out/venue/ie-cliffs.webp",
+   "title": "File:Ireland Cliffs of Moher BW 2025-09-11 14-48-01.jpg",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ireland_Cliffs_of_Moher_BW_2025-09-11_14-48-01.jpg"
+  },
+  "ie-kells": {
+   "file": "out/venue/ie-kells.webp",
+   "title": "File:Long Room Interior, Trinity College Dublin, Ireland - Diliff.jpg",
+   "author": "Diliff",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Long_Room_Interior,_Trinity_College_Dublin,_Ireland_-_Diliff.jpg"
+  },
+  "ie-muckross": {
+   "file": "out/venue/ie-muckross.webp",
+   "title": "File:Ireland Muckross House BW 2025-09-12 17-01-41.jpg",
+   "author": "Berthold Werner",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Ireland_Muckross_House_BW_2025-09-12_17-01-41.jpg"
+  },
+  "ie-kilmainham": {
+   "file": "out/venue/ie-kilmainham.webp",
+   "title": "File:Kilmainham Gaol exterior.jpg",
+   "author": "GrimsbyT",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Kilmainham_Gaol_exterior.jpg"
+  },
+  "ldn-abbey": {
+   "file": "out/venue/ldn-abbey.webp",
+   "title": "File:Westminster Abbey - 02.jpg",
+   "author": "Carlos Delgado",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Westminster_Abbey_-_02.jpg"
+  },
+  "ldn-tower": {
+   "file": "out/venue/ldn-tower.webp",
+   "title": "File:Tower of London viewed from the River Thames.jpg",
+   "author": "Bob Collowan",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Tower_of_London_viewed_from_the_River_Thames.jpg"
+  },
+  "ldn-globe": {
+   "file": "out/venue/ldn-globe.webp",
+   "title": "File:Shakespeare's Globe, London.jpg",
+   "author": "Tristan Surtel",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Shakespeare%27s_Globe,_London.jpg"
+  },
+  "ldn-christchurch": {
+   "file": "out/venue/ldn-christchurch.webp",
+   "title": "File:Tom Quad, Christ Church, Oxford 2025-05-04.jpg",
+   "author": "Andy Li",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Tom_Quad,_Christ_Church,_Oxford_2025-05-04.jpg"
+  },
+  "ldn-blenheim": {
+   "file": "out/venue/ldn-blenheim.webp",
+   "title": "File:Blenheim Palace from the Water Terraces October 2016.jpg",
+   "author": "DeFacto",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Blenheim_Palace_from_the_Water_Terraces_October_2016.jpg"
+  },
+  "ldn-birthplace": {
+   "file": "out/venue/ldn-birthplace.webp",
+   "title": "File:Shakespeare's Birthplace, Stratford.jpg",
+   "author": "Philip Sheldrake",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Shakespeare%27s_Birthplace,_Stratford.jpg"
+  },
+  "bran-showboat": {
+   "file": "out/venue/bran-showboat.webp",
+   "title": "File:Branson Belle Table Rock Lake 2012 cropped.jpg",
+   "author": "Doug Wertman from Rogers, AR, USA",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Branson_Belle_Table_Rock_Lake_2012_cropped.jpg"
+  },
+  "nola-mgw": {
+   "file": "out/venue/nola-mgw.webp",
+   "title": "File:Leviathan float, Orpheus, Mardi Gras.jpg",
+   "author": "Paul Mannix",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Leviathan_float,_Orpheus,_Mardi_Gras.jpg"
+  },
+  "sa-lbj": {
+   "file": "out/venue/sa-lbj.webp",
+   "title": "File:Lyndon B. Johnson Ranch October 2020 28 (Texas White House).jpg",
+   "author": "Michael Barera",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Lyndon_B._Johnson_Ranch_October_2020_28_(Texas_White_House).jpg"
+  },
+  "chi-cac": {
+   "file": "out/venue/chi-cac.webp",
+   "title": "File:Architecture River Cruise (35510731352).jpg",
+   "author": "piet theisohn from Leverkusen, Germany",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Architecture_River_Cruise_(35510731352).jpg"
+  },
+  "gr-delphi": {
+   "file": "out/venue/gr-delphi.webp",
+   "title": "File:Temple of Apollo in Delphi - columns 03.jpg",
+   "author": "Bernard Gagnon",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Temple_of_Apollo_in_Delphi_-_columns_03.jpg"
+  },
+  "ie-guinness": {
+   "file": "out/venue/ie-guinness.webp",
+   "title": "File:Entrance to the Guinness Storehouse Visitor Centre, Robert Street South, Dublin - geograph.org.uk - 2581859.jpg",
+   "author": "P L Chadwick",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Entrance_to_the_Guinness_Storehouse_Visitor_Centre,_Robert_Street_South,_Dublin_-_geograph.org.uk_-_2581859.jpg"
+  },
+  "nash-cmhof": {
+   "file": "out/venue/nash-cmhof.webp",
+   "title": "File:Country Music Hall of Fame Piano-Shaped outside.jpg",
+   "author": "Jumpy542",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Country_Music_Hall_of_Fame_Piano-Shaped_outside.jpg"
+  }
+ },
+ "hotel": {
+  "nash-hilton-downtown": {
+   "file": "out/hotel/nash-hilton-downtown.webp",
+   "title": "File:Hilton Downtown Nashville.JPG",
+   "author": "Michael Rivera",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Hilton_Downtown_Nashville.JPG"
+  },
+  "nash-courtyard-downtown": {
+   "file": "out/hotel/nash-courtyard-downtown.webp",
+   "title": "File:Courtyard Nashville Downtown.jpg",
+   "author": "Mx. Granger",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Courtyard_Nashville_Downtown.jpg"
+  },
+  "cany-sheraton-phx": {
+   "file": "out/hotel/cany-sheraton-phx.webp",
+   "title": "File:Sheraton, Copper Square, Downtown Phoenix, Arizona - panoramio.jpg",
+   "author": "davidpinter",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sheraton,_Copper_Square,_Downtown_Phoenix,_Arizona_-_panoramio.jpg"
+  },
+  "ne-hilton-parkplaza": {
+   "file": "out/hotel/ne-hilton-parkplaza.webp",
+   "title": "File:Boston Park Plaza Hotel.jpg",
+   "author": "Marc N. Belanger",
+   "license": "Public domain",
+   "license_url": "",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Boston_Park_Plaza_Hotel.jpg"
+  },
+  "niag-marriott-fallsview": {
+   "file": "out/hotel/niag-marriott-fallsview.webp",
+   "title": "File:Niagara Falls July 2010 10 (Marriott).JPG",
+   "author": "Michael Barera",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Niagara_Falls_July_2010_10_(Marriott).JPG"
+  },
+  "cany-hyatt-phx": {
+   "file": "out/hotel/cany-hyatt-phx.webp",
+   "title": "File:Hyatt Regency Phoenix 2022.jpg",
+   "author": "Cazzy82",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Hyatt_Regency_Phoenix_2022.jpg"
+  },
+  "ny-sheraton-ts": {
+   "file": "out/hotel/ny-sheraton-ts.webp",
+   "title": "File:Sheraton New York Times Square Hotel alternate exterior view.jpg",
+   "author": "Nielsoncaetanosalmeron",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sheraton_New_York_Times_Square_Hotel_alternate_exterior_view.jpg"
+  },
+  "ny-hyatt-jc": {
+   "file": "out/hotel/ny-hyatt-jc.webp",
+   "title": "File:Hyatt Regency Jersey City on the Hudson, New Jersey, US.jpg",
+   "author": "Clyde Charles Brown",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Hyatt_Regency_Jersey_City_on_the_Hudson,_New_Jersey,_US.jpg"
+  },
+  "sa-hilton-palacio": {
+   "file": "out/hotel/sa-hilton-palacio.webp",
+   "title": "File:Hilton Palacio del RIo, San Antonio.jpg",
+   "author": "Blas J",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Hilton_Palacio_del_RIo,_San_Antonio.jpg"
+  },
+  "chi-sheraton": {
+   "file": "out/hotel/chi-sheraton.webp",
+   "title": "File:NBC Tower and Sheraton Grand Chicago (31660505880).jpg",
+   "author": "daryl_mitchell from Saskatoon, Saskatchewan, Canada",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:NBC_Tower_and_Sheraton_Grand_Chicago_(31660505880).jpg"
+  },
+  "nola-sheraton": {
+   "file": "out/hotel/nola-sheraton.webp",
+   "title": "File:Sheraton Hotel in New Orleans.jpg",
+   "author": "Tony Webster",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sheraton_Hotel_in_New_Orleans.jpg"
+  },
+  "nola-hyatt-reg": {
+   "file": "out/hotel/nola-hyatt-reg.webp",
+   "title": "File:Hyatt Regency New Orleans hotel & conference center, front view.jpeg",
+   "author": "N'Awlins Contrarian",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Hyatt_Regency_New_Orleans_hotel_%26_conference_center,_front_view.jpeg"
+  },
+  "hl-dan-jer": {
+   "file": "out/hotel/hl-dan-jer.webp",
+   "title": "File:Dan Jerusalem IMG 5095.JPG",
+   "author": "deror_avi",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dan_Jerusalem_IMG_5095.JPG"
+  },
+  "hl-dan-tlv": {
+   "file": "out/hotel/hl-dan-tlv.webp",
+   "title": "File:Dan Hotel Tel Aviv 20120916 01.jpg",
+   "author": "Chris Hoare",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Dan_Hotel_Tel_Aviv_20120916_01.jpg"
+  },
+  "hl-cp-jer": {
+   "file": "out/hotel/hl-cp-jer.webp",
+   "title": "File:Crowne Plaza Jerusalem (43249608072).jpg",
+   "author": "Gary Todd from Xinzheng, China",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Crowne_Plaza_Jerusalem_(43249608072).jpg"
+  },
+  "hl-leo-tib": {
+   "file": "out/hotel/hl-leo-tib.webp",
+   "title": "File:Leonardo Club Hotel, Tiberias.JPG",
+   "author": "geagea",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Leonardo_Club_Hotel,_Tiberias.JPG"
+  },
+  "gr-hilton-athens": {
+   "file": "out/hotel/gr-hilton-athens.webp",
+   "title": "File:The Athens Hilton as seen from the neighbourhood of Pagrati.jpg",
+   "author": "Divad",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:The_Athens_Hilton_as_seen_from_the_neighbourhood_of_Pagrati.jpg"
+  },
+  "ldn-hilton-metropole": {
+   "file": "out/hotel/ldn-hilton-metropole.webp",
+   "title": "File:The Metropole Hilton, Paddington - geograph.org.uk - 5113201.jpg",
+   "author": "David Howard",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:The_Metropole_Hilton,_Paddington_-_geograph.org.uk_-_5113201.jpg"
+  },
+  "ldn-sheraton-pl": {
+   "file": "out/hotel/ldn-sheraton-pl.webp",
+   "title": "File:Sheraton Grand London Park Lane.jpg",
+   "author": "Jordiferrer",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Sheraton_Grand_London_Park_Lane.jpg"
+  }
+ }
 }

@@ -6,13 +6,13 @@ def accept(kind,id,work,idx,crop=(0.5,0.5)):
     lic=r['lic']; assert find.OK.match(lic),lic
     if kind=='dest': assert r['w']>=1600
     tw=1920 if kind=='dest' else 1280
-    tw=min(tw,r['w'])
-    url=re.sub(r'/\d+px-','/%dpx-'%tw,r['thumb']) if r['thumb'] else r['url']
+    if tw>=r['w']: tw=960 if r['w']>960 else r['w']
+    url=r['url'] if tw>=r['w'] else re.sub(r'/\d+px-','/%dpx-'%tw,r['thumb']) if r['thumb'] else r['url']
     raw=f'raw/{kind}_{id}.jpg'
-    for i in range(4):
+    for i in range(10):
         subprocess.run(['curl','-sS','-A',find.UA,'-o',raw,url])
         try: Image.open(raw).verify(); break
-        except Exception: time.sleep(8)
+        except Exception: time.sleep(12)
     else: raise SystemExit('download failed '+url)
     pg={'title':r['title']}; ii={'descriptionurl':r['src']}
     g=lambda k:{'LicenseUrl':r['licurl'],'Artist':r['artist']}[k]
@@ -34,4 +34,4 @@ def accept(kind,id,work,idx,crop=(0.5,0.5)):
     json.dump(mf,open('manifest.json','w'),indent=1,ensure_ascii=False)
     print(kind,id,lic,os.path.getsize(out),'q',q)
 if __name__=='__main__':
-    a=sys.argv; accept(a[1],a[2],a[3],int(a[4]),(float(a[5]),0.5) if len(a)>5 else (0.5,0.5))
+    a=sys.argv; accept(a[1],a[2],a[3],int(a[4]),(float(a[5]),float(a[6]) if len(a)>6 else 0.5) if len(a)>5 else (0.5,0.5))
