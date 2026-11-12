@@ -29,7 +29,7 @@ const {chromium}=require('playwright');
  await p.click('[data-act=go][data-v=gaps]');await sh('18_he_gaps');
  await p.click('[data-act=open][data-pt=tfin]');await p.waitForTimeout(300);await sh('19_he_tfin');
  await p.setViewportSize({width:1024,height:768});await p.click('[data-act=lang]');await p.waitForTimeout(300);await sh('20_tablet_tfin');
- await p.setViewportSize({width:390,height:844});await p.click('[data-act=go][data-v=home]');await sh('21_mobile');
+ await p.setViewportSize({width:390,height:844});await p.evaluate(()=>{S.tab='home';render();});await sh('21_mobile');
  const ov=await p.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);
  const he=await p.evaluate(()=>(document.body.innerText.match(/[א-ת]+/g)||[]).slice(0,10));
  console.log('errors',errs,'hscroll mobile',ov,'hebrew in en',he);

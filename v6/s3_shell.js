@@ -103,7 +103,7 @@ const TOUR=[
   {sel:'.stats',go:()=>{S.tab='gaps';S.gF='open';},
    tx:()=>[L('כל הטיולים, כל הספקים','Every trip, every supplier'),L('פערים פתוחים, דרישות זיכוי וזיכויים שהתקבלו לאורך העונה, ואילו ספקים מחייבים ביתר הכי הרבה.','Open, disputed and recovered gaps across the season, and which suppliers overbill most often.')]},
   {sel:'.chat',go:()=>{S.tab='ai';if(!S.chat.length)askQ(QS[1]);},
-   tx:()=>[L('שאלו את מאיה','Ask Maya'),L('מאיה עונה מהנתונים של הסוכנות, בעברית או באנגלית. 25 שאלות מוכנות, ואפשר גם לכתוב חופשי.','Maya answers from your own agency data, in English or Hebrew. 25 ready questions, or type your own.')]}
+   tx:()=>[L('שאלו את מאיה','Ask Maya'),L(`מאיה עונה מהנתונים של הסוכנות, בעברית או באנגלית. ${QS.length} שאלות מוכנות, ואפשר גם לכתוב חופשי.`,`Maya answers from your own agency data, in English or Hebrew. ${QS.length} ready questions, or type your own.`)]}
 ];
 function tourPanel(){
   if(S.tour<0)return '';

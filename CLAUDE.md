@@ -12,7 +12,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - The file starts with `<meta charset="utf-8">`. Without it, Chromium mis-detects the encoding of the large file and every `$` and symbol turns into garbage.
 - Must work offline on a booth laptop.
 - Default language is English. The Hebrew toggle must be fully RTL.
-- The assistant "Maya" answers from 25 scripted questions. It is NOT a live LLM. Do not present it as one in the UI.
+- The assistant "Maya" answers from 28 scripted questions (count shown from QS.length). It is NOT a live LLM. Do not present it as one in the UI.
 - **Real-brand rule:** a real company (hotel, chain, venue, airline) must never appear next to negative wording (gap, overbilling, dispute, late). Gap stories stay on fictional suppliers. `brandSwap()` gives a trip a real hotel only if none of its invoices has a gap. `check6.js` fails if any catalog name appears in a gap.
 - No official logos. Brands appear as a neutral badge: a colored square with an initial, plus the name. Using real logos needs the brand owner's permission.
 
@@ -61,8 +61,15 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - the Operation dashboard cards, the Finance dashboard, Income (deal invoices and receipts with a totals footer) and Vouchers;
   - the phone hamburger drawer.
 - `v6/s7c_lists.js`, `v6/lists.css` - product-style tables for Activities (catalog venues), Hotels (`vHotelsList`) and Clients (`vClients`). The last two are registered in s9_boot.js.
+- `v6/s9a_books.js` - Phase 2:
+  - accounting sync (pilot, simulated against a sample company file): QuickBooks Online and Xero lead in English, Priority and Hashavshevet lead in Hebrew, all four in both languages;
+  - connect animation, object mapping, posting rules and sync log;
+  - gap actions post bills, holds and credits to the log;
+  - a sync chip on trip finance tabs;
+  - the "Your numbers" card on Profit leaks;
+  - Maya questions 26-28.
 - `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
-- `v6/s9_meet.js` - meeting mode (8 beats, arrow keys, R restart, Esc exit, closing screen)
+- `v6/s9_meet.js` - meeting mode (9 beats incl. "Connect your books", arrow keys, R restart, Esc exit, closing screen)
 - `v6/s9_boot.js` - wraps render/resetDemo, then `load(); render();`. Must stay last.
 - `v6/base.css`, `v6/extra.css`, `v6/v7.css`, `v6/brand-fonts.css`, `v6/theme.css` - styles in load order. `fonts.css` - embedded Hebrew font (IBM Plex Sans Hebrew), the fallback for Hebrew glyphs.
 
@@ -78,5 +85,5 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 ## Open items (owner)
 - Payment and email domains are placeholders (`.example`).
 - Gap frequencies (about 20% of invoices with a gap) are estimates, not benchmarks.
-- Phase B of the upgrade plan: simulated QuickBooks/Xero connect flow and post-to-books. Not built yet.
+- Live accounting connections (Intuit, Xero, Priority, Hashavshevet) are product work; the demo is simulated and badged Pilot. Verify Hashavshevet and Priority object names with an accountant before showing to Israeli buyers.
 - Catalog caveats from research: some Israel hotel operating statuses need confirming; star ratings for a few properties are approximate.

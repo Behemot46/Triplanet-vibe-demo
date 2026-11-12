@@ -19,7 +19,7 @@ const {chromium}=require('playwright');
  await p.click('[data-act=lang]');await p.click('[data-act=go][data-v=studio]');await p.waitForTimeout(400);await sh('09_he_studio',true);
  await p.click('[data-act=go][data-v=leaks]');await p.waitForTimeout(1200);await sh('10_he_leaks');
  await p.click('[data-act=lang]');
- await p.setViewportSize({width:390,height:844});await p.click('[data-act=go][data-v=studio]');await sh('11_mobile_studio',true);
+ await p.setViewportSize({width:390,height:844});await p.evaluate(()=>{S.tab='studio';render();});await sh('11_mobile_studio',true);
  const ov=await p.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth);
  await p.setViewportSize({width:1440,height:900});
  if(await p.$('[data-act=meet]')){await p.click('[data-act=meet]');for(let i=0;i<9;i++){await p.waitForTimeout(i===2?4200:900);await sh('2'+i+'_meet');const nx=await p.$('[data-act=meetnext]');if(!nx)break;await nx.click();}}
