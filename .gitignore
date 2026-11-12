@@ -7,3 +7,4 @@ tools/photos/raw/
 __pycache__/
 tools/photos/work/
 tools/photos/contact_*.jpg
+tools/avatars/node_modules/

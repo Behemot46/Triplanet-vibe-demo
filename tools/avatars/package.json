@@ -1,0 +1,2 @@
+{ "name": "tp-avatars", "private": true, "type": "module",
+  "dependencies": { "@dicebear/core": "9.4.3", "@dicebear/collection": "9.4.3" } }

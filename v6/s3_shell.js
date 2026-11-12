@@ -20,7 +20,10 @@ async function copy(text){try{await navigator.clipboard.writeText(trHe(text));to
 const noTrip=()=>`<div class="card"><h2>${L('אין כאן טיולים','No trips here')}</h2><p class="muted">${L('סוכנים רואים רק את התיקים שלהם. עברו לתצוגת מנהל כדי לראות הכול.','Agents only see their own files. Switch to the manager view to see everything.')}</p></div>`;
 const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אישור ההצעה','opens after the quote is accepted')}</h2><p class="muted">${esc(t.name)} ${L('עדיין בשלב הצעה','is still a quote')} (${qn(t.qst)}). ${L('אישור ההצעה יוצר קבוצות חיוב, רשימת משימות ואישורי ספקים.','Accepting the quote creates billing groups, a task list and supplier confirmations.')}</p><button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button></div>`;
 const head=(title,right)=>`<div class="ph"><h1>${title}</h1><div class="row">${right||''}</div></div>`;
-const avatarOf=n=>`<span class="avatar">${esc(trHe(String(n)).trim().charAt(0))}</span>`;
+/* staff portraits (v6/s0_avatars.js, generated): looked up by agent key or by the full name in either language */
+const avKey=n=>{n=String(n).trim();if(typeof AVATARS==='undefined')return null;if(AVATARS[n])return n;
+  for(const a of AGENTS)if(n===AGN[a]||n===AGE[a])return a;if(n==='אלה ברוקס'||n==='Ella Brooks')return 'Ella';return null;};
+const avatarOf=(n,cls)=>{const k=avKey(n);return k?`<img class="avatar avimg${cls?' '+cls:''}" src="${AVATARS[k]}" alt="" width="40" height="40">`:`<span class="avatar${cls?' '+cls:''}">${esc(trHe(String(n)).trim().charAt(0))}</span>`;};
 const NEWP=()=>pillF(L('חדש','New'),'green');
 
 /* ---------- shell ---------- */

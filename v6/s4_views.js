@@ -25,17 +25,17 @@ function hpHero(ts,P,up){
 }
 function hpStats(won,lost,H){
   const dW=Math.round((won-12)/12*100),dL=Math.round((lost-3)/3*100);
-  const chip=(d,goodUp)=>{const good=d===0?null:(d>0)===goodUp;return `<span class="hp-chip ${good===null?'flat':good?'good':'bad'}">${d===0?'':ic(d>0?'trendup':'trenddown')}<bdi>${d>0?'+':''}${d}%</bdi></span>`;};
-  const kp=(cls,lab,v,d,goodUp,art)=>`<div class="hp-kp ${cls}"><div><span>${lab}</span><b>${v}</b><div class="hp-vs">${chip(d,goodUp)} ${L('לעומת שנה שעברה','vs last year')}</div></div><img src="${art}" alt="" width="64" height="64"></div>`;
-  const W=360,Hh=176,top=18,bot=26,ch=Hh-top-bot,mx=Math.max(15,...H.map(h=>Math.max(h[1],h[2]))),sc=v=>ch*v/mx,gw=W/H.length,bw=Math.min(22,gw*.24);
-  const grid=[0,5,10,15].filter(v=>v<=mx).map(v=>`<line x1="0" x2="${W}" y1="${(top+ch-sc(v)).toFixed(1)}" y2="${(top+ch-sc(v)).toFixed(1)}"/><text x="0" y="${(top+ch-sc(v)-4).toFixed(1)}">${v}</text>`).join('');
-  const bars=H.map((h,i)=>{const cx=gw*i+gw/2+8,cur=i===H.length-1,o=cur?1:.42;
-    const r=(x,v,cl)=>{const hh=Math.max(sc(v),3),y=top+ch-hh;return `<rect class="${cl}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(6,bw/2).toFixed(1)}" style="opacity:${o};animation-delay:${i*90}ms"/><text class="v" x="${(x+bw/2).toFixed(1)}" y="${(y-5).toFixed(1)}" style="opacity:${cur?1:.6}">${v}</text>`;};
-    return r(cx-bw-2,h[1],'w')+r(cx+2,h[2],'l')+`<text class="x${cur?' cur':''}" x="${cx.toFixed(1)}" y="${Hh-6}">${h[0]}</text>`;}).join('');
+  const chip=(d,goodUp)=>{const good=d===0?null:(d>0)===goodUp;return `<span class="hp-chip ${good===null?'flat':good?'good':'bad'}">${d===0?'':ic(d>0?'arrup':'arrdown')}<bdi>${d>0?'+':''}${d}%</bdi></span>`;};
+  const kp=(cls,lab,v,d,goodUp,icn)=>`<div class="hp-kp ${cls}"><span class="hp-badge">${ic(icn)}</span><div><span>${lab}</span><b>${v}</b><div class="hp-vs">${chip(d,goodUp)}<em>${L('לעומת שנה שעברה','vs last year')}</em></div></div></div>`;
+  const W=360,Hh=196,top=30,bot=30,ch=Hh-top-bot,mx=Math.max(15,...H.map(h=>Math.max(h[1],h[2]))),sc=v=>ch*v/mx,gw=W/H.length,bw=12,gap=5,base=top+ch;
+  const grid=[0,mx/2,mx].map(v=>`<line x1="0" x2="${W}" y1="${(base-sc(v)).toFixed(1)}" y2="${(base-sc(v)).toFixed(1)}"/>`).join('');
+  const cols=H.map((h,i)=>{const cx=gw*i+gw/2,cur=i===H.length-1;
+    const bar=(x,v,cl,j)=>{const hh=Math.max(sc(v),bw),y=base-hh;return `<rect class="${cl}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${hh.toFixed(1)}" rx="${bw/2}" style="animation-delay:${i*90+j*60}ms"/><text class="v" x="${(x+bw/2).toFixed(1)}" y="${(y-7).toFixed(1)}">${v}</text>`;};
+    return `<g class="yr${cur?' cur':''}">${cur?`<rect class="hl" x="${(cx-30).toFixed(1)}" y="4" width="60" height="${Hh-4}" rx="16"/>`:''}${bar(cx-bw-gap/2,h[1],'w',0)}${bar(cx+gap/2,h[2],'l',1)}<text class="x" x="${cx.toFixed(1)}" y="${Hh-9}">${h[0]}</text></g>`;}).join('');
   return `<div class="card pstat hp-ps${hpAnim()?' anim':''}"><div class="hp-ph"><h3>${L('סטטיסטיקת פרויקטים','Project statistics')}</h3><select aria-label="${L('תקופה','Period')}"><option>${L('שנה','Year')}</option><option>${L('רבעון','Quarter')}</option><option>${L('חודש','Month')}</option></select></div>
-   <div class="hp-kps">${kp('won',L('פרויקטים שנסגרו','Closed projects'),won,dW,true,TP_ART.open)}${kp('lost',L('פרויקטים שבוטלו','Canceled projects'),lost,dL,false,TP_ART.closed)}</div>
+   <div class="hp-kps">${kp('won',L('פרויקטים שנסגרו','Closed projects'),won,dW,true,'trophy')}${kp('lost',L('פרויקטים שבוטלו','Canceled projects'),lost,dL,false,'pinx')}</div>
    <div class="hp-lg"><span><i class="w"></i>${L('נסגרו','Closed')}</span><span><i class="l"></i>${L('בוטלו','Canceled')}</span><span class="muted">${L('שנים קודמות פיקטיביות','Prior years are fictional')}</span></div>
-   <svg class="hp-ch" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${L('פרויקטים שנסגרו ובוטלו לפי שנה','Closed and canceled projects by year')}"><defs><linearGradient id="hpgw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5BE49B"/><stop offset="1" stop-color="#22C55E"/></linearGradient><linearGradient id="hpgl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD666"/><stop offset="1" stop-color="#FFAB00"/></linearGradient></defs><g class="g">${grid}</g>${bars}</svg></div>`;
+   <svg class="hp-ch" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${L('פרויקטים שנסגרו ובוטלו לפי שנה','Closed and canceled projects by year')}"><defs><linearGradient id="hpgw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5BE49B"/><stop offset="1" stop-color="#118D57"/></linearGradient><linearGradient id="hpgl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD666"/><stop offset="1" stop-color="#FF8F00"/></linearGradient></defs><g class="g">${grid}</g>${cols}</svg></div>`;
 }
 const LY={Priya:.62,Dana:.7,Marcus:.45,Grace:.55,Luis:.6,Tom:.5};
 function vHome(){
@@ -57,9 +57,9 @@ function vHome(){
   const chg=S.role==='manager'?`${sgn(Math.round((won-12)/12*100),v=>v)}% ${L('ביחס לשנה קודמת','vs last year')}`:'';
   const latest=ts.slice().sort((a,b)=>b.no-a.no).slice(0,5).map(t=>{
     const ring=t.stage==='Operations'?(()=>{const d=t.tasks.filter(x=>x.done).length;return `<div class="pr" style="--p:${Math.round(d/t.tasks.length*100)}"><span>${d}/${t.tasks.length}</span></div>`;})():t.stage!=='Quote'?'<span class="okc">'+ic('check')+'</span>':'';
-    return `<tr><td><strong>${esc(t.name)}</strong><div class="small muted">${sn(t.seg)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${agn(t.agent)}</td><td>${qchip(t)}</td><td>${ring}</td><td><button class="btn sm" data-act="open" data-v="${t.id}" aria-label="${L('פתח','Open')}">›</button></td></tr>`;}).join('');
+    return `<tr><td><strong>${esc(t.name)}</strong><div class="small muted">${sn(t.seg)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td><td>${qchip(t)}</td><td>${ring}</td><td><button class="btn sm" data-act="open" data-v="${t.id}" aria-label="${L('פתח','Open')}">›</button></td></tr>`;}).join('');
   const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
-    return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n">${Math.round(r*100)}% <span class="${up?'pos':'neg'}">${up?ic('trendup'):ic('trenddown')}</span></td></tr>`;}).join('');
+    return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n"><span class="hp-chip ${up?'good':'bad'}">${ic(up?'arrup':'arrdown')}<bdi>${Math.round(r*100)}%</bdi></span></td></tr>`;}).join('');
   const al=alertsFor(ts,S.thresh).slice(0,6).map(a=>`<div class="alert">${pillF(a.sev==='bad'?L('דחוף','Urgent'):a.sev==='warn'?L('לבדיקה','Check'):L('לידיעה','FYI'),a.sev==='bad'?'red':a.sev==='warn'?'amber':'blue')}<div>${a.txt}</div>${a.trip?`<button class="btn sm" data-act="open" data-v="${a.trip}" data-pt="${a.pt||'costs'}">${L('פתח','Open')}</button>`:`<button class="btn sm" data-act="go" data-v="${a.go}">${L('הצג','View')}</button>`}</div>`).join('')||`<p class="muted">${L('אין התראות.','No alerts.')}</p>`;
   return `${hpHero(ts,P,up)}
   <div class="two">
@@ -84,7 +84,7 @@ function vQuotes(){
   const list=base.filter(t=>inTab(t,S.qtab)).sort((a,b)=>D(a.dep)-D(b.dep));
   const per=S.rpp||list.length||1,pages=Math.max(1,Math.ceil(list.length/per));if(S.page>=pages)S.page=pages-1;
   const shown=S.rpp?list.slice(S.page*per,S.page*per+per):list;
-  const rows=shown.map(t=>`<tr><td class="no">#${t.no}</td><td>${qchip(t)}</td><td><strong>${esc(t.name)}</strong><div class="small muted">${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row">${avatarOf(agn(t.agent))}${agn(t.agent)}</span></td>
+  const rows=shown.map(t=>`<tr><td class="no">#${t.no}</td><td>${qchip(t)}</td><td><strong>${esc(t.name)}</strong><div class="small muted">${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td>
     <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm" data-act="dup" data-v="${t.id}">${L('שכפל','Duplicate')}</button></div></td></tr>`).join('');
   const tabs=[['quotes',L('הצעות','Quotes')],['files',L('תיקים','Files')],['archive',L('ארכיון','Archive')],['all',L('הכל','All')]].map(x=>`<button class="${S.qtab===x[0]?'on':''}" data-act="qtab" data-v="${x[0]}">${x[1]}<span class="cnt">${base.filter(t=>inTab(t,x[0])).length}</span></button>`).join('');
   const from=list.length?S.page*per+1:0,to=Math.min(list.length,S.page*per+per);

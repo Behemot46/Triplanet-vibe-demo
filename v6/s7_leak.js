@@ -85,7 +85,7 @@ function lkHeat(M){
   const cell=(a,s)=>{const rs=M.rows.filter(r=>r.t.agent===a&&r.t.seg===s);if(!rs.length)return {v:null,n:0};return {v:r2(rs.reduce((x,r)=>x+r.leak,0)),n:rs.length};};
   const mx=Math.max(1,...ags.flatMap(a=>sg.map(s=>cell(a,s).v||0)));
   return `<div class="card lk-heat"><h3>${L('איפה זה דולף: סוכן מול סוג קבוצה','Where it leaks: agent by group type')}</h3><div class="scroll"><table class="hm"><thead><tr><th></th>${sg.map(s=>`<th>${sn(s)}</th>`).join('')}</tr></thead><tbody>
-   ${ags.map(a=>`<tr><th>${agn(a)}</th>${sg.map(s=>{const c=cell(a,s);if(c.v===null)return '<td class="e">·</td>';const i=Math.max(0,Math.min(1,c.v/mx));
+   ${ags.map(a=>`<tr><th><span class="row" style="flex-wrap:nowrap;gap:8px">${avatarOf(agn(a),'xs')}${agn(a)}</span></th>${sg.map(s=>{const c=cell(a,s);if(c.v===null)return '<td class="e">·</td>';const i=Math.max(0,Math.min(1,c.v/mx));
      return `<td><button class="hmc" data-act="lksel" data-v="agent|${a}" style="--i:${i.toFixed(2)}" title="${esc(agn(a))} · ${esc(sn(s))}: ${c.n}">${kUsd(c.v)}</button></td>`;}).join('')}</tr>`).join('')}</tbody></table></div>
    <p class="small muted" style="margin:8px 0 0">${L('כהה יותר = יותר רווח שדלף. לחיצה מסננת לפי הסוכן.','Darker means more profit lost. Click to focus on that agent.')}</p></div>`;
 }
