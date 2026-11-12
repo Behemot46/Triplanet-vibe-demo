@@ -5,7 +5,7 @@ const els={};
 const mk=id=>els[id]||(els[id]={id,innerHTML:'',value:'',style:{},setAttribute(){},textContent:'',classList:{add(){},remove(){}},addEventListener(){},focus(){}});
 const ctx={document:{getElementById:mk,addEventListener(){},querySelector(){return null;},querySelectorAll(){return []}},window:{scrollY:0,scrollTo(){},matchMedia:()=>({matches:false})},navigator:{},Intl,console,setTimeout:()=>0,clearTimeout(){}};
 ctx.window.window=ctx.window;vm.createContext(ctx);
-vm.runInContext(js+`;globalThis.__t={MEET,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
+vm.runInContext(js+`;globalThis.__t={MEET,meetSetCut,leakModel_:leakModel,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
 const X=ctx.__t,{S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,QS,PTABS,vTrip,NAV,NAV2,trHtml,HE_RE,trChunk}=X;
 let bad=0;const fail=m=>{bad++;console.log('FAIL',m);};
 const chk=(h0,l)=>{const h=String(h0).replace(/data:[a-z/+]+;base64,[A-Za-z0-9+\/=]+/g,'');if(/NaN|undefined|Infinity|\[object|null</.test(h))fail(l+' bad token: '+(h.match(/.{40}(NaN|undefined|Infinity|\[object|null<).{20}/)||[''])[0]);};
@@ -79,9 +79,12 @@ for(const lang of ['en','he']){S.lang=lang;Object.keys(X.ACCT).forEach(k=>{S.acc
   S.tab='books';const h=VIEWS.books();chk(h,'books '+k);if(lang==='en')scan(h,'books '+k);if(a.log.length<3)fail('books log '+k);
   S.tab='trip';S.tripId='gc';S.ptab='fdash';chk(vTrip(),'chip '+k);if(lang==='en')scan(vTrip(),'chip '+k);});S.acct=null;}
 // ---- meeting mode: every beat and the closing screen, both languages
-for(const lang of ['en','he']){S.lang=lang;X.resetDemo();X.MEET.forEach((b,i)=>{try{S.meet=i;b.go();const h=(b.close?X.closingHtml():'')+X.meetBar();chk(h,'meet '+i);if(lang==='en')scan(trHtml(h),'meet '+i);
-  if(b.close&&/<b>\$0<\/b>/.test(h))fail('meet closing shows $0');}catch(e){fail('meet '+lang+' '+i+' '+e.message);}});S.meet=-1;}
+for(const cut of [1,3,10])for(const lang of ['en','he']){S.lang=lang;X.meetSetCut(cut);X.resetDemo();if(!X.MEET.every(Boolean)||!X.MEET[X.MEET.length-1].close)fail('meet cut '+cut);X.MEET.forEach((b,i)=>{try{S.meet=i;b.go();const h=(b.close?X.closingHtml():'')+X.meetBar()+(b.id==='status'?X.VIEWS.status():'');chk(h,'meet '+cut+' '+b.id);if(lang==='en')scan(trHtml(h),'meet '+i);
+  if(b.close&&/<b>\$0<\/b>/.test(h))fail('meet closing shows $0');}catch(e){fail('meet '+cut+' '+lang+' '+i+' '+e.message);}});S.meet=-1;}
+X.meetSetCut(3);
 X.resetDemo();
+{const M=X.leakModel(X.visibleTrips()),P=portfolio(TRIPS);if(!(M.comm>=0&&M.comm<=P.comm))fail('commission owed '+M.comm);const cs=Object.values(M.commSup).reduce((a,b)=>a+b,0);if(Math.abs(cs-M.comm)>0.05)fail('commission by supplier '+cs);console.log('COMMISSION owed',M.comm,'of',P.comm,'lines',M.commN);}
+for(const lang of ['en','he']){S.lang=lang;S.tab='status';const h=VIEWS.status();chk(h,'status');if(lang==='en')scan(h,'status');}
 S.lang='en';
 const L=Object.entries(left);console.log('LEFTOVER',L.length);L.slice(0,40).forEach(x=>console.log('  ',x[1],'|',x[0],'=>',trChunk(x[0])));
 const P=portfolio(TRIPS);console.log('P rev',P.rev,'pp',P.pp,'fp',P.fp,'fx',Object.keys(P.fxExp));

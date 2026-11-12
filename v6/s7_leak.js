@@ -12,14 +12,18 @@ function releaseRisk(t){
   const lod=t.lines.find(l=>l.type==='Lodging'&&l.cost>0);if(!lod)return null;
   return {t,n,rd,amt:r2(n*t.nights*lod.cost*lrate(t,lod))};
 }
+/* supplier commission counted in profit but not yet received (demo rule: fixed per line, so it is stable) */
+const commPaid=(t,l)=>{const h=[...(t.id+':'+l.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0);return t.stage==='Closed'?h%4!==0:h%3===0;};
 function leakModel(ts){
-  const M={rev:0,pp:0,fp:0,amtDiff:0,fx:0,pax:0,n:0,steps:{},rec:0,recN:0,lost:0,lostN:0,got:0,gotN:0,release:0,rel:[],late:0,lateN:0,missing:0,rows:[],sup:{}};
+  const M={rev:0,pp:0,fp:0,amtDiff:0,fx:0,pax:0,n:0,steps:{},rec:0,recN:0,lost:0,lostN:0,got:0,gotN:0,release:0,rel:[],late:0,lateN:0,missing:0,comm:0,commN:0,commSup:{},rows:[],sup:{}};
   LK_ORDER.forEach(k=>M.steps[k]={amt:0,n:0});
   ts.filter(t=>t.stage!=='Quote').forEach(t=>{
     const c=calc(t),g=groupsCalc(t);
     const row={t,key:t.id,rev:c.rev,pp:c.planProfit,fp:c.fcProfit,leak:r2(c.planProfit-c.fcProfit),rec:0,recN:0,fx:c.fx};
     c.lines.forEach(x=>{
-      const l=x.l;if(!l.inv)return;const s=invStatus(l);
+      const l=x.l;
+      if(x.comm>0&&(t.stage==='Finance'||t.stage==='Closed')&&!commPaid(t,l)){M.comm=r2(M.comm+x.comm);M.commN++;M.commSup[l.sup]=r2((M.commSup[l.sup]||0)+x.comm);row.comm=r2((row.comm||0)+x.comm);}
+      if(!l.inv)return;const s=invStatus(l);
       if(s.k==='credited'){const u=r2(s.credit*lrate(t,l));M.got=r2(M.got+u);M.gotN++;const sp=M.sup[l.sup]||(M.sup[l.sup]={over:0,rec:0,got:0,n:0,trips:new Set()});sp.got=r2(sp.got+u);sp.trips.add(t.id);return;}
       if(s.k!=='gap')return;
       const k=kindOf(l,s),st=M.steps[k]||(M.steps[k]={amt:0,n:0});st.amt=r2(st.amt+x.amtDiff);st.n++;
@@ -104,6 +108,7 @@ function vLeaks(){
     <div class="lk-ri"><span class="ic">${ic('bed')}</span><div><strong>${usd(M.release)}</strong> ${L('חדרים בבלוק שלא שוחררו','unreleased block rooms')}<div class="small muted">${M.rel.length?M.rel.map(x=>`${esc(x.t.name)}: ${x.n} ${L('חדרים','rooms')}, ${esc(x.t.room.hotel)}`).join(' · '):L('אין','None')}</div></div></div>
     <div class="lk-ri"><span class="ic">${ic('clock')}</span><div><strong>${usd(M.late)}</strong> ${L('תשלומי לקוחות באיחור','late client payments')}<div class="small muted">${M.lateN} ${L('קבוצות חיוב. סיכון מזומנים, לא רווח.','billing groups. A cash risk, not profit.')}</div></div></div>
     <div class="lk-ri"><span class="ic">${ic('danger')}</span><div><strong>${M.missing}</strong> ${L('חשבוניות ספק חסרות','missing supplier invoices')}<div class="small muted">${L('בטיולים שחזרו. הסכום ידוע רק כשהן מגיעות.','On returned trips. The amount is known only when they arrive.')}</div></div></div>
+    <div class="lk-ri"><span class="ic">${ic('percent')}</span><div><strong>${usd(M.comm)}</strong> ${L('עמלות ספקים שעוד לא נגבו','supplier commission not yet collected')}<div class="small muted">${M.commN?Object.entries(M.commSup).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,v])=>`${esc(k)} ${usd(v)}`).join(' · ')+L('. כלול ברווח הצפוי.','. Counted in expected profit.'):L('הכל נגבה','All collected')}</div></div></div>
     <div class="lk-ri ok"><span class="ic">${ic('check')}</span><div><strong>${usd(M.got)}</strong> ${L('הוחזר מספקים העונה','recovered from suppliers this season')}<div class="small muted">${M.gotN} ${L('זיכויים',(M.gotN)===1?'credit':'credits')}</div></div></div></div>`;
   return head(L('דליפות רווח','Profit leaks'),pillF(L('חדש','New'),'green'))+
   `<p class="muted">${L('כל טיול, סוכן וסוג קבוצה: כמה מהרווח המתוכנן הגיע בפועל, ולאן השאר הלך.','Every trip, agent and group type: how much planned profit is still there, and where the rest went.')}</p>

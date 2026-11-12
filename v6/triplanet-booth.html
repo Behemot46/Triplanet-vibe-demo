@@ -856,6 +856,29 @@ select:focus,input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 1px 
 .closing .leadf select option{color:#1C252E}
 .closing .leadf .btn{background:var(--mint);color:var(--primary-darker);border:0;font-weight:700}
 @media (max-width:760px){.closing .lead{grid-template-columns:1fr 1fr}.closing .leadf .btn{grid-column:1/-1}}
+/* ---- phase 3: What's live ---- */
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
+.rm-col{display:flex;flex-direction:column;gap:4px}
+.rm-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:4px;border-bottom:1px dashed var(--line)}
+.rm-f{display:flex;align-items:flex-start;gap:12px;padding:10px 0}
+.rm-f>div{flex:1;min-width:0}
+.rm-ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:20px;color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.rm-ic .ic{--duobg:var(--panel)}
+.rm-f .btn.sm{padding:4px 8px}
+.meet .cuts{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:rgba(255,255,255,.1);margin-inline-start:8px}
+.meet .cuts button{font:600 12px var(--f-ui);color:#DCEBFA;background:none;border:0;border-radius:999px;padding:3px 10px;cursor:pointer}
+.meet .cuts button.on{background:var(--mint);color:var(--primary-darker)}
+.meet .cuts button:focus-visible{outline:2px solid var(--mint);outline-offset:1px}
+#idlewarn{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:80;background:var(--primary-darker);color:#fff;font:600 15px var(--f-ui);padding:10px 18px;border-radius:999px;box-shadow:var(--sh-drop);max-width:calc(100vw - 32px);text-align:center}
+/* ---- phase 3: MUI outlined selects, tablet header and tiles ---- */
+select{appearance:none;-webkit-appearance:none;background-color:var(--panel);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23637381' d='M12 15.5a1 1 0 0 1-.7-.29l-5-5a1 1 0 1 1 1.4-1.42L12 13.1l4.3-4.3a1 1 0 0 1 1.4 1.42l-5 5a1 1 0 0 1-.7.28'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-inline-end:34px!important;cursor:pointer}
+[dir=rtl] select{background-position:left 10px center}
+select:hover{border-color:var(--ink)}
+.closing .leadf select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M12 15.5a1 1 0 0 1-.7-.29l-5-5a1 1 0 1 1 1.4-1.42L12 13.1l4.3-4.3a1 1 0 0 1 1.4 1.42l-5 5a1 1 0 0 1-.7.28'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:18px}
+.tourbtn{white-space:nowrap}
+@media (max-width:1180px) and (min-width:901px){
+  .tourbtn{font-size:0!important;gap:0!important;padding:0 10px!important}
+  .ptiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
 
 /* product-style list screens: Activities, Hotels, Clients */
 .al-card{padding:0;overflow:hidden}
@@ -1879,7 +1902,7 @@ function render(){
    <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
-     <button class="btn sm tourbtn" data-act="tourgo">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
+     <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
      <span class="grow"></span>
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
      <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
@@ -2653,14 +2676,18 @@ function releaseRisk(t){
   const lod=t.lines.find(l=>l.type==='Lodging'&&l.cost>0);if(!lod)return null;
   return {t,n,rd,amt:r2(n*t.nights*lod.cost*lrate(t,lod))};
 }
+/* supplier commission counted in profit but not yet received (demo rule: fixed per line, so it is stable) */
+const commPaid=(t,l)=>{const h=[...(t.id+':'+l.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0);return t.stage==='Closed'?h%4!==0:h%3===0;};
 function leakModel(ts){
-  const M={rev:0,pp:0,fp:0,amtDiff:0,fx:0,pax:0,n:0,steps:{},rec:0,recN:0,lost:0,lostN:0,got:0,gotN:0,release:0,rel:[],late:0,lateN:0,missing:0,rows:[],sup:{}};
+  const M={rev:0,pp:0,fp:0,amtDiff:0,fx:0,pax:0,n:0,steps:{},rec:0,recN:0,lost:0,lostN:0,got:0,gotN:0,release:0,rel:[],late:0,lateN:0,missing:0,comm:0,commN:0,commSup:{},rows:[],sup:{}};
   LK_ORDER.forEach(k=>M.steps[k]={amt:0,n:0});
   ts.filter(t=>t.stage!=='Quote').forEach(t=>{
     const c=calc(t),g=groupsCalc(t);
     const row={t,key:t.id,rev:c.rev,pp:c.planProfit,fp:c.fcProfit,leak:r2(c.planProfit-c.fcProfit),rec:0,recN:0,fx:c.fx};
     c.lines.forEach(x=>{
-      const l=x.l;if(!l.inv)return;const s=invStatus(l);
+      const l=x.l;
+      if(x.comm>0&&(t.stage==='Finance'||t.stage==='Closed')&&!commPaid(t,l)){M.comm=r2(M.comm+x.comm);M.commN++;M.commSup[l.sup]=r2((M.commSup[l.sup]||0)+x.comm);row.comm=r2((row.comm||0)+x.comm);}
+      if(!l.inv)return;const s=invStatus(l);
       if(s.k==='credited'){const u=r2(s.credit*lrate(t,l));M.got=r2(M.got+u);M.gotN++;const sp=M.sup[l.sup]||(M.sup[l.sup]={over:0,rec:0,got:0,n:0,trips:new Set()});sp.got=r2(sp.got+u);sp.trips.add(t.id);return;}
       if(s.k!=='gap')return;
       const k=kindOf(l,s),st=M.steps[k]||(M.steps[k]={amt:0,n:0});st.amt=r2(st.amt+x.amtDiff);st.n++;
@@ -2745,6 +2772,7 @@ function vLeaks(){
     <div class="lk-ri"><span class="ic">${ic('bed')}</span><div><strong>${usd(M.release)}</strong> ${L('חדרים בבלוק שלא שוחררו','unreleased block rooms')}<div class="small muted">${M.rel.length?M.rel.map(x=>`${esc(x.t.name)}: ${x.n} ${L('חדרים','rooms')}, ${esc(x.t.room.hotel)}`).join(' · '):L('אין','None')}</div></div></div>
     <div class="lk-ri"><span class="ic">${ic('clock')}</span><div><strong>${usd(M.late)}</strong> ${L('תשלומי לקוחות באיחור','late client payments')}<div class="small muted">${M.lateN} ${L('קבוצות חיוב. סיכון מזומנים, לא רווח.','billing groups. A cash risk, not profit.')}</div></div></div>
     <div class="lk-ri"><span class="ic">${ic('danger')}</span><div><strong>${M.missing}</strong> ${L('חשבוניות ספק חסרות','missing supplier invoices')}<div class="small muted">${L('בטיולים שחזרו. הסכום ידוע רק כשהן מגיעות.','On returned trips. The amount is known only when they arrive.')}</div></div></div>
+    <div class="lk-ri"><span class="ic">${ic('percent')}</span><div><strong>${usd(M.comm)}</strong> ${L('עמלות ספקים שעוד לא נגבו','supplier commission not yet collected')}<div class="small muted">${M.commN?Object.entries(M.commSup).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([k,v])=>`${esc(k)} ${usd(v)}`).join(' · ')+L('. כלול ברווח הצפוי.','. Counted in expected profit.'):L('הכל נגבה','All collected')}</div></div></div>
     <div class="lk-ri ok"><span class="ic">${ic('check')}</span><div><strong>${usd(M.got)}</strong> ${L('הוחזר מספקים העונה','recovered from suppliers this season')}<div class="small muted">${M.gotN} ${L('זיכויים',(M.gotN)===1?'credit':'credits')}</div></div></div></div>`;
   return head(L('דליפות רווח','Profit leaks'),pillF(L('חדש','New'),'green'))+
   `<p class="muted">${L('כל טיול, סוכן וסוג קבוצה: כמה מהרווח המתוכנן הגיע בפועל, ולאן השאר הלך.','Every trip, agent and group type: how much planned profit is still there, and where the rest went.')}</p>
@@ -3371,38 +3399,93 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.acopt){A().opt[el.dataset.acopt]=el.checked;render();}
   else if(el.dataset&&el.dataset.yn){S[el.dataset.yn]=Math.max(1,+el.value||1);render();}});
 
+/* ---------- Phase 3: honesty layer. Every feature carries Live, Pilot or Roadmap ----------
+   One table drives the "What's live" screen, the badge on each page header and the 10-minute
+   meeting beat. The owner confirms the statuses before each show (see CLAUDE.md). */
+const FEAT=[
+  // Live: in the product today (app.triplanet.io screens)
+  ['projects','live','folder',['פרויקטים ושלבים','Projects and stages'],['הצעה, תפעול וכספים באותו תיק.','Quotation, operation and finance in one file.'],'quotes'],
+  ['quote','live','quotes',['הצעות מחיר עם מרקאפ','Quotes with markup'],['מרקאפ לפי סוג שירות, הצעה ממותגת ללקוח.','Markup by service type, a branded client quote.'],null],
+  ['catalog','live','hotels',['מלונות, פעילויות וספקים','Hotels, activities and suppliers'],['קטלוג אחד עם עלויות, עמלות וקיבולת.','One catalog with costs, commissions and capacity.'],'hotels'],
+  ['clients','live','clients',['לקוחות','Clients'],['כל קבוצה וכל תיק במקום אחד.','Every group and file in one place.'],'clients'],
+  ['income','live','receipt',['הכנסות, חשבוניות ושוברים','Income, invoices and vouchers'],['חשבוניות עסקה, חשבוניות מס ושוברים לספקים.','Deal invoices, tax invoices and supplier vouchers.'],null],
+  ['lang','live','widget',['עברית ואנגלית','Hebrew and English'],['ממשק מלא בשתי השפות, כולל ימין לשמאל.','The full interface in both languages, right to left included.'],null],
+  // Pilot: working, offered to pilot customers
+  ['gaps','pilot','gaps',['בקרת חשבוניות ספקים','Supplier invoice check'],['כל שורה בחשבונית מול מה שתומחר, ודרישת זיכוי בלחיצה.','Every bill line against what was quoted, and a dispute in one click.'],'gaps'],
+  ['books','pilot','sync',['חיבור להנהלת חשבונות','Accounting sync'],['פריוריטי, חשבשבת, <bdi>QuickBooks</bdi> ו-<bdi>Xero</bdi>.','QuickBooks, Xero, Priority and Hashavshevet.'],'books'],
+  ['leaks','pilot','leaks',['דליפות רווח','Profit leaks'],['לפי טיול, סוכן, סוג קבוצה וספק.','By trip, agent, group type and supplier.'],'leaks'],
+  ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
+  // Roadmap: planned, not available yet
+  ['ai','roadmap','ai',['מאיה עונה מהנתונים שלכם','Maya answers from your data'],['בדמו התשובות מוכנות מראש.','In the demo the answers are scripted.'],'ai'],
+  ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
+  ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
+  ['trust','roadmap','shield',['דוחות חשבון נאמנות','Trust account reports'],['לחוקי Seller of Travel במדינות ארה״ב.','For US Seller of Travel rules.'],null],
+  ['guide','roadmap','users2',['אפליקציה למדריך','Guide mobile app'],['מסלול, רשימת נוסעים ושוברים בטלפון.','Itinerary, passenger list and vouchers on the phone.'],null],
+];
+const ST_META={live:[['זמין','Live'],'green'],pilot:[['פיילוט','Pilot'],'info'],roadmap:[['בתכנון','Roadmap'],'amber']};
+const stPill=st=>pillF(L(ST_META[st][0][0],ST_META[st][0][1]),ST_META[st][1]);
+const featOf=v=>FEAT.find(f=>f[5]===v);
+function vStatus(){
+  const col=st=>`<div class="card rm-col"><div class="rm-h">${stPill(st)}<span class="small muted">${{live:L('במוצר היום','In the product today'),pilot:L('עובד, פתוח ללקוחות פיילוט','Working, open to pilot customers'),roadmap:L('מתוכנן, עוד לא זמין','Planned, not available yet')}[st]}</span></div>
+    ${FEAT.filter(f=>f[1]===st).map(f=>`<div class="rm-f"><span class="rm-ic">${ic(f[2])}</span><div><strong>${L(f[3][0],f[3][1])}</strong><div class="small muted">${L(f[4][0],f[4][1])}</div></div>${f[5]&&VIEWS[f[5]]?`<button class="btn sm" data-act="go" data-v="${f[5]}" aria-label="${L('פתיחה','Open')}">${ic('chev','flip')}</button>`:''}</div>`).join('')}</div>`;
+  return head(L('מה זמין היום','What\'s live'))+`<p class="muted">${L('כל מה שמוצג בדמו, ומה מצבו במוצר. מה שעוד לא במוצר מסומן כפיילוט או בתכנון.','Everything in this demo and where it stands in the product. Anything not in the product yet is marked Pilot or Roadmap.')}</p>
+   <div class="rm-grid">${['live','pilot','roadmap'].map(col).join('')}</div>`;
+}
+VIEWS.status=vStatus;
+NAV2.push(['status',['מה זמין היום','What\'s live'],ic('checklist')]);
+/* a status badge on every page header that shows a Pilot or Roadmap feature */
+['gaps','books','leaks','studio','ai'].forEach(v=>{const f0=VIEWS[v];if(!f0)return;VIEWS[v]=function(){const h=f0.apply(this,arguments),f=featOf(v);
+  if(!f||h.indexOf('<div class="ph">')!==0)return h;const tag=stPill(f[1]);
+  const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
+  return hd+h.slice(e);};});
+
 /* ---------- meeting mode: the 3-minute booth story (v7) ----------
    Presenter drives with the arrow keys (or the buttons). Easy process first (studio),
    then high value (leaks, invoices, dispute, Maya), then the close. R restarts with clean data. */
 let MEET_T0=0,MEET_TICK=null,MEET_LAST_SCROLL=-1;
 const meetPreset=()=>{S.gen={...G0(),dest:'Nashville',seg:'Faith',pax:44,nights:4,tier:4,pace:'classic',built:false};};
-const MEET=[
-  {sel:'#st-right',go:()=>{S.tab='studio';meetPreset();setTimeout(()=>{if(S.meet===0&&S.gen&&!S.gen.built&&S.genBusy==null)genRun();},700);},
+const MEET_ALL=[
+  {id:'studio',sel:'#st-right',go:()=>{S.tab='studio';meetPreset();setTimeout(()=>{if(meetIs('studio')&&S.gen&&!S.gen.built&&S.genBusy==null)genRun();},700);},
    tx:()=>[L('טיול שלם בתוך שניות','A whole trip in seconds'),L('קבוצת כנסייה, 44 נוסעים, ארבעה לילות בנאשוויל. טריפלאנט בונה מסלול יום אחר יום עם מלונות ואטרקציות אמיתיים, ומתמחרת כל שורה.','A church group, 44 travelers, four nights in Nashville. Triplanet builds the day-by-day route with real hotels and attractions, and prices every line.')]},
-  {sel:'.st-hotels',go:()=>{S.tab='studio';if(!S.gen)meetPreset();S.gen.built=true;S.genBusy=null;const hs=catHotels(S.gen.dest);const cur=pickHotel(S.gen);const alt=hs.find(h=>!cur||h.id!==cur.id&&h.stars>=4)||hs.at(1);if(alt)S.gen.hotel=alt.id;},
+  {id:'swap',sel:'.st-hotels',go:()=>{S.tab='studio';if(!S.gen)meetPreset();S.gen.built=true;S.genBusy=null;const hs=catHotels(S.gen.dest);const cur=pickHotel(S.gen);const alt=hs.find(h=>!cur||h.id!==cur.id&&h.stars>=4)||hs.at(1);if(alt)S.gen.hotel=alt.id;},
    tx:()=>{const P=genPlan(S.gen||G0());return [L('מחליפים מלון, המחיר מתעדכן','Swap the hotel, the price follows'),L(`${P.hotel?P.hotel.name:''}: ${usd(P.pp)} לנוסע, ${pct(P.margin)} רווח מתוכנן. כל שינוי מתומחר מחדש מיד, מול קו הרווח שלכם.`,`${P.hotel?P.hotel.name:''}: ${usd(P.pp)} per traveler at a ${pct(P.margin)} planned margin. Every change re-prices instantly against your margin line.`)];}},
-  {sel:'.stats',go:()=>{if(!S.gen)meetPreset();S.gen.built=true;genCreate();},
+  {id:'quote',sel:'.stats',go:()=>{if(!S.gen)meetPreset();S.gen.built=true;genCreate();},
    tx:()=>[L('לחיצה אחת, הצעת מחיר אמיתית','One click, a real quote'),L('התוכנית הופכת להצעה רגילה: שורות עלות, מרקאפ לפי סוג שירות, מסלול והצעה ממותגת ללקוח.','The plan becomes an ordinary quote: cost lines, markup by service type, the itinerary and a branded proposal.')]},
-  {sel:'.ac-head,.ac-busy',go:()=>{S.tab='books';const x=A();if(x.phase==='idle')setTimeout(()=>{if(S.meet===3&&A().phase==='idle')acConnect(S.lang==='he'?'priority':'qbo');},600);},
+  {id:'books',sel:'.ac-head,.ac-busy',go:()=>{S.tab='books';const x=A();if(x.phase==='idle')setTimeout(()=>{if(meetIs('books')&&A().phase==='idle')acConnect(S.lang==='he'?'priority':'qbo');},600);},
    tx:()=>{const k=A().sys||(S.lang==='he'?'priority':'qbo');return [L('מחברים את הנהלת החשבונות','Connect your books'),L(`${an(k,'short')} מחובר בלחיצה. טריפלאנט מייבאת את חשבוניות הספקים, מתייגת כל טיול ומתאימה כל שורה להצעה. בעברית: פריוריטי וחשבשבת, באנגלית: QuickBooks ו-Xero.`,`${an(k,'short')} connects in one click. Triplanet imports supplier bills, tags every trip and matches each line to the quote. QuickBooks and Xero in English; Priority and Hashavshevet in Hebrew.`)];}},
-  {sel:'.lk-hero',top:true,go:()=>{S.tab='leaks';S.lkSel='';S.lkDim='trip';},
+  {id:'leaks',sel:'.lk-hero',top:true,go:()=>{S.tab='leaks';S.lkSel='';S.lkDim='trip';},
    tx:()=>{const M=leakModel(visibleTrips());return [L('ואחרי הטיול: לאן הלך הרווח?','After the trip: where did the profit go?'),L(`בעונה הזו דלפו ${usd(M.leak)} מהרווח המתוכנן. ${usd(M.rec)} עוד ניתנים להחזרה. אותה תמונה לפי טיול, סוכן, סוג קבוצה וספק.`,`This season ${usd(M.leak)} of planned profit leaked, and ${usd(M.rec)} can still be recovered. The same view by trip, agent, group type and supplier.`)];}},
-  {sel:'#inbox,.gaps',top:true,go:()=>{openTrip('nen','tfin');setTimeout(()=>{const t=byId('nen');if(S.meet===5&&t&&t.inbox.length&&!S.reading)startReading(t);},600);},
+  {id:'inbox',sel:'#inbox,.gaps',top:true,go:()=>{openTrip('nen','tfin');setTimeout(()=>{const t=byId('nen');if(meetIs('inbox')&&t&&t.inbox.length&&!S.reading)startReading(t);},600);},
    tx:()=>[L('שש חשבוניות חדשות, נקראות בשניות','Six new invoices, read in seconds'),L('קבוצת ניו אינגלנד חזרה. טריפלאנט קוראת כל חשבונית ספק ומתאימה כל שורה למה שתומחר.','The New England group is home. Triplanet reads every supplier invoice and matches each line to what was quoted.')]},
-  {sel:'.disp',go:()=>{const t=byId('nen');if(t&&(t.inbox.length||S.reading)){const n=(S.reading&&S.reading.n)||t.inbox.length;S.reading=null;applyInbox(t);S.lastMatch.nen=matchSummary(t,n||6);}openTrip('nen','tfin');S.disp='nen|1';setTimeout(()=>{const e=document.querySelector&&document.querySelector('.disp');if(e&&e.scrollIntoView)e.scrollIntoView({block:'center'});},120);},
+  {id:'dispute',sel:'.disp',go:()=>{const t=byId('nen');if(t&&(t.inbox.length||S.reading)){const n=(S.reading&&S.reading.n)||t.inbox.length;S.reading=null;applyInbox(t);S.lastMatch.nen=matchSummary(t,n||6);}openTrip('nen','tfin');S.disp='nen|1';setTimeout(()=>{const e=document.querySelector&&document.querySelector('.disp');if(e&&e.scrollIntoView)e.scrollIntoView({block:'center'});},120);},
    tx:()=>{const t=byId('nen'),g=t?tripGaps(t).filter(x=>x.usd>0&&x.s.k==='gap'):[],a=r2(g.reduce((s,x)=>s+x.usd,0));return [L('לחיצה אחת מנסחת את דרישת הזיכוי','One click drafts the dispute'),L(`${g.length} פערים בסך ${usd(a)} בטיול אחד. המייל לספק כבר כתוב, עם המספרים מהחוזה ומרשימת החדרים.`,`${g.length} gap${(g.length)===1?'':'s'} worth ${usd(a)} on one trip. The email to the supplier is already written, with the numbers from the contract and the rooming list.`)];}},
-  {sel:'.chat',go:()=>{S.tab='ai';S.chat=[];askQ(QS[1]);},
+  {id:'maya',sel:'.chat',go:()=>{S.tab='ai';S.chat=[];askQ(QS[1]);},
    tx:()=>[L('שואלים את מאיה','Ask Maya'),L(`מאיה עונה מהנתונים של הסוכנות. ${QS.length} שאלות מוכנות על פערים, רווחיות, תשלומים ומשימות.`,`Maya answers from the agency's own data: ${QS.length} ready questions on gaps, margins, payments and tasks.`)]},
-  {sel:'',close:true,go:()=>{S.tab='leaks';},
-   tx:()=>[L('בדיקת דליפות חינם','A free leak audit'),L('שלחו 90 יום של חשבוניות ספקים. נחזיר לכם את מפת הדליפות.','Send 90 days of supplier bills. We send back your leak map.')]}
+  {id:'close',sel:'',close:true,go:()=>{S.tab='leaks';},
+   tx:()=>[L('בדיקת דליפות חינם','A free leak audit'),L('שלחו 90 יום של חשבוניות ספקים. נחזיר לכם את מפת הדליפות.','Send 90 days of supplier bills. We send back your leak map.')]},
+  {id:'ops',sel:'.ogrid',go:()=>{openTrip('bra','odash');},
+   tx:()=>[L('מהצעה לתפעול, בלי להקליד מחדש','From quote to operations, with no re-typing'),L('אותו תיק עובר מהצעה לתפעול: ימים ליציאה, משימות דחופות, ספקים שעוד לא אישרו. הכל מהשורות שכבר תומחרו.','The same file moves from quotation to operation: days to departure, urgent tasks, suppliers not yet confirmed. All from the lines already priced.')]},
+  {id:'numbers',sel:'.yn',top:true,go:()=>{S.tab='leaks';S.lkSel='';S.lkDim='trip';},
+   tx:()=>[L('ובסוכנות שלכם?','And at your agency?'),L('מקלידים טיולים בשנה והכנסה ממוצעת לטיול, ורואים טווח דליפה להמחשה. הבדיקה החינמית מחליפה אותו במספרים שלכם.','Type trips per year and average revenue per trip to see an illustrative leak range. The free audit replaces it with your own numbers.')]},
+  {id:'fin',sel:'.stats',go:()=>{openTrip('nen','fdash');},
+   tx:()=>{const t=byId('nen'),c=t?calc(t):{planProfit:0,fcProfit:0,rev:1};return [L('דוח רווח והפסד לטיול, חי','A live P&L for every trip'),L(`ניו אינגלנד: רווח מתוכנן ${usd(c.planProfit)}, צפוי ${usd(c.fcProfit)}. גבייה, תשלומים לספקים ופערים פתוחים באותו מסך.`,`New England: planned profit ${usd(c.planProfit)}, expected ${usd(c.fcProfit)}. Collections, supplier payments and open gaps on one screen.`)];}},
+  {id:'status',sel:'.rm-grid',go:()=>{S.tab='status';},
+   tx:()=>[L('מה זמין היום','What is live today'),L('כל מה שראיתם, ואיפה הוא עומד: במוצר, בפיילוט או בתכנון.','Everything you saw, and where it stands: in the product, in pilot or on the roadmap.')]}
 ];
+/* three cuts of the same story: 60 seconds, 3 minutes, 10 minutes */
+const MEET_CUTS={1:['leaks','inbox','dispute','close'],3:['studio','swap','quote','books','leaks','inbox','dispute','maya','close'],10:['studio','swap','quote','ops','books','leaks','numbers','inbox','dispute','fin','maya','status','close']};
+const MEET=[];let MEET_CUT=3;
+function meetSetCut(c){MEET_CUT=MEET_CUTS[c]?+c:3;MEET.splice(0,MEET.length,...MEET_CUTS[MEET_CUT].map(id=>MEET_ALL.find(b=>b.id===id)));}
+meetSetCut(3);
+const meetIs=id=>S.meet>=0&&!!MEET[S.meet]&&MEET[S.meet].id===id;
+const meetLen=()=>MEET_CUT===10?'10:00':MEET_CUT===1?'1:00':'3:00';
 function meetGo(i){MEET_LAST_SCROLL=-1;
   S.meet=Math.max(0,Math.min(MEET.length-1,i));S.menu=false;S.chen=false;S.tour=-1;
   MEET[S.meet].go();window.scrollTo(0,0);render();
 }
-function meetStart(){resetDemo();S.meet=0;MEET_T0=Date.now();clearInterval(MEET_TICK);MEET_TICK=setInterval(meetClock,1000);meetGo(0);}
+function meetStart(c){if(c)meetSetCut(c);resetDemo();S.meet=0;MEET_T0=Date.now();clearInterval(MEET_TICK);MEET_TICK=setInterval(meetClock,1000);meetGo(0);}
 function meetEnd(){S.meet=-1;clearInterval(MEET_TICK);render();}
-function meetClock(){const el=document.getElementById('meetclock');if(!el||S.meet<0)return;const s=Math.floor((Date.now()-MEET_T0)/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} / 3:00`;}
+function meetClock(){const el=document.getElementById('meetclock');if(!el||S.meet<0)return;const s=Math.floor((Date.now()-MEET_T0)/1000);el.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')} / ${meetLen()}`;}
 function closingHtml(){
   const M=leakModel(visibleTrips()),t=byId('nen'),g=t?tripGaps(t).filter(x=>x.usd>0&&x.s.k==='gap'):[],a=r2(g.reduce((s,x)=>s+x.usd,0));
   const tg=x=>r2(tripGaps(x).filter(y=>y.usd>0&&y.s.k==='gap').reduce((s,y)=>s+y.usd,0)),a1=a>0?a:Math.max(0,...visibleTrips().map(tg));
@@ -3417,9 +3500,9 @@ function closingHtml(){
 }
 function meetBar(){
   const st=MEET[S.meet],[ti,tx]=st.tx(),last=S.meet===MEET.length-1;
-  return `<div class="meet" role="dialog" aria-label="${L('מצב פגישה','Meeting mode')}" dir="${S.lang==='en'?'ltr':'rtl'}"><div class="top"><div class="dots">${MEET.map((m,i)=>`<i class="${i===S.meet?'on':i<S.meet?'done':''}"></i>`).join('')}</div><span class="small" style="color:#B7D4F2" dir="ltr">${S.meet+1} / ${MEET.length}</span><span class="clock" id="meetclock" dir="ltr"></span></div>
+  return `<div class="meet" role="dialog" aria-label="${L('מצב פגישה','Meeting mode')}" dir="${S.lang==='en'?'ltr':'rtl'}"><div class="top"><div class="dots">${MEET.map((m,i)=>`<i class="${i===S.meet?'on':i<S.meet?'done':''}"></i>`).join('')}</div><span class="small" style="color:#B7D4F2" dir="ltr">${S.meet+1} / ${MEET.length}</span><span class="cuts" role="group" aria-label="${L('אורך הפגישה','Meeting length')}">${[1,3,10].map(c=>`<button class="${MEET_CUT===c?'on':''}" data-act="meetcut" data-v="${c}" aria-pressed="${MEET_CUT===c}">${c} ${L('דק׳','min')}</button>`).join('')}</span><span class="clock" id="meetclock" dir="ltr"></span></div>
    <h3>${ti}</h3><p>${tx}</p>
-   <div class="ctl"><button class="btn" data-act="meetprev" ${S.meet===0?'disabled':''}>${ic('left','flip')} ${L('הקודם','Back')}</button><button class="btn pri" data-act="${last?'meetend':'meetnext'}">${last?L('סיום','Finish'):L('הבא','Next')} ${ic('right','flip')}</button><button class="btn" data-act="meetstart">${ic('restart')} ${L('מההתחלה','Restart')}</button><button class="btn" data-act="meetend">${ic('x')}</button><span class="keys">${L('חיצים: מעבר · R: התחלה מחדש · Esc: יציאה','Arrows: move · R: restart · Esc: exit')}</span></div></div>`;
+   <div class="ctl"><button class="btn" data-act="meetprev" ${S.meet===0?'disabled':''}>${ic('left','flip')} ${L('הקודם','Back')}</button><button class="btn pri" data-act="${last?'meetend':'meetnext'}">${last?L('סיום','Finish'):L('הבא','Next')} ${ic('right','flip')}</button><button class="btn" data-act="meetstart">${ic('restart')} ${L('מההתחלה','Restart')}</button><button class="btn" data-act="meetend">${ic('x')}</button><span class="keys">${L('חיצים: מעבר · 1/3/0: אורך · R: מההתחלה · Esc: יציאה','Arrows: move · 1/3/0: length · R: restart · Esc: exit')}</span></div></div>`;
 }
 function meetAfter(){
   if(!document.body||!document.createElement)return;
@@ -3433,7 +3516,7 @@ function meetAfter(){
 /* topbar button: inject next to the guided tour button after each render */
 function meetButton(){
   if(!document.querySelector)return;const tb=document.querySelector('.tourbtn');if(!tb||document.querySelector('[data-act="meet"]'))return;
-  const b=document.createElement('button');b.className='btn sm tourbtn meetbtn';b.dataset.act='meet';b.innerHTML=ic('present')+' '+trHe(L('מצב פגישה (3 דק׳)','Meeting mode (3 min)'));tb.insertAdjacentElement('afterend',b);
+  const b=document.createElement('button');b.className='btn sm tourbtn meetbtn';b.dataset.act='meet';b.title=trHe(L('מצב פגישה','Meeting mode'));b.innerHTML=ic('present')+' '+trHe(L('מצב פגישה (3 דק׳)','Meeting mode (3 min)'));tb.insertAdjacentElement('afterend',b);
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
@@ -3441,6 +3524,7 @@ document.addEventListener('click',e=>{
   else if(a==='meetnext')meetGo(S.meet+1);
   else if(a==='meetprev')meetGo(S.meet-1);
   else if(a==='meetend')meetEnd();
+  else if(a==='meetcut')meetStart(+b.dataset.v);
 });
 document.addEventListener('keydown',e=>{
   if(!(S.meet>=0))return;const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='SELECT'||tg==='TEXTAREA')return;
@@ -3449,6 +3533,8 @@ document.addEventListener('keydown',e=>{
   else if(e.key===back||e.key==='PageUp'){e.preventDefault();meetGo(S.meet-1);}
   else if(e.key==='Escape')meetEnd();
   else if(e.key==='r'||e.key==='R')meetStart();
+  else if(e.key==='1'||e.key==='3')meetStart(+e.key);
+  else if(e.key==='0')meetStart(10);
 });
 
 /* booth lead capture: stored on this laptop only, exported from the settings menu */
@@ -3468,6 +3554,20 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   const rows=leadsGet();if(!rows.length){toast(L('אין עדיין לידים.','No leads yet.'));return;}
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',csv=['at,name,agency,email,system,lang',...rows.map(r=>[r.at,r.name,r.agency,r.email,r.system,r.lang].map(q).join(','))].join('\n');
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='triplanet-booth-leads.csv';document.body.appendChild(a);a.click();a.remove();toast(L(`${rows.length} לידים יוצאו`,`${rows.length} leads exported`));}catch(err){toast(L('הייצוא לא נתמך כאן. פתחו את הקובץ המקומי.','Export is not available here. Open the offline file.'));}});
+
+/* booth kiosk: after 4 idle minutes, warn for 15 seconds, then reset to a clean Home.
+   Any key, click or touch cancels. Booth leads are kept. */
+const IDLE_MS=240000,IDLE_WARN=15;let IDLE_AT=Date.now(),IDLE_LEFT=0;
+function idleBump(){IDLE_AT=Date.now();if(IDLE_LEFT){IDLE_LEFT=0;const el=document.getElementById('idlewarn');if(el)el.remove();}}
+['pointerdown','keydown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev,idleBump,{passive:true,capture:true}));
+if(typeof setInterval==='function'&&document.body)setInterval(()=>{
+  if(Date.now()-IDLE_AT<IDLE_MS)return;
+  if(!IDLE_LEFT)IDLE_LEFT=IDLE_WARN+1;IDLE_LEFT--;
+  let el=document.getElementById('idlewarn');
+  if(IDLE_LEFT>0){if(!el){el=document.createElement('div');el.id='idlewarn';el.setAttribute('role','status');document.body.appendChild(el);}
+    el.innerHTML=trHe(L(`הדמו יתאפס בעוד ${IDLE_LEFT} שניות. נגיעה כלשהי תעצור.`,`The demo resets in ${IDLE_LEFT} s. Touch anything to keep it.`));return;}
+  if(el)el.remove();IDLE_AT=Date.now();clearInterval(MEET_TICK);resetDemo();S.tab='home';window.scrollTo(0,0);render();
+},1000);
 
 /* ---------- boot: runs last, after every module has registered its views ---------- */
 {const r0=render;render=function(){r0();try{countUp();meetButton();meetAfter();leadsMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}

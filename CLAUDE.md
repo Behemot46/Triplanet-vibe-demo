@@ -58,7 +58,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - nav "Projects" and "Clients";
   - UK flag for English, header search;
   - the project page with a Quotation / Operation / Finance stage switch and stage tabs;
-  - the Operation dashboard cards, the Finance dashboard, Income (deal invoices and receipts with a totals footer) and Vouchers;
+  - the Operation dashboard cards, the Finance dashboard, Income (deal invoices and tax invoices with a totals footer) and Vouchers;
   - the phone hamburger drawer.
 - `v6/s7c_lists.js`, `v6/lists.css` - product-style tables for Activities (catalog venues), Hotels (`vHotelsList`) and Clients (`vClients`). The last two are registered in s9_boot.js.
 - `v6/s9a_books.js` - Phase 2:
@@ -69,7 +69,12 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - the "Your numbers" card on Profit leaks;
   - Maya questions 26-28.
 - `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
-- `v6/s9_meet.js` - meeting mode (9 beats incl. "Connect your books", arrow keys, R restart, Esc exit, closing screen)
+- `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens; Pilot = working in the demo, offered to pilot customers; Roadmap = not available.
+- `v6/s9_meet.js` - meeting mode:
+  - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
+  - beats are found by `id` (`meetIs('inbox')`), never by index;
+  - arrow keys, R restart, Esc exit, closing screen with booth lead capture (CSV export from the settings menu);
+  - kiosk idle reset: after 4 idle minutes a 15-second warning, then a clean Home. Booth leads are kept.
 - `v6/s9_boot.js` - wraps render/resetDemo, then `load(); render();`. Must stay last.
 - `v6/base.css`, `v6/extra.css`, `v6/v7.css`, `v6/brand-fonts.css`, `v6/theme.css` - styles in load order. `fonts.css` - embedded Hebrew font (IBM Plex Sans Hebrew), the fallback for Hebrew glyphs.
 
@@ -77,7 +82,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - Assistant name: Maya / מאיה. Hebrew is secondary, EN is the default.
 - Money in USD by default. Locked FX rate per trip. Commission counts as income in planned profit: planProfit = rev - plan + comm. The identity planProfit - amtDiff - fx - fcProfit = 0 must hold.
 - Gap model: kinds are rooms, qty, rate, comp, extra, dup, under, missing.
-- Leak model: the bridge runs from planned to expected profit. It is the supplier differences by kind plus FX, so it ties to the identity. Room-block release exposure, late client payments and missing invoices are shown as "at risk", outside the bridge. The bridge chart starts at $0 (no truncated axis).
+- Leak model: the bridge runs from planned to expected profit. It is the supplier differences by kind plus FX, so it ties to the identity. Room-block release exposure, late client payments, missing invoices and supplier commission not yet collected are shown as "at risk", outside the bridge. Commission collection uses a fixed demo rule per line (`commPaid`), so the figure is stable. The bridge chart starts at $0 (no truncated axis).
 - Studio plans use the same `genLines` + `calc` as quotes, so "Create the quote" yields an ordinary quote. Studio plans are multi-base: hotels define bases, each attraction belongs to its nearest base (within 170 km), and nights split by attractions. Drive time from Tulsa is straight-line km x 1.12 at 100 km/h plus 1 h; coach transfers and day trips use km x 1.35 at 80 km/h.
 - The demo's "today" is still fixed at 20 Oct 2026 (owner decision pending; moving it re-baselines every dated figure).
 - Print: window.print is wrapped in try/catch.
