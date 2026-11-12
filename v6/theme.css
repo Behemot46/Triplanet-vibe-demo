@@ -353,3 +353,10 @@ select:focus,input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 1px 
 .yn-out b{display:block;font:700 30px/1.2 var(--f-num);color:#FFAC82}
 .yn-out small{color:var(--hero-mute)}
 @media (max-width:760px){.yn-g{grid-template-columns:1fr}}
+
+.closing .leadf{display:grid;grid-template-columns:1.1fr 1.1fr 1.3fr 1fr auto;gap:8px;margin:0 auto 18px;max-width:780px}
+.closing .leadf input,.closing .leadf select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:10px 12px;font:500 14px var(--f-ui)}
+.closing .leadf input::placeholder{color:#B7D4F2}
+.closing .leadf select option{color:#1C252E}
+.closing .leadf .btn{background:var(--mint);color:var(--primary-darker);border:0;font-weight:700}
+@media (max-width:760px){.closing .lead{grid-template-columns:1fr 1fr}.closing .leadf .btn{grid-column:1/-1}}
