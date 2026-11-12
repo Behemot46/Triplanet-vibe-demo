@@ -123,6 +123,7 @@ function startReading(t){
   if(S.reading||!t.inbox.length)return;
   S.reading={tid:t.id,done:[],n:t.inbox.length};render();
   const tick=()=>{
+    if(!S.reading||S.reading.tid!==t.id||byId(t.id)!==t)return; // demo reset mid-read
     const f=t.inbox.shift();if(!f){const n=S.reading.n;S.reading=null;S.lastMatch[t.id]=matchSummary(t,n);render();const s=S.lastMatch[t.id];toast(L(`נמצאו ${s.n} פערים בסך ${usd(s.amt)}`,`Found ${s.n} gaps worth ${usd(s.amt)}`));return;}
     applyInboxFile(t,f);
     const lines=(f.inv||[]).length+(f.extra||[]).length,gaps=(f.inv||[]).filter(x=>x[1].kind).length+(f.extra||[]).length;

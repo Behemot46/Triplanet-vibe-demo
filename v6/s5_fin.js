@@ -77,7 +77,7 @@ function vGaps(){
   const G=gapStats(ts);
   const kinds=['rooms','qty','rate','comp','extra','dup','under'];
   const stOf=x=>x.s.k==='credited'?'credited':x.s.st;
-  const list=G.list.filter(x=>(S.gF==='all'||stOf(x)===S.gF)&&(S.gK==='All'||kindOf(x.l,x.s)===S.gK)).sort((a,b)=>Math.abs(b.usd)-Math.abs(a.usd));
+  const list=G.list.filter(x=>(S.gF==='all'||(stOf(x)===S.gF&&!(S.gF==='open'&&x.usd<0&&S.gK!=='under')))&&(S.gK==='All'||kindOf(x.l,x.s)===S.gK)).sort((a,b)=>Math.abs(b.usd)-Math.abs(a.usd));
   const kmx=Math.max(...Object.values(G.byKind).map(b=>b.amt),1);
   const byKind={};G.list.forEach(x=>{if(x.orig<=0)return;const k=kindOf(x.l,x.s),b=byKind[k]||(byKind[k]={n:0,amt:0});b.n++;b.amt=r2(b.amt+x.orig);});
   const kbars=kinds.filter(k=>byKind[k]).sort((a,b)=>byKind[b].amt-byKind[a].amt).map(k=>`<div class="hbar"><span>${kindL(k)}</span><div class="t"><div style="width:${byKind[k].amt/kmx*100}%;background:var(--red);opacity:.75"></div></div><span class="small hv">${usd(byKind[k].amt)} · ${byKind[k].n}</span></div>`).join('');
@@ -87,7 +87,7 @@ function vGaps(){
   const sel=(k,arr,v)=>`<select data-ch="${k}">${arr.map(x=>`<option value="${x[0]}" ${x[0]===v?'selected':''}>${x[1]}</option>`).join('')}</select>`;
   return head(L('בקרת חשבוניות','Invoice check'),pillF(L('חדש','New'),'green'))+`<p class="muted">${L('כל חשבונית ספק מותאמת למה שתומחר בהצעה. פערים נמצאים לבד ונשארים במעקב עד שמתקבל זיכוי או שהחיוב מאושר.','Every supplier invoice is matched to what you quoted. Gaps are found automatically and tracked until they are credited or accepted.')}</p>
   <div class="stats"><div class="stat"><div class="l">${L('חשבוניות שנקראו','Invoices read')}</div><div class="v">${G.received}</div><div class="s">${pct(rate)} ${L('תואמות בלי מגע יד','matched with no touch')}</div></div>
-   <div class="stat"><div class="l">${L('פערים פתוחים','Open gaps')}</div><div class="v neg">${usd(G.open)}</div><div class="s">${G.openN} ${L('פערים','gaps')}</div></div>
+   <div class="stat"><div class="l">${L('פתוחים, טרם נשלחה דרישה','Open, no dispute yet')}</div><div class="v neg">${usd(G.open)}</div><div class="s">${G.openN} ${L('פערים','gaps')}</div></div>
    <div class="stat"><div class="l">${L('נשלחה דרישת זיכוי','Dispute sent')}</div><div class="v">${usd(G.disp)}</div><div class="s">${G.dispN} ${L('פערים','gaps')}</div></div>
    <div class="stat"><div class="l">${L('הוחזר העונה','Recovered this season')}</div><div class="v pos">${usd(G.rec)}</div><div class="s">${G.recN} ${L('זיכויים','credits')}</div></div>
    <div class="stat"><div class="l">${L('חשבוניות חסרות','Missing invoices')}</div><div class="v">${G.missing}</div><div class="s">${L('בטיולים שחזרו','on returned trips')}</div></div></div>
