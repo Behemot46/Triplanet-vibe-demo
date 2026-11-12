@@ -1,5 +1,42 @@
 
 /* ---------- home ---------- */
+/* ---------- home: hero band and project statistics (v7.1 redesign) ----------
+   The hero keeps class "ptiles" because the guided tour points at it (TOUR[0]). */
+let HP_PREV='';
+{const r0=render;render=function(){r0();HP_PREV=S.tab+'|'+S.role+'|'+S.lang;};}
+const hpAnim=()=>HP_PREV!=='home|'+S.role+'|'+S.lang;
+function hpHero(ts,P,up){
+  const c=f=>ts.filter(f).length,tot=ts.length||1;
+  const st=[['quote',L('הצעת מחיר','Quotation'),c(t=>t.stage==='Quote'),'#68CDF9',L('הצעות','quotes')],
+    ['ops',L('תפעול','Operation'),c(t=>t.stage==='Operations'),'#FFC145',L('תיקים פעילים','active files')],
+    ['fin',L('כספים','Finance'),c(t=>t.stage==='Finance'),'#C684FF',L('בסגירה כספית','in financial close')],
+    ['done',L('נסגרו','Closed'),c(t=>t.stage==='Closed'),'#5BE49B',L('הושלמו','completed')]];
+  const nx=up[0],dd=nx?Math.round((D(nx.dep)-TODAY)/864e5):0;
+  const nm=S.role==='manager'?MGR():agn(S.role),first=String(nm).split(' ')[0];
+  const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const bar=st.map(x=>`<i style="--w:${(x[2]/tot*100).toFixed(2)}%;--c:${x[3]}" title="${x[1]}: ${x[2]}"></i>`).join('');
+  const cards=st.map((x,i)=>`<button class="hp-st" data-act="go" data-v="quotes" style="--c:${x[3]};--d:${i*70}ms"><span class="hp-k"><i></i>${x[1]}</span><b>${x[2]}</b><small>${x[4]}</small><span class="hp-p"><i style="width:${(x[2]/tot*100).toFixed(1)}%"></i></span></button>`).join('');
+  return `<section class="ptiles hp${hpAnim()?' anim':''}" aria-label="${L('תמונת מצב','Overview')}">
+   <div class="hp-top"><div class="hp-hi"><span class="hp-eye">${day}</span><h1>${L('שלום','Hello')}, ${esc(first)}</h1>
+     <p>${L(`${ts.length} פרויקטים`,`${ts.length} projects`)} · ${L(`${P.pax} נוסעים`,`${P.pax} travelers`)}${nx?` · ${L(`היציאה הבאה בעוד ${dd} ימים`,`next departure in ${dd} days`)}: <a href="#" data-act="open" data-v="${nx.id}">${esc(nx.name)}</a>`:''}</p></div>
+    <div class="hp-kpi"><div><span>${L('הכנסות שהוזמנו','Booked revenue')}</span><b>${usd(P.rev)}</b></div><div><span>${L('רווח צפוי','Expected profit')}</span><b>${usd(P.fp)}</b><em>${P.rev?pct(P.fp/P.rev):''}</em></div><div><span>${L('בהצעות פתוחות','In open quotes')}</span><b>${usd(P.pipeline)}</b></div></div></div>
+   <div class="hp-bar" role="img" aria-label="${st.map(x=>x[1]+' '+x[2]).join(', ')}">${bar}</div>
+   <div class="hp-grid">${cards}</div></section>`;
+}
+function hpStats(won,lost,H){
+  const dW=Math.round((won-12)/12*100),dL=Math.round((lost-3)/3*100);
+  const chip=(d,goodUp)=>{const good=d===0?null:(d>0)===goodUp;return `<span class="hp-chip ${good===null?'flat':good?'good':'bad'}">${d===0?'':ic(d>0?'trendup':'trenddown')}<bdi>${d>0?'+':''}${d}%</bdi></span>`;};
+  const kp=(cls,lab,v,d,goodUp,art)=>`<div class="hp-kp ${cls}"><div><span>${lab}</span><b>${v}</b><div class="hp-vs">${chip(d,goodUp)} ${L('לעומת שנה שעברה','vs last year')}</div></div><img src="${art}" alt="" width="64" height="64"></div>`;
+  const W=360,Hh=176,top=18,bot=26,ch=Hh-top-bot,mx=Math.max(15,...H.map(h=>Math.max(h[1],h[2]))),sc=v=>ch*v/mx,gw=W/H.length,bw=Math.min(22,gw*.24);
+  const grid=[0,5,10,15].filter(v=>v<=mx).map(v=>`<line x1="0" x2="${W}" y1="${(top+ch-sc(v)).toFixed(1)}" y2="${(top+ch-sc(v)).toFixed(1)}"/><text x="0" y="${(top+ch-sc(v)-4).toFixed(1)}">${v}</text>`).join('');
+  const bars=H.map((h,i)=>{const cx=gw*i+gw/2+8,cur=i===H.length-1,o=cur?1:.42;
+    const r=(x,v,cl)=>{const hh=Math.max(sc(v),3),y=top+ch-hh;return `<rect class="${cl}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" rx="${Math.min(6,bw/2).toFixed(1)}" style="opacity:${o};animation-delay:${i*90}ms"/><text class="v" x="${(x+bw/2).toFixed(1)}" y="${(y-5).toFixed(1)}" style="opacity:${cur?1:.6}">${v}</text>`;};
+    return r(cx-bw-2,h[1],'w')+r(cx+2,h[2],'l')+`<text class="x${cur?' cur':''}" x="${cx.toFixed(1)}" y="${Hh-6}">${h[0]}</text>`;}).join('');
+  return `<div class="card pstat hp-ps${hpAnim()?' anim':''}"><div class="hp-ph"><h3>${L('סטטיסטיקת פרויקטים','Project statistics')}</h3><select aria-label="${L('תקופה','Period')}"><option>${L('שנה','Year')}</option><option>${L('רבעון','Quarter')}</option><option>${L('חודש','Month')}</option></select></div>
+   <div class="hp-kps">${kp('won',L('פרויקטים שנסגרו','Closed projects'),won,dW,true,TP_ART.open)}${kp('lost',L('פרויקטים שבוטלו','Canceled projects'),lost,dL,false,TP_ART.closed)}</div>
+   <div class="hp-lg"><span><i class="w"></i>${L('נסגרו','Closed')}</span><span><i class="l"></i>${L('בוטלו','Canceled')}</span><span class="muted">${L('שנים קודמות פיקטיביות','Prior years are fictional')}</span></div>
+   <svg class="hp-ch" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${L('פרויקטים שנסגרו ובוטלו לפי שנה','Closed and canceled projects by year')}"><defs><linearGradient id="hpgw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5BE49B"/><stop offset="1" stop-color="#22C55E"/></linearGradient><linearGradient id="hpgl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD666"/><stop offset="1" stop-color="#FFAB00"/></linearGradient></defs><g class="g">${grid}</g>${bars}</svg></div>`;
+}
 const LY={Priya:.62,Dana:.7,Marcus:.45,Grace:.55,Luis:.6,Tom:.5};
 function vHome(){
   const ts=visibleTrips();if(!ts.length)return noTrip();
@@ -7,9 +44,6 @@ function vHome(){
   const qL=n=>L('הצעות',n===1?'quote':'quotes'),fL=n=>L('תיקים',n===1?'file':'files');
   const n1=c(t=>t.stage==='Quote'&&(t.qst||'Draft')==='Draft'),n2=c(t=>t.stage==='Quote'&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
   const tiles=[[L('סך הכל','Total'),ts.length,L('הצעות ותיקים','quotes and files'),'',ic('folder')],[L('בבנייה','In progress'),n1,qL(n1),'orange',ic('draft')],[L('ממתינות','Pending'),n2,qL(n2),'amber',ic('hourglass')],[L('בתפעול','In operations'),n3,fL(n3),'blue',ic('ops')],[L('סגירה כספית','Financial close'),n4,fL(n4),'purple',ic('wallet')],[L('נסגרו','Closed'),n5,fL(n5),'green',ic('done')]];
-  const tot=ts.length||1,nq=c(t=>t.stage==='Quote'),no=c(t=>t.stage==='Operations'),nf=c(t=>t.stage==='Finance'||t.stage==='Closed');
-  const ptl=[[L('סך הכל','Total'),ts.length,'var(--ink)',ic('folder'),1],[L('הצעת מחיר','Quotation'),nq,'var(--dis)',ic('document'),nq/tot],[L('תפעול','Operation'),no,'#FFAB00',ic('mapsq'),no/tot],[L('כספים','Finance'),nf,'#22C55E',ic('cash'),nf/tot]]
-    .map(x=>`<div class="ptile"><span class="pring" style="--c:${x[2]};--p:${Math.round(x[4]*100)}"><span>${x[3]}</span></span><div><b>${x[0]}</b><span>${x[1]}</span></div></div>`).join('');
   const tl=tiles.map(x=>`<div class="tile"><span class="ring" style="${x[3]?`--c:var(--${x[3]})`:''}">${x[4]}</span><div><div class="l">${x[0]}</div><div class="s">${x[1]} ${x[2]}</div></div></div>`).join('');
   const up=ts.filter(t=>D(t.dep)>=TODAY).sort((a,b)=>D(a.dep)-D(b.dep)).slice(0,7);
   let lastD='',ev='';
@@ -27,13 +61,9 @@ function vHome(){
   const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
     return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n">${Math.round(r*100)}% <span class="${up?'pos':'neg'}">${up?ic('trendup'):ic('trenddown')}</span></td></tr>`;}).join('');
   const al=alertsFor(ts,S.thresh).slice(0,6).map(a=>`<div class="alert">${pillF(a.sev==='bad'?L('דחוף','Urgent'):a.sev==='warn'?L('לבדיקה','Check'):L('לידיעה','FYI'),a.sev==='bad'?'red':a.sev==='warn'?'amber':'blue')}<div>${a.txt}</div>${a.trip?`<button class="btn sm" data-act="open" data-v="${a.trip}" data-pt="${a.pt||'costs'}">${L('פתח','Open')}</button>`:`<button class="btn sm" data-act="go" data-v="${a.go}">${L('הצג','View')}</button>`}</div>`).join('')||`<p class="muted">${L('אין התראות.','No alerts.')}</p>`;
-  return `<h1 style="margin-bottom:16px">${L('שלום','Hello')} ${S.role==='manager'?MGR():agn(S.role)} 👋</h1>
-  <div class="ptiles">${ptl}</div>
+  return `${hpHero(ts,P,up)}
   <div class="two">
-   <div class="card pstat"><div class="row" style="justify-content:space-between;margin-bottom:14px"><h3 style="margin:0">${L('סטטיסטיקת פרויקטים','Project Statistics')}</h3><select aria-label="${L('תקופה','Period')}"><option>${L('שנה','Year')}</option><option>${L('רבעון','Quarter')}</option><option>${L('חודש','Month')}</option></select></div>
-     <div class="pstat-g"><div class="pcards"><div class="pcard"><div><span>${L('פרויקטים שנסגרו','Closed Projects')}</span><b>${won}</b><small>${Math.abs(Math.round((won-12)/12*100))}% ${L('ביחס לשנה שעברה','compared to last year')}</small></div><img src="${TP_ART.open}" alt="" width="96" height="96"></div>
-      <div class="pcard"><div><span>${L('פרויקטים שבוטלו','Canceled Projects')}</span><b>${lost}</b><small>${ic('trenddown')} ${Math.round(Math.abs(3-lost)/3*100)}% ${L('ביחס לשנה שעברה','compared to last year')}</small></div><img src="${TP_ART.closed}" alt="" width="96" height="96"></div></div>
-      <div><div class="legend"><span><i style="background:#22C55E"></i>${L('פרויקטים שנסגרו','Closed Projects')}</span><span><i style="background:#FFAB00"></i>${L('פרויקטים שבוטלו','Canceled Projects')}</span></div><div class="scroll"><div class="chart" style="min-width:200px;height:190px">${bars}</div><div class="xl" style="min-width:200px">${labs}</div></div></div></div></div>
+   ${hpStats(won,lost,H)}
    <div class="card" style="padding:0;overflow:hidden"><div style="padding:16px 16px 6px"><h3>${L('יציאות קרובות','Upcoming departures')}</h3></div>${ev}</div>
   </div>
   <div class="two">
