@@ -12,7 +12,12 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - The file starts with `<meta charset="utf-8">`. Without it, Chromium mis-detects the encoding of the large file and every `$` and symbol turns into garbage.
 - Must work offline on a booth laptop.
 - Default language is English. The Hebrew toggle must be fully RTL.
-- The assistant "Maya" answers from 28 scripted questions (count shown from QS.length). It is NOT a live LLM. Do not present it as one in the UI.
+- The assistant "Maya" answers from 28 scripted questions (count shown from QS.length). Since 12 Nov 2026 (owner decision) she also has an optional **live mode** (`v6/s9c_live.js`, Pilot):
+  - only typed questions go live, to the Claude API (`claude-opus-5-5`, streaming, effort low, server-side refusal fallback), grounded on `liveSnapshot()`: the demo's current data as JSON;
+  - the ready-made question buttons and meeting mode stay scripted;
+  - the API key is entered on the booth laptop (settings menu > Maya live answers) and kept in that browser's localStorage. **Never put a key in the repo or the HTML file**;
+  - no key, offline, an error, a refusal or no first word within 25 s: the scripted answer, with a note;
+  - the header pill shows the real mode (Scripted or Live answers · Claude). Never label a scripted answer as live.
 - **Real-brand rule:** a real company (hotel, chain, venue, airline) must never appear next to negative wording (gap, overbilling, dispute, late). Gap stories stay on fictional suppliers. `brandSwap()` gives a trip a real hotel only if none of its invoices has a gap. `check6.js` fails if any catalog name appears in a gap.
 - No official logos. Brands appear as a neutral badge: a colored square with an initial, plus the name. Using real logos needs the brand owner's permission.
 
@@ -70,6 +75,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - Maya questions 26-28.
 - `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
 - `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens; Pilot = working in the demo, offered to pilot customers; Roadmap = not available.
+- `v6/s9c_live.js` - Maya live mode (see Hard constraints): settings card, `liveSnapshot()`, `liveSystem()`, streaming `liveAsk()`, scripted fallback. `check6.js` checks the snapshot (no NaN, no real brand in a gap, leak total ties).
 - `v6/s9_meet.js` - meeting mode:
   - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;

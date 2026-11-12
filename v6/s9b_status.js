@@ -13,9 +13,10 @@ const FEAT=[
   ['gaps','pilot','gaps',['בקרת חשבוניות ספקים','Supplier invoice check'],['כל שורה בחשבונית מול מה שתומחר, ודרישת זיכוי בלחיצה.','Every bill line against what was quoted, and a dispute in one click.'],'gaps'],
   ['books','pilot','sync',['חיבור להנהלת חשבונות','Accounting sync'],['פריוריטי, חשבשבת, <bdi>QuickBooks</bdi> ו-<bdi>Xero</bdi>.','QuickBooks, Xero, Priority and Hashavshevet.'],'books'],
   ['leaks','pilot','leaks',['דליפות רווח','Profit leaks'],['לפי טיול, סוכן, סוג קבוצה וספק.','By trip, agent, group type and supplier.'],'leaks'],
+  ['ai','pilot','ai',['מאיה עונה מהנתונים שלכם','Maya answers from your data'],['שאלה מוקלדת נענית בזמן אמת על ידי Claude. כפתורי השאלות המוכנות בתסריט.','Typed questions are answered live by Claude. The ready-made question buttons are scripted.'],'ai'],
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
   // Roadmap: planned, not available yet
-  ['ai','roadmap','ai',['מאיה עונה מהנתונים שלכם','Maya answers from your data'],['בדמו התשובות מוכנות מראש.','In the demo the answers are scripted.'],'ai'],
+  
   ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
   ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
   ['trust','roadmap','shield',['דוחות חשבון נאמנות','Trust account reports'],['לחוקי Seller of Travel במדינות ארה״ב.','For US Seller of Travel rules.'],null],

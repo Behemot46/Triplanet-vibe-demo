@@ -387,3 +387,14 @@ select:hover{border-color:var(--ink)}
 @media (max-width:1180px) and (min-width:901px){
   .tourbtn{font-size:0!important;gap:0!important;padding:0 10px!important}
   .ptiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
+/* ---- Maya live answers ---- */
+.lv-card{margin-bottom:16px;border:1px solid color-mix(in srgb,var(--primary) 30%,var(--line))}
+.lv-f{gap:8px;margin-top:8px}.lv-f input{flex:1;min-width:200px}
+.lv-tg{display:inline-flex;align-items:center;gap:8px;font:500 14px var(--f-ui);cursor:pointer}
+.lv-src{margin-top:8px;font:500 12px var(--f-ui);color:var(--primary);display:flex;align-items:center;gap:6px}
+.lv-src.off{color:var(--muted)}
+.lv-wait{color:var(--muted);font-style:italic}
+.lv-caret{display:inline-block;width:7px;height:1em;margin-inline-start:2px;vertical-align:-2px;background:var(--primary);animation:lvblink 1s steps(2) infinite}
+@keyframes lvblink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.lv-caret{animation:none}}
+.lv-f input[type=password]{border-radius:8px;border:1px solid var(--line2);font:400 14px var(--f-ui);padding:8px 12px;background:var(--panel);color:var(--ink)}
