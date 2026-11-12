@@ -42,9 +42,10 @@ function render(){
   const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
-  app.innerHTML=trHtml(`<div class="app">
+  app.innerHTML=trHtml(`<div class="app${S.drawer?' drawer':''}">
    <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
    <main class="content"><div class="topbar">
+     <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
      <span class="grow"></span>
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
@@ -52,6 +53,7 @@ function render(){
        <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
+     <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
      <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
      <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">${ic('bell')}${nAl?`<b>${nAl}</b>`:''}</button>
      <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">${ic('settings')}</button>${menu}</span>

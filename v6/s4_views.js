@@ -7,6 +7,9 @@ function vHome(){
   const qL=n=>L('הצעות',n===1?'quote':'quotes'),fL=n=>L('תיקים',n===1?'file':'files');
   const n1=c(t=>t.stage==='Quote'&&(t.qst||'Draft')==='Draft'),n2=c(t=>t.stage==='Quote'&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
   const tiles=[[L('סך הכל','Total'),ts.length,L('הצעות ותיקים','quotes and files'),'',ic('folder')],[L('בבנייה','In progress'),n1,qL(n1),'orange',ic('draft')],[L('ממתינות','Pending'),n2,qL(n2),'amber',ic('hourglass')],[L('בתפעול','In operations'),n3,fL(n3),'blue',ic('ops')],[L('סגירה כספית','Financial close'),n4,fL(n4),'purple',ic('wallet')],[L('נסגרו','Closed'),n5,fL(n5),'green',ic('done')]];
+  const tot=ts.length||1,nq=c(t=>t.stage==='Quote'),no=c(t=>t.stage==='Operations'),nf=c(t=>t.stage==='Finance'||t.stage==='Closed');
+  const ptl=[[L('סך הכל','Total'),ts.length,'var(--ink)',ic('folder'),1],[L('הצעת מחיר','Quotation'),nq,'var(--dis)',ic('document'),nq/tot],[L('תפעול','Operation'),no,'#FFAB00',ic('mapsq'),no/tot],[L('כספים','Finance'),nf,'#22C55E',ic('cash'),nf/tot]]
+    .map(x=>`<div class="ptile"><span class="pring" style="--c:${x[2]};--p:${Math.round(x[4]*100)}"><span>${x[3]}</span></span><div><b>${x[0]}</b><span>${x[1]}</span></div></div>`).join('');
   const tl=tiles.map(x=>`<div class="tile"><span class="ring" style="${x[3]?`--c:var(--${x[3]})`:''}">${x[4]}</span><div><div class="l">${x[0]}</div><div class="s">${x[1]} ${x[2]}</div></div></div>`).join('');
   const up=ts.filter(t=>D(t.dep)>=TODAY).sort((a,b)=>D(a.dep)-D(b.dep)).slice(0,7);
   let lastD='',ev='';
@@ -24,12 +27,13 @@ function vHome(){
   const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
     return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n">${Math.round(r*100)}% <span class="${up?'pos':'neg'}">${up?ic('trendup'):ic('trenddown')}</span></td></tr>`;}).join('');
   const al=alertsFor(ts,S.thresh).slice(0,6).map(a=>`<div class="alert">${pillF(a.sev==='bad'?L('דחוף','Urgent'):a.sev==='warn'?L('לבדיקה','Check'):L('לידיעה','FYI'),a.sev==='bad'?'red':a.sev==='warn'?'amber':'blue')}<div>${a.txt}</div>${a.trip?`<button class="btn sm" data-act="open" data-v="${a.trip}" data-pt="${a.pt||'costs'}">${L('פתח','Open')}</button>`:`<button class="btn sm" data-act="go" data-v="${a.go}">${L('הצג','View')}</button>`}</div>`).join('')||`<p class="muted">${L('אין התראות.','No alerts.')}</p>`;
-  return `<h1 style="margin-bottom:16px">${L('שלום','Hello')}, ${S.role==='manager'?MGR():agn(S.role)} 👋</h1>
-  <div class="tiles">${tl}</div>
+  return `<h1 style="margin-bottom:16px">${L('שלום','Hello')} ${S.role==='manager'?MGR():agn(S.role)} 👋</h1>
+  <div class="ptiles">${ptl}</div>
   <div class="two">
-   <div class="card"><h3>${L('סטטיסטיקת הצעות מחיר','Quote statistics')}</h3><div class="two" style="margin:0;grid-template-columns:1fr 1fr">
-     <div><div class="legend"><span><i style="background:#4aa66f"></i>${L('הצעות שנסגרו','Quotes closed')}</span><span><i style="background:#f2a98a"></i>${L('הצעות שבוטלו','Quotes cancelled')}</span></div><div class="scroll"><div class="chart" style="min-width:200px;height:170px">${bars}</div><div class="xl" style="min-width:200px">${labs}</div></div></div>
-     <div style="display:grid;gap:12px"><div class="dk"><div><div class="t">${L('הצעות שנסגרו','Quotes closed')}</div><div class="big">${won}</div><div class="t">${chg}</div></div></div><div class="dk"><div><div class="t">${L('הצעות שבוטלו','Quotes cancelled')}</div><div class="big">${lost}</div></div></div></div></div></div>
+   <div class="card pstat"><div class="row" style="justify-content:space-between;margin-bottom:14px"><h3 style="margin:0">${L('סטטיסטיקת פרויקטים','Project Statistics')}</h3><select aria-label="${L('תקופה','Period')}"><option>${L('שנה','Year')}</option><option>${L('רבעון','Quarter')}</option><option>${L('חודש','Month')}</option></select></div>
+     <div class="pstat-g"><div class="pcards"><div class="pcard"><div><span>${L('פרויקטים שנסגרו','Closed Projects')}</span><b>${won}</b><small>${Math.abs(Math.round((won-12)/12*100))}% ${L('ביחס לשנה שעברה','compared to last year')}</small></div><img src="${TP_ART.open}" alt="" width="96" height="96"></div>
+      <div class="pcard"><div><span>${L('פרויקטים שבוטלו','Canceled Projects')}</span><b>${lost}</b><small>${ic('trenddown')} ${Math.round(Math.abs(3-lost)/3*100)}% ${L('ביחס לשנה שעברה','compared to last year')}</small></div><img src="${TP_ART.closed}" alt="" width="96" height="96"></div></div>
+      <div><div class="legend"><span><i style="background:#22C55E"></i>${L('פרויקטים שנסגרו','Closed Projects')}</span><span><i style="background:#FFAB00"></i>${L('פרויקטים שבוטלו','Canceled Projects')}</span></div><div class="scroll"><div class="chart" style="min-width:200px;height:190px">${bars}</div><div class="xl" style="min-width:200px">${labs}</div></div></div></div></div>
    <div class="card" style="padding:0;overflow:hidden"><div style="padding:16px 16px 6px"><h3>${L('יציאות קרובות','Upcoming departures')}</h3></div>${ev}</div>
   </div>
   <div class="two">

@@ -8,7 +8,7 @@ ctx.window.window=ctx.window;vm.createContext(ctx);
 vm.runInContext(js+`;globalThis.__t={S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
 const X=ctx.__t,{S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,QS,PTABS,vTrip,NAV,NAV2,trHtml,HE_RE,trChunk}=X;
 let bad=0;const fail=m=>{bad++;console.log('FAIL',m);};
-const chk=(h,l)=>{if(/NaN|undefined|Infinity|\[object|null</.test(h))fail(l+' bad token: '+(h.match(/.{40}(NaN|undefined|Infinity|\[object|null<).{20}/)||[''])[0]);};
+const chk=(h0,l)=>{const h=String(h0).replace(/data:[a-z/+]+;base64,[A-Za-z0-9+\/=]+/g,'');if(/NaN|undefined|Infinity|\[object|null</.test(h))fail(l+' bad token: '+(h.match(/.{40}(NaN|undefined|Infinity|\[object|null<).{20}/)||[''])[0]);};
 const ident=(t,tag)=>{const c=calc(t);if(Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit)>0.05)fail('identity '+tag+' '+t.id);
   if(t.stage!=='Quote'&&t.groups.length){const g=groupsCalc(t);if(Math.abs(g.rows.reduce((a,r)=>a+r.amt,0)-c.rev)>0.01)fail('groups '+t.id);if(g.rows.reduce((a,r)=>a+r.size,0)!==t.pax)fail('pax '+t.id);}};
 TRIPS.forEach(t=>ident(t,'init'));

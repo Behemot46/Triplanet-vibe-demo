@@ -1,0 +1,53 @@
+/* product-style list screens: Activities, Hotels, Clients */
+.al-card{padding:0;overflow:hidden}
+.al-filters{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:20px 24px}
+.al-sel{min-width:240px;height:48px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);padding:0 12px}
+.al-chips{display:flex;flex-wrap:wrap;gap:8px}
+.al-search{display:flex;align-items:center;gap:8px;height:48px;border:1px solid var(--line2);border-radius:8px;padding:0 12px;color:var(--muted);margin-inline-start:auto;min-width:220px;background:var(--panel)}
+.al-search:focus-within{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.al-search .ic{width:20px;height:20px;flex:none}
+.al-search input{border:0!important;box-shadow:none!important;outline:0;padding:0!important;background:transparent;flex:1;min-width:0;color:var(--ink)}
+.al-tgl{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--ink)}
+.al-tgl input{position:absolute;opacity:0;pointer-events:none}
+.al-sw{position:relative;width:40px;height:24px;border-radius:12px;background:var(--dis);opacity:.55;flex:none;transition:background .15s,opacity .15s}
+.al-sw:after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:inset-inline-start .15s}
+.al-tgl input:checked+.al-sw{background:var(--primary);opacity:1}
+.al-tgl input:checked+.al-sw:after{inset-inline-start:18px}
+.al-tgl input:focus-visible+.al-sw{outline:2px solid var(--primary);outline-offset:2px}
+.al-tbl{width:100%;border-collapse:collapse}
+.al-tbl th,.al-tbl td{text-align:start}
+.al-tbl th.n,.al-tbl td.n{text-align:end}
+.al-tbl th .ic{width:16px;height:16px;vertical-align:-3px;margin-inline-start:4px}
+.al-tbl td{vertical-align:middle}
+.al-nm{display:flex;align-items:center;gap:16px;min-width:230px}
+.al-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.al-t small{color:var(--muted);font-size:12.5px}
+.al-t strong{font-weight:600}
+.al-thumb{width:40px;height:40px;flex:none;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:var(--tc,var(--primary));background:color-mix(in srgb,var(--tc,var(--primary)) 14%,var(--panel))}
+.al-thumb .ic{width:22px;height:22px}
+.al-brand{background:var(--tc);color:#fff;font:700 17px var(--f-ui)}
+.al-av{background:var(--primary-lighter);color:var(--primary-dark);font:600 16px var(--f-ui);border-radius:50%}
+.al-code{font-family:var(--f-num);color:var(--ink2);letter-spacing:.02em}
+.al-stars{display:inline-flex;gap:1px;color:#FFAB00}
+.al-stars .ic{width:18px;height:18px}
+.al-ctl{width:56px;text-align:end!important;padding-inline-end:12px!important}
+.al-go{display:inline-flex;width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--primary);align-items:center;justify-content:center;cursor:pointer;padding:0}
+.al-go:hover{background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.al-go .ic{width:20px;height:20px}
+.al-none{text-align:center!important;color:var(--muted);padding:40px 16px!important}
+.al-pg{display:flex;align-items:center;justify-content:flex-end;gap:20px;padding:12px 20px;font-size:14px;color:var(--ink2);border-top:1px dashed var(--line);flex-wrap:wrap}
+.al-pg .al-rpp{border:0;background:transparent;padding:4px 2px;font:400 14px var(--f-ui);color:var(--ink);cursor:pointer}
+.al-pgl{margin-inline-end:-12px}
+.al-pgb{display:inline-flex;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:var(--ink2);align-items:center;justify-content:center;cursor:pointer;padding:0}
+.al-pgb:hover:not([disabled]){background:var(--recess)}
+.al-pgb[disabled]{color:var(--dis);opacity:.5;cursor:default}
+.al-pgb .ic{width:20px;height:20px}
+.al-h2{margin:28px 0 10px}
+@media (max-width:640px){
+  .al-filters{padding:16px;gap:12px}
+  .al-sel,.al-search{width:100%;min-width:0;margin-inline-start:0}
+  .al-pg{justify-content:center;gap:14px}
+  .al-pgl{margin-inline-end:0}
+}
+.ic.al-l{transform:scaleX(-1)}
+[dir=rtl] .ic.al-l{transform:none}
