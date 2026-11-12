@@ -295,5 +295,3 @@ document.addEventListener('dragstart',e=>{const c=e.target.closest&&e.target.clo
 document.addEventListener('dragover',e=>{const d=e.target.closest&&e.target.closest('.acc');if(d&&dragId!==null){e.preventDefault();d.classList.add('over');}});
 document.addEventListener('dragleave',e=>{const d=e.target.closest&&e.target.closest('.acc');if(d)d.classList.remove('over');});
 document.addEventListener('drop',e=>{const d=e.target.closest&&e.target.closest('.acc');if(d&&dragId!==null){e.preventDefault();const it=T().items.find(i=>i.id===dragId);if(it)it.day=+d.dataset.day;dragId=null;render();}});
-load();
-render();

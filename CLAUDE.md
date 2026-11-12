@@ -1,42 +1,62 @@
 # Triplanet booth demo - handover
 
 ## What this is
-A single-file, offline-capable Hebrew/English (RTL/LTR) demo of Triplanet, an AI-assisted SaaS for group tour operators. It is shown at a trade-show booth: NTA Travel Exchange '26, Tulsa, Oklahoma, 15-18 Nov 2026. The target buyers are US agencies with 3-20 agents. The hero feature is the supplier-invoice gap check (overbilling detection, dispute email drafting, credit tracking, margin recovery).
+A single-file, offline-capable Hebrew/English (RTL/LTR) demo of Triplanet, an AI-assisted SaaS for group tour operators. It is shown at trade-show booths. NTA Travel Exchange '26 (Tulsa, 15-18 Nov 2026) ran the v6 build. v7 targets IITA Summit (Birmingham AL, 31 Jan-4 Feb 2027) and ABA Marketplace (Calgary, 6-9 Feb 2027). The target buyers are US group tour operators with 3-20 agents.
 
-All data is fictional: the agency is "Redbud Group Tours" (Tulsa), 20 trips, 6 agents, 11 destinations. Keep it that way unless the owner says otherwise.
+The story for a short meeting is easy process plus high value. The Trip studio builds a priced, mapped trip in seconds. Profit leaks and the invoice check show where planned profit went and recover it.
+
+Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Since v7, hotel and venue names are REAL (owner decision, Nov 2026); see the brand rule below.
 
 ## Hard constraints
-- Output is ONE self-contained HTML file. No frameworks, no CDN calls. Fonts are embedded (IBM Plex Sans Hebrew, base64 in fonts.css).
+- Output is ONE self-contained HTML file. No frameworks, no CDN calls. The font (IBM Plex Sans Hebrew) and the map geometry are embedded.
+- The file starts with `<meta charset="utf-8">`. Without it, Chromium mis-detects the encoding of the large file and every `$` and symbol turns into garbage.
 - Must work offline on a booth laptop.
 - Default language is English. The Hebrew toggle must be fully RTL.
 - The assistant "Maya" answers from 25 scripted questions. It is NOT a live LLM. Do not present it as one in the UI.
+- **Real-brand rule:** a real company (hotel, chain, venue, airline) must never appear next to negative wording (gap, overbilling, dispute, late). Gap stories stay on fictional suppliers. `brandSwap()` gives a trip a real hotel only if none of its invoices has a gap. `check6.js` fails if any catalog name appears in a gap.
+- No official logos. Brands appear as a neutral badge: a colored square with an initial, plus the name. Using real logos needs the brand owner's permission.
 
 ## Build and verify
-- Build: `python3 build.py` writes `v6/triplanet-booth.html` (same file the Artifact is published from).
-- Logic and text checks: `node check6.js`. It checks finance identities, renders every view for each role in EN and HE, counts leftover Hebrew in EN mode (must be 0), routes all 25 Maya questions, and runs the tour and the win/new/draft flows.
-- Screenshots: `shot6.js` and `shot7.js` (Playwright, Chromium at /opt/pw-browsers/chromium), run from the repo root.
+- Map geometry, only when views or cities change: `cd tools/geo && npm install && node build_geo.mjs` regenerates `v6/s0_geo.js`. The runtime functions (`geoMap`, `geoViewFor`) live in `tools/geo/geo_runtime.js`.
+- Build: `python3 build.py` writes `v6/triplanet-booth.html`. Use `TP_SKIP=file.js,...` to leave optional modules out while debugging.
+- Checks: `node check6.js`. It covers:
+  - finance identities;
+  - every view for each role in EN and HE;
+  - leftover Hebrew in EN mode (must be 0);
+  - all 25 Maya routes;
+  - the tour and the win/new/draft flows;
+  - since v7: leak-bridge identities per scope and per dimension, the studio for all 16 destinations in both languages, gen-quote identities, and the real-brand guard.
+- Screenshots: `shot6.js`, `shot7.js` (v6 paths) and `shot8.js [prefix]` (v7: leaks, studio, Hebrew, mobile, meeting mode), run from the repo root. Output goes to `shots/` (git-ignored).
 - Before any publish or handover, run the check and confirm LEFTOVER 0, bad 0, and no page errors.
 
-## File map
+## File map (build order)
+- `v6/s0_geo.js` - GENERATED map data (US, Europe, Levant, Italy, Isles, Greece, Ontario; 48 cities) plus `geoMap`/`geoViewFor`
 - `v6/s1_core.js` - data model, generators, finance math, invoice-gap logic, trip specs (TRIP_SPECS), inbox files (NEN_INBOX)
+- `v6/s1c_catalog.js` - real hotels (65), venues (82), airlines, BRANDS, 5 extra destinations (NewYork, Smokies, SanAntonio, Chicago, NewOrleans), DEST_CITIES routes. Every entry has a `src` URL; rates and costs are illustrative.
 - `v6/s1b_labels.js` - labels, gap explanations, alerts
 - `v6/s2_i18n.js` - Hebrew-to-English translator (DICT, trHtml), English answers
-- `v6/s3_shell.js` - state, save/load/reset (localStorage, try/catch), navigation, render shell, Maya drawer, guided tour (TOUR), invoice-reading animation
-- `v6/s4_views.js` - home, quotes, trip tabs (general, plan, costs, quote, approve, ops, people)
+- `v6/s3_shell.js` - state, save/load/reset (localStorage key v7), navigation, render shell, Maya drawer, guided tour (TOUR), invoice-reading animation
+- `v6/s4_views.js` - home, quotes, trip tabs
 - `v6/s5_fin.js` - trip invoice check, gap cards, dispute email, Invoice check page, finance dashboard
-- `v6/s6_rest.js` - templates, hotels, suppliers, activities, users, import, the 25 Maya questions (QS), event wiring
-- `v6/base.css`, `v6/extra.css` - styles. `fonts.css` - embedded font. `fonts/` - font source package.
-- `build.py` - concatenates the parts above in this order: base CSS, fonts, extra CSS, then the JS in the order listed in build.py.
+- `v6/s6_rest.js` - templates, hotels, suppliers, activities, users, import, Maya questions (QS), event wiring (no boot lines any more)
+- `v6/s7_leak.js` - leak model (`leakModel`, `leakRows`), Profit leaks screen, leak bridge SVG, heatmap, count-up
+- `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
+- `v6/s9_meet.js` - meeting mode (8 beats, arrow keys, R restart, Esc exit, closing screen)
+- `v6/s9_boot.js` - wraps render/resetDemo, then `load(); render();`. Must stay last.
+- `v6/base.css`, `v6/extra.css`, `v6/v7.css` - styles. `fonts.css` - embedded font.
 
 ## Decisions already made
-- Assistant name: Maya / מאיה.
-- Hebrew is secondary. EN is the default.
-- Money in USD by default. Locked FX rate per trip. Commission counts as income in planned profit: planProfit = rev - plan + comm. Identity planProfit - amtDiff - fx - fcProfit = 0 must hold.
-- Gap model: kinds are rooms, qty, rate, comp, extra, dup, under, missing. Missing invoices exclude lines already covered by unread inbox files.
-- Print: window.print is wrapped in try/catch. Printing works only from a real browser, not from some preview frames.
+- Assistant name: Maya / מאיה. Hebrew is secondary, EN is the default.
+- Money in USD by default. Locked FX rate per trip. Commission counts as income in planned profit: planProfit = rev - plan + comm. The identity planProfit - amtDiff - fx - fcProfit = 0 must hold.
+- Gap model: kinds are rooms, qty, rate, comp, extra, dup, under, missing.
+- Leak model: the bridge runs from planned to expected profit. It is the supplier differences by kind plus FX, so it ties to the identity. Room-block release exposure, late client payments and missing invoices are shown as "at risk", outside the bridge. The bridge chart starts at $0 (no truncated axis).
+- Studio plans use the same `genLines` + `calc` as quotes, so "Create the quote" yields an ordinary quote. Motorcoach hours come from straight-line distance x 1.2 at 90 km/h.
+- The demo's "today" is still fixed at 20 Oct 2026 (owner decision pending; moving it re-baselines every dated figure).
+- Print: window.print is wrapped in try/catch.
 
-## Open items
+## Open items (owner)
 - Real Triplanet logo and brand colors. The placeholder is a plain "R" mark.
-- Payment and email domains are placeholders.
-- Gap frequencies (about 20% of invoices with a gap) are estimates, not benchmarks. Replace them with real customer data if available.
-- Triplanet pilot-client threshold and go-to-market are owned outside this repo (see the owner's memory notes).
+- Payment and email domains are placeholders (`.example`).
+- Gap frequencies (about 20% of invoices with a gap) are estimates, not benchmarks.
+- Phase B of the upgrade plan: simulated QuickBooks/Xero connect flow and post-to-books. Not built yet.
+- Catalog caveats from research: some Israel hotel operating statuses need confirming; star ratings for a few properties are approximate.

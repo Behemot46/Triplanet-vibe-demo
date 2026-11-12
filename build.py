@@ -1,6 +1,6 @@
 # Builds the single-file demo: v6/triplanet-booth.html
 # Run from the repo root: python3 build.py
-import pathlib
+import os, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent
 V6 = ROOT / 'v6'
 
@@ -9,12 +9,16 @@ def read(p):
 
 css = read('v6/base.css')
 fonts = read('fonts.css')
-extra = read('v6/extra.css')
-JS_ORDER = ['s1_core.js', 's1b_labels.js', 's2_i18n.js', 's3_shell.js',
-            's4_views.js', 's5_fin.js', 's6_rest.js']
-js = ''.join(read('v6/' + f) + '\n' for f in JS_ORDER)
+extra = read('v6/extra.css') + '\n' + read('v6/v7.css')
+JS_ORDER = ['s0_geo.js', 's1_core.js', 's1c_catalog.js', 's1b_labels.js', 's2_i18n.js',
+            's3_shell.js', 's4_views.js', 's5_fin.js', 's6_rest.js',
+            's7_leak.js', 's8_gen.js', 's9_meet.js', 's9_boot.js']
+# optional modules may be absent while they are being built
+SKIP = set(os.environ.get('TP_SKIP', '').split(','))
+js = ''.join(read('v6/' + f) + '\n' for f in JS_ORDER if (V6 / f).exists() and f not in SKIP)
 
-out = f'''<title>Triplanet Demo</title>
+out = f'''<meta charset="utf-8">
+<title>Triplanet Demo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Triplanet booth demo: group tour operations with automatic supplier invoice checking.">
 <style>

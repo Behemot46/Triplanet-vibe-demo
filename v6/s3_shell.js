@@ -5,7 +5,7 @@ const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
   page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
 const S=S0();
-const VER=6,KEY='triplanet-booth-demo-v6';
+const VER=7,KEY='triplanet-booth-demo-v7';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
 function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS}));}catch(e){}}
 function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});}catch(e){}}
@@ -38,7 +38,7 @@ function render(){
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
   const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">▶ ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
-     <button data-act="reset" role="menuitem" class="neg">↺ ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('כל השמות והמספרים פיקטיביים.','All names and figures are fictional.')}</div></div>`:'';
+     <button data-act="reset" role="menuitem" class="neg">↺ ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
   const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
