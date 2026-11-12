@@ -17,7 +17,7 @@ function brandBadge(fam){
   const b=(typeof BRANDS!=='undefined'&&BRANDS[fam])||{label:fam||'Independent',color:'#5B6472'};
   return `<span class="brandb" style="--bc:${esc(b.color)}"><i>${esc(String(b.label).charAt(0))}</i>${esc(b.label)}</span>`;
 }
-const stars=n=>`<span class="stars" aria-label="${n} ${L('כוכבים','stars')}">${'★'.repeat(n||0)}</span>`;
+const stars=n=>`<span class="stars" aria-label="${n} ${L('כוכבים','stars')}">${Array.from({length:n||0},()=>ic('star')).join('')}</span>`;
 function genMonths(){const out=[];for(let i=1;i<=12;i++){const d=new Date(TODAY.getFullYear(),TODAY.getMonth()+i,1);out.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}return out;}
 function pickHotel(o){
   const hs=catHotels(o.dest);if(!hs.length)return null;
@@ -118,7 +118,7 @@ function stForm(g){
    <div class="st-sec"><div class="lbl">${L('סוג קבוצה','Group type')}</div><div class="chips">${Object.keys(SEG).map(s=>ch('seg',s,sn(s))).join('')}</div></div>
    <div class="st-sec"><div class="lbl">${L('נוסעים','Travelers')}</div><div class="st-range"><input type="range" min="12" max="60" value="${g.pax}" data-gen="pax" aria-label="${L('נוסעים','Travelers')}"><output>${g.pax}</output></div></div>
    <div class="st-sec"><div class="lbl">${L('לילות','Nights')}</div><div class="st-range"><input type="range" min="2" max="12" value="${g.nights}" data-gen="nights" aria-label="${L('לילות','Nights')}"><output>${g.nights}</output></div></div>
-   <div class="st-sec"><div class="lbl">${L('רמת מלון','Hotel class')}</div><div class="chips">${[3,4,5].map(n=>{const ok=!HAS_CAT()||catHotels(g.dest).some(h=>h.stars===n);return `<button class="chip ${g.tier===n?'on':''}" data-act="gset" data-k="tier" data-v="${n}" ${ok?'':`disabled title="${L(`אין מלון שותף ${n}★ ביעד הזה`,`No ${n}★ partner hotel here`)}"`}>${n}★</button>`;}).join('')}</div></div>
+   <div class="st-sec"><div class="lbl">${L('רמת מלון','Hotel class')}</div><div class="chips">${[3,4,5].map(n=>{const ok=!HAS_CAT()||catHotels(g.dest).some(h=>h.stars===n);return `<button class="chip ${g.tier===n?'on':''}" data-act="gset" data-k="tier" data-v="${n}" ${ok?'':`disabled title="${L(`אין מלון שותף ${n}★ ביעד הזה`,`No ${n}★ partner hotel here`)}"`}>${n} ${ic('star')}</button>`;}).join('')}</div></div>
    <div class="st-sec"><div class="lbl">${L('קצב','Pace')}</div><div class="chips">${[['relaxed',L('רגוע','Relaxed')],['classic',L('קלאסי','Classic')],['full',L('עמוס','Full')]].map(p=>ch('pace',p[0],p[1])).join('')}</div></div>
    <div class="st-sec"><div class="lbl">${L('חודש יציאה','Departure month')}</div><select data-ch="gmonth" aria-label="${L('חודש יציאה','Departure month')}">${genMonths().map(m=>`<option value="${m}" ${(g.month||genMonths()[5])===m?'selected':''}>${monthLabel(m)} ${m.slice(0,4)}</option>`).join('')}</select></div>
    <button class="st-go" data-act="ggo">${ic('magic')} ${g.built?L('בנה מחדש','Rebuild the plan'):L('בנה תוכנית טיול','Build the trip plan')}</button>

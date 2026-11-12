@@ -99,7 +99,7 @@ const TOUR=[
    tx:()=>[L('אחרי הטיול, החשבוניות מגיעות','After the trip, the invoices arrive'),L('קבוצת ניו אינגלנד חזרה הביתה. שש חשבוניות ספקים הגיעו במייל. טריפלאנט קוראת אותן ומתאימה כל שורה למה שתומחר בהצעה.','The New England group is home. Six supplier invoices just arrived by email. Triplanet reads them and matches every line to what you quoted.')]},
   {sel:'.gaps',go:()=>{const t=byId('nen');if(t&&t.inbox.length&&!S.reading){applyInbox(t);S.lastMatch.nen=matchSummary(t,6);}openTrip('nen','tfin');},
    tx:()=>{const t=byId('nen'),g=tripGaps(t).filter(x=>x.usd>0&&x.s.k==='gap'),a=r2(g.reduce((s,x)=>s+x.usd,0)),c=calc(t),base=r2(c.fcProfit+a);
-     return [L('פערים שנמצאו לבד','Gaps found automatically'),L(`${g.length} פערים בסך ${usd(a)} בטיול אחד: חדר מיותר, חדר נהג "חינם" שחויב, תוספת דלק, חשבונית כפולה, מחיר מחירון במקום תעריף קבוצה ומנות עודפות. זה ${base>0?pct(a/base):''} מהרווח של הטיול. לחיצה אחת מנסחת דרישת זיכוי.`,`${g.length} gaps worth ${usd(a)} on one trip: an extra room, a "complimentary" driver room billed, a fuel surcharge, a duplicate invoice, the public rate instead of the group rate, and extra covers. That is ${base>0?pct(a/base):''} of this trip's profit. One click drafts the dispute.`)];}},
+     return [L('פערים שנמצאו לבד','Gaps found automatically'),L(`${g.length} פערים בסך ${usd(a)} בטיול אחד: חדר מיותר, חדר נהג "חינם" שחויב, תוספת דלק, חשבונית כפולה, מחיר מחירון במקום תעריף קבוצה ומנות עודפות. זה ${base>0?pct(a/base):''} מהרווח של הטיול. לחיצה אחת מנסחת דרישת זיכוי.`,`${g.length} gap${(g.length)===1?'':'s'} worth ${usd(a)} on one trip: an extra room, a "complimentary" driver room billed, a fuel surcharge, a duplicate invoice, the public rate instead of the group rate, and extra covers. That is ${base>0?pct(a/base):''} of this trip's profit. One click drafts the dispute.`)];}},
   {sel:'.stats',go:()=>{S.tab='gaps';S.gF='open';},
    tx:()=>[L('כל הטיולים, כל הספקים','Every trip, every supplier'),L('פערים פתוחים, דרישות זיכוי וזיכויים שהתקבלו לאורך העונה, ואילו ספקים מחייבים ביתר הכי הרבה.','Open, disputed and recovered gaps across the season, and which suppliers overbill most often.')]},
   {sel:'.chat',go:()=>{S.tab='ai';if(!S.chat.length)askQ(QS[1]);},
@@ -126,7 +126,7 @@ function startReading(t){
   S.reading={tid:t.id,done:[],n:t.inbox.length};render();
   const tick=()=>{
     if(!S.reading||S.reading.tid!==t.id||byId(t.id)!==t)return; // demo reset mid-read
-    const f=t.inbox.shift();if(!f){const n=S.reading.n;S.reading=null;S.lastMatch[t.id]=matchSummary(t,n);render();const s=S.lastMatch[t.id];toast(L(`נמצאו ${s.n} פערים בסך ${usd(s.amt)}`,`Found ${s.n} gaps worth ${usd(s.amt)}`));return;}
+    const f=t.inbox.shift();if(!f){const n=S.reading.n;S.reading=null;S.lastMatch[t.id]=matchSummary(t,n);render();const s=S.lastMatch[t.id];toast(L(`נמצאו ${s.n} פערים בסך ${usd(s.amt)}`,`Found ${s.n} gap${(s.n)===1?'':'s'} worth ${usd(s.amt)}`));return;}
     applyInboxFile(t,f);
     const lines=(f.inv||[]).length+(f.extra||[]).length,gaps=(f.inv||[]).filter(x=>x[1].kind).length+(f.extra||[]).length;
     S.reading.done.push({file:f.file,lines,gaps});render();setTimeout(tick,650);

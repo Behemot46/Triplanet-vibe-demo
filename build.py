@@ -18,6 +18,7 @@ SKIP = set(os.environ.get('TP_SKIP', '').split(','))
 js = ''.join(read('v6/' + f) + '\n' for f in JS_ORDER if (V6 / f).exists() and f not in SKIP)
 
 out = f'''<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Triplanet Demo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Triplanet booth demo: group tour operations with automatic supplier invoice checking.">

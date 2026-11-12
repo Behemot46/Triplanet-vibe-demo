@@ -40,6 +40,8 @@ body{background:var(--bg);color:var(--ink);font:400 14.5px/1.57 var(--f-ui);padd
 h1{font-size:24px;font-weight:700;letter-spacing:-.005em} h2{font-size:18px;font-weight:700} h3{font-size:16.5px;font-weight:600}
 .ic{width:1.3em;height:1.3em;flex:none;vertical-align:-.28em;display:inline-block}
 [dir=rtl] .ic.flip{transform:scaleX(-1)}
+.ic.back{transform:scaleX(-1)}[dir=rtl] .ic.flip.back{transform:none}
+.stars{display:inline-flex;gap:1px;color:#FFAB00;vertical-align:-2px}.stars .ic{--duo:45%}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 ::selection{background:var(--primary-lighter);color:var(--primary-darker)}
 /* ---- app frame: integrated nav + content ---- */
@@ -213,7 +215,8 @@ select:focus,input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 1px 
 .meet p{font-size:17px;line-height:1.5;color:#DCEBFA}
 .meet .clock{color:#B7D4F2}
 .meet-on .content{padding-bottom:280px}
-.meet-on #toast{bottom:250px}
+.meet-on #toast{top:84px;bottom:auto;left:auto;right:24px;transform:none}
+@media (max-height:960px){.meet{padding:12px 20px}.meet h3{font-size:21px;margin:6px 0 2px}.meet p{font-size:15.5px;line-height:1.45}.meet .ctl{margin-top:8px}.meet .ctl .btn{padding-block:6px}}
 
 /* ---- product nav icons (mask, follow text color) and submenu chevrons ---- */
 .nic{width:24px;height:24px;flex:none;display:inline-block;background:currentColor;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center}
@@ -333,7 +336,8 @@ select:focus,input:focus{outline:0;border-color:var(--ink);box-shadow:0 0 0 1px 
 .acb{width:44px;height:44px;border-radius:12px;flex:none;display:grid;place-items:center;background:var(--bc);color:#fff;font:800 15px var(--f-ui);letter-spacing:-.02em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
 .ac-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:20px;margin-bottom:12px}
 .ac-card{display:flex;flex-direction:column;gap:14px}
-.ac-card .btn{align-self:flex-start}
+.ac-card .btn{align-self:flex-start;margin-top:auto}
+.ac-ul li{white-space:nowrap}
 .ac-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--muted)}
 .ac-ul li{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .ac-ul .ic{width:14px;height:14px}

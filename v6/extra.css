@@ -78,7 +78,7 @@ pre.mail{white-space:pre-wrap;direction:ltr;text-align:left;font:13px/1.55 var(-
 @media (prefers-reduced-motion:reduce){.thl{animation:none}}
 @media (max-width:860px){
   .tour{inset-inline-start:12px;bottom:12px;width:calc(100vw - 24px)}
-  .chenfab span{display:none} .chenfab{padding:8px !important;min-width:46px;min-height:46px;justify-content:center}
+  .chenfab span:not(.chenav){display:none} .chenfab{padding:8px !important;min-width:46px;min-height:46px;justify-content:center}
   .hbar{grid-template-columns:110px 1fr 110px}
   .gapgrid{grid-template-columns:1fr}
   .welcome .wim{display:none}

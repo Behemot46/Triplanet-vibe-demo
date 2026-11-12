@@ -7,14 +7,14 @@ const ACCT={
     map:[[['טיול','Trip'],['Class',"Class"]],[['ספק','Supplier'],['Vendor','Vendor']],[['חשבונית ספק','Supplier invoice'],['Bill','Bill']],[['זיכוי מספק','Supplier credit'],['Vendor credit','Vendor credit']],[['חשבון ללקוח','Client invoice'],['Invoice + Payment','Invoice + Payment']]],
     trip:['Class','Class'],credit:['Vendor credit','vendor credit'],bill:['Bill','bill']},
   xero:{name:['זירו','Xero'],short:['זירו','Xero'],color:'#0E7FA8',ini:'X',region:['גלובלי','Global'],
-    map:[[['טיול','Trip'],['Tracking category "Trip"','Tracking category "Trip"']],[['ספק','Supplier'],['Contact','Contact']],[['חשבונית ספק','Supplier invoice'],['Bill (ACCPAY)','Bill (ACCPAY)']],[['זיכוי מספק','Supplier credit'],['Credit note','Credit note']],[['חשבון ללקוח','Client invoice'],['Invoice (ACCREC)','Invoice (ACCREC)']]],
+    map:[[['טיול','Trip'],['Tracking category: Trip','Tracking category: Trip']],[['ספק','Supplier'],['Contact','Contact']],[['חשבונית ספק','Supplier invoice'],['Bill (ACCPAY)','Bill (ACCPAY)']],[['זיכוי מספק','Supplier credit'],['Credit note','Credit note']],[['חשבון ללקוח','Client invoice'],['Invoice (ACCREC)','Invoice (ACCREC)']]],
     trip:['Tracking category','tracking category'],credit:['Credit note','credit note'],bill:['Bill','bill']},
   priority:{name:['פריוריטי','Priority ERP'],short:['פריוריטי','Priority'],color:'#6B3FA0',ini:'P',region:['ישראל','Israel'],
-    map:[[['טיול','Trip'],['פרויקט / מרכז רווח','Project / profit center']],[['ספק','Supplier'],['כרטיס ספק','Supplier record']],[['חשבונית ספק','Supplier invoice'],['חשבונית ספק','Supplier invoice']],[['זיכוי מספק','Supplier credit'],['חשבונית זיכוי ספק','Supplier credit invoice']],[['חשבון ללקוח','Client invoice'],['חשבונית מס / קבלה','Tax invoice / receipt']]],
+    map:[[['טיול','Trip'],['פרויקט','Project']],[['ספק','Supplier'],['כרטיס ספק','Supplier record']],[['חשבונית ספק','Supplier invoice'],['חשבונית ספק','Supplier invoice']],[['זיכוי מספק','Supplier credit'],['חשבונית זיכוי ספק','Supplier credit invoice']],[['חשבון ללקוח','Client invoice'],['חשבונית מס קבלה','Tax invoice-receipt']]],
     trip:['פרויקט','Project','project'],credit:['חשבונית זיכוי','Credit invoice','credit invoice'],bill:['חשבונית ספק','Supplier invoice','supplier invoice']},
   hash:{name:['חשבשבת','Hashavshevet'],short:['חשבשבת','Hashavshevet'],color:'#1F5FA8',ini:['ח','H'],region:['ישראל','Israel'],
-    map:[[['טיול','Trip'],['מרכז רווח','Profit center']],[['ספק','Supplier'],['כרטיס ספק','Supplier account']],[['חשבונית ספק','Supplier invoice'],['קליטת תנועות (פקודת יומן)','Journal entry import']],[['זיכוי מספק','Supplier credit'],['פקודת זיכוי','Credit entry']],[['חשבון ללקוח','Client invoice'],['חשבונית מס / קבלה','Tax invoice / receipt']]],
-    trip:['מרכז רווח','Profit center','profit center'],credit:['פקודת זיכוי','Credit entry','credit entry'],bill:['פקודת יומן','Journal entry','journal entry']}};
+    map:[[['טיול','Trip'],['מרכז רווח','Profit center']],[['ספק','Supplier'],['כרטיס ספק','Supplier account']],[['חשבונית ספק','Supplier invoice'],['פקודת יומן','Journal entry']],[['זיכוי מספק','Supplier credit'],['חשבונית זיכוי ספק','Supplier credit note']],[['חשבון ללקוח','Client invoice'],['חשבונית מס קבלה','Tax invoice-receipt']]],
+    trip:['מרכז רווח','Profit center','profit center'],credit:['חשבונית זיכוי ספק','Supplier credit note','supplier credit note'],bill:['פקודת יומן','Journal entry','journal entry']}};
 /* object names: [Title, lower] for English systems, [Hebrew, Title, lower] for Israeli ones */
 const term=(p,f,lower)=>{const v=p[f];return v.length===3?(S.lang==='he'?v[0]:(lower?v[2]:v[1])):(lower?v[1]:v[0]);};
 const acctOrder=()=>S.lang==='he'?['priority','hash','qbo','xero']:['qbo','xero','priority','hash'];
@@ -44,14 +44,14 @@ function acSeed(){
 }
 function acLog(kind,t,l,amt){
   const a=A();if(a.phase!=='synced')return;a.log.unshift({k:kind,t:t.name,sup:l.sup,no:l.inv?l.inv.no:'',amt:r2(amt)});a.log=a.log.slice(0,30);
-  const p=ACCT[a.sys],tag=a.opt.tag?L(` · ${term(p,'trip')}: ${t.name}`,` · ${term(p,'trip')}: ${t.name}`):'';
-  const msg=kind==='post'?L(`${term(p,'bill')} נרשמה ב${an(a.sys,'short')}${tag}`,`${term(p,'bill')} posted to ${an(a.sys,'short')}${tag}`)
-    :kind==='credit'?L(`${term(p,'credit')} נוצר ב${an(a.sys,'short')}: ${usd(amt)}`,`${term(p,'credit')} created in ${an(a.sys,'short')}: ${usd(amt)}`)
+  const p=ACCT[a.sys],tag=a.opt.tag?L(` · מתויגת לטיול ${t.name}`,` · ${term(p,'trip')}: ${t.name}`):'';
+  const msg=kind==='post'?L(`החשבונית נרשמה ב${an(a.sys,'short')} (${term(p,'bill')})${tag}`,`${term(p,'bill')} posted to ${an(a.sys,'short')}${tag}`)
+    :kind==='credit'?L(`נוצר זיכוי ב${an(a.sys,'short')} (${term(p,'credit')}): ${usd(amt)}`,`${term(p,'credit')} created in ${an(a.sys,'short')}: ${usd(amt)}`)
     :L(`החשבונית ${l.inv.no} מוקפאת לתשלום ב${an(a.sys,'short')} עד לזיכוי`,`Bill ${l.inv.no} held from payment in ${an(a.sys,'short')} until the credit arrives`);
   toast(msg);
 }
 function acLogRow(e){const a=A(),p=ACCT[a.sys||'qbo'];
-  const lab={import:L('יובאה ותואמה','Imported and matched'),post:L(`${term(p,'bill')} נרשמה`,`${term(p,'bill')} posted`),credit:L(`${term(p,'credit')} נוצר`,`${term(p,'credit')} created`),hold:L('הוקפאה לתשלום','Held from payment')}[e.k];
+  const lab={import:L('יובאה ותואמה','Imported and matched'),post:L('החשבונית נרשמה',`${term(p,'bill')} posted`),credit:L('נוצר זיכוי',`${term(p,'credit')} created`),hold:L('הוקפאה לתשלום','Held from payment')}[e.k];
   const pc={import:'green',post:'blue',credit:'green',hold:'amber'}[e.k];
   return `<tr><td>${pillF(lab,pc)}</td><td><strong>${esc(e.sup)}</strong><div class="small muted">${esc(e.no||'')}</div></td><td>${esc(e.t)}</td><td class="n">${usd(e.amt,2)}</td></tr>`;}
 function vBooks(){
@@ -61,9 +61,9 @@ function vBooks(){
   if(a.phase==='connecting'){const k=a.sys;return head0+intro+`<div class="card ac-busy"><div class="row" style="gap:12px;margin-bottom:12px">${acBadge(k)}<h3 style="margin:0">${L(`מתחבר ל${an(k)}...`,`Connecting ${an(k)}...`)}</h3></div>${AC_STEPS.map((f,i)=>i<=a.step?`<div class="st-step ${i<a.step?'done':'cur'}"><span class="dot">${i<a.step?ic('check'):''}</span>${esc(f(k))}</div>`:'').join('')}</div>`;}
   if(a.phase!=='synced'){
     const cards=acctOrder().map(k=>`<div class="card ac-card"><div class="row" style="gap:12px">${acBadge(k)}<div><strong>${an(k)}</strong><div class="small muted">${L(ACCT[k].region[0],ACCT[k].region[1])}</div></div></div>
-      <ul class="ac-ul">${ACCT[k].map.slice(0,3).map(m=>`<li>${L(m[0][0],m[0][1])} ${ic('right','flip')} <b>${L(m[1][0],m[1][1])}</b></li>`).join('')}</ul>
-      <button class="btn pri" data-act="acconn" data-v="${k}">${ic('plug')} ${L(`חיבור ${an(k,'short')}`,`Connect ${an(k,'short')}`)}</button></div>`).join('');
-    return head0+intro+`<div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים ל-QuickBooks, Xero, פריוריטי וחשבשבת נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p>`;
+      <ul class="ac-ul">${ACCT[k].map.slice(0,3).map(m=>`<li>${L(m[0][0],m[0][1])} ${ic('right','flip')} <b><bdi>${L(m[1][0],m[1][1])}</bdi></b></li>`).join('')}</ul>
+      <button class="btn pri" data-act="acconn" data-v="${k}">${ic('link')} ${L(`חיבור ${an(k,'short')}`,`Connect ${an(k,'short')}`)}</button></div>`).join('');
+    return head0+intro+`<div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p>`;
   }
   const k=a.sys,p=ACCT[k],pctm=s.bills?s.matched/s.bills:0;
   const opt=(key,he,en)=>`<label class="ac-opt"><input type="checkbox" data-acopt="${key}" ${a.opt[key]?'checked':''}> <span>${L(he,en)}</span></label>`;
@@ -73,7 +73,7 @@ function vBooks(){
     <div class="stat"><div class="l">${L('תואמו להצעה','Matched to the quote')}</div><div class="v">${pct(pctm)}</div><div class="s">${s.matched} ${L('בלי מגע יד','with no touch')}</div></div>
     <div class="stat"><div class="l">${L('פערים שנמצאו','Gaps found')}</div><div class="v neg">${usd(s.gap)}</div><div class="s">${s.gapN} ${L('פתוחים או בדרישה','open or disputed')}</div></div>
     <div class="stat"><div class="l">${L('טיולים מתויגים','Trips tagged')}</div><div class="v">${s.trips}</div><div class="s">${L(`כ${term(p,'trip')}`,`as ${term(p,'trip',1)}`)}</div></div></div>
-   <div class="two"><div class="card"><h3>${L('מה ממופה למה','What maps to what')}</h3><table class="tbl"><thead><tr><th>Triplanet</th><th>${an(k,'short')}</th></tr></thead><tbody>${p.map.map(m=>`<tr><td>${L(m[0][0],m[0][1])}</td><td><strong>${L(m[1][0],m[1][1])}</strong></td></tr>`).join('')}</tbody></table></div>
+   <div class="two"><div class="card"><h3>${L('מה ממופה למה','What maps to what')}</h3><table class="tbl"><thead><tr><th>Triplanet</th><th>${an(k,'short')}</th></tr></thead><tbody>${p.map.map(m=>`<tr><td>${L(m[0][0],m[0][1])}</td><td><strong><bdi>${L(m[1][0],m[1][1])}</bdi></strong></td></tr>`).join('')}</tbody></table></div>
     <div class="card"><h3>${L('כללי רישום','Posting rules')}</h3>${opt('auto','לרשום אוטומטית חשבוניות שאושרו','Post approved bills automatically')}${opt('tag',`לתייג כל שורה לפי הטיול (${term(p,'trip')})`,`Tag every line with the trip (${term(p,'trip',1)})`)}${opt('credit',`ליצור ${term(p,'credit')} כשמתקבל זיכוי`,`Create a ${term(p,'credit',1)} when a dispute is credited`)}
      <p class="st-note">${L('חשבונית עם פער פתוח לא נרשמת לתשלום עד שהיא מטופלת.','A bill with an open gap is held from payment until it is handled.')}</p></div></div>
    <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h3 style="margin:0">${L('יומן סנכרון','Sync log')}</h3><button class="btn sm" data-act="go" data-v="gaps">${L('לבקרת החשבוניות','Open invoice check')}</button></div>
@@ -81,7 +81,7 @@ function vBooks(){
     <p class="st-note">${L('אשרו, שלחו דרישה או רשמו זיכוי בכרטיס פער, והפעולה תופיע כאן ובמערכת הנהלת החשבונות.','Accept, dispute or credit a gap card and the entry appears here and in your accounting system.')}</p></div>`;
 }
 /* sync chip on the trip's finance tabs */
-function acChip(t){const a=A();if(a.phase!=='synced'||t.stage==='Quote')return '';return `<div class="ac-chip">${acBadge(a.sys)}<span>${L(`מסונכרן עם ${an(a.sys,'short')}`,`Synced with ${an(a.sys,'short')}`)} · ${term(ACCT[a.sys],'trip')}: <strong>${esc(t.name)}</strong></span>${PILOT()}</div>`;}
+function acChip(t){const a=A();if(a.phase!=='synced'||t.stage==='Quote')return '';return `<div class="ac-chip">${acBadge(a.sys)}<span>${L(`מסונכרן עם ${an(a.sys,'short')}`,`Synced with ${an(a.sys,'short')}`)} · ${L('מתויג לטיול',term(ACCT[a.sys],'trip')+':')} <strong>${esc(t.name)}</strong></span>${PILOT()}</div>`;}
 {const f0=pFinDash,t0=pTripFin;pFinDash=function(t){return acChip(t)+f0(t);};pTripFin=function(t){return acChip(t)+t0(t);};}
 /* your numbers: what this leak rate would mean for the visitor's agency (illustration) */
 function yourNumbers(){
@@ -98,8 +98,8 @@ QS.push(
  {g:1,he:'איזה סוג קבוצה מאבד הכי הרבה רווח?',en:'Which group type leaks the most profit?',r:/(group type|segment|סוג קבוצה).*(leak|lose|דלי|מאבד)/,f:()=>{const M=leakModel(visibleTrips()),rs=leakRows(M,'seg').filter(r=>r.leak>0);
    return rs.length?{t:L(`${rs[0].label}: ${usd(rs[0].leak)} דלפו, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} מהרווח המתוכנן.\n`,`${rs[0].label}: ${usd(rs[0].leak)} leaked, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} of planned profit.\n`)+listL(rs.slice(1,4).map(r=>`${r.label}: ${usd(r.leak)}`))}:{t:L('אף סוג קבוצה לא איבד רווח.','No group type has lost profit.')};}},
  {g:0,he:'מה ייבאנו ממערכת הנהלת החשבונות?',en:'What did we import from our accounting system?',r:/(accounting|quickbooks|xero|priority|hashavshevet|books|הנהלת ה?חשבונות|פריוריטי|חשבשבת).*(import|sync|ייב|יבא|סנכר)|(import|ייב).*(accounting|books|הנהלת ה?חשבונות)/,f:()=>{const a=A(),s=acStats();
-   return a.phase==='synced'?{t:L(`מ${an(a.sys,'short')}: ${s.bills} חשבוניות ספק, ${s.vend} ספקים ו-${s.trips} טיולים מתויגים. ${s.matched} חשבוניות תואמו בלי מגע יד, ונמצאו ${s.gapN} פערים בסך ${usd(s.gap)}.`,`From ${an(a.sys,'short')}: ${s.bills} supplier bills, ${s.vend} suppliers and ${s.trips} tagged trips. ${s.matched} bills matched with no touch, and ${s.gapN} gaps worth ${usd(s.gap)} were found.`),btn:{label:L('לסנכרון','Open accounting sync'),act:'go',v:'books'}}
-     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר QuickBooks, Xero, פריוריטי או חשבשבת (פיילוט).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (pilot).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
+   return a.phase==='synced'?{t:L(`מ${an(a.sys,'short')}: ${s.bills} חשבוניות ספק, ${s.vend} ספקים ו-${s.trips} טיולים מתויגים. ${s.matched} חשבוניות תואמו בלי מגע יד, ונמצאו ${s.gapN} פערים בסך ${usd(s.gap)}.`,`From ${an(a.sys,'short')}: ${s.bills} supplier bills, ${s.vend} suppliers and ${s.trips} tagged trips. ${s.matched} bills matched with no touch, and ${s.gapN} gap${(s.gapN)===1?'':'s'} worth ${usd(s.gap)} were found.`),btn:{label:L('לסנכרון','Open accounting sync'),act:'go',v:'books'}}
+     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר את פריוריטי, חשבשבת, QuickBooks או Xero (פיילוט).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (pilot).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
 QS.slice(-3).forEach((q,i)=>{q.id=QS.length-2+i;});
 QORDER.unshift(QS.length-2,QS.length-1,QS.length);
 /* wiring */
