@@ -38,3 +38,17 @@ NAV2.push(['status',['מה זמין היום','What\'s live'],ic('checklist')]);
   if(!f||h.indexOf('<div class="ph">')!==0)return h;const tag=stPill(f[1]);
   const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
   return hd+h.slice(e);};});
+/* photo credits: every embedded photo with author, license and source (CC BY / BY-SA need this) */
+function vCredits(){
+  const cr=typeof PHOTO_CREDITS!=='undefined'?PHOTO_CREDITS:[],kn={dest:L('יעדים','Destinations'),venue:L('אתרים ופעילויות','Venues and activities'),hotel:L('מלונות','Hotels')};
+  const it=c=>`<div class="cr-it">${phImg(c.kind,c.id,'','')}<div><strong><bdi>${esc(c.title.replace(/^File:/,'').replace(/\.[a-z]+$/i,''))}</bdi></strong><br>${esc(c.author)} · ${c.license_url?`<a href="${esc(c.license_url)}" target="_blank" rel="noopener">${esc(c.license)}</a>`:esc(c.license)}${c.source_url?` · <a href="${esc(c.source_url)}" target="_blank" rel="noopener">${L('מקור','Source')}</a>`:''}</div></div>`;
+  const sec=k=>{const xs=cr.filter(c=>c.kind===k);return xs.length?`<div class="card"><h3>${kn[k]} <span class="small muted">· ${xs.length}</span></h3><div class="cr-grid">${xs.map(it).join('')}</div></div>`:'';};
+  return head(L('קרדיט לתמונות','Photo credits'))+`<p class="muted">${L('התמונות מ-Wikimedia Commons, ברישיונות פתוחים. תמונה של מלון או אתר מציגה את המקום עצמו; היא לא מעידה על שיתוף פעולה עם בעליו.','Photos from Wikimedia Commons under open licenses. A photo of a hotel or venue shows the place itself; it does not imply any partnership with its owner.')}</p>${cr.length?['dest','venue','hotel'].map(sec).join(''):`<p class="muted">${L('אין תמונות בגרסה הזו.','No photos in this build.')}</p>`}`;
+}
+VIEWS.credits=vCredits;
+function creditsMenu(){
+  if(!document.querySelector)return;const m=document.querySelector('.menu');if(!m||m.querySelector('[data-act="go"][data-v="credits"]'))return;
+  const b=document.createElement('button');b.setAttribute('role','menuitem');b.dataset.act='go';b.dataset.v='credits';b.innerHTML=ic('document')+' '+trHe(L('קרדיט לתמונות','Photo credits'));
+  m.insertBefore(b,m.querySelector('[data-act="reset"]'));
+}
+{const r0=render;render=function(){r0();try{creditsMenu();}catch(e){}};}

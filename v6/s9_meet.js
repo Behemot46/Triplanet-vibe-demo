@@ -120,10 +120,28 @@ const IDLE_MS=240000,IDLE_WARN=15;let IDLE_AT=Date.now(),IDLE_LEFT=0;
 function idleBump(){IDLE_AT=Date.now();if(IDLE_LEFT){IDLE_LEFT=0;const el=document.getElementById('idlewarn');if(el)el.remove();}}
 ['pointerdown','keydown','wheel','touchstart'].forEach(ev=>document.addEventListener(ev,idleBump,{passive:true,capture:true}));
 if(typeof setInterval==='function'&&document.body)setInterval(()=>{
-  if(Date.now()-IDLE_AT<IDLE_MS)return;
+  if(Date.now()-IDLE_AT<IDLE_MS||document.getElementById('attract'))return;
   if(!IDLE_LEFT)IDLE_LEFT=IDLE_WARN+1;IDLE_LEFT--;
   let el=document.getElementById('idlewarn');
   if(IDLE_LEFT>0){if(!el){el=document.createElement('div');el.id='idlewarn';el.setAttribute('role','status');document.body.appendChild(el);}
     el.innerHTML=trHe(L(`הדמו יתאפס בעוד ${IDLE_LEFT} שניות. נגיעה כלשהי תעצור.`,`The demo resets in ${IDLE_LEFT} s. Touch anything to keep it.`));return;}
-  if(el)el.remove();IDLE_AT=Date.now();clearInterval(MEET_TICK);resetDemo();S.tab='home';window.scrollTo(0,0);render();
+  if(el)el.remove();IDLE_AT=Date.now();clearInterval(MEET_TICK);resetDemo();S.tab='home';window.scrollTo(0,0);render();attractShow();
 },1000);
+
+/* attract screen: the HyperFrames booth loop, full screen and muted, after an idle reset or from the menu.
+   Any touch, click or key closes it and leaves a clean Home. */
+function attractShow(){
+  if(typeof BOOTH_VIDEO==='undefined'||!document.body||document.getElementById('attract'))return;
+  const d=document.createElement('div');d.id='attract';d.setAttribute('role','dialog');d.setAttribute('aria-label',trHe(L('סרטון הדגמה','Booth video')));
+  d.innerHTML=`<video src="${BOOTH_VIDEO}" autoplay muted loop playsinline aria-hidden="true"></video><div class="at-cta">${trHe(L('נגעו במסך כדי להתחיל','Touch anywhere to start'))}</div>`;
+  document.body.appendChild(d);const v=d.querySelector('video');try{const p=v.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}
+  const close=ev=>{ev.preventDefault();ev.stopPropagation();d.remove();['pointerdown','keydown'].forEach(t=>document.removeEventListener(t,close,true));idleBump();};
+  setTimeout(()=>['pointerdown','keydown'].forEach(t=>document.addEventListener(t,close,true)),300);
+}
+function attractMenu(){
+  if(!document.querySelector||typeof BOOTH_VIDEO==='undefined')return;const m=document.querySelector('.menu');if(!m||m.querySelector('[data-act="attract"]'))return;
+  const b=document.createElement('button');b.setAttribute('role','menuitem');b.dataset.act='attract';b.innerHTML=ic('play')+' '+trHe(L('הפעלת סרטון הביתן','Play booth video'));
+  m.insertBefore(b,m.querySelector('[data-act="reset"]'));
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="attract"]');if(!b)return;S.menu=false;render();setTimeout(attractShow,50);});
+{const r0=render;render=function(){r0();try{attractMenu();}catch(e){}};}

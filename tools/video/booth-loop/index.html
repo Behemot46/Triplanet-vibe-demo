@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!-- Triplanet booth loop: the demo's story in 31 seconds, for the booth screen.
+         Figures are the demo's fictional agency (New England Fall Foliage trip, build 409ddf4). -->
+    <link rel="stylesheet" href="assets/fonts.css" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      :root {
+        --navy: #012972; --dark: #0351AB; --primary: #078DEE; --light: #68CDF9;
+        --mint: #5DFCE0; --ink: #1C252E; --muted: #637381; --line: #E9ECEE;
+        --red: #FF5630; --green: #22C55E; --paper: #ffffff;
+        --ui: 'Public Sans', system-ui, sans-serif; --num: 'Barlow', 'Public Sans', sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--navy); }
+      #root { position: relative; width: 1920px; height: 1080px; font-family: var(--ui); color: #fff;
+        background: radial-gradient(1200px 700px at 78% 12%, rgba(104,205,249,.28), transparent 60%), linear-gradient(135deg, #012972 0%, #0351AB 100%); }
+      .clip { position: absolute; inset: 0; }
+      .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .logo { width: 560px; filter: brightness(0) invert(1); }
+      .kicker { font: 600 30px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--mint); }
+      .big { font: 800 112px/1.05 var(--ui); letter-spacing: -0.035em; }
+      .mid { font: 700 64px/1.1 var(--ui); letter-spacing: -0.02em; }
+      .mint { color: var(--mint); }
+      .fine { position: absolute; left: 96px; bottom: 50px; font: 500 28px var(--ui); color: rgba(255,255,255,.62); }
+      /* invoice inbox card */
+      .card { background: var(--paper); color: var(--ink); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,.28); }
+      #inbox { left: 96px; top: 210px; width: 1060px; padding: 40px 44px; position: absolute; }
+      #inbox h3 { font: 700 34px var(--ui); margin-bottom: 6px; }
+      #inbox .sub { font: 500 28px var(--ui); color: var(--muted); margin-bottom: 22px; }
+      .row { display: flex; align-items: center; gap: 18px; padding: 14px 20px; border: 1px solid var(--line); border-radius: 14px; margin-top: 10px; font: 500 28px var(--ui); }
+      .pdf { font: 800 20px var(--ui); color: #fff; background: #C4320A; border-radius: 6px; padding: 5px 9px; letter-spacing: .04em; }
+      .row .name { flex: 1; }
+      .row .st { font: 700 28px var(--ui); color: var(--red); }
+      .row .st.ok { color: #118D57; }
+      #counter { position: absolute; left: 1230px; top: 300px; width: 600px; }
+      #counter .lbl { font: 600 30px var(--ui); color: rgba(255,255,255,.75); }
+      #counter .v { font: 800 168px/1 var(--num); color: var(--mint); letter-spacing: -0.02em; margin-top: 10px; }
+      #counter .s { font: 500 30px/1.35 var(--ui); color: #DCEBFA; margin-top: 18px; }
+      .h2 { position: absolute; left: 96px; top: 96px; font: 800 68px/1.1 var(--ui); letter-spacing: -0.025em; }
+      /* bridge */
+      #bridge { position: absolute; left: 96px; top: 250px; width: 1728px; height: 640px; padding: 40px 48px; }
+      .bar { position: absolute; border-radius: 10px 10px 4px 4px; }
+      .bar.total { background: var(--primary); }
+      .bar.exp { background: #118D57; }
+      .bar.leak { background: var(--red); border-radius: 6px; }
+      .blabel { position: absolute; width: 200px; text-align: center; font: 600 28px/1.2 var(--ui); color: var(--muted); }
+      .bval { position: absolute; width: 190px; text-align: center; font: 800 30px var(--num); color: var(--ink); }
+      .bval.neg { color: var(--red); }
+      .base { position: absolute; left: 48px; right: 48px; height: 2px; background: var(--line); }
+      /* dispute + books */
+      #mail { position: absolute; left: 96px; top: 250px; width: 980px; padding: 40px 44px; }
+      #mail .hdr { font: 600 28px var(--ui); color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px; }
+      #mail .hdr b { color: var(--ink); }
+      #mail p { font: 500 34px/1.45 var(--ui); color: var(--ink); margin-top: 10px; }
+      #mail .amt { color: var(--red); font-weight: 800; }
+      #mail .btn { display: inline-block; margin-top: 26px; background: var(--ink); color: #fff; font: 700 24px var(--ui); padding: 14px 26px; border-radius: 12px; }
+      #books { position: absolute; left: 1170px; top: 270px; width: 660px; }
+      #books .lbl { font: 600 28px var(--ui); color: rgba(255,255,255,.75); margin-bottom: 22px; }
+      .chip { display: flex; align-items: center; gap: 18px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 16px; padding: 18px 22px; margin-bottom: 14px; font: 700 30px var(--ui); }
+      .chip i { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font: 800 22px var(--ui); font-style: normal; color: #fff; }
+      .chip .p { margin-left: auto; font: 700 28px var(--ui); color: var(--navy); background: var(--light); border-radius: 8px; padding: 5px 10px; }
+      .plane { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 24px 6px rgba(93,252,224,.55); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="31" data-width="1920" data-height="1080">
+
+      <!-- A. logo -->
+      <div id="sA" class="clip center" data-start="0" data-duration="4.6" data-track-index="0">
+        <img class="logo" src="assets/logo.png" alt="Triplanet" />
+        <div id="aSub" class="kicker" style="margin-top:34px">For group tour operators</div>
+        <div id="aDot" class="plane" style="left:640px;top:610px"></div>
+      </div>
+
+      <!-- B. hook -->
+      <div id="sB" class="clip center" data-start="4.6" data-duration="5.6" data-track-index="0">
+        <div id="b1" class="big">Your hotel bills 23 rooms.</div>
+        <div id="b2" class="big" style="margin-top:14px">Your rooming list says 22.</div>
+        <div id="b3" class="mid mint" style="margin-top:56px">Who catches it?</div>
+      </div>
+
+      <!-- C. invoices read -->
+      <div id="sC" class="clip" data-start="10.2" data-duration="7.6" data-track-index="0">
+        <div id="cH" class="h2">Six supplier invoices, read in seconds.</div>
+        <div id="inbox" class="card">
+          <h3>New England Fall Foliage</h3>
+          <div class="sub">42 travelers · back home · invoices matched to the quote, line by line</div>
+          <div class="row" id="r1"><span class="pdf" data-layout-ignore>PDF</span><span class="name">MapleRidgeInn_INV-20931.pdf</span><span class="st">2 gaps · $2,148</span></div>
+          <div class="row" id="r2"><span class="pdf" data-layout-ignore>PDF</span><span class="name">YankeeCoach_INV-55120.pdf</span><span class="st">1 gap · $406</span></div>
+          <div class="row" id="r3"><span class="pdf" data-layout-ignore>PDF</span><span class="name">FoliageStepOn_INV-0412.pdf</span><span class="st ok">matches the quote</span></div>
+          <div class="row" id="r4"><span class="pdf" data-layout-ignore>PDF</span><span class="name">FoliageStepOn_INV-0412 (1).pdf</span><span class="st">duplicate · $780</span></div>
+          <div class="row" id="r5"><span class="pdf" data-layout-ignore>PDF</span><span class="name">NotchRailroad_7781.pdf</span><span class="st">1 gap · $280</span></div>
+          <div class="row" id="r6"><span class="pdf" data-layout-ignore>PDF</span><span class="name">MaineCoastBakes_1093.pdf</span><span class="st">1 gap · $432</span></div>
+        </div>
+        <div id="counter">
+          <div class="lbl">Overbilled on one trip</div>
+          <div class="v" id="cv">$0</div>
+          <div class="s">Rooms over the rooming list, a driver room that should be free, a duplicate invoice.</div>
+        </div>
+        <div class="fine">Demo data: a fictional agency and fictional suppliers.</div>
+      </div>
+
+      <!-- D. bridge: planned to expected profit -->
+      <div id="sD" class="clip" data-start="17.8" data-duration="5.8" data-track-index="0">
+        <div id="dH" class="h2">Where did the profit go?</div>
+        <div id="bridge" class="card"><div id="dCall" style="position:absolute;right:52px;top:36px;font:800 40px var(--num);color:var(--red)">-$4,046 <span style="font:600 28px var(--ui);color:var(--muted)">26% of planned profit, on one trip</span></div></div>
+        <div class="fine">New England Fall Foliage · planned profit to expected profit · demo data</div>
+      </div>
+
+      <!-- E. dispute + books -->
+      <div id="sE" class="clip" data-start="23.6" data-duration="3.8" data-track-index="0">
+        <div id="eH" class="h2">One click drafts the dispute.</div>
+        <div id="mail" class="card">
+          <div class="hdr">To: <b>Maple Ridge Inn</b> · Re: invoice INV-20931</div>
+          <p>Please credit <span class="amt">$2,148</span>: rooms over our list, comp driver room.</p>
+          <div class="btn">Send dispute</div>
+        </div>
+        <div id="books">
+          <div class="lbl">Posted back to your books</div>
+          <div class="chip" id="k1"><i data-layout-ignore style="background:#2E7D32">QB</i>QuickBooks<span class="p">Pilot</span></div>
+          <div class="chip" id="k2"><i data-layout-ignore style="background:#0E7FA8">X</i>Xero<span class="p">Pilot</span></div>
+          <div class="chip" id="k3"><i data-layout-ignore style="background:#6B3FA0">P</i>Priority<span class="p">Pilot</span></div>
+          <div class="chip" id="k4"><i data-layout-ignore style="background:#1F5FA8">H</i>Hashavshevet<span class="p">Pilot</span></div>
+        </div>
+      </div>
+
+      <!-- F. close -->
+      <div id="sF" class="clip center" data-start="27.4" data-duration="3.6" data-track-index="0">
+        <div id="f1" class="big" style="font-size:104px">Find the money your<br />suppliers owe you.</div>
+        <div id="f2" class="mid mint" style="margin-top:44px;font-size:52px">Free 90-day leak audit. Ask us at the booth.</div>
+        <img id="f3" class="logo" src="assets/logo.png" alt="Triplanet" style="width:360px;margin-top:72px" />
+      </div>
+    </div>
+
+    <script>
+      /* waterfall geometry, deterministic: planned 15,338 minus six gaps = expected 11,292 */
+      const steps = [
+        ["Planned profit", 15338, "total"],
+        ["Rooms over rooming list", -1374, "leak"],
+        ["Duplicate invoice", -780, "leak"],
+        ["Driver room not comped", -774, "leak"],
+        ["Quantity over quote", -432, "leak"],
+        ["Fuel surcharge", -406, "leak"],
+        ["Rate above contract", -280, "leak"],
+        ["Expected profit", 11292, "exp"],
+      ];
+      const B = document.getElementById("bridge");
+      const W = 1728 - 96, T0 = 120, chartH = 340, base = T0 + chartH, colW = W / steps.length;
+      const k = chartH / 15338;
+      const fmt = (v) => (v < 0 ? "-$" : "$") + Math.abs(v).toLocaleString("en-US");
+      let run = 0;
+      steps.forEach(([label, v, kind], i) => {
+        const x = 48 + i * colW + (colW - 150) / 2;
+        let y, h;
+        if (kind === "total") { h = v * k; y = base - h; run = v; }
+        else if (kind === "exp") { h = v * k; y = base - h; }
+        else { const before = run; run += v; h = -v * k; y = base - before * k; }
+        const bar = document.createElement("div");
+        bar.className = "bar " + kind; bar.id = "bar" + i;
+        Object.assign(bar.style, { left: x + "px", top: y + "px", width: "150px", height: Math.max(h, 4) + "px", transformOrigin: kind === "leak" ? "top" : "bottom" });
+        B.appendChild(bar);
+        const val = document.createElement("div");
+        val.className = "bval" + (kind === "leak" ? " neg" : ""); val.id = "val" + i;
+        Object.assign(val.style, { left: x - 20 + "px", top: (kind === "leak" ? y + h + 8 : y - 44) + "px" });
+        val.textContent = fmt(v); B.appendChild(val);
+        const lab = document.createElement("div");
+        lab.className = "blabel"; lab.textContent = label;
+        Object.assign(lab.style, { left: x - 20 + "px", top: base + 22 + "px" });
+        B.appendChild(lab);
+      });
+      const ln = document.createElement("div"); ln.className = "base"; ln.style.top = base + "px"; B.appendChild(ln);
+
+      const tl = gsap.timeline({ paused: true });
+      /* A */
+      tl.fromTo("#sA .logo", { scale: 0.96 }, { scale: 1, duration: 1.2, ease: "power3.out" }, 0);
+      tl.fromTo("#aSub", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.9);
+      tl.fromTo("#aDot", { x: 0, y: 0, opacity: 0 }, { x: 640, y: -40, opacity: 1, duration: 2.4, ease: "power1.inOut" }, 1.2);
+      tl.to("#sA", { opacity: 0, duration: 0.4 }, 4.2);
+      /* B */
+      tl.fromTo("#b1", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 4.7);
+      tl.fromTo("#b2", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 6.0);
+      tl.fromTo("#b3", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 7.6);
+      tl.to("#sB", { opacity: 0, duration: 0.4 }, 9.8);
+      /* C */
+      tl.fromTo("#cH", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5 }, 10.3);
+      tl.fromTo("#inbox", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 10.4);
+      ["#r1", "#r2", "#r3", "#r4", "#r5", "#r6"].forEach((r, i) => tl.fromTo(r, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }, 11.0 + i * 0.55));
+      tl.fromTo("#counter", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5 }, 11.0);
+      const cnt = { v: 0 }, cv = document.getElementById("cv");
+      tl.fromTo(cnt, { v: 0 }, { v: 4046, duration: 3.4, ease: "power2.out", onUpdate: () => { cv.textContent = "$" + Math.round(cnt.v).toLocaleString("en-US"); } }, 11.2);
+      tl.to("#sC", { opacity: 0, duration: 0.4 }, 17.4);
+      /* D */
+      tl.fromTo("#dH", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5 }, 17.9);
+      tl.fromTo("#bridge", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5 }, 17.95);
+      steps.forEach((s, i) => {
+        tl.fromTo("#bar" + i, { scaleY: 0 }, { scaleY: 1, duration: 0.4, ease: "power2.out" }, 18.4 + i * 0.42);
+        tl.fromTo("#val" + i, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 18.6 + i * 0.42);
+      });
+      tl.fromTo("#dCall", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, 21.6);
+      tl.to("#sD", { opacity: 0, duration: 0.4 }, 23.2);
+      /* E */
+      tl.fromTo("#eH", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45 }, 23.7);
+      tl.fromTo("#mail", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 23.8);
+      ["#k1", "#k2", "#k3", "#k4"].forEach((c, i) => tl.fromTo(c, { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35 }, 24.5 + i * 0.3));
+      tl.to("#sE", { opacity: 0, duration: 0.4 }, 27.0);
+      /* F */
+      tl.fromTo("#f1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 27.5);
+      tl.fromTo("#f2", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 27.8);
+      tl.fromTo("#f3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 }, 28.4);
+      tl.to("#sF", { opacity: 0, duration: 0.35 }, 30.6);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -14,7 +14,7 @@ function vHome(){
   const up=ts.filter(t=>D(t.dep)>=TODAY).sort((a,b)=>D(a.dep)-D(b.dep)).slice(0,7);
   let lastD='',ev='';
   up.forEach(t=>{if(t.dep!==lastD){lastD=t.dep;ev+=`<div class="evh">${fmtDate(t.dep)}</div>`;}
-    ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span><a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
+    ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span>${phImg('dest',t.dest,'ev-ph','')}<a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
   const won=c(t=>t.stage!=='Quote'),lost=S.role==='manager'?3:0;
   const H=[['2023',9,4],['2024',11,5],['2025',12,3],['2026',won,lost]];
   const mx=Math.max(...H.map(h=>Math.max(h[1],h[2])),1);

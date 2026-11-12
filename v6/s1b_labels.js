@@ -69,3 +69,7 @@ function alertsFor(ts,thresh){
   ts.filter(t=>t.stage==='Quote'&&t.qst==='Sent'&&t.qdays>14).forEach(t=>A.push({sev:'info',txt:L(`ההצעה ל-${t.name} ממתינה ${t.qdays} ימים לתשובת הלקוח.`,`The quote for ${t.name} has waited ${t.qdays} days for the client.`),trip:t.id,pt:'approve'}));
   return A;
 }
+
+/* real photos (Wikimedia Commons, see Photo credits); empty string when none, so callers fall back */
+const phSrc=(k,id)=>(typeof PHOTOS!=='undefined'&&PHOTOS[k]&&PHOTOS[k][id])||'';
+const phImg=(k,id,cls,alt)=>{const u=phSrc(k,id);return u?`<img class="${cls||'ph'}" src="${u}" alt="${alt?esc(alt):''}" loading="lazy" decoding="async">`:'';};

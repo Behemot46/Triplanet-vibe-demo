@@ -1,3 +1,6 @@
 tools/geo/node_modules/
 shots/
 tools/brand/node_modules/
+tools/video/node_modules/
+tools/video/booth-loop/.hyperframes/
+tools/photos/raw/
