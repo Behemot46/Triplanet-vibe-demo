@@ -15,6 +15,94 @@
    "license": "CC0",
    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
    "source_url": "https://commons.wikimedia.org/wiki/File:Colosseum_of_Rome_and_Roman_forum.jpg"
+  },
+  "Greece": {
+   "file": "out/dest/Greece.webp",
+   "title": "File:Attica 06-13 Athens 50 View from Philopappos - Acropolis Hill.jpg",
+   "author": "A.Savin",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Attica_06-13_Athens_50_View_from_Philopappos_-_Acropolis_Hill.jpg"
+  },
+  "Ireland": {
+   "file": "out/dest/Ireland.webp",
+   "title": "File:CliffsofMoher 001.jpg",
+   "author": "Höstblomma",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:CliffsofMoher_001.jpg"
+  },
+  "Niagara": {
+   "file": "out/dest/Niagara.webp",
+   "title": "File:Horseshoe Falls (Niagara Falls).jpg",
+   "author": "Maksimsokolov",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Horseshoe_Falls_(Niagara_Falls).jpg"
+  },
+  "Washington": {
+   "file": "out/dest/Washington.webp",
+   "title": "File:Lincoln Memorial Reflecting Pool With The Washington Monument.jpg",
+   "author": "Ali Khan",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Lincoln_Memorial_Reflecting_Pool_With_The_Washington_Monument.jpg"
+  },
+  "London": {
+   "file": "out/dest/London.webp",
+   "title": "File:River Thames viewed from the Tower Bridge.jpg",
+   "author": "APK",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:River_Thames_viewed_from_the_Tower_Bridge.jpg"
+  },
+  "Canyon": {
+   "file": "out/dest/Canyon.webp",
+   "title": "File:Grand Canyon Hopi Point with rainbow 2013.jpg",
+   "author": "Tuxyso",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Grand_Canyon_Hopi_Point_with_rainbow_2013.jpg"
+  },
+  "NewYork": {
+   "file": "out/dest/NewYork.webp",
+   "title": "File:Lower Manhattan from Governors Island with a fishing boat (46294p).jpg",
+   "author": "Rhododendrites",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Lower_Manhattan_from_Governors_Island_with_a_fishing_boat_(46294p).jpg"
+  },
+  "Smokies": {
+   "file": "out/dest/Smokies.webp",
+   "title": "File:Meadow in the Smoky Mountains (41923p).jpg",
+   "author": "Rhododendrites",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Meadow_in_the_Smoky_Mountains_(41923p).jpg"
+  },
+  "SanAntonio": {
+   "file": "out/dest/SanAntonio.webp",
+   "title": "File:River walk with tower.jpg",
+   "author": "Larry D. Moore",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:River_walk_with_tower.jpg"
+  },
+  "Chicago": {
+   "file": "out/dest/Chicago.webp",
+   "title": "File:Skyline de Chicago desde el centro, Illinois, Estados Unidos, 2012-10-20, DD 06.jpg",
+   "author": "Diego Delso",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Skyline_de_Chicago_desde_el_centro,_Illinois,_Estados_Unidos,_2012-10-20,_DD_06.jpg"
+  },
+  "Nashville": {
+   "file": "out/dest/Nashville.webp",
+   "title": "File:Nashville, TN skyline.jpg",
+   "author": "Quintin Soloviev",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source_url": "https://commons.wikimedia.org/wiki/File:Nashville,_TN_skyline.jpg"
   }
  },
  "venue": {},

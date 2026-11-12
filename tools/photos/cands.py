@@ -1,7 +1,7 @@
 import sys,json,os,time,subprocess,re
 from find import *
 from PIL import Image,ImageDraw
-BAD=re.compile(r'map|logo|diagram|plan\b|poster|stamp|coat of arms|flag|icon|ticket|brochure|sign\b|interior|detail|panorama of|crowd|concert|night|logo|schematic|drawing|painting|engraving|print|postcard|1[0-9]{3}\b',re.I)
+BAD=re.compile(r'\bmaps?\b|logo|diagram|\bplan\b|poster|stamp|coat of arms|\bflag\b|\bicon\b|ticket|brochure|schematic|drawing|painting|engraving|postcard|\.svg|\bmenu\b',re.I)
 def thumbdl(url,path):
     if os.path.exists(path) and os.path.getsize(path)>1000: return True
     for i in range(3):

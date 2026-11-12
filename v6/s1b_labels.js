@@ -73,3 +73,8 @@ function alertsFor(ts,thresh){
 /* real photos (Wikimedia Commons, see Photo credits); empty string when none, so callers fall back */
 const phSrc=(k,id)=>(typeof PHOTOS!=='undefined'&&PHOTOS[k]&&PHOTOS[k][id])||'';
 const phImg=(k,id,cls,alt)=>{const u=phSrc(k,id);return u?`<img class="${cls||'ph'}" src="${u}" alt="${alt?esc(alt):''}" loading="lazy" decoding="async">`:'';};
+/* a photo for a named site (a catalog venue whose name matches), else its destination's photo */
+const phVenueBy=name=>{if(typeof PHOTOS==='undefined'||!name||typeof CATALOG==='undefined')return '';const n=String(name).toLowerCase();
+  const v=CATALOG.venues.find(v=>PHOTOS.venue[v.id]&&(n.includes(v.name.toLowerCase())||v.name.toLowerCase().includes(n)));return v?PHOTOS.venue[v.id]:'';};
+const phFor=(name,dest)=>phVenueBy(name)||phSrc('dest',dest);
+const phBg=(u,fb)=>u?`background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.38)),url(${u}) center/cover`:fb;
