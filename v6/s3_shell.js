@@ -29,6 +29,16 @@ const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
+/* Save a generated text file. Inside a published claude.ai page the viewer's "downloads" permission is used
+   (the viewer confirms); on the booth laptop (plain file) a normal browser download is used. Resolves 'saved',
+   'declined' or 'failed'. */
+async function saveFile(name,text,mime){
+  try{if(typeof window!=='undefined'&&window.claude&&typeof window.claude.use==='function'){const d=await window.claude.use('downloads');
+    if(d){try{await d.save({filename:name,data:text});return 'saved';}catch(e){if(e&&e.code==='declined')return 'declined';}}}}catch(e){}
+  try{const u=URL.createObjectURL(new Blob([text],{type:mime||'text/plain;charset=utf-8'})),a=document.createElement('a');
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>{try{URL.revokeObjectURL(u);}catch(e){}},1000);return 'saved';}catch(e){return 'failed';}
+}
+const saveToast=r=>toast(r==='saved'?L('הקובץ נשמר','The file was saved'):r==='declined'?L('השמירה בוטלה','Save canceled'):L('לא ניתן לשמור כאן. נסו בדפדפן.','Saving is not available here. Try in a browser.'));
 async function copy(text){try{await navigator.clipboard.writeText(trHe(text));toast(L('הועתק','Copied'));}catch(e){toast(L('סמנו והעתיקו ידנית','Select and copy manually'));}}
 const noTrip=()=>`<div class="card"><h2>${L('אין כאן טיולים','No trips here')}</h2><p class="muted">${L('סוכנים רואים רק את התיקים שלהם. עברו לתצוגת מנהל כדי לראות הכול.','Agents only see their own files. Switch to the manager view to see everything.')}</p></div>`;
 const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אישור ההצעה','opens after the quote is accepted')}</h2><p class="muted">${esc(t.name)} ${L('עדיין בשלב הצעה','is still a quote')} (${qn(t.qst)}). ${L('אישור ההצעה יוצר קבוצות חיוב, רשימת משימות ואישורי ספקים.','Accepting the quote creates billing groups, a task list and supplier confirmations.')}</p><button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button></div>`;

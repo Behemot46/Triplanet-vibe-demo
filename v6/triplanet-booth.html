@@ -3492,6 +3492,16 @@ const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
+/* Save a generated text file. Inside a published claude.ai page the viewer's "downloads" permission is used
+   (the viewer confirms); on the booth laptop (plain file) a normal browser download is used. Resolves 'saved',
+   'declined' or 'failed'. */
+async function saveFile(name,text,mime){
+  try{if(typeof window!=='undefined'&&window.claude&&typeof window.claude.use==='function'){const d=await window.claude.use('downloads');
+    if(d){try{await d.save({filename:name,data:text});return 'saved';}catch(e){if(e&&e.code==='declined')return 'declined';}}}}catch(e){}
+  try{const u=URL.createObjectURL(new Blob([text],{type:mime||'text/plain;charset=utf-8'})),a=document.createElement('a');
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>{try{URL.revokeObjectURL(u);}catch(e){}},1000);return 'saved';}catch(e){return 'failed';}
+}
+const saveToast=r=>toast(r==='saved'?L('הקובץ נשמר','The file was saved'):r==='declined'?L('השמירה בוטלה','Save canceled'):L('לא ניתן לשמור כאן. נסו בדפדפן.','Saving is not available here. Try in a browser.'));
 async function copy(text){try{await navigator.clipboard.writeText(trHe(text));toast(L('הועתק','Copied'));}catch(e){toast(L('סמנו והעתיקו ידנית','Select and copy manually'));}}
 const noTrip=()=>`<div class="card"><h2>${L('אין כאן טיולים','No trips here')}</h2><p class="muted">${L('סוכנים רואים רק את התיקים שלהם. עברו לתצוגת מנהל כדי לראות הכול.','Agents only see their own files. Switch to the manager view to see everything.')}</p></div>`;
 const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אישור ההצעה','opens after the quote is accepted')}</h2><p class="muted">${esc(t.name)} ${L('עדיין בשלב הצעה','is still a quote')} (${qn(t.qst)}). ${L('אישור ההצעה יוצר קבוצות חיוב, רשימת משימות ואישורי ספקים.','Accepting the quote creates billing groups, a task list and supplier confirmations.')}</p><button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button></div>`;
@@ -7589,11 +7599,7 @@ function opCsv(t,lang){
   }finally{S.lang=l0;}
 }
 function opExportCsv(t){
-  try{
-    const b=new Blob(['﻿'+opCsv(t)],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');
-    a.href=u;a.download='master-list-'+t.no+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
-    toast(L('הקובץ ירד','The file was downloaded'));return true;
-  }catch(e){try{toast(L('לא ניתן להוריד כאן. נסו בדפדפן.','Download is not available here. Try in a browser.'));}catch(e2){}return false;}
+  try{saveFile('master-list-'+t.no+'.csv','\ufeff'+opCsv(t),'text/csv;charset=utf-8').then(saveToast);return true;}catch(e){return false;}
 }
 /* simulated import (A17): 5 rows that update fields of EXISTING travelers only; travelers, rooms and pax never change */
 function opImportPreview(t){
@@ -10864,7 +10870,7 @@ function leadsMenu(){
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="leadsx"]');if(!b)return;
   const rows=leadsGet();if(!rows.length){toast(L('אין עדיין לידים.','No leads yet.'));return;}
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',csv=['at,name,agency,email,system,lang',...rows.map(r=>[r.at,r.name,r.agency,r.email,r.system,r.lang].map(q).join(','))].join('\n');
-  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='triplanet-booth-leads.csv';document.body.appendChild(a);a.click();a.remove();toast(L(`${rows.length} לידים יוצאו`,`${rows.length} leads exported`));}catch(err){toast(L('הייצוא לא נתמך כאן. פתחו את הקובץ המקומי.','Export is not available here. Open the offline file.'));}});
+  saveFile('triplanet-booth-leads.csv',csv,'text/csv;charset=utf-8').then(r=>{if(r==='saved')toast(L(`${rows.length} לידים יוצאו`,`${rows.length} leads exported`));else saveToast(r);});});
 
 /* booth kiosk: after 4 idle minutes, warn for 15 seconds, then reset to a clean Home.
    Any key, click or touch cancels. Booth leads are kept. */

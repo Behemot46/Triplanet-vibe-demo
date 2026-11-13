@@ -130,11 +130,7 @@ function opCsv(t,lang){
   }finally{S.lang=l0;}
 }
 function opExportCsv(t){
-  try{
-    const b=new Blob(['﻿'+opCsv(t)],{type:'text/csv;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');
-    a.href=u;a.download='master-list-'+t.no+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
-    toast(L('הקובץ ירד','The file was downloaded'));return true;
-  }catch(e){try{toast(L('לא ניתן להוריד כאן. נסו בדפדפן.','Download is not available here. Try in a browser.'));}catch(e2){}return false;}
+  try{saveFile('master-list-'+t.no+'.csv','\ufeff'+opCsv(t),'text/csv;charset=utf-8').then(saveToast);return true;}catch(e){return false;}
 }
 /* simulated import (A17): 5 rows that update fields of EXISTING travelers only; travelers, rooms and pax never change */
 function opImportPreview(t){

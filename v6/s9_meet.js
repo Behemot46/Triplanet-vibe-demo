@@ -112,7 +112,7 @@ function leadsMenu(){
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="leadsx"]');if(!b)return;
   const rows=leadsGet();if(!rows.length){toast(L('אין עדיין לידים.','No leads yet.'));return;}
   const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',csv=['at,name,agency,email,system,lang',...rows.map(r=>[r.at,r.name,r.agency,r.email,r.system,r.lang].map(q).join(','))].join('\n');
-  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='triplanet-booth-leads.csv';document.body.appendChild(a);a.click();a.remove();toast(L(`${rows.length} לידים יוצאו`,`${rows.length} leads exported`));}catch(err){toast(L('הייצוא לא נתמך כאן. פתחו את הקובץ המקומי.','Export is not available here. Open the offline file.'));}});
+  saveFile('triplanet-booth-leads.csv',csv,'text/csv;charset=utf-8').then(r=>{if(r==='saved')toast(L(`${rows.length} לידים יוצאו`,`${rows.length} leads exported`));else saveToast(r);});});
 
 /* booth kiosk: after 4 idle minutes, warn for 15 seconds, then reset to a clean Home.
    Any key, click or touch cancels. Booth leads are kept. */
