@@ -54,6 +54,8 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/s0_geo.js` - GENERATED map data (US, Europe, Levant, Italy, Isles, Greece, Ontario; 48 cities) plus `geoMap`/`geoViewFor`
 - `v6/s1_core.js` - data model, generators, finance math, invoice-gap logic, trip specs (TRIP_SPECS), inbox files (NEN_INBOX)
 - `v6/s1c_catalog.js` - real hotels (65), venues (82), airlines, BRANDS, 5 extra destinations (NewYork, Smokies, SanAntonio, Chicago, NewOrleans), DEST_CITIES routes. Every entry has a `src` URL; rates and costs are illustrative.
+- `v6/s1d_data.js` - (v8) SUPPLIERS: 344 suppliers (81 real: CATALOG hotels and 16 real attractions; the rest fictional, generated from name patterns, list in `SUP_FICT` for owner review), rate cards by season x pax band x variant (`rateCard`, `rateFor`), `altsFor(t,line)` alternatives anchored to the line's current cost, `incumbentOf`. Real suppliers carry no rating, reply time or invented documents.
+- `v6/s1e_people.js` - (v8) CLIENTS (24 incl. 10 prospects), STAFF (owner Ella Brooks, accountant Nora Kim, 6 agents with annual targets: illustrative, owner to confirm), ROLES, 40 PERMS in 9 groups, `can(perm)`, traveler extras (passport no/expiry, DOB, emergency contact, room type, form status), `blockOf(t)`.
 - `v6/s1b_labels.js` - labels, gap explanations, alerts
 - `v6/s2_i18n.js` - Hebrew-to-English translator (DICT, trHtml), English answers
 - `v6/s3_shell.js` - state, save/load/reset (localStorage key v7), navigation, render shell, Maya drawer, guided tour (TOUR), invoice-reading animation
@@ -80,6 +82,16 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens; Pilot = working in the demo, offered to pilot customers; Roadmap = not available.
 - `v6/s9c_live.js` - Maya live mode (see Hard constraints): settings card, `liveSnapshot()`, `liveSystem()`, streaming `liveAsk()`, scripted fallback. `check6.js` checks the snapshot (no NaN, no real brand in a gap, leak total ties).
 - `v6/s9d_maya.js` - Maya always at hand (since 13 Nov 2026): her AI-generated face (`AVATARS.Maya`) with an "AI" badge, one proactive tip per page computed from the data on screen (scripted logic, never labeled live), a one-tap fix for an overloaded trip-plan day (nearest day that fits, arrival and departure days last), "/" or Ctrl/Cmd+K to open her, and page-aware suggested questions. Tips are off in meeting mode, the tour, the attract screen and while her panel is open. check6 covers the tips in both languages and every plan fix.
+- v8 feature modules (spec `docs/spec-v8-parity.md`, builder rules `docs/v8-builder-brief.md`). Each module owns `v6/s10_<code>.js` + `v6/m_<code>.css`, plugs in through the hooks below, and registers its own tests:
+  - `s10_forms.js` - schema-driven forms engine and modal (`FORM_SCHEMAS`, `formOpen`, `formValidate`); entity forms for supplier, client, user, activity, hotel.
+  - `s10_fbuild.js` - form builder page (`VIEWS.forms`, from Settings) and the 4 traveler forms with responses and "send" links.
+  - `s10_prop.js` - proposal formats (PDF, agents table with group-size tiers and single supplement, landing page) and the overhead / brokerage fee card on Pricing.
+  - `s10_tbday.js` - trip plan view switch (By day / By components / Map), day details with Global and per-participant payment tables, save day as template, route map. Owns the only `pPlan` wrapper.
+  - `s10_tbcomp.js` - By components view with supplier alternatives and swap/undo (`tbSwap`, `tbUndo`), and the Versions tab (save, compare, restore).
+  - `s10_sup.js` - supplier list and card (rate card, terms, documents), in-trip Suppliers tab (Contact / Pending / Approved / Price comparison), client card with a finance tab.
+  - `s10_ops.js` - Operation Tasks tab (48-task library by time window), Master list tab (forms, custom columns, CSV export, import preview), room blocks card on Hotels.
+  - `s10_settings.js` - Settings: organization, roles and permissions matrix (8 enforced, the rest matrix only), stages preview, links to forms and integrations.
+  - `s10_dacct.js` / `s10_dash.js` - role dashboards: accountant (AR, AP schedule, FX, documents, month end), manager additions (approvals, team leaderboard vs target, departure readiness), agent home.
 - `v6/s9_meet.js` - meeting mode:
   - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;
@@ -87,6 +99,13 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - kiosk idle reset: after 4 idle minutes a 15-second warning, then a clean Home. Booth leads are kept.
 - `v6/s9_boot.js` - wraps render/resetDemo, then `load(); render();`. Must stay last.
 - `v6/base.css`, `v6/extra.css`, `v6/v7.css`, `v6/brand-fonts.css`, `v6/theme.css` - styles in load order. `fonts.css` - embedded Hebrew font (IBM Plex Sans Hebrew), the fallback for Hebrew glyphs.
+
+## v8 hooks and roles
+- Roles: `ROLE_KEYS` = manager (owner), accountant, the 6 agents. Owner and accountant see every file (`seesAll()`). `can(perm)` gates pages through `NAV_PERM` (Users, Accounting sync, Finance and Invoice check) and a few actions.
+- Hooks in `s1_core.js`: `PERSIST` (extra saved datasets with reset), `TESTS` (module self-tests run by check6), `TRIP_TABS`, `TRIP_INIT` (idempotent per-trip initializers, run at boot after brandSwap, after load/reset and on new trips), `TB_VIEWS`. Trip tabs are added with `tabInsert(stage, tab)` and ordered by `TAB_ORDER` (`s7b_product.js`).
+- `calc(t)` supports optional overhead `t.ovh` (added to price) and brokerage `t.brk` (added to price and cost, profit unchanged). Absent = 0.
+- Storage key is v8 (`triplanet-booth-demo-v8`); older saves are ignored.
+- check6 now takes about 14 s and prints one `TEST <name> ok` line per module.
 
 ## Decisions already made
 - Assistant name: Maya / מאיה. Hebrew is secondary, EN is the default.
