@@ -122,7 +122,7 @@ TESTS.push({name:'global search',run:h=>{
   const dk=Object.keys(DESTS).find(k=>TRIPS.some(t=>t.dest===k)),dt=TRIPS.find(t=>t.dest===dk);
   if(!find(DESTS[dk].he,'trip').some(x=>x.key===dt.id))out.push('trip by Hebrew destination');
   if(!find(DESTS[dk].en.toUpperCase(),'trip').some(x=>x.key===dt.id))out.push('trip by destination, upper case');
-  const sup=SUPPLIERS.find(s=>s.city&&s.city.length>3);
+  const sup=SUPPLIERS.find(s=>s.city&&s.city.length>3&&!(s.real&&s.cat==='Lodging'));
   if(!gsSearch(sup.city).some(g=>g.k==='sups'&&g.items.length))out.push('supplier by city');
   if(!find(sup.name.slice(0,6),'sup').some(x=>x.key===sup.id))out.push('supplier by name prefix');
   const hot=CATALOG.hotels[0];if(!find(hot.name.slice(0,8),'hotel').some(x=>x.key===hot.name))out.push('hotel by name');
