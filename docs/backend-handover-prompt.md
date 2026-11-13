@@ -158,7 +158,8 @@ Verify every fact against the vendor's current docs and label it.
    client quote acceptance (optional).
 
 ### Security: ready for a penetration test
-- Build the plan around **OWASP ASVS 4.0 Level 2**. Include a control matrix:
+- Build the plan around **OWASP ASVS 5.0 Level 2** (5.0.0 released 30 May 2025; map to
+  4.0.3 only if the chosen pen-test vendor asks). Include a control matrix:
   each control → how it is implemented → evidence.
 - Threat model (STRIDE) covering:
   - tenant isolation;
