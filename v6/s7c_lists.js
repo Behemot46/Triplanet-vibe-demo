@@ -67,7 +67,7 @@ function vHotelsList(){
   `<div class="card al-card"><div class="al-filters"><div class="chips al-chips"><button class="chip ${f==='All'?'on':''}" data-act="al-fam" data-v="All">${L('כל הרשתות','All brands')}</button>${fams.map(x=>`<button class="chip ${f===x?'on':''}" data-act="al-fam" data-v="${esc(x)}">${esc(BRANDS[x].label)}</button>`).join('')}</div>
   <select class="al-sel" data-al-dest="htl" aria-label="${L('יעד','Destination')}"><option value="All">${L('כל היעדים','All destinations')}</option>${dests.map(k=>`<option value="${k}" ${d===k?'selected':''}>${dn(k)}</option>`).join('')}</select>${alSearch('htl',S.htlQ)}</div>
   <div id="al-body-htl">${alHotelBody()}</div></div>
-  <h2 class="al-h2">${L('בלוקים של חדרים','Room blocks')}</h2>${blocks}`;
+  ${typeof opBlocksCard==='function'?'':`<h2 class="al-h2">${L('בלוקים של חדרים','Room blocks')}</h2>${blocks}`}`;
 }
 
 /* ---- Clients ---- */
