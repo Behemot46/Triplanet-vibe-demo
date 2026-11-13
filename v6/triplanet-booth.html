@@ -4036,7 +4036,7 @@ function alPager(ns,total){
 }
 const alSearch=(ns,val)=>`<label class="al-search">${ic('search')}<input type="text" data-al-q="${ns}" value="${esc(val||'')}" placeholder="${L('חיפוש','Search')}" aria-label="${L('חיפוש','Search')}"></label>`;
 const alTgl=(ns,k,on,txt)=>`<label class="al-tgl"><input type="checkbox" data-al-tgl="${ns}|${k}" ${on?'checked':''}><span class="al-sw"></span>${txt}</label>`;
-const alMore=()=>`<button class="al-go" data-act="al-open" aria-label="${L('פרטים','Details')}">${ic('chev','flip')}</button>`;
+const alMore=(ns,k)=>`<button class="al-go" data-act="al-open" data-v="${ns||''}|${esc(k||'')}" aria-label="${L('פרטים','Details')}">${ic('chev','flip')}</button>`;
 const alEmpty=n=>`<tr><td colspan="${n}" class="al-none">${L('אין תוצאות בסינון הזה.','No results match these filters.')}</td></tr>`;
 const alTh=(t,cls)=>`<th${cls?` class="${cls}"`:''}>${t}</th>`;
 
@@ -4050,7 +4050,7 @@ function alCityName(id){const c=typeof GEO!=='undefined'&&GEO.cities&&GEO.cities
 function alActBody(){
   const rows=alActRows(),pg=alPager('act',rows.length),page=rows.slice(pg.p*pg.rpp,(pg.p+1)*pg.rpp);
   return `<div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('שם','Name')+' '+ic('up'))}${alTh(L('מיקום','Location'))}${alTh(L('קוד','Code'))}${alTh(L('מחיר לאדם','Price per person'),'n')}${alTh(L('עמלה','Commission'),'n')}<th class="al-ctl"></th></tr></thead><tbody>${
-    page.map(v=>`<tr><td><span class="al-nm">${phSrc('venue',v.id)?`<span class="al-thumb al-ph">${phImg('venue',v.id,'',v.name)}</span>`:phSrc('dest',v.dest)?`<span class="al-thumb al-ph">${phImg('dest',v.dest,'','')}</span>`:`<span class="al-thumb" style="--tc:${AL_KIND[alKindIc(v.kind)]}">${ic(alKindIc(v.kind))}</span>`}<span class="al-t"><strong><bdi>${esc(v.name)}</bdi></strong><small>${esc(alCityName(v.city))}</small></span></span></td><td>${dn(v.dest)}</td><td class="al-code">${alCode(v.id)}</td><td class="n">${usd(v.cost)}</td><td class="n">${v.comm}%</td><td class="al-ctl">${alMore()}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div>${pg.html}`;
+    page.map(v=>`<tr><td><span class="al-nm">${phSrc('venue',v.id)?`<span class="al-thumb al-ph">${phImg('venue',v.id,'',v.name)}</span>`:phSrc('dest',v.dest)?`<span class="al-thumb al-ph">${phImg('dest',v.dest,'','')}</span>`:`<span class="al-thumb" style="--tc:${AL_KIND[alKindIc(v.kind)]}">${ic(alKindIc(v.kind))}</span>`}<span class="al-t"><strong><bdi>${esc(v.name)}</bdi></strong><small>${esc(alCityName(v.city))}</small></span></span></td><td>${dn(v.dest)}</td><td class="al-code">${alCode(v.id)}</td><td class="n">${usd(v.cost)}</td><td class="n">${v.comm}%</td><td class="al-ctl">${alMore('act',v.name)}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div>${pg.html}`;
 }
 function vActivitiesList(){
   const dests=[...new Set(CATALOG.venues.map(v=>v.dest))].filter(k=>DESTS[k]).sort((a,b)=>dn(a).localeCompare(dn(b)));
@@ -4073,7 +4073,7 @@ function alHotelRows(){
 function alHotelBody(){
   const rows=alHotelRows(),pg=alPager('htl',rows.length),page=rows.slice(pg.p*pg.rpp,(pg.p+1)*pg.rpp);
   return `<div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('שם','Name')+' '+ic('up'))}${alTh(L('מיקום','Location'))}${alTh(L('רמה','Level'))}${alTh(L('תעריף קבוצה ללילה','Group rate per night'),'n')}${alTh(L('תיקים','Files'),'n')}<th class="al-ctl"></th></tr></thead><tbody>${
-    page.map(h=>{const b=alBrand(h.family);return `<tr><td><span class="al-nm">${phSrc('hotel',h.id)?`<span class="al-thumb al-ph">${phImg('hotel',h.id,'',h.name)}</span>`:`<span class="al-thumb al-brand" style="--tc:${esc(b.color)}">${esc(String(b.label).charAt(0))}</span>`}<span class="al-t"><strong><bdi>${esc(h.name)}</bdi></strong><small>${esc(b.label)}</small></span></span></td><td><span class="al-t"><span>${esc(alCityName(h.city))}</span>${alNorm(dn(h.dest))===alNorm(alCityName(h.city))?'':`<small>${dn(h.dest)}</small>`}</span></td><td>${alStars(h.stars)}</td><td class="n">${usd(h.rate)}</td><td class="n">${alFiles(h.name)}</td><td class="al-ctl">${alMore()}</td></tr>`;}).join('')||alEmpty(6)}</tbody></table></div>${pg.html}`;
+    page.map(h=>{const b=alBrand(h.family);return `<tr><td><span class="al-nm">${phSrc('hotel',h.id)?`<span class="al-thumb al-ph">${phImg('hotel',h.id,'',h.name)}</span>`:`<span class="al-thumb al-brand" style="--tc:${esc(b.color)}">${esc(String(b.label).charAt(0))}</span>`}<span class="al-t"><strong><bdi>${esc(h.name)}</bdi></strong><small>${esc(b.label)}</small></span></span></td><td><span class="al-t"><span>${esc(alCityName(h.city))}</span>${alNorm(dn(h.dest))===alNorm(alCityName(h.city))?'':`<small>${dn(h.dest)}</small>`}</span></td><td>${alStars(h.stars)}</td><td class="n">${usd(h.rate)}</td><td class="n">${alFiles(h.name)}</td><td class="al-ctl">${alMore('htl',h.name)}</td></tr>`;}).join('')||alEmpty(6)}</tbody></table></div>${pg.html}`;
 }
 function vHotelsList(){
   const f=S.htlFam||'All',d=S.htlDest||'All';
@@ -4099,7 +4099,7 @@ function alCliBody(){
   const q=alNorm(S.cliQ),all=alClients().filter(c=>!q||alNorm(c.name).includes(q));
   const pg=alPager('cli',all.length),page=all.slice(pg.p*pg.rpp,(pg.p+1)*pg.rpp);
   return `<div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('לקוח','Client')+' '+ic('up'))}${alTh(L('סוג','Type'))}${alTh(L('פרויקטים','Projects'),'n')}${alTh(L('הכנסה סגורה','Booked revenue'),'n')}${alTh(L('טיול אחרון','Last trip'))}${alTh(L('סוכן/ת אחראי/ת','Owner agent'))}<th class="al-ctl"></th></tr></thead><tbody>${
-    page.map(c=>{const ty=CTYPE[c.type]||[c.type,c.type,''];return `<tr><td><span class="al-nm"><span class="al-thumb al-av">${esc(c.name.charAt(0))}</span><span class="al-t"><strong><bdi>${esc(c.name)}</bdi></strong></span></span></td><td>${pillF(L(ty[0],ty[1]),ty[2])}</td><td class="n">${c.n}</td><td class="n">${c.rev?usd(c.rev):'–'}</td><td>${fmtDate(c.last.dep)}</td><td>${agn(c.last.agent)}</td><td class="al-ctl">${alMore()}</td></tr>`;}).join('')||alEmpty(7)}</tbody></table></div>${pg.html}`;
+    page.map(c=>{const ty=CTYPE[c.type]||[c.type,c.type,''];return `<tr><td><span class="al-nm"><span class="al-thumb al-av">${esc(c.name.charAt(0))}</span><span class="al-t"><strong><bdi>${esc(c.name)}</bdi></strong></span></span></td><td>${pillF(L(ty[0],ty[1]),ty[2])}</td><td class="n">${c.n}</td><td class="n">${c.rev?usd(c.rev):'–'}</td><td>${fmtDate(c.last.dep)}</td><td>${agn(c.last.agent)}</td><td class="al-ctl">${alMore('cli',c.name)}</td></tr>`;}).join('')||alEmpty(7)}</tbody></table></div>${pg.html}`;
 }
 function vClients(){
   return head(L('לקוחות','Clients'),`<button class="btn pri" data-act="al-new" data-v="cli">${L('לקוח חדש','New client')}</button>`)+
@@ -4116,8 +4116,12 @@ document.addEventListener('click',e=>{
   const a=b.dataset.act,v=b.dataset.v;
   if(a==='al-prev'||a==='al-next'){const k=AL_NS[v].page;S[k]=(+S[k]||0)+(a==='al-next'?1:-1);alPartial(v);}
   else if(a==='al-fam'){S.htlFam=v;S.htlPage=0;alRefresh('htl');}
-  else if(a==='al-new')toast(L('יצירה חדשה זמינה במוצר המלא','Creating new records is available in the full product'));
-  else if(a==='al-open')toast(L('דף הפרטים נפתח במוצר המלא','The detail page opens in the full product'));
+  else if(a==='al-new'){const id={act:'activity',htl:'hotel',cli:'client'}[v];if(id&&typeof formOpen==='function'){formOpen(id,null);render();}else toast(L('יצירה חדשה זמינה במוצר המלא','Creating new records is available in the full product'));}
+  else if(a==='al-open'){const [ns,k]=String(v||'').split('|');
+    /* v8: clients open the client card; hotels open the supplier card */
+    if(ns==='cli'&&typeof spCliOpen==='function'){spCliOpen(k);render();window.scrollTo(0,0);}
+    else if(ns==='htl'&&typeof spOpen==='function'&&typeof supByName==='function'&&supByName(k)){S.tab='suppliers';spOpen(supByName(k).id);render();window.scrollTo(0,0);}
+    else toast(L('דף הפרטים נפתח במוצר המלא','The detail page opens in the full product'));}
 });
 document.addEventListener('change',e=>{
   const el=e.target,d=el.dataset;if(!d)return;
