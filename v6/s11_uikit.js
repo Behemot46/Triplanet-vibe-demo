@@ -138,8 +138,8 @@ function ukFeedback(){
    `<div class="uk-gate">${gate(t0,L('תפעול','Operation'))}</div>`,"gate(trip, L(he,'Operation'))",L('להציע את הפעולה שפותחת.','Offer the action that unlocks it.'),L('לא להסתיר מסך בלי הסבר.','Never hide a screen without a reason.')));
   e.push(ukEx(L('כרטיס אין הרשאה','No-access card'),L('התפקיד אינו כולל את המסך.','The role does not include the screen.'),
    `<div class="uk-gate">${noAccess(L('דוגמה','Example'))}</div>`,"noAccess('Reports')   // gate by can('perm')",L('להסביר מי יכול לשנות.','Say who can change it.'),L('לא להציג דף ריק.','Never show a blank page.')));
-  if(typeof nextSteps==='function'){let ns='';try{ns=String(nextSteps(t0)||'');}catch(x){ns='';}
-    if(ns&&ns!=='undefined')e.push(ukEx(L('סרגל הצעד הבא','Next-step bar'),L('מציע את הפעולה הבאה בתיק לפי הנתונים.','Suggests the next action on a file from its data.'),`<div class="uk-gate">${ns}</div>`,'nextSteps(trip)',L('עד שלושה צעדים.','Up to three steps.'),L('לא לחזור על הלשוניות.','Do not repeat the tabs.')));}
+  if(typeof nxBar==='function'){let ns='';try{const tq=TRIPS.find(x=>x.stage==='Operations')||t0;ns=String(nxBar(tq)||'');}catch(x){ns='';}
+    if(ns&&ns!=='undefined')e.push(ukEx(L('סרגל הצעד הבא','Next-step bar'),L('מציע את הפעולה הבאה בתיק לפי הנתונים.','Suggests the next action on a file from its data.'),`<div class="uk-gate">${ns}</div>`,'nxBar(trip)   // steps come from nextSteps(trip)',L('עד שלושה צעדים.','Up to three steps.'),L('לא לחזור על הלשוניות.','Do not repeat the tabs.')));}
   return ukSec('feedback',L('5. משוב','5. Feedback'),L('הודעות, אזהרות ומצבים חסומים.','Messages, warnings and blocked states.'),`<div class="uk-grid">${e.join('')}</div>`);
 }
 
