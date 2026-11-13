@@ -220,7 +220,7 @@ document.addEventListener('click',e=>{
   else if(a==='ask'){const q=QS[+v-1];if(q)askQ(q);render();const c=document.querySelector('.cb');if(c)c.scrollTop=c.scrollHeight;}
   else if(a==='clearchat'){S.chat=[];render();}
   else if(a==='chen'){S.chen=!S.chen;render();}
-  else if(a==='win'){winQuote(byId(v));openTrip(v,'ops');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
+  else if(a==='win'){winQuote(byId(v));openTrip(v,'odash');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
   else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
   else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);

@@ -248,7 +248,7 @@ function spmTab(t){
   ${panels?`<div class="sp-panels">${panels}</div>`:`<p class="muted small" style="margin-top:12px">${L('בחרו "השוואת מחירים" בשורת ספק כדי לראות את הספק הנוכחי מול שתי חלופות.','Pick "Price comparison" on a supplier row to see the current supplier next to two alternatives.')}</p>`}`;
 }
 tabInsert('o',['spm','ספקים','Suppliers','idcard']);
-TRIP_TABS.spm=spmTab;
+TRIP_TABS.spm=t=>{const h=spmTab(t);return t.stage==='Quote'||typeof supMsgCard!=='function'?h:h+supMsgCard(t);};
 
 /* ---------- client card ---------- */
 const spCli=()=>S.cliId?(CLI_BY[S.cliId]||cliByName(S.cliId)||(TRIPS.some(t=>t.client===S.cliId)?{id:null,name:S.cliId,type:(TRIPS.find(t=>t.client===S.cliId)||{}).ctype||'Prospect',city:'',state:'',contact:{name:'',role:'',email:'',phone:''},since:'',taxExempt:false,source:'',notes:{en:'',he:''}}:null)):null;

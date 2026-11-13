@@ -209,7 +209,7 @@ function pApprove(t){
   const cur=t.stage==='Quote'?steps.findIndex(s=>s[0]===(t.qst||'Draft')):4,c=calc(t);
   const st=steps.map((s,i)=>`<div class="tile" style="border:0"><span class="ring" style="--c:var(--${i<cur?'green':i===cur?'blue':'muted'})">${i<cur?ic('check'):i+1}</span><div class="l">${s[1]}</div></div>`).join('')+`<div class="tile" style="border:0"><span class="ring" style="--c:var(--${cur>=4?'green':'muted'})">${cur>=4?ic('check'):5}</span><div class="l">${L('תיק נפתח','File opened')}</div></div>`;
   let act='';
-  if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="ops">${L('לתפעול','To operations')}</button>`;
+  if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="odash">${L('לתפעול','To operations')}</button>`;
   else if((t.qst||'Draft')==='Draft')act=`<button class="btn pri" data-act="qs" data-v="Approval">${L('שלח לאישור מנהל','Send for manager approval')}</button>`;
   else if(t.qst==='Approval')act=S.role==='manager'?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מנהל יכול לאשר ולשלוח.','The quote is waiting for manager approval. Only a manager can approve and send it.')}</p>`;
   else if(t.qst==='Sent')act=`<p>${L(`ההצעה נשלחה ללקוח לפני ${t.qdays} ימים.`,`The quote was sent to the client ${t.qdays} days ago.`)}</p><button class="btn" data-act="qs" data-v="Negotiating">${L('הלקוח ביקש לסגור','Client asked to close')}</button>`;
@@ -236,6 +236,14 @@ function pOps(t){
   <pre class="mail">${esc(msg)}</pre><button class="btn" data-act="copymsg">${L('העתק הודעה','Copy message')}</button></div></div>`;
 }
 
+/* v8.1: the supplier message template, shown on the Operation > Suppliers tab */
+function supMsgCard(t){
+  if(!t.sups.length)return '';
+  const k=Math.min(S.msgSup,t.sups.length-1),sp=t.sups[k],ln=t.lines.find(l=>l.id===sp.line)||t.lines[0];
+  const msg=`Hello ${sp.n} team,\n\nPlease confirm the booking for our group of ${t.pax} travelers (${t.client}, arriving ${D(t.dep).toLocaleDateString('en-US')}): ${ln.name}, ${ln.qty} ${ln.unit} at ${money(ln.cost,ln.cur)}. A reply with your confirmation number and invoice details is all we need.\n\nThank you,\n${AGE[t.agent]}\n${AGENCY}`;
+  return `<div class="card sec"><h3>${L('הודעת אישור לספק','Confirmation message to a supplier')}</h3><label class="row small muted">${L('ספק','Supplier')} <select data-ch="msgsup">${t.sups.map((s,i)=>`<option value="${i}" ${i===k?'selected':''}>${esc(s.n)}</option>`).join('')}</select></label>
+  <pre class="mail">${esc(msg)}</pre><button class="btn" data-act="copymsg">${L('העתק הודעה','Copy message')}</button></div>`;
+}
 /* ---------- travelers and billing ---------- */
 function pPeople(t){
   if(t.stage==='Quote')return gate(t,L('נוסעים וחיוב','Travelers & billing'));

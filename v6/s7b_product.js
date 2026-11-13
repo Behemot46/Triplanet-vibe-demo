@@ -10,11 +10,11 @@ FLAG.en=`<svg viewBox="0 0 60 40" width="30" height="20" aria-hidden="true"><cli
 /* ---------- project page: stage switch + stage tabs ---------- */
 const STAGES=[
   ['q',['הצעת מחיר','Quotation'],[['general','כללי','General','document'],['plan','תוכנית טיול','Trip plan','calendar'],['costs','תמחור ומרווחים','Pricing','cash'],['quote','הצעה ללקוח','Proposal','invoice'],['approve','אישור','Approval','check']]],
-  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','תקציר והודעות','Digest & messages','mail'],['people','חיוב ותשלומים','Billing','wallet']]],
+  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['people','חיוב ותשלומים','Billing','wallet']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
 /* v8: fixed tab order per stage, so modules can register tabs in any load order */
-const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people','ops'],f:['fdash','income','tfin','vouch']};
+const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people'],f:['fdash','income','tfin','vouch']};
 function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)return;
   if(!sg[2].some(x=>x[0]===tab[0]))sg[2].push(tab);
   const o=TAB_ORDER[stage]||[],ix=k=>{const i=o.indexOf(k);return i<0?99:i;};sg[2].sort((a,b)=>ix(a[0])-ix(b[0]));
@@ -28,6 +28,7 @@ function pjStatus(t){
 }
 vTrip=function(){
   const t=T();if(!t)return noTrip();
+  if(S.ptab==='ops')S.ptab='odash'; /* v8.1: the digest tab was merged into the dashboard */
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
   const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
@@ -44,10 +45,10 @@ function pOpsDash(t){
   const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
   const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6);
   return `<div class="ogrid">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
-    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="ops"')}
-    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="ops"')}
+    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="optasks"')}
+    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="spm"')}
     ${ocard('amber',ic('chart2'),usd(c.rev),L('הכנסה צפויה','Estimated revenue'),'data-act="pt" data-v="fdash"')}</div>
-   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>`;
+   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>${t.room?`<div class="card sec"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3><p class="small muted"><bdi>${esc(t.room.hotel)}</bdi>, ${fmtDate(t.dep)}</p><div class="prog"><div style="width:${t.room.held?Math.round(t.room.used/t.room.held*100):0}%"></div></div><p class="small" style="margin-top:8px">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div>`:''}`;
 }
 /* Finance dashboard: the trip's own leak bridge */
 function pFinDash(t){

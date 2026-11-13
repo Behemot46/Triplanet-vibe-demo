@@ -2632,7 +2632,14 @@ function altCost(t,l,sup){
   const inc=incumbentOf(l,t);
   if(!sup||sup===inc||sup.name===l.sup||sup.id===inc.id)return l.cost;
   const pax=t&&t.pax||0,dep=(t&&t.dep)||iso(TODAY);
-  const B=c=>BASE_RATE[c]||1,den=sdRaw(inc,dep,pax)*B(inc.cur);
+  const B=c=>BASE_RATE[c]||1;let den=sdRaw(inc,dep,pax)*B(inc.cur);
+  /* v8.1: brandSwap relabels a line with a real hotel but keeps the line's cost. When the real brand's catalog
+     rate is far from that cost, anchor on the market (median of the fictional suppliers of the same destination
+     and sub-category) so the comparison does not inherit the gap between the two. */
+  const lc=l.cost*B(l.cur);
+  if(inc.real&&lc>0&&Math.abs(den-lc)/lc>.15){
+    const sub=lineSub(l),dk=inc.dest,pool=SUPPLIERS.filter(x=>!x.real&&x.dest===dk&&x.cat===inc.cat&&(x.sub||'')===(inc.sub||sub)).map(x=>sdRaw(x,dep,pax)*B(x.cur)).sort((a,b)=>a-b);
+    if(pool.length)den=pool[Math.floor(pool.length/2)];}
   if(!(den>0))return l.cost;
   return Math.round(l.cost*sdRaw(sup,dep,pax)*B(sup.cur)/den);
 }
@@ -3217,6 +3224,8 @@ const userName=()=>isMgr()?MGR():agn(S.role);
 const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
 const canSee=t=>seesAll()||t.agent===S.role;
 /* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
+/* Hebrew for generic data strings (s11_trdata.js); identity when absent or in English */
+const heDataIf=h=>S.lang==='he'&&typeof heData==='function'?heData(h):h;
 const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
@@ -3232,6 +3241,15 @@ const avatarOf=(n,cls)=>{const k=avKey(n);return k?`<img class="avatar avimg${cl
 const NEWP=()=>pillF(L('חדש','New'),'green');
 
 /* ---------- shell ---------- */
+/* v8.1: the sidebar is grouped by job. Items not listed in a section go to the last one. */
+const NAV_SECTIONS=[[null,['home']],[['מכירות','Sales'],['quotes','studio','clients']],[['קטלוג','Catalog'],['suppliers','hotels','activities','templates']],
+  [['כספים ורווח','Money'],['finance','gaps','leaks','books']],[['עזרה','Help'],['ai','status']],[['ניהול','Admin'],['users','settings']]];
+function navSections(ok,nb){
+  const all=[...NAV,...NAV2].filter(ok),by={},used=new Set();all.forEach(n=>by[n[0]]=n);
+  const sec=NAV_SECTIONS.map(([lab,keys])=>{const its=keys.filter(k=>by[k]);its.forEach(k=>used.add(k));return [lab,its.map(k=>by[k])];});
+  all.filter(n=>!used.has(n[0])).forEach(n=>sec[sec.length-1][1].push(n));
+  return sec.filter(x=>x[1].length).map(([lab,its])=>(lab?`<div class="nvh">${L(lab[0],lab[1])}</div>`:'')+its.map(nb).join('')).join('');
+}
 const NAV=[['home',['דף הבית','Home'],ic('home')],['quotes',['הצעות מחיר','Quotes'],ic('quotes')],['templates',['תבניות','Templates'],ic('templates')],['hotels',['מלונות','Hotels'],ic('hotels')],['suppliers',['ספקים','Suppliers'],ic('suppliers')],['activities',['פעילויות','Activities'],ic('activities')],['users',['משתמשים','Users'],ic('users')]];
 const NAV2=[['gaps',['בקרת חשבוניות','Invoice check'],ic('gaps')],['finance',['כספים','Finance'],ic('finance')],['ai',['מאיה, העוזרת החכמה','Maya, AI assistant'],ic('ai')]];
 const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g fill="#b22234">${[0,2,4,6,8,10,12].map(i=>`<rect y="${i*20/13}" width="30" height="${20/13}"/>`).join('')}</g><rect width="13" height="${20*7/13}" fill="#3c3b6e"/></svg>`,
@@ -3247,12 +3265,13 @@ function render(){
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
   const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
+     ${typeof devPanel==='function'?`<button data-act="devnotes" role="menuitem">${ic('document')} ${devOn()?L('הסתר הערות למפתחים','Hide developer notes'):L('הצג הערות למפתחים','Show developer notes')}</button>`:''}
      <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
   const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
-  app.innerHTML=trHtml(`<div class="app${S.drawer?' drawer':''}">
-   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.filter(navOk).map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.filter(navOk).map(nb).join('')}</aside>
+  app.innerHTML=heDataIf(trHtml(`<div class="app${S.drawer?' drawer':''}">
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${navSections(navOk,nb)}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
@@ -3269,7 +3288,7 @@ function render(){
      <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">${ic('bell')}${nAl?`<b>${nAl}</b>`:''}</button>
      <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">${ic('settings')}</button>${menu}</span>
      ${avatarOf(user)}
-   </div><div id="view">${view()}</div></main></div>${fab}${tourPanel()}`);
+   </div><div id="view">${view()}</div></main></div>${fab}${tourPanel()}`));
   window.scrollTo(0,y);
   tourAfter();save();
 }
@@ -3564,7 +3583,7 @@ function pApprove(t){
   const cur=t.stage==='Quote'?steps.findIndex(s=>s[0]===(t.qst||'Draft')):4,c=calc(t);
   const st=steps.map((s,i)=>`<div class="tile" style="border:0"><span class="ring" style="--c:var(--${i<cur?'green':i===cur?'blue':'muted'})">${i<cur?ic('check'):i+1}</span><div class="l">${s[1]}</div></div>`).join('')+`<div class="tile" style="border:0"><span class="ring" style="--c:var(--${cur>=4?'green':'muted'})">${cur>=4?ic('check'):5}</span><div class="l">${L('תיק נפתח','File opened')}</div></div>`;
   let act='';
-  if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="ops">${L('לתפעול','To operations')}</button>`;
+  if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="odash">${L('לתפעול','To operations')}</button>`;
   else if((t.qst||'Draft')==='Draft')act=`<button class="btn pri" data-act="qs" data-v="Approval">${L('שלח לאישור מנהל','Send for manager approval')}</button>`;
   else if(t.qst==='Approval')act=S.role==='manager'?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מנהל יכול לאשר ולשלוח.','The quote is waiting for manager approval. Only a manager can approve and send it.')}</p>`;
   else if(t.qst==='Sent')act=`<p>${L(`ההצעה נשלחה ללקוח לפני ${t.qdays} ימים.`,`The quote was sent to the client ${t.qdays} days ago.`)}</p><button class="btn" data-act="qs" data-v="Negotiating">${L('הלקוח ביקש לסגור','Client asked to close')}</button>`;
@@ -3591,6 +3610,14 @@ function pOps(t){
   <pre class="mail">${esc(msg)}</pre><button class="btn" data-act="copymsg">${L('העתק הודעה','Copy message')}</button></div></div>`;
 }
 
+/* v8.1: the supplier message template, shown on the Operation > Suppliers tab */
+function supMsgCard(t){
+  if(!t.sups.length)return '';
+  const k=Math.min(S.msgSup,t.sups.length-1),sp=t.sups[k],ln=t.lines.find(l=>l.id===sp.line)||t.lines[0];
+  const msg=`Hello ${sp.n} team,\n\nPlease confirm the booking for our group of ${t.pax} travelers (${t.client}, arriving ${D(t.dep).toLocaleDateString('en-US')}): ${ln.name}, ${ln.qty} ${ln.unit} at ${money(ln.cost,ln.cur)}. A reply with your confirmation number and invoice details is all we need.\n\nThank you,\n${AGE[t.agent]}\n${AGENCY}`;
+  return `<div class="card sec"><h3>${L('הודעת אישור לספק','Confirmation message to a supplier')}</h3><label class="row small muted">${L('ספק','Supplier')} <select data-ch="msgsup">${t.sups.map((s,i)=>`<option value="${i}" ${i===k?'selected':''}>${esc(s.n)}</option>`).join('')}</select></label>
+  <pre class="mail">${esc(msg)}</pre><button class="btn" data-act="copymsg">${L('העתק הודעה','Copy message')}</button></div>`;
+}
 /* ---------- travelers and billing ---------- */
 function pPeople(t){
   if(t.stage==='Quote')return gate(t,L('נוסעים וחיוב','Travelers & billing'));
@@ -3979,7 +4006,7 @@ document.addEventListener('click',e=>{
   else if(a==='ask'){const q=QS[+v-1];if(q)askQ(q);render();const c=document.querySelector('.cb');if(c)c.scrollTop=c.scrollHeight;}
   else if(a==='clearchat'){S.chat=[];render();}
   else if(a==='chen'){S.chen=!S.chen;render();}
-  else if(a==='win'){winQuote(byId(v));openTrip(v,'ops');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
+  else if(a==='win'){winQuote(byId(v));openTrip(v,'odash');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
   else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
   else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
@@ -4310,11 +4337,11 @@ FLAG.en=`<svg viewBox="0 0 60 40" width="30" height="20" aria-hidden="true"><cli
 /* ---------- project page: stage switch + stage tabs ---------- */
 const STAGES=[
   ['q',['הצעת מחיר','Quotation'],[['general','כללי','General','document'],['plan','תוכנית טיול','Trip plan','calendar'],['costs','תמחור ומרווחים','Pricing','cash'],['quote','הצעה ללקוח','Proposal','invoice'],['approve','אישור','Approval','check']]],
-  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','תקציר והודעות','Digest & messages','mail'],['people','חיוב ותשלומים','Billing','wallet']]],
+  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['people','חיוב ותשלומים','Billing','wallet']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
 /* v8: fixed tab order per stage, so modules can register tabs in any load order */
-const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people','ops'],f:['fdash','income','tfin','vouch']};
+const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people'],f:['fdash','income','tfin','vouch']};
 function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)return;
   if(!sg[2].some(x=>x[0]===tab[0]))sg[2].push(tab);
   const o=TAB_ORDER[stage]||[],ix=k=>{const i=o.indexOf(k);return i<0?99:i;};sg[2].sort((a,b)=>ix(a[0])-ix(b[0]));
@@ -4328,6 +4355,7 @@ function pjStatus(t){
 }
 vTrip=function(){
   const t=T();if(!t)return noTrip();
+  if(S.ptab==='ops')S.ptab='odash'; /* v8.1: the digest tab was merged into the dashboard */
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
   const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
@@ -4344,10 +4372,10 @@ function pOpsDash(t){
   const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
   const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6);
   return `<div class="ogrid">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
-    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="ops"')}
-    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="ops"')}
+    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="optasks"')}
+    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="spm"')}
     ${ocard('amber',ic('chart2'),usd(c.rev),L('הכנסה צפויה','Estimated revenue'),'data-act="pt" data-v="fdash"')}</div>
-   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>`;
+   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>${t.room?`<div class="card sec"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3><p class="small muted"><bdi>${esc(t.room.hotel)}</bdi>, ${fmtDate(t.dep)}</p><div class="prog"><div style="width:${t.room.held?Math.round(t.room.used/t.room.held*100):0}%"></div></div><p class="small" style="margin-top:8px">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div>`:''}`;
 }
 /* Finance dashboard: the trip's own leak bridge */
 function pFinDash(t){
@@ -6982,7 +7010,7 @@ function spmTab(t){
   ${panels?`<div class="sp-panels">${panels}</div>`:`<p class="muted small" style="margin-top:12px">${L('בחרו "השוואת מחירים" בשורת ספק כדי לראות את הספק הנוכחי מול שתי חלופות.','Pick "Price comparison" on a supplier row to see the current supplier next to two alternatives.')}</p>`}`;
 }
 tabInsert('o',['spm','ספקים','Suppliers','idcard']);
-TRIP_TABS.spm=spmTab;
+TRIP_TABS.spm=t=>{const h=spmTab(t);return t.stage==='Quote'||typeof supMsgCard!=='function'?h:h+supMsgCard(t);};
 
 /* ---------- client card ---------- */
 const spCli=()=>S.cliId?(CLI_BY[S.cliId]||cliByName(S.cliId)||(TRIPS.some(t=>t.client===S.cliId)?{id:null,name:S.cliId,type:(TRIPS.find(t=>t.client===S.cliId)||{}).ctype||'Prospect',city:'',state:'',contact:{name:'',role:'',email:'',phone:''},since:'',taxExempt:false,source:'',notes:{en:'',he:''}}:null)):null;
@@ -8190,7 +8218,7 @@ function dbMini(v,na){return `<div class="db-m ${na?'na':dbCls(v)}"><b><bdi>${na
 function dbReadyRows(ts,days){
   const dep=dbDepartures(ts,days);
   const rows=dep.map(t=>{const r=dbReadiness(t),dd=Math.round((D(t.dep)-TODAY)/DAY);
-    return `<tr class="da-row" data-act="open" data-v="${t.id}" data-pt="ops"><td><strong>${esc(t.name)}</strong><div class="small muted">${esc(t.client)} · ${agn(t.agent)}</div></td>
+    return `<tr class="da-row" data-act="open" data-v="${t.id}" data-pt="odash"><td><strong>${esc(t.name)}</strong><div class="small muted">${esc(t.client)} · ${agn(t.agent)}</div></td>
      <td>${fmtDate(t.dep)}<div class="small muted">${L(`בעוד ${dd} ימים`,`in ${dd} ${PLN(dd,'day','days')}`)}</div></td>
      <td>${dbMini(r.tasks)}<div class="small muted">${L(`${r.nOpen} פתוחות`,`${r.nOpen} open`)}</div></td><td>${dbMini(r.pass,r.passNA)}</td><td>${dbMini(r.sups)}</td><td>${dbMini(r.dep)}</td>
      <td class="n"><span class="db-ov ${dbCls(r.overall)}"><bdi>${r.overall}%</bdi></span></td></tr>`;}).join('');
@@ -8234,7 +8262,7 @@ function dbHero(K,ts){
     tile('#FF8F00',3,L('משימות באיחור','Overdue tasks'),K.overN,K.overN?L('דורשות טיפול','need attention'):L('הכול בזמן','all on time'),od?'open':'go',od?od.t.id:'quotes',od?'ops':'')].join('');
   return `<section class="hp db-hero${typeof hpAnim==='function'&&hpAnim()?' anim':''}" aria-label="${L('תמונת מצב','Overview')}">
    <div class="hp-top"><div class="hp-hi"><span class="hp-eye">${day}</span><h1>${L('שלום','Hello')}, ${esc(first)}</h1>
-     <p>${L(`${ts.length} תיקים והצעות שלך`,`${ts.length} of your ${ts.length===1?'file or quote':'files and quotes'}`)}${nx?` · ${L(`היציאה הבאה בעוד ${dd} ימים`,`next departure in ${dd} ${PLN(dd,'day','days')}`)}: <a href="#" data-act="open" data-v="${nx.id}" data-pt="ops">${esc(nx.name)}</a>`:''}</p></div>
+     <p>${L(`${ts.length} תיקים והצעות שלך`,`${ts.length} of your ${ts.length===1?'file or quote':'files and quotes'}`)}${nx?` · ${L(`היציאה הבאה בעוד ${dd} ימים`,`next departure in ${dd} ${PLN(dd,'day','days')}`)}: <a href="#" data-act="open" data-v="${nx.id}" data-pt="optasks">${esc(nx.name)}</a>`:''}</p></div>
     <div class="hp-kpi"><div><span>${L('הכנסות שהוזמנו','Booked revenue')}</span><b>${usd(K.booked)}</b></div><div><span>${L('רווח צפוי','Expected profit')}</span><b>${usd(K.fp)}</b><em>${K.booked?pct(K.margin):''}</em></div><div><span>${L('בהצעות פתוחות','In open quotes')}</span><b>${usd(K.openVal)}</b></div></div></div>
    <div class="hp-bar" role="img" aria-label="${seg.map(x=>x[2]+' '+usd(x[0])).join(', ')}">${seg.map(x=>`<i style="--w:${(x[0]/tot*100).toFixed(2)}%;--c:${x[1]}" title="${x[2]}: ${usd(x[0])}"></i>`).join('')}</div>
    <div class="da-leg">${seg.map(x=>`<span><i style="background:${x[1]}"></i>${x[2]} <b>${x[3]}</b> · ${usd(x[0])}</span>`).join('')}</div>
@@ -8251,7 +8279,7 @@ function dbPipelineCard(ts){
 }
 function dbWeekCard(ts){
   const list=dbTasks(ts,7),CAP=8,over=list.filter(z=>z.over).length;
-  const row=z=>`<div class="da-li"><div><strong>${esc(z.x.t)}</strong><div class="small muted"><a href="#" data-act="open" data-v="${z.t.id}" data-pt="ops">${esc(z.t.name)}</a> · ${z.over?`<span class="db-red">${L('באיחור','Overdue')}</span> · `:''}${fmtDate(z.x.due)}</div></div>
+  const row=z=>`<div class="da-li"><div><strong>${esc(z.x.t)}</strong><div class="small muted"><a href="#" data-act="open" data-v="${z.t.id}" data-pt="optasks">${esc(z.t.name)}</a> · ${z.over?`<span class="db-red">${L('באיחור','Overdue')}</span> · `:''}${fmtDate(z.x.due)}</div></div>
     <button class="btn sm" data-act="db-done" data-v="${z.t.id}:${z.x.id}" aria-label="${L('סמן כבוצע','Mark done')}: ${esc(z.x.t)}">${ic('check')} ${L('בוצע','Done')}</button></div>`;
   const rows=list.slice(0,CAP).map(row).join('');
   const soon=list.length?[]:dbTasks(ts,3650).slice(0,5);

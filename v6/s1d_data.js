@@ -232,7 +232,14 @@ function altCost(t,l,sup){
   const inc=incumbentOf(l,t);
   if(!sup||sup===inc||sup.name===l.sup||sup.id===inc.id)return l.cost;
   const pax=t&&t.pax||0,dep=(t&&t.dep)||iso(TODAY);
-  const B=c=>BASE_RATE[c]||1,den=sdRaw(inc,dep,pax)*B(inc.cur);
+  const B=c=>BASE_RATE[c]||1;let den=sdRaw(inc,dep,pax)*B(inc.cur);
+  /* v8.1: brandSwap relabels a line with a real hotel but keeps the line's cost. When the real brand's catalog
+     rate is far from that cost, anchor on the market (median of the fictional suppliers of the same destination
+     and sub-category) so the comparison does not inherit the gap between the two. */
+  const lc=l.cost*B(l.cur);
+  if(inc.real&&lc>0&&Math.abs(den-lc)/lc>.15){
+    const sub=lineSub(l),dk=inc.dest,pool=SUPPLIERS.filter(x=>!x.real&&x.dest===dk&&x.cat===inc.cat&&(x.sub||'')===(inc.sub||sub)).map(x=>sdRaw(x,dep,pax)*B(x.cur)).sort((a,b)=>a-b);
+    if(pool.length)den=pool[Math.floor(pool.length/2)];}
   if(!(den>0))return l.cost;
   return Math.round(l.cost*sdRaw(sup,dep,pax)*B(sup.cur)/den);
 }
