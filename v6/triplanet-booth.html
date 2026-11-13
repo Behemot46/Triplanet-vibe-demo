@@ -5347,7 +5347,7 @@ function mayaTip(){
   if(S.tab==='books'&&QS[27])return {k:'books',txt:L('רוצים לדעת מה יובא ממערכת הנהלת החשבונות?','Want to know what we imported from your accounting system?'),act:'ask',v:28,lab:L('הצג','Show me')};
   return null;
 }
-const mayaQuiet=()=>!document.querySelector||S.chen||S.tab==='ai'||(S.tour!=null&&S.tour>=0)||S.meet>=0||document.getElementById('attract')||document.body.classList.contains('dnd');
+const mayaQuiet=()=>!document.querySelector||S.chen||S.gs||S.form||S.tab==='ai'||(S.tour!=null&&S.tour>=0)||S.meet>=0||document.getElementById('attract')||document.body.classList.contains('dnd');
 function mayaHide(){clearTimeout(MAYA.hide);if(MAYA.el){MAYA.el.remove();MAYA.el=null;}MAYA.cur=null;}
 function mayaShow(tip){
   mayaHide();if(mayaQuiet())return;MAYA.cur=tip;MAYA.shown[tip.k]=1;
