@@ -1379,6 +1379,18 @@ body.dnd,body.dnd *{cursor:grabbing!important;user-select:none!important;-webkit
 .nx-lt{display:flex;flex-direction:column;flex:1;min-width:0}
 @media (max-width:640px){.nx-bar{align-items:flex-start}.nx-go{width:100%}.nx-li{flex-wrap:wrap}.nx-li .nx-go{width:100%}}
 
+/* project status menu and the stage-move card */
+.pj-stwrap{position:relative;display:inline-block}
+button.pj-status{border:0;cursor:pointer}
+.pj-menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:30;min-width:260px;max-width:min(340px,86vw);background:var(--panel);border:1px solid var(--line2);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;display:flex;flex-direction:column;gap:2px}
+.pj-mi{display:flex;flex-direction:column;gap:2px;text-align:start;background:none;border:0;border-radius:8px;padding:10px 12px;cursor:pointer;color:var(--ink);font:inherit}
+.pj-mi:hover:not(:disabled){background:var(--recess)}
+.pj-mi:disabled{cursor:not-allowed}
+.pj-mi.off b{color:var(--muted)}
+.pj-mn{margin:0;padding:8px 12px}
+.stm-card{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.rate-ro{display:inline-flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+
 /* v8 module op: tasks, master list, room blocks */
 .op-stats{margin-bottom:14px}
 .op-filters{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
@@ -1838,6 +1850,18 @@ body.dv-open #app{padding-right:380px}
 .db-hero .hp-st small,.da-hero .hp-st small,.db-hero .hp-kpi span,.da-hero .hp-kpi span,.db-hero .hp-hi p,.da-hero .hp-hi p,.db-hero .da-leg,.da-hero .da-leg{color:color-mix(in srgb,var(--hero-ink) 88%,transparent)}
 .db-hero .hp-kpi span,.da-hero .hp-kpi span{font-weight:700}
 .db-hero .hp-k,.da-hero .hp-k{font-weight:700}
+
+/* accessibility (design-system section 10): contrast of at least 4.5:1 for normal text */
+/* light mode: darker green and amber text tokens (pills, chips, positive figures); dark mode keeps its light shades */
+:root[data-theme="light"]{--green:#0B7442;--orange:#8F5500;--yellow:#8F5500;--amber:#8F5500}
+/* small headings that people read use the muted token (the disabled grey is for disabled controls only) */
+.nvh,.dv-s h4{color:var(--muted)}
+/* green button: dark green with white text in both modes (5.4:1) */
+.btn.grn{background:#0B7A47;border-color:#0B7A47;color:#fff}
+.btn.grn:hover{background:#08633A;border-color:#08633A}
+/* the Presentation button is a demo control, not a product one: brand dark blue gives 7.6:1 with white text */
+.tourbtn.meetbtn{background:var(--primary-dark)!important;border-color:var(--primary-dark)!important}
+.tourbtn.meetbtn:hover{background:var(--primary-darker)!important}
 
 
 </style>
@@ -2313,7 +2337,7 @@ function portfolio(ts){
   MONTHS.forEach(m=>P.cash[m]={in:0,out:0});
   ts.forEach(t=>{
     const c=calc(t);
-    if(t.stage==='Quote'){P.pipeline=r2(P.pipeline+c.rev);P.pipelineN++;return;}
+    if(t.stage==='Quote'){if(t.qst!=='Lost'){P.pipeline=r2(P.pipeline+c.rev);P.pipelineN++;}return;}
     const g=groupsCalc(t);
     P.rev=r2(P.rev+c.rev);P.plan=r2(P.plan+c.plan);P.fc=r2(P.fc+c.fc);P.amtDiff=r2(P.amtDiff+c.amtDiff);P.fx=r2(P.fx+c.fx);P.comm=r2(P.comm+c.comm);
     P.pax+=t.pax;P.col=r2(P.col+g.collected);P.late=r2(P.late+g.late);
@@ -3150,7 +3174,9 @@ const STE={Quote:'Quote',Operations:'Operations',Finance:'Financial close',Close
 const stn=k=>L(STH[k],STE[k]);
 const stCls=s=>({Quote:'orange',Operations:'blue',Finance:'purple',Closed:'green'}[s]);
 const supCls=s=>({Confirmed:'green',Sent:'blue','No reply':'red','Not sent':''}[s]||'');
-const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple']};
+/* an open quote: still in play (a Lost quote keeps stage Quote but leaves every pipeline total) */
+const isOpenQ=t=>!!t&&t.stage==='Quote'&&t.qst!=='Lost';
+const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple'],Lost:['לא נסגרה','Lost','red']};
 const qn=k=>{const q=QST[k||'Draft'];return L(q[0],q[1]);};
 const sd=s=>S.lang==='en'?s.slice(5,7)+'/'+s.slice(8,10)+'/'+s.slice(0,4):s.split('-').reverse().join('/');
 const endOf=t=>addDays(t.dep,t.nights);
@@ -3385,6 +3411,8 @@ const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
 /* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
 const ROLE_KEYS=['manager','accountant',...AGENTS];
+const canApprove=()=>typeof can==='function'?can('prop.approve'):isMgr();
+const canIssueDocs=()=>typeof can==='function'?can('fin.issueDocs'):(isMgr()||isAcct());
 const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
 const seesAll=()=>isMgr()||isAcct();
 AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
@@ -3549,7 +3577,7 @@ let HP_PREV='';
 const hpAnim=()=>HP_PREV!=='home|'+S.role+'|'+S.lang;
 function hpHero(ts,P,up){
   const c=f=>ts.filter(f).length,tot=ts.length||1;
-  const st=[['quote',L('הצעת מחיר','Quotation'),c(t=>t.stage==='Quote'),'#68CDF9',L('הצעות','quotes')],
+  const st=[['quote',L('הצעת מחיר','Quotation'),c(isOpenQ),'#68CDF9',L('הצעות','quotes')],
     ['ops',L('תפעול','Operation'),c(t=>t.stage==='Operations'),'#FFC145',L('תיקים פעילים','active files')],
     ['fin',L('כספים','Finance'),c(t=>t.stage==='Finance'),'#C684FF',L('בסגירה כספית','in financial close')],
     ['done',L('נסגרו','Closed'),c(t=>t.stage==='Closed'),'#5BE49B',L('הושלמו','completed')]];
@@ -3584,14 +3612,14 @@ function vHome(){
   const ts=visibleTrips();if(!ts.length)return noTrip();
   const c=f=>ts.filter(f).length,P=portfolio(ts),G=gapStats(ts);
   const qL=n=>L('הצעות',n===1?'quote':'quotes'),fL=n=>L('תיקים',n===1?'file':'files');
-  const n1=c(t=>t.stage==='Quote'&&(t.qst||'Draft')==='Draft'),n2=c(t=>t.stage==='Quote'&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
+  const n1=c(t=>isOpenQ(t)&&(t.qst||'Draft')==='Draft'),n2=c(t=>isOpenQ(t)&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
   const tiles=[[L('סך הכל','Total'),ts.length,L('הצעות ותיקים','quotes and files'),'',ic('folder')],[L('בבנייה','In progress'),n1,qL(n1),'orange',ic('draft')],[L('ממתינות','Pending'),n2,qL(n2),'amber',ic('hourglass')],[L('בתפעול','In operations'),n3,fL(n3),'blue',ic('ops')],[L('סגירה כספית','Financial close'),n4,fL(n4),'purple',ic('wallet')],[L('נסגרו','Closed'),n5,fL(n5),'green',ic('done')]];
   const tl=tiles.map(x=>`<div class="tile"><span class="ring" style="${x[3]?`--c:var(--${x[3]})`:''}">${x[4]}</span><div><div class="l">${x[0]}</div><div class="s">${x[1]} ${x[2]}</div></div></div>`).join('');
   const up=ts.filter(t=>D(t.dep)>=TODAY).sort((a,b)=>D(a.dep)-D(b.dep)).slice(0,7);
   let lastD='',ev='';
   up.forEach(t=>{if(t.dep!==lastD){lastD=t.dep;ev+=`<div class="evh">${fmtDate(t.dep)}</div>`;}
     ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span>${phImg('dest',t.dest,'ev-ph','')}<a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
-  const won=c(t=>t.stage!=='Quote'),lost=seesAll()?3:0;
+  const won=c(t=>t.stage!=='Quote'),lost=(seesAll()?3:0)+c(t=>t.stage==='Quote'&&t.qst==='Lost');
   const H=[['2023',9,4],['2024',11,5],['2025',12,3],['2026',won,lost]];
   const mx=Math.max(...H.map(h=>Math.max(h[1],h[2])),1);
   const bars=H.map(h=>`<div class="col"><div class="bars"><div class="b won" style="height:${h[1]/mx*100}%"><i>${h[1]}</i></div><div class="b lost" style="height:${Math.max(h[2]/mx*100,2)}%"><i>${h[2]}</i></div></div></div>`).join('');
@@ -3620,7 +3648,7 @@ function vHome(){
 /* ---------- projects list ---------- */
 function vQuotes(){
   const all=visibleTrips();if(!all.length)return noTrip();
-  const inTab=(t,k)=>k==='all'||(k==='quotes'&&t.stage==='Quote')||(k==='files'&&(t.stage==='Operations'||t.stage==='Finance'))||(k==='archive'&&t.stage==='Closed');
+  const inTab=(t,k)=>k==='all'||(k==='quotes'&&isOpenQ(t))||(k==='files'&&(t.stage==='Operations'||t.stage==='Finance'))||(k==='archive'&&(t.stage==='Closed'||(t.stage==='Quote'&&t.qst==='Lost')));
   const q=S.q.trim().toLowerCase();
   const base=all.filter(t=>(S.qseg==='All'||t.seg===S.qseg)&&(!q||(t.name+' '+t.client+' #'+t.no+' '+dn(t.dest)).toLowerCase().includes(q)));
   const list=base.filter(t=>inTab(t,S.qtab)).sort((a,b)=>D(a.dep)-D(b.dep));
@@ -3656,7 +3684,7 @@ function pGeneral(t){
   const d=DESTS[t.dest];
   const rows=[[L('שם הפרוייקט','Project name'),`<input type="text" data-ch="name" value="${esc(t.name)}" aria-label="${L('שם','Name')}" style="width:min(340px,100%)">`],[L('לקוח','Client'),`${esc(t.client)} (${ctn(t.ctype)})`],[L('יעד','Destination'),dn(t.dest)+', '+cn(t.dest)],[L('סוג קבוצה','Group type'),sn(t.seg)],[L('מספר נוסעים','Travelers'),t.pax],[L('תאריכי טיול','Trip dates'),range(t)],[L('אחראי תיק','File owner'),agn(t.agent)],
     [L('מטבע ספקים','Supplier currency'),t.cur+(d.air?L(' (טיסות ב-USD)',' (air in USD)'):'')],
-    ...(t.cur!=='USD'?[[L(`שער נעול, דולר ל-${t.cur}`,`Locked rate, USD per ${t.cur}`),`<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}">`]]:[]),
+    ...(t.cur!=='USD'?[[L(`שער נעול, דולר ל-${t.cur}`,`Locked rate, USD per ${t.cur}`),rateField(t)]]:[]),
     [L('מקדמה (%)','Deposit (%)'),`<input type="number" min="0" max="100" data-ch="pct" value="${t.pct}" aria-label="${L('אחוז מקדמה','Deposit percent')}">`],[L('מועד מקדמה','Deposit due'),fmtDate(t.depDue)],[L('מועד יתרה','Balance due'),fmtDate(t.balDue)]];
   return master(t)+`<div class="card"><table class="tbl"><tbody>${rows.map(r=>`<tr><td class="muted" style="width:220px">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody></table></div>`;
 }
@@ -3722,7 +3750,7 @@ function pCosts(t){
   return master(t,`<button class="btn pri" data-act="pt" data-v="quote">${L('צור הצעת מחיר','Create proposal')}</button>`)+`
   <div class="stats"><div class="stat"><div class="l">${L('מחיר ללקוח','Client price')}</div><div class="v">${usd(c.rev)}</div><div class="s">${usd(c.rev/t.pax,2)} ${L('לנוסע','per traveler')}</div></div><div class="stat"><div class="l">${L('עלות מתוכננת','Planned cost')}</div><div class="v">${usd(c.plan)}</div></div><div class="stat"><div class="l">${L('רווח מתוכנן','Planned profit')}</div><div class="v">${usd(c.planProfit)}</div><div class="s">${pct(c.planProfit/c.rev)} ${L('מהמחיר, כולל עמלות','of price, incl. commission')}</div></div><div class="stat"><div class="l">${L('עמלת ספקים צפויה','Expected supplier commission')}</div><div class="v">${usd(c.comm)}</div><div class="s">${L('לא מוצגת ללקוח','not shown to client')}</div></div>${c.disc?`<div class="stat"><div class="l">${L('הנחות','Discounts')}</div><div class="v">${usd(c.disc)}</div></div>`:''}</div>
   <div class="card sec"><div class="row" style="justify-content:space-between"><div class="row"><strong>${L('המרקאפ מחושב','Markup is calculated')}</strong><div class="row"><button class="btn sm ${t.basis==='cost'?'pri':''}" data-act="basis" data-v="cost">${L('על העלות','On cost')}</button><button class="btn sm ${t.basis==='price'?'pri':''}" data-act="basis" data-v="price">${L('מהמחיר','Of price')}</button></div></div>
-    ${usdOnly?'':`<label class="row small muted">${L(`שער נעול, דולר ל-${cs}`,`Locked rate, USD per ${cs}`)}<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}"></label>`}</div><p class="small muted" style="margin:8px 0 0">${usdOnly?L('כל הספקים בטיול הזה מחייבים בדולרים, אז אין חשיפה לשער חליפין.','Every supplier on this trip bills in USD, so there is no exchange-rate exposure.'):L(`עלויות הספקים ב-${cs} (טיסות וביטוח בדולרים), והמחיר ללקוח בדולרים לפי השער הנעול.`,`Supplier costs are in ${cs} (air and travel protection in USD); the client price is in dollars at the locked rate.`)} ${ex}</p></div>
+    ${usdOnly?'':`<label class="row small muted">${L(`שער נעול, דולר ל-${cs}`,`Locked rate, USD per ${cs}`)}${rateField(t)}</label>`}</div><p class="small muted" style="margin:8px 0 0">${usdOnly?L('כל הספקים בטיול הזה מחייבים בדולרים, אז אין חשיפה לשער חליפין.','Every supplier on this trip bills in USD, so there is no exchange-rate exposure.'):L(`עלויות הספקים ב-${cs} (טיסות וביטוח בדולרים), והמחיר ללקוח בדולרים לפי השער הנעול.`,`Supplier costs are in ${cs} (air and travel protection in USD); the client price is in dollars at the locked rate.`)} ${ex}</p></div>
   ${a.has?`<div class="card sec"><h3>${L('הוצאות משותפות','Shared expenses')}</h3><div class="scroll"><table class="tbl">${th(L('סוג השירות','Service type'),'Tot Global')}<tbody>${a.rows}</tbody><tfoot><tr><td>${L('סה"כ','Total')}</td><td></td><td></td><td></td><td class="n">${usd(a.tot)}</td></tr></tfoot></table></div></div>`:''}
   ${b.has?`<div class="card sec"><h3>${L('הוצאות פר אדם','Per-person expenses')}</h3><div class="scroll"><table class="tbl">${th(L('סוג השירות','Service type'),'Tot PP')}<tbody>${b.rows}</tbody><tfoot><tr><td>${L('סה"כ לאדם','Total per person')}</td><td></td><td></td><td></td><td class="n">${usd(b.tot/t.pax,2)}</td></tr><tr><td>${paxL(t.pax)}</td><td></td><td></td><td></td><td class="n">${usd(b.tot)}</td></tr></tfoot></table></div></div>`:''}`;
 }
@@ -3745,6 +3773,11 @@ function pQuote(t){
     <div class="row" style="margin-top:12px"><button class="btn" data-act="pt" data-v="approve">${L('לשלב אישור ההצעה','To quote approval')}</button></div></div></div>`;
 }
 
+/* the locked FX rate: editable only while the trip is a quote; afterwards it is the rate fixed at acceptance */
+function rateField(t){
+  if(t.stage==='Quote')return `<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}">`;
+  return `<span class="rate-ro"><b><bdi>${t.rate}</bdi></b> <span class="muted small">${t.wonOn?L(`ננעל כשההצעה אושרה ב-${fmtDate(t.wonOn)}`,`Locked when the quote was accepted on ${fmtDate(t.wonOn)}`):L('ננעל בעת אישור ההצעה','Locked at acceptance')}</span></span>`;
+}
 /* ---------- approval ---------- */
 function pApprove(t){
   const steps=[['Draft',L('בבנייה','In progress')],['Approval',L('לאישור מנהל','Manager approval')],['Sent',L('נשלח ללקוח','Sent to client')],['Negotiating',L('ממתין לסגירה','Awaiting close')]];
@@ -3753,7 +3786,7 @@ function pApprove(t){
   let act='';
   if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="odash">${L('לתפעול','To operations')}</button>`;
   else if((t.qst||'Draft')==='Draft')act=`<button class="btn pri" data-act="qs" data-v="Approval">${L('שלח לאישור מנהל','Send for manager approval')}</button>`;
-  else if(t.qst==='Approval')act=S.role==='manager'?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מנהל יכול לאשר ולשלוח.','The quote is waiting for manager approval. Only a manager can approve and send it.')}</p>`;
+  else if(t.qst==='Approval')act=canApprove()?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מי שמורשה לאשר הצעות יכול לאשר ולשלוח.','The quote is waiting for approval. Only someone who can approve proposals can approve and send it.')}</p>`;
   else if(t.qst==='Sent')act=`<p>${L(`ההצעה נשלחה ללקוח לפני ${t.qdays} ימים.`,`The quote was sent to the client ${t.qdays} days ago.`)}</p><button class="btn" data-act="qs" data-v="Negotiating">${L('הלקוח ביקש לסגור','Client asked to close')}</button>`;
   else act=`<p>${L('הלקוח מוכן לסגור.','The client is ready to close.')}</p>`;
   if(t.stage==='Quote'&&(t.qst==='Sent'||t.qst==='Negotiating'))act+=` <button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button>`;
@@ -4088,7 +4121,7 @@ const QS=[
  {g:2,he:'אילו הצעות ממתינות ללקוח יותר משבועיים?',en:'Which quotes have waited more than two weeks for the client?',r:/two weeks|waited|waiting.*client|שבועיים|ממתינות ללקוח/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Sent'&&t.qdays>14);
    return {t:q.length?listL(q.map(t=>L(`${t.name}: נשלחה לפני ${t.qdays} ימים, ${usd(calc(t).rev)}. ${agn(t.agent)} אחראי/ת.`,`${t.name}: sent ${t.qdays} days ago, ${usd(calc(t).rev)}. Owner: ${agn(t.agent)}.`)))+L('\nכדאי שיחת מעקב השבוע.','\nWorth a follow-up call this week.'):L('אין הצעות שממתינות יותר משבועיים.','No quote has waited more than two weeks.')};}},
  {g:2,he:'אילו הצעות ממתינות לאישור שלי?',en:'Which quotes are waiting for my approval?',r:/approv|לאישור/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Approval');
-   if(S.role!=='manager')return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
+   if(!canApprove())return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
    return {t:q.length?listL(q.map(t=>{const c=calc(t);return L(`${t.name}: ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}, ${agn(t.agent)}.`,`${t.name}: ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}, from ${agn(t.agent)}.`);})):L('אין הצעות שממתינות לאישור.','Nothing is waiting for approval.'),btn:q.length?{label:L('פתח לאישור','Open for approval'),act:'open',v:q[0].id+'|approve'}:null};}},
  {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
    return {t:listL(ag.map(([a,w,n])=>`${agn(a)}: ${w}/${n} (${Math.round(w/n*100)}%)`))+L('\nכולל הצעות פתוחות, כך שהשיעור יעלה ככל שייסגרו.','\nOpen quotes are included, so rates rise as they close.')};}},
@@ -4133,7 +4166,7 @@ const VIEWS={home:vHome,quotes:vQuotes,templates:vTemplates,hotels:vHotels,suppl
 /* ---------- actions ---------- */
 function winQuote(t){
   const R=rng(9000+t.id.length*31+S.nid++);
-  t.stage='Operations';t.qst='';
+  t.stage='Operations';t.qst='';t.wonOn=iso(TODAY);
   t.groups=genGroups(t.seg,t.pax,R);t.groups.forEach(g=>{g.depPaid=false;g.balPaid=false;});
   t.tasks=genTasks(t,R).map(x=>({...x,done:false}));
   t.sups=genSups(t.lines,'Operations',R).map(s=>({...s,st:'Sent'}));
@@ -4175,7 +4208,7 @@ document.addEventListener('click',e=>{
   else if(a==='clearchat'){S.chat=[];render();}
   else if(a==='chen'){S.chen=!S.chen;render();}
   else if(a==='win'){winQuote(byId(v));openTrip(v,'odash');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
-  else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
+  else if(a==='qs'){if(v==='Sent'&&t.qst==='Approval'&&!canApprove()){toast(L('התפקיד שלך לא כולל אישור הצעות','Your role cannot approve proposals'));return;}t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
   else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
     openTrip(c.id,'plan');render();window.scrollTo(0,0);toast(L('שוכפל כהצעה חדשה','Duplicated as a new quote'));}
@@ -4200,7 +4233,7 @@ document.addEventListener('click',e=>{
   else if(a==='gapdisp'){S.disp=v||null;render();}
   else if(a==='copydisp'){const {t:tt,l}=gapLineOf(v);if(l)copy(disputeMail(tt,l));}
   else if(a==='gapsent'){const {l}=gapLineOf(v);if(l){l.inv.st='disputed';S.disp=null;render();toast(L(`דרישת זיכוי נשלחה ל-${l.sup}`,`Dispute sent to ${l.sup}`));}}
-  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=r2(effAmt(l.inv)-planC(l));l.inv.credit=r2((l.inv.credit||0)+amt);l.inv.st='credited';render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
+  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=gapCredit(l);render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
   else if(a==='gapacc'){const {l}=gapLineOf(v);if(l){l.inv.st='accepted';S.disp=null;render();toast(L('החיוב אושר','Charge accepted'));}}
   else if(a==='print'){try{window.print();}catch(err){}toast(L('אם חלון ההדפסה לא נפתח כאן, הדפיסו מהקובץ המקומי.','If no print dialog opened here, print from the offline file.'));}
 });
@@ -4214,7 +4247,7 @@ document.addEventListener('change',e=>{
   else if(k==='cost')t.lines.find(l=>l.id===+v).cost=Math.max(0,+val||0);
   else if(k==='itemcost'){const l=t.lines.find(x=>x.id===+v);l.cost=Math.max(0,r2((+val||0)/lrate(t,l)));}
   else if(k==='ov')t.lines.find(l=>l.id===+v).ov=val===''?'':Math.min(90,Math.max(0,+val||0));
-  else if(k==='rate')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));
+  else if(k==='rate'){if(t.stage==='Quote')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));}
   else if(k==='dm'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.m=val;}
   else if(k==='dv'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.v=val===''?'':Math.max(0,+val||0);}
   else if(k==='mv')t.items.find(i=>i.id===+v).day=+val;
@@ -4517,9 +4550,10 @@ function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)retur
 const stageOf=pt=>(STAGES.find(s=>s[2].some(x=>x[0]===pt))||STAGES[0])[0];
 const tabIcon=k=>k.startsWith('N:')?nic(k.slice(2)):ic(k);
 function pjStatus(t){
-  if(t.stage==='Quote')return `<span class="pj-status q">${qn(t.qst)} ${ic('down')}</span>`;
-  const lab={Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
-  return `<span class="pj-status s-${t.stage}">${lab} ${ic('down')}</span>`;
+  const lab=t.stage==='Quote'?qn(t.qst):{Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
+  const cls=t.stage==='Quote'?'q':'s-'+t.stage,open=!!S.pjMenu,mv=typeof stmMoves==='function'?stmMoves(t):[];
+  const items=mv.map(m=>`<button type="button" role="menuitem" class="pj-mi${m.ok?'':' off'}" data-act="pjmove" data-v="${m.mv}" ${m.ok?'':'disabled'}><b>${L(m.he,m.en)}</b><span class="small muted">${m.ok?L(m.dhe,m.den):m.why.map(w=>L(w.he,w.en)).join('. ')}</span></button>`).join('')||`<p class="small muted pj-mn">${L('אין מעברים זמינים.','No moves available.')}</p>`;
+  return `<span class="pj-stwrap"><button type="button" class="pj-status ${cls}" data-act="pjmenu" aria-haspopup="menu" aria-expanded="${open}" aria-label="${L('סטטוס הפרויקט','Project status')}: ${esc(lab)}">${lab} ${ic('down')}</button>${open?`<div class="pj-menu" role="menu" aria-label="${L('מעברי סטטוס','Status moves')}">${items}</div>`:''}</span>`;
 }
 vTrip=function(){
   const t=T();if(!t)return noTrip();
@@ -4530,7 +4564,7 @@ vTrip=function(){
   return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
    <div class="pj-sub">${range(t)} · ${L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`)} · ${dn(t.dest)} · <bdi>${esc(t.client)}</bdi> · ${paxL(t.pax)}</div>
-   <div class="tabs pj-tabs">${SG[2].map(x=>`<button class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
+   <div class="tabs pj-tabs" role="tablist" aria-label="${L('לשוניות הפרויקט','Project tabs')}">${SG[2].map(x=>`<button role="tab" aria-selected="${S.ptab===x[0]}" class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
 };
 /* Operation dashboard, as in the product: days to trip, urgent tasks, suppliers, revenue */
 function ocard(cls,icon,val,label,act){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span></button>`;}
@@ -4570,11 +4604,11 @@ function pIncome(t){
   const {docs,g}=incomeDocs(t),c=calc(t),tab=S.incTab||'all',q=(S.incQ||'').toLowerCase();
   const billed=r2(docs.filter(d=>d.type==='deal').reduce((a,d)=>a+d.amt,0));
   const all=docs.filter(d=>(tab==='all'||d.type===tab)&&(!q||d.name.toLowerCase().includes(q))),rpp=S.incRpp||10,pages=Math.max(1,Math.ceil(all.length/rpp)),pg=Math.min(S.incPage||0,pages-1),rows=all.slice(pg*rpp,pg*rpp+rpp);
-  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('חשבונית מס קבלה','Tax invoice')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
+  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
   const stl=d=>d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber');
-  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}">${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
    <div class="card inc" style="padding:0;overflow:hidden"><div class="row inc-f"><input type="text" data-inc="q" value="${esc(S.incQ||'')}" placeholder="${L('חיפוש...','Search...')}" aria-label="${L('חיפוש','Search')}"><button class="btn" data-act="toast" data-v="${L('סינון לפי סוג, סטטוס ותאריך','Filter by type, status and date')}">${ic('filter')} ${L('סינון','Filters')}</button></div>
-    <div class="tabs inc-t">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('חשבוניות מס','Tax invoices')]].map(x=>`<button class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
+    <div class="tabs inc-t" role="tablist" aria-label="${L('סוג מסמך','Document type')}">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('קבלות','Receipts')]].map(x=>`<button role="tab" aria-selected="${tab===x[0]}" class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
     <div class="scroll"><table class="tbl"><thead><tr><th>${L('שם לקוח','Client name')}</th><th>${L('סוג מסמך','Document type')}</th><th>${L('מספר','Number')}</th><th>${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
     <tbody>${rows.map(d=>`<tr><td><strong>${esc(d.name)}</strong></td><td>${lab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${stl(d)}</td></tr>`).join('')||`<tr><td colspan="6" class="muted">${L('אין מסמכים.','No documents.')}</td></tr>`}</tbody></table></div>
     <div class="inc-pg"><label class="small muted">${L('שורות בעמוד','Rows per page')} <select data-ch="incrpp" aria-label="${L('שורות בעמוד','Rows per page')}">${[5,10,25].map(n=>`<option value="${n}" ${rpp===n?'selected':''}>${n}</option>`).join('')}</select></label><span class="small muted" dir="ltr">${all.length?pg*rpp+1:0}–${Math.min(all.length,pg*rpp+rpp)} ${L('מתוך','of')} ${all.length}</span><button class="iconb" data-act="incpg" data-v="${pg-1}" ${pg===0?'disabled':''} aria-label="${L('הקודם','Previous')}">${ic('chev','flip back')}</button><button class="iconb" data-act="incpg" data-v="${pg+1}" ${pg>=pages-1?'disabled':''} aria-label="${L('הבא','Next')}">${ic('chev','flip')}</button></div>
@@ -6601,6 +6635,8 @@ TESTS.push({name:'tbday',run:h=>{
 Object.assign(S,{tbAlt:0,tbVerA:0,tbVerB:0,tbNote:'',tbRestore:0});
 
 const tbcCan=()=>typeof can!=='function'||can('price.edit');
+/* swapping a supplier is its own permission (sup.swap); tbSwap and tbUndo refuse without it unless a seed passes force */
+const tbcCanSwap=()=>typeof can!=='function'||can('sup.swap');
 const tbcLines=t=>t.lines.filter(l=>!l.extra);
 const tbcSg=n=>(n<0?'-':n>0?'+':'')+usd(Math.abs(n));
 const tbcWho=by=>by==='manager'?MGR():(typeof STAFF_BY!=='undefined'&&STAFF_BY[by]&&by!=='manager'?L(STAFF_BY[by].he,STAFF_BY[by].en):agn(by));
@@ -6632,9 +6668,10 @@ function tbcProfitDelta(t,l,a){
   const t2=Object.assign({},t,{lines:t.lines.map(x=>x===l?Object.assign({},x,{sup:a.sup.name,cost:a.cost,comm:a.comm}):x)});
   return r2(calc(t2).planProfit-calc(t).planProfit);
 }
-function tbUndo(t,lineId){
+function tbUndo(t,lineId,force){
   const l=t.lines.find(x=>x.id===lineId);
   if(!l)return {ok:false,delta:0,reason:'line'};
+  if(!force&&!tbcCanSwap())return {ok:false,delta:0,reason:'perm'};
   if(!l.alt0)return {ok:false,delta:0,reason:'nothing'};
   if(l.inv)return {ok:false,delta:0,reason:'invoiced'};
   const p0=calc(t).planProfit,old=l.sup,a=l.alt0;
@@ -6642,15 +6679,16 @@ function tbUndo(t,lineId){
   tbcSupSync(t,l,old);tbcRoomSync(t,old,l.sup);
   return {ok:true,delta:r2(calc(t).planProfit-p0),reason:''};
 }
-function tbSwap(t,lineId,supId){
+function tbSwap(t,lineId,supId,force){
   const l=t.lines.find(x=>x.id===lineId);
   if(!l)return {ok:false,delta:0,reason:'line'};
+  if(!force&&!tbcCanSwap())return {ok:false,delta:0,reason:'perm'};
   if(l.inv)return {ok:false,delta:0,reason:'invoiced'};
   if(t.stage!=='Quote'&&t.stage!=='Operations')return {ok:false,delta:0,reason:'stage'};
   const a=tbcAltOf(t,l,supId);
   if(!a)return {ok:false,delta:0,reason:'unknown'};
   if(a.sup.name===l.sup)return {ok:false,delta:0,reason:'same'};
-  if(l.alt0&&a.sup.name===l.alt0.sup)return tbUndo(t,lineId);   // swapping back restores the exact original
+  if(l.alt0&&a.sup.name===l.alt0.sup)return tbUndo(t,lineId,true);   // swapping back restores the exact original
   const p0=calc(t).planProfit,old=l.sup;
   if(!l.alt0)l.alt0={sup:l.sup,cost:l.cost,comm:l.comm};
   l.sup=a.sup.name;l.cost=a.cost;l.comm=a.comm;
@@ -6658,7 +6696,7 @@ function tbSwap(t,lineId,supId){
   return {ok:true,delta:r2(calc(t).planProfit-p0),reason:''};
 }
 function tbcMsg(r,l){
-  if(!r.ok)return {invoiced:L('השורה כבר חויבה בחשבונית, אי אפשר להחליף ספק.','This line already has an invoice, so the supplier cannot be changed.'),stage:L('החלפת ספק אפשרית רק בשלב הצעה או תפעול.','Suppliers can be swapped only in Quotation or Operation.'),nothing:L('אין החלפה לבטל.','Nothing to undo.')}[r.reason]||L('לא ניתן להחליף.','Could not swap.');
+  if(!r.ok)return {invoiced:L('השורה כבר חויבה בחשבונית, אי אפשר להחליף ספק.','This line already has an invoice, so the supplier cannot be changed.'),stage:L('החלפת ספק אפשרית רק בשלב הצעה או תפעול.','Suppliers can be swapped only in Quotation or Operation.'),nothing:L('אין החלפה לבטל.','Nothing to undo.'),perm:L('התפקיד שלך לא כולל החלפת ספקים.','Your role cannot swap suppliers.')}[r.reason]||L('לא ניתן להחליף.','Could not swap.');
   const s=tbcSg(r.delta);
   return L(`הספק הוחלף: ${l?l.sup:''}. השפעה על הרווח המתוכנן ${s}`,`Supplier changed${l?' to '+l.sup:''}. Planned profit ${s}`);
 }
@@ -6686,9 +6724,9 @@ const tbcScope=l=>l.scope==='shared'?L('משותף','Shared'):L('לנוסע','Pe
 
 /* ---------- By components view ---------- */
 function tbcAltPanel(t,l){
-  const alts=altsFor(t,l),canSwap=tbcCan()&&t.stage==='Quote'&&!l.inv,ops=t.stage==='Operations';
+  const alts=altsFor(t,l),canSwap=tbcCanSwap()&&t.stage==='Quote'&&!l.inv,ops=t.stage==='Operations';
   const hint=l.inv?L('לשורה יש חשבונית, הספק נעול. אפשר להשוות בלבד.','This line has an invoice, so the supplier is locked. Comparison only.')
-    :t.stage==='Quote'?(tbcCan()?L('החלפה משנה את עלות היחידה והעמלה בלבד, לא את המטבע או השער. אפשר לבטל.','A swap changes the unit cost and commission only, never the currency or rate. You can undo it.'):L('התפקיד שלך לא יכול לערוך מחירים.','Your role cannot edit prices.'))
+    :t.stage==='Quote'?(tbcCanSwap()?L('החלפה משנה את עלות היחידה והעמלה בלבד, לא את המטבע או השער. אפשר לבטל.','A swap changes the unit cost and commission only, never the currency or rate. You can undo it.'):L('התפקיד שלך לא כולל החלפת ספקים.','Your role cannot swap suppliers.'))
     :ops?L('בתפעול בוחרים ספק מתוך מסך הספקים של התיק.','In Operation, the supplier is chosen from the trip Suppliers tab.')
     :L('תצוגה לקריאה בלבד בשלב הזה.','Read-only at this stage.');
   const rows=alts.map(a=>{
@@ -6813,7 +6851,7 @@ TRIP_INIT.push(t=>{
   if(t.id==='hl'||t.id==='irl'){
     const c=JSON.parse(JSON.stringify(t)),l=c.lines.find(x=>x.type==='Lodging'&&!x.inv);
     if(!l)return;const a=altsFor(c,l).filter(x=>!x.inc)[0];if(!a)return;
-    if(tbSwap(c,l.id,a.sup.id).ok)t.versions.push(tbVerSnap(c,2,at2,t.agent,'Alternative hotel: '+a.sup.name,'מלון חלופי: '+a.sup.name));
+    if(tbSwap(c,l.id,a.sup.id,true).ok)t.versions.push(tbVerSnap(c,2,at2,t.agent,'Alternative hotel: '+a.sup.name,'מלון חלופי: '+a.sup.name));
   }
 });
 
@@ -7187,7 +7225,7 @@ function spCliOpen(name){
   S.cliId=c?c.id:name;S.cliTab='ov';S.tab='clients';S.menu=false;render();window.scrollTo(0,0);return !!spCli();
 }
 function spCliClose(){S.cliId=null;render();window.scrollTo(0,0);}
-/* a client's money: documents from incomeDocs across its non-Quote trips; billed = deal invoices, received = tax invoices (receipts) */
+/* a client's money: documents from incomeDocs across its non-Quote trips; billed = deal invoices, received = receipts */
 function spCliFin(name){
   const trips=TRIPS.filter(t=>t.client===name&&canSee(t)),rows=[],docs=[];let billed=0,received=0,booked=0;
   trips.filter(t=>t.stage!=='Quote').forEach(t=>{
@@ -7198,14 +7236,14 @@ function spCliFin(name){
 function spCliHtml(c,tab){
   tab=tab||S.cliTab||'ov';
   const F=spCliFin(c.name),ty=CTYPE[c.type]||[c.type,c.type,''],ct=c.contact||{};
-  const quotes=F.trips.filter(t=>t.stage==='Quote'),qv=r2(quotes.reduce((a,t)=>a+calc(t).rev,0));
+  const quotes=F.trips.filter(isOpenQ),qv=r2(quotes.reduce((a,t)=>a+calc(t).rev,0));
   const editWhy=spNoForm()||(!spCan('cli.edit')?L('התפקיד שלך לא כולל עריכת לקוחות','Your role cannot edit clients'):'');
   const kv=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`,sr=SP_SRC[c.source];
   const tabs=[['ov',L('סקירה','Overview')],['fin',L('כספים','Finance')]];
   const tripRows=F.trips.slice().sort((a,b)=>D(b.dep)-D(a.dep)).map(t=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${t.id}">#${t.no} ${esc(t.name)}</button></td><td>${t.stage==='Quote'?pillF(qn(t.qst),''):pillF(stn(t.stage),'blue')}</td><td>${range(t)}</td><td class="n">${t.pax}</td><td class="n">${usd(calc(t).rev)}</td><td>${agn(t.agent)}</td></tr>`).join('');
   let body='';
   if(tab==='fin'){
-    const docLab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('חשבונית מס קבלה','Tax invoice')};
+    const docLab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')};
     body=`<div class="sp-sum sp-fin"><span class="sp-kpi"><small>${L('הכנסה סגורה','Booked revenue')}</small><b>${usd(F.booked,2)}</b></span><span class="sp-kpi"><small>${L('חויב','Billed')}</small><b>${usd(F.billed,2)}</b></span><span class="sp-kpi"><small>${L('התקבל','Received')}</small><b>${usd(F.received,2)}</b></span><span class="sp-kpi"><small>${L('פתוח','Open')}</small><b class="${F.open>0?'due':''}">${usd(F.open,2)}</b></span></div>
     ${F.rows.length?`<div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('סך הטיול','Trip total'),'n')}${alTh(L('חויב','Billed'),'n')}${alTh(L('התקבל','Received'),'n')}${alTh(L('פתוח','Open'),'n')}</tr></thead><tbody>${F.rows.map(r=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${r.t.id}|income">#${r.t.no} ${esc(r.t.name)}</button></td><td class="n">${usd(r.rev,2)}</td><td class="n">${usd(r.billed,2)}</td><td class="n">${usd(r.received,2)}</td><td class="n">${usd(r.open,2)}</td></tr>`).join('')}</tbody></table></div></div>
     <h3 class="al-h2">${L('מסמכים','Documents')}</h3><div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('מסמך','Document'))}${alTh(L('מספר','Number'))}${alTh(L('טיול','Trip'))}${alTh(L('תאריך','Date'))}${alTh(L('סכום','Amount'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${F.docs.map(d=>`<tr><td>${docLab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>#${d.t.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber')}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div></div>`
@@ -7774,7 +7812,8 @@ const stPreviewLine=()=>{const p=stPreview();
 
 /* ---------- permissions ---------- */
 const ST_ROLES=['owner','admin','agent','accountant'];
-const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','price.edit','forms.build'];
+/* exactly the keys the code checks with can() (a TEST in s11_fix.js pins the list): pages, approvals, document issue, supplier work, clients, settings, forms */
+const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','settings.stages','price.edit','forms.build','sup.edit','sup.swap','ops.suppliers','cli.edit'];
 PERSIST.push({key:'st-perms',get:()=>S.perms?JSON.parse(JSON.stringify(S.perms)):null,set:v=>{S.perms=v&&typeof v==='object'?v:null;},reset:()=>{S.perms=null;}});
 /* effective value of a permission for a role key (owner|admin|agent|accountant) */
 const stPermOf=(role,k)=>{const p=PERM_BY[k];if(!p)return false;const o=S.perms&&S.perms[role];return o&&typeof o[k]==='boolean'?o[k]:!!p[role];};
@@ -7855,7 +7894,7 @@ function stRoles(ro){
         ST_ROLES.map(r=>{const on=stPermOf(r,p.k),lock=r==='owner',ch=!lock&&on!==!!p[r];
           return `<td class="st-c"><label class="st-sw${ch?' chg':''}"><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
   return `<div class="card st-card"><div class="st-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
-  <p class="muted st-note">${L('שמונה הרשאות נאכפות בדמו (למשל כספים, משתמשים, סנכרון הנהלת חשבונות). האחרות מוצגות במטריצה בלבד. עמודת הבעלים נעולה.','Eight permissions are enforced in this demo (for example finance, users, accounting sync). The rest only show in the matrix. The owner column is locked.')}</p>
+  <p class="muted st-note">${L('13 הרשאות נאכפות בדמו (למשל כספים, משתמשים, אישור הצעות, החלפת ספקים). האחרות מוצגות במטריצה בלבד. עמודת הבעלים נעולה.','13 permissions are enforced in this demo (for example finance, users, approving proposals, swapping suppliers). The rest only show in the matrix. The owner column is locked.')}</p>
   <div class="scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function stStages(ro){
@@ -7930,9 +7969,9 @@ TESTS.push({name:'st settings',run:h=>{const out=[],S=h.S,role0=S.role,lang0=S.l
       const ro=!can('settings.edit');if(ro!==html.includes('st-ro'))out.push(`read-only note mismatch ${role} ${tb}`);
       if(tb==='roles'&&ro&&(html.match(/<input type="checkbox" class="st-tg"[^>]*>/g)||[]).some(x=>!/disabled/.test(x)))out.push('read-only matrix has an enabled toggle for '+role);});});});
   S.lang='en';S.role='manager';S.stSub='roles';
-  /* 40 x 4 = 160 toggles; 8 enforced tags, 32 matrix-only tags; owner column locked on */
+  /* 40 x 4 = 160 toggles; 13 enforced tags, 27 matrix-only tags; owner column locked on */
   {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==160)out.push('toggles '+n);
-    if(count(html,'class="st-mx"')!==32)out.push('matrix-only tags '+count(html,'class="st-mx"'));
+    if(count(html,'class="st-mx"')!==27)out.push('matrix-only tags '+count(html,'class="st-mx"'));
     if((html.match(/pill ok/g)||[]).length!==ST_ENFORCED.length)out.push('enforced tags');
     const own=html.match(/<input type="checkbox" class="st-tg"[^>]*data-role="owner"[^>]*>/g)||[];if(own.length!==40||own.some(x=>!/checked/.test(x)||!/disabled/.test(x)))out.push('owner column not locked on');}
   /* fin.view off for agent: can() false for Priya, Finance and Invoice check render noAccess, owner unaffected */
@@ -8081,8 +8120,10 @@ function daMonthEnd(){
 function daDet(k){S.daDet=k;if(k!=='ap')S.daWk=-1;render();}
 function daWk(i){S.daDet='ap';S.daWk=S.daWk===i?-1:i;render();}
 function daIssue(key){
+  if(!canIssueDocs()){try{toast(L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents'));}catch(e){}return false;}
   if(!DA_STATE.iss.includes(key)){DA_STATE.iss.push(key);try{toast(L('החשבונית הופקה ונשלחה ללקוח','Deal invoice issued and sent to the client'));}catch(e){}}
   render();
+  return true;
 }
 function daApprove(key){
   if(DA_STATE.ap.includes(key))return;
@@ -8125,7 +8166,7 @@ function daDetail(key){
   if(key==='docs'){const d=daDocsToIssue();
     return {title:L('חשבוניות עסקה להפקה','Deal invoices to issue'),sum:usd(d.total),page:'finance',
       body:tbl([[L('קבוצת חיוב','Billing group')],[L('טיול','Trip')],[L('סוג','Type')],[L('תאריך','Date')],[L('סכום','Amount'),'n'],['']],
-        d.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.d.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.d.kind)}</td><td>${fmtDate(x.d.date)}</td>${daNum(usd(x.amt))}<td><button class="btn sm pri" data-act="da-issue" data-v="${x.key}">${L('הפק','Issue')}</button></td></tr>`).join(''),daMore(d.n-CAP,'finance',L('לכל הכספים','Open Finance')))};}
+        d.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.d.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.d.kind)}</td><td>${fmtDate(x.d.date)}</td>${daNum(usd(x.amt))}<td><button class="btn sm pri" data-act="da-issue" data-v="${x.key}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${L('הפק','Issue')}</button></td></tr>`).join(''),daMore(d.n-CAP,'finance',L('לכל הכספים','Open Finance')))};}
   if(key==='ap'){const w=daApWeeks(8),sel=S.daWk>=0?w.weeks[S.daWk]:null,items=(sel?sel.items:w.weeks.flatMap(x=>x.items)).slice().sort((a,b)=>b.amt-a.amt);
     return {title:sel?L(`תשלומים לספקים: ${daDate(sel.from)} עד ${daDate(sel.to)}`,`Supplier payments: ${daDate(sel.from)} to ${daDate(sel.to)}`):L('תשלומים לספקים ב-8 השבועות הקרובים','Supplier payments, next 8 weeks'),sum:usd(sel?sel.total:w.total),page:'finance',
       body:tbl([[L('טיול','Trip')],[L('קטגוריה','Category')],[L('תאריך תשלום','Pay date')],[L('סכום','Amount'),'n'],['']],
@@ -8193,7 +8234,7 @@ function daDocsCard(){
   const d=daDocsToIssue(),CAP=5;
   return `<div class="card da-card"><div class="da-h"><h3>${L('מסמכים להפקה','Documents to issue')}</h3><span class="da-sum">${d.n}</span></div>
    <p class="small muted da-note">${L('חשבוניות עסקה לתשלומי לקוחות שמועדם בתוך 30 יום או שעבר.','Deal invoices for client installments due within 30 days or already past due.')}</p>
-   ${d.items.slice(0,CAP).map(x=>`<div class="da-li"><div><strong>${esc(x.d.name)}</strong><div class="small muted">${esc(x.t.name)} · ${daKind(x.d.kind)} · ${fmtDate(x.d.date)}</div></div><span class="da-amt">${usd(x.amt)}</span><button class="btn sm pri" data-act="da-issue" data-v="${x.key}">${L('הפק','Issue')}</button></div>`).join('')||`<p class="muted">${L('כל המסמכים הופקו.','Everything is issued.')}</p>`}
+   ${d.items.slice(0,CAP).map(x=>`<div class="da-li"><div><strong>${esc(x.d.name)}</strong><div class="small muted">${esc(x.t.name)} · ${daKind(x.d.kind)} · ${fmtDate(x.d.date)}</div></div><span class="da-amt">${usd(x.amt)}</span><button class="btn sm pri" data-act="da-issue" data-v="${x.key}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${L('הפק','Issue')}</button></div>`).join('')||`<p class="muted">${L('כל המסמכים הופקו.','Everything is issued.')}</p>`}
    <div class="da-more">${d.n>CAP?`<span class="muted small">${L(`ועוד ${d.n-CAP}`,`and ${d.n-CAP} more`)}</span>`:'<span></span>'}<button class="btn sm" data-act="da-det" data-v="docs">${L('לכל המסמכים','See all')}</button></div></div>`;
 }
 
@@ -8325,7 +8366,7 @@ const dbDepartures=(ts,days)=>{const lo=DB_TODAY(),hi=addDays(lo,days);
 /* team leaderboard: one row per agent */
 function dbTeam(){
   const rows=AGENTS.map(a=>{
-    const ts=dbAgentTrips(a),open=ts.filter(t=>t.stage==='Quote'),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
+    const ts=dbAgentTrips(a),open=ts.filter(isOpenQ),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
     const tgt=(STAFF_BY[a]&&STAFF_BY[a].target)||0,booked=P.rev;
     return {agent:a,openN:open.length,openVal:r2(open.reduce((s,t)=>s+calc(t).rev,0)),files:won.length,all:ts.length,
       booked,fp:P.fp,margin:booked?P.fp/booked:0,target:tgt,att:tgt?booked/tgt:0};});
@@ -8359,7 +8400,7 @@ function dbFormsPending(ts){
 /* the agent's KPIs and everything the dashboard shows */
 function dbAgentKpis(agent,ts){
   ts=(ts||dbAgentTrips(agent)).filter(t=>t.agent===agent);
-  const open=ts.filter(t=>t.stage==='Quote'),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
+  const open=ts.filter(isOpenQ),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
   const tgt=(STAFF_BY[agent]&&STAFF_BY[agent].target)||0,team=dbTeam();
   return {agent,openN:open.length,openVal:r2(open.reduce((s,t)=>s+calc(t).rev,0)),
     followN:dbFollowUps(agent,ts).length,depN:dbDepartures(ts,60).length,overN:dbTasks(ts,0).filter(z=>z.over).length,
@@ -8397,7 +8438,7 @@ function dbReadyRows(ts,days){
 function dbApprovalsCard(){
   const a=dbApprovals(TRIPS),tot=r2(a.reduce((s,x)=>s+x.rev,0));
   const rows=a.map(x=>`<div class="da-li db-ap"><div><strong>${esc(x.t.name)}</strong><div class="small muted">${esc(x.t.client)} · ${agn(x.t.agent)} · ${L(`ממתינה ${dbDays(x.days)}`,`waiting ${dbDays(x.days)}`)} · ${L('רווח מתוכנן','planned margin')} <bdi>${pct(x.margin)}</bdi></div></div>
-    <span class="da-amt">${usd(x.rev)}</span><button class="btn sm pri" data-act="open" data-v="${x.t.id}" data-pt="approve">${L('אשר','Approve')}</button></div>`).join('');
+    <span class="da-amt">${usd(x.rev)}</span>${canApprove()?`<button class="btn sm pri" data-act="open" data-v="${x.t.id}" data-pt="approve">${L('אשר','Approve')}</button>`:`<button class="btn sm" data-act="open" data-v="${x.t.id}" data-pt="approve" title="${L('התפקיד שלך לא כולל אישור הצעות','Your role cannot approve proposals')}">${L('פתח','Open')}</button>`}</div>`).join('');
   return `<div class="card da-card db-card"><div class="da-h"><h3>${L('הצעות הממתינות לאישור','Approvals waiting')}</h3><span class="da-sum">${usd(tot)}</span></div>
    ${rows||`<p class="muted">${L('אין הצעות הממתינות לאישור.','No quotes are waiting for approval.')}</p>`}</div>`;
 }
@@ -8418,7 +8459,7 @@ function dbMgrCards(){
 
 function dbHero(K,ts){
   const first=String(userName()).split(' ')[0],day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const open=ts.filter(t=>t.stage==='Quote'),cols=['Draft','Approval','Sent','Negotiating'],cc=['#68CDF9','#C684FF','#FFC145','#5BE49B'];
+  const open=ts.filter(isOpenQ),cols=['Draft','Approval','Sent','Negotiating'],cc=['#68CDF9','#C684FF','#FFC145','#5BE49B'];
   const seg=cols.map((k,i)=>{const x=open.filter(t=>dbQst(t)===k);return [r2(x.reduce((s,t)=>s+calc(t).rev,0)),cc[i],qn(k),x.length];});
   const tot=Math.max(1,seg.reduce((s,x)=>s+x[0],0));
   const nx=dbDepartures(ts,400)[0],dd=nx?Math.round((D(nx.dep)-TODAY)/DAY):0;
@@ -8438,7 +8479,7 @@ function dbHero(K,ts){
 }
 
 function dbPipelineCard(ts){
-  const cols=['Draft','Approval','Sent','Negotiating'],open=ts.filter(t=>t.stage==='Quote');
+  const cols=['Draft','Approval','Sent','Negotiating'],open=ts.filter(isOpenQ);
   const col=k=>{const x=open.filter(t=>dbQst(t)===k).sort((a,b)=>(b.qdays||0)-(a.qdays||0));
     return `<div class="db-col"><div class="db-ch"><span class="pill ${QST[k][2]}">${qn(k)}</span><b>${x.length}</b></div>
      ${x.map(t=>{const c=calc(t),late=k==='Sent'&&(t.qdays||0)>7;
@@ -8493,12 +8534,12 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     if(Math.abs(T.booked-P.rev)>.02)out.push(`leaderboard booked ${T.booked} vs portfolio ${P.rev}`);
     if(Math.abs(T.fp-P.fp)>.05)out.push(`leaderboard fp ${T.fp} vs ${P.fp}`);
     if(T.rows.length!==AGENTS.length)out.push('leaderboard rows');
-    let n=0,v=0;TRIPS.forEach(t=>{if(t.stage==='Quote'){n++;v+=calc(t).rev;}});
+    let n=0,v=0;TRIPS.forEach(t=>{if(isOpenQ(t)){n++;v+=calc(t).rev;}});
     if(T.openN!==n||Math.abs(T.openVal-r2(v))>.05)out.push(`open quotes ${T.openN}/${T.openVal} vs ${n}/${r2(v)}`);
     T.rows.forEach(r=>{if(!isFinite(r.att)||!isFinite(r.margin))out.push('non-finite team row '+r.agent);});}
   /* agent KPIs count only that agent's trips (every agent) */
   AGENTS.forEach(a=>{const K=dbAgentKpis(a),mine=TRIPS.filter(t=>t.agent===a),lo=iso(TODAY);
-    const q=mine.filter(t=>t.stage==='Quote'),exp={n:q.length,v:r2(q.reduce((s,t)=>s+calc(t).rev,0)),
+    const q=mine.filter(isOpenQ),exp={n:q.length,v:r2(q.reduce((s,t)=>s+calc(t).rev,0)),
       f:q.filter(t=>t.qst==='Sent'&&t.qdays>7).length,
       d:mine.filter(t=>t.stage!=='Quote'&&t.dep>=lo&&t.dep<=addDays(lo,60)).length,
       o:mine.reduce((s,t)=>s+(t.stage==='Quote'?0:t.tasks.filter(x=>!x.done&&x.due<lo).length),0),
@@ -8507,7 +8548,7 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     if(K.followN!==exp.f||K.depN!==exp.d||K.overN!==exp.o)out.push(`agent ${a} counts ${K.followN}/${K.depN}/${K.overN} vs ${exp.f}/${exp.d}/${exp.o}`);
     if(Math.abs(K.booked-exp.b)>.05)out.push(`agent ${a} booked ${K.booked} vs ${exp.b}`);
     if(dbFollowUps(a).some(t=>t.agent!==a))out.push('follow-ups include another agent');});
-  if(AGENTS.reduce((s,a)=>s+dbAgentKpis(a).openN,0)!==TRIPS.filter(t=>t.stage==='Quote').length)out.push('agent open quotes do not add up');
+  if(AGENTS.reduce((s,a)=>s+dbAgentKpis(a).openN,0)!==TRIPS.filter(isOpenQ).length)out.push('agent open quotes do not add up');
   /* readiness: finite and in [0,100] for every non-Quote trip, with any number of tasks */
   TRIPS.forEach(t=>{if(t.stage==='Quote')return;const r=dbReadiness(t);
     ['tasks','pass','sups','dep','overall'].forEach(k=>{if(!isFinite(r[k])||r[k]<0||r[k]>100)out.push(`readiness ${t.id}.${k}=${r[k]}`);});});
@@ -8894,6 +8935,68 @@ TESTS.push({name:'td Hebrew data strings',run:h=>{
      room block open with cutoff within 30 days.
    - Finance: invoices waiting, open gaps, open balance, else "close the file" (info). Closed: none.
    Severity: urgent = overdue / late / past cutoff / follow-up due; info = nothing for this person to do. */
+/* ---------- stage moves: named, guarded, reused by the status menu, the dashboard control and the next-step bar ----------
+   stmCheck(t,mv) -> {ok,why:[{he,en}]} for mv = 'lost' (Quote -> Lost), 'fin' (Operations -> Finance), 'close' (Finance -> Closed).
+   fin needs the return date to have passed; close needs no open gaps, nothing in the supplier-invoice inbox and no balance to collect. */
+const stmReturned=t=>!!t&&endOf(t)<=iso(TODAY);
+const stmOpenGaps=t=>tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);
+function stmCheck(t,mv){
+  const why=[],add=(he,en)=>why.push({he,en});
+  if(!t){add('אין תיק','No file');return {ok:false,why};}
+  if(mv==='lost'){if(t.stage!=='Quote'||t.qst==='Lost')add('אפשר לסמן כאבודה רק הצעה פתוחה','Only an open quote can be marked lost');}
+  else if(mv==='fin'){
+    if(t.stage!=='Operations')add('רק תיק בתפעול עובר לסגירה כספית','Only a file in operations can move to financial close');
+    else if(!stmReturned(t))add(`הטיול חוזר ב-${fmtDate(endOf(t))}. אפשר לעבור לסגירה כספית אחרי החזרה`,`The trip returns on ${fmtDate(endOf(t))}. It can move to financial close after it returns`);}
+  else if(mv==='close'){
+    if(t.stage!=='Finance')add('רק תיק בסגירה כספית אפשר לסגור','Only a file in financial close can be closed');
+    else{const ni=(t.inbox||[]).length,gp=stmOpenGaps(t),g=t.groups&&t.groups.length?groupsCalc(t):null;
+      if(ni)add(`${ni} חשבוניות ספקים ממתינות לבדיקה`,`${ni} supplier invoice${ni>1?'s are':' is'} waiting to be checked`);
+      if(gp.length)add(`${gp.length} פערי חשבוניות פתוחים, ${usd(r2(gp.reduce((s,x)=>s+x.usd,0)))}`,`${gp.length} open invoice gap${gp.length>1?'s':''}, ${usd(r2(gp.reduce((s,x)=>s+x.usd,0)))}`);
+      if(g&&g.outstanding>0.005)add(`יתרה לגבייה: ${usd(g.outstanding)}`,`Open balance to collect: ${usd(g.outstanding)}`);}}
+  else add('מעבר לא מוכר','Unknown move');
+  return {ok:!why.length,why};
+}
+/* Operations -> Finance (only after the trip returned), Finance -> Closed (only when nothing is open) */
+function advanceStage(t){
+  const mv=t&&t.stage==='Finance'?'close':'fin',r=stmCheck(t,mv);
+  if(!r.ok)return {ok:false,mv,why:r.why};
+  const from=t.stage;t.stage=mv==='fin'?'Finance':'Closed';
+  return {ok:true,mv,from,to:t.stage,why:[]};
+}
+/* an open quote the client turned down: stage stays Quote, status becomes Lost, and it leaves every open-quote total */
+function markLost(t){
+  const r=stmCheck(t,'lost');if(!r.ok)return {ok:false,mv:'lost',why:r.why};
+  t.qst='Lost';t.qdays=0;return {ok:true,mv:'lost',from:'Quote',to:'Lost',why:[]};
+}
+function stmGo(mv,id){
+  const t=id?byId(id):T();if(!t)return false;
+  const r=mv==='lost'?markLost(t):mv==='fin'||mv==='close'||mv==='advance'?advanceStage(t):{ok:false,why:[{he:'מעבר לא מוכר',en:'Unknown move'}]};
+  S.pjMenu=false;
+  if(r.ok){if(r.to==='Finance')S.ptab='fdash';
+    render();toast(r.mv==='lost'?L('ההצעה סומנה כאבודה','The quote is marked lost'):r.to==='Finance'?L('התיק עבר לסגירה כספית','The file moved to financial close'):L('התיק נסגר','The file is closed'));}
+  else{render();toast(L('אי אפשר לעבור עדיין: ','Cannot move yet: ')+r.why.map(w=>L(w.he,w.en)).join('; '));}
+  return r.ok;
+}
+/* the moves the project status menu offers for a trip, each with its guard result */
+function stmMoves(t){
+  const m=(mv,he,en,dhe,den)=>{const r=stmCheck(t,mv);return {mv,he,en,dhe,den,ok:r.ok,why:r.why};};
+  if(t.stage==='Quote')return t.qst==='Lost'?[]:[m('lost','סימון כאבודה','Mark as lost','הלקוח לא אישר. ההצעה יוצאת מסכומי ההצעות הפתוחות.','The client did not accept. The quote leaves the open-quote totals.')];
+  if(t.stage==='Operations')return [m('fin','מעבר לסגירה כספית','Move to financial close','הטיול חזר. מעבירים לבדיקת חשבוניות וגבייה.','The trip is back. Moves to invoice checks and collection.')];
+  if(t.stage==='Finance')return [m('close','סגירת התיק','Close the file','הכול מסודר. התיק עובר לארכיון.','Everything is settled. The file moves to the archive.')];
+  return [];
+}
+/* Operation dashboard: the explicit control, shown only once the trip has returned */
+{const f0=pOpsDash;pOpsDash=function(t){const h=f0.apply(this,arguments);
+  if(!t||t.stage!=='Operations'||!stmReturned(t))return h;
+  return `<div class="card stm-card"><div><b>${L('הטיול חזר','The trip is back')}</b><div class="small muted">${L('מעבירים את התיק לסגירה כספית: בדיקת חשבוניות ספקים וגבייה.','Move the file to financial close: supplier invoice checks and collection.')}</div></div><button class="btn pri" data-act="advance" data-v="${t.id}">${L('מעבר לסגירה כספית','Move to financial close')}</button></div>`+h;};}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act]'),a=b&&b.dataset.act;
+  if(a==='pjmenu'){S.pjMenu=!S.pjMenu;render();return;}
+  if(a==='pjmove'){if(!b.disabled)stmGo(b.dataset.v);return;}
+  if(a==='advance'){stmGo('advance',b.dataset.v);return;}
+  if(S.pjMenu&&!(e.target.closest&&e.target.closest('.pj-stwrap'))){S.pjMenu=false;if(document.querySelector('.pj-menu'))render();}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.pjMenu){S.pjMenu=false;render();}});
 const NX_SEV={urgent:0,todo:1,info:2};
 function nextSteps(t){
   const out=[],T0=iso(TODAY);
@@ -8901,13 +9004,14 @@ function nextSteps(t){
   const pt=v=>({a:'pt',v});
   if(!t)return out;
   if(t.stage==='Quote'){
+    if(t.qst==='Lost')return out;
     const q=t.qst||'Draft',nm=t.client||'',d=t.qdays||0;
     if(q==='Draft'){
       const bad=(t.lines||[]).filter(l=>!l.extra&&(!(l.cost>0)||!l.sup)).length;
       if(bad)add('price','todo',`להשלים את התמחור: ${bad} שורות בלי עלות או ספק`,`Finish pricing: ${bad} line${bad>1?'s':''} without a cost or supplier`,pt('costs'),['לתמחור','Open pricing']);
       else add('send','todo','התמחור מוכן. שלחו לאישור מנהל','Pricing is complete. Send it for manager approval',pt('approve'),['שליחה לאישור','Send for approval']);
     }else if(q==='Approval'){
-      if(isMgr())add('approve','urgent','ההצעה ממתינה לאישורך','This quote is waiting for your approval',pt('approve'),['אישור ההצעה','Approve this quote']);
+      if(canApprove())add('approve','urgent','ההצעה ממתינה לאישורך','This quote is waiting for your approval',pt('approve'),['אישור ההצעה','Approve this quote']);
       else add('wait','info',`ממתין לאישור הבעלים (${d} ימים)`,`Waiting for the owner's approval (${d} day${d===1?'':'s'})`,pt('approve'),['לסטטוס','View status']);
     }else if(q==='Sent'){
       if(d>7)add('follow','urgent',`לחזור ללקוח ${nm} (ההצעה נשלחה לפני ${d} ימים)`,`Follow up with ${nm} (sent ${d} days ago)`,pt('quote'),['להצעה','Open the proposal']);
@@ -8916,6 +9020,7 @@ function nextSteps(t){
     return out;
   }
   if(t.stage==='Operations'){
+    if(stmReturned(t))add('finclose','todo','הטיול חזר. מעבירים את התיק לסגירה כספית','The trip is back. Move the file to financial close',{a:'advance',v:t.id},['מעבר לסגירה כספית','Move to financial close']);
     const od=(t.tasks||[]).filter(x=>!x.done&&x.due<T0).length;
     if(od)add('tasks','urgent',`${od} משימות באיחור`,`${od} overdue task${od>1?'s':''}`,pt('optasks'),['למשימות','Open tasks']);
     const tr=t.trav||[],intl=!!(DESTS[t.dest]&&DESTS[t.dest].intl),mp=intl?tr.filter(x=>x.pass==='Missing').length:0;
@@ -8938,7 +9043,7 @@ function nextSteps(t){
     if(gp.length)add('gaps','urgent',`${gp.length} פערי חשבוניות פתוחים, ${usd(gu)}`,`${gp.length} open invoice gap${gp.length>1?'s':''}, ${usd(gu)}`,pt('tfin'),['לטיפול בפערים','Resolve the gaps']);
     const g=t.groups&&t.groups.length?groupsCalc(t):null;
     if(g&&g.outstanding>0.005)add('bal','todo',`יתרה פתוחה לגבייה: ${usd(g.outstanding)}`,`Open balance to collect: ${usd(g.outstanding)}`,pt('income'),['להכנסות','Open income']);
-    if(!out.length)add('close','info','הכול מסודר. אפשר לסגור את התיק','Everything is settled. The file can be closed',pt('fdash'),['לדשבורד הכספים','Open finance dashboard']);
+    if(!out.length)add('close','todo','הכול מסודר. אפשר לסגור את התיק','Everything is settled. The file can be closed',{a:'advance',v:t.id},['סגירת התיק','Close the file']);
   }
   return out;
 }
@@ -8962,7 +9067,7 @@ function nxAgentSteps(ts,max){
 function nxMyCard(ts){
   const r=nxAgentSteps(ts,6);
   return `<div class="card da-card nx-card"><div class="da-h"><h3>${L('הצעדים הבאים שלי','My next steps')}</h3><span class="da-sum">${r.length}</span></div>
-   ${r.length?r.map(x=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn nx-go" data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}">${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
+   ${r.length?r.map(x=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn nx-go" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
 }
 function nxCloseRows(ts){return ts.filter(t=>t.stage==='Finance').map(t=>{const gp=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);return {t,gaps:gp.length,gapUsd:r2(gp.reduce((s,x)=>s+x.usd,0)),open:r2(groupsCalc(t).outstanding)};});}
 const nxHasUpcoming=ts=>ts.some(t=>t.stage!=='Quote'&&t.stage!=='Finance'&&t.stage!=='Closed'&&t.dep>=iso(TODAY));
@@ -8978,7 +9083,7 @@ function nxCloseCard(ts){
 TESTS.push({name:'nx next steps',run:h=>{const out=[],role0=S.role,lang0=S.lang,meet0=S.meet,tour0=S.tour,ptab0=S.ptab,tr0=S.tripId;
   const tabs=new Set(PTABS.map(p=>p[0])),T0=iso(TODAY),cnt={};
   TRIPS.forEach(t=>{S.role='manager';const st=nextSteps(t);
-    st.forEach(s=>{if(!tabs.has(s.act.v))out.push(`${t.id}: step ${s.k} tab ${s.act.v} not in PTABS`);if(!['urgent','todo','info'].includes(s.sev))out.push('sev '+s.k);
+    st.forEach(s=>{if(s.act.a!=='advance'&&!tabs.has(s.act.v))out.push(`${t.id}: step ${s.k} tab ${s.act.v} not in PTABS`);if(!['urgent','todo','info'].includes(s.sev))out.push('sev '+s.k);
       if(!s.he||!s.en||!s.label||!s.label[0]||!s.label[1])out.push(`${t.id}: step ${s.k} text`);if(/NaN|undefined/.test(s.he+s.en))out.push(`${t.id}: step ${s.k} NaN`);});
     const by={};st.forEach(s=>by[s.k]=s);cnt[t.stage]=(cnt[t.stage]||0)+1;
     const has=k=>!!by[k];
@@ -9022,6 +9127,165 @@ TESTS.push({name:'nx next steps',run:h=>{const out=[],role0=S.role,lang0=S.lang,
   S.role='Marcus';S.lang='en';{const ts=visibleTrips();if(nxHasUpcoming(ts))out.push('Marcus has upcoming departures');if(!VIEWS.home().includes('Files in financial close'))out.push('Marcus lacks close card');}
   S.role=role0;S.lang=lang0;S.meet=meet0;S.tour=tour0;S.ptab=ptab0;S.tripId=tr0;
   return out;}});
+
+/* ---------- v8.2 fixes: one truth for credits, permissions, stage moves ----------
+   gapCredit(l): the single function behind the "Credit received" button. Like the generator's settle(), it marks the
+   invoice paid, so realized FX and the AP schedule agree whether a credit was generated or recorded in the UI. */
+function gapCredit(l){
+  if(!l||!l.inv)return 0;
+  const amt=r2(effAmt(l.inv)-planC(l));
+  l.inv.credit=r2((l.inv.credit||0)+amt);l.inv.st='credited';l.inv.paid=true;
+  return amt;
+}
+
+/* ---------- tests ---------- */
+const FX_IDN=t=>{const c=calc(t);return Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit)<=0.05;};
+TESTS.push({name:'fix credit, permissions, stage moves',run:h=>{
+  const out=[],role0=S.role,lang0=S.lang;
+  /* 1. enforced list equals the keys the code checks */
+  const want=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','settings.stages','price.edit','forms.build','sup.edit','sup.swap','ops.suppliers','cli.edit'];
+  if(want.length!==ST_ENFORCED.length||want.some(k=>!ST_ENFORCED.includes(k))||ST_ENFORCED.some(k=>!PERM_BY[k]))out.push('ST_ENFORCED differs from the checked keys');
+
+  /* 2. crediting a gap in the UI marks it paid and keeps the identity */
+  {const t=TRIPS.find(x=>x.stage==='Finance'&&tripGaps(x).some(g=>isOpenGap(g.s)));
+    if(!t)out.push('no Finance trip with an open gap');
+    else{const g=tripGaps(t).find(x=>isOpenGap(x.s)),l=g.l,usd0=g.usd;
+      const amt=gapCredit(l);
+      if(!l.inv.paid)out.push('credit did not mark the invoice paid');
+      if(l.inv.st!=='credited'||invStatus(l).k!=='credited')out.push('credit status '+l.inv.st);
+      if(!FX_IDN(t))out.push('identity after credit '+t.id);
+      if(Math.abs(amt*lrate(t,l)-usd0)>0.02)out.push(`credit amount ${amt} vs gap ${usd0}`);
+      if(tripGaps(t).some(x=>x.l===l&&isOpenGap(x.s)))out.push('gap still open after credit');
+      const before=JSON.stringify(l.inv);gapCredit(l);if(JSON.stringify(l.inv)!==before)out.push('second credit changed the invoice');
+      /* a generated credited invoice carries the same flags */
+      const gen=TRIPS.flatMap(x=>x.lines).find(x=>x.inv&&x.inv.st==='credited'&&x!==l);
+      if(gen&&(!gen.inv.paid||gen.inv.st!==l.inv.st))out.push('generated credit differs from UI credit');}}
+  resetAfter();
+
+  /* 3. permissions: prop.approve */
+  {const q=TRIPS.find(x=>x.stage==='Quote'&&x.qst==='Approval');
+    if(!q)out.push('no quote in Approval');
+    else{S.tripId=q.id;S.lang='en';
+      S.role='manager';if(!pApprove(q).includes('data-v="Sent"'))out.push('owner lacks approve control');
+      S.role='Priya';if(pApprove(q).includes('data-v="Sent"'))out.push('agent sees approve control');
+      S.perms={agent:{'prop.approve':true}};if(!pApprove(q).includes('data-v="Sent"'))out.push('agent with prop.approve lacks control');
+      if(nextSteps(q)[0].k!=='approve')out.push('agent with prop.approve next step');
+      const mq=QS.find(x=>/approv/.test(x.en));if(!mq)out.push('no Maya approval question');
+      S.role='manager';S.perms=null;if(mq&&!mq.f().btn)out.push('Maya approval answer lacks the button for an approver');
+      S.role='Priya';S.perms={agent:{'prop.approve':true}};
+      S.perms={owner:{'prop.approve':false}};S.role='manager';
+      if(pApprove(q).includes('data-v="Sent"'))out.push('owner without prop.approve sees control');
+      if(nextSteps(q)[0].k!=='wait')out.push('owner without prop.approve next step');
+      if(mq&&mq.f().btn)out.push('Maya offers approval to a role without prop.approve');
+      if(typeof dbApprovalsCard==='function'&&/btn sm pri" data-act="open"[^>]*data-pt="approve"/.test(dbApprovalsCard()))out.push('approvals card still shows Approve');
+      S.perms=null;}}
+  /* fin.issueDocs */
+  {S.role='accountant';S.perms=null;DA_STATE.iss=[];const d=daDocsToIssue();
+    if(d.n){if(!daIssue(d.items[0].key)||DA_STATE.iss.length!==1)out.push('accountant cannot issue');DA_STATE.iss=[];
+      S.perms={accountant:{'fin.issueDocs':false}};if(daIssue(d.items[0].key)||DA_STATE.iss.length)out.push('issue without fin.issueDocs');
+      S.role='Priya';S.perms=null;if(daIssue(d.items[0].key)||DA_STATE.iss.length)out.push('agent issued a document');}
+    S.perms=null;DA_STATE.iss=[];
+    const tr=TRIPS.find(x=>x.stage==='Finance');S.tripId=tr.id;S.role='accountant';S.lang='en';
+    if(/data-act="toast"[^>]*disabled[^>]*>.{0,40}Issue document/.test(pIncome(tr)))out.push('accountant Issue document disabled');
+    S.perms={accountant:{'fin.issueDocs':false}};if(!/disabled[^>]*>[^<]*<svg[^>]*>.*?<\/svg> Issue document/s.test(pIncome(tr))&&!/disabled title="Your role cannot issue documents"/.test(pIncome(tr)))out.push('Income issue button not disabled');S.perms=null;}
+  /* sup.swap guards tbSwap itself */
+  {const t=TRIPS.find(x=>x.stage==='Quote'&&x.lines.some(l=>!l.inv&&altsFor(x,l).length>1));
+    if(!t)out.push('no swappable quote');
+    else{const l=t.lines.find(x=>!x.inv&&altsFor(t,x).length>1),a=altsFor(t,l).find(x=>!x.inc);
+      S.role='manager';S.perms={owner:{'sup.swap':false}};const k0=l.sup;
+      const r=tbSwap(t,l.id,a.sup.id);if(r.ok||r.reason!=='perm'||l.sup!==k0)out.push('tbSwap ignored sup.swap');
+      S.lang='en';S.tripId=t.id;S.ptab='tbcomp';S.perms=null;
+      S.role='accountant';const r2_=tbSwap(t,l.id,a.sup.id);if(r2_.ok||r2_.reason!=='perm')out.push('accountant swapped a supplier');
+      S.role='Priya';const r3=tbSwap(t,l.id,a.sup.id);if(!r3.ok)out.push('agent cannot swap by default '+r3.reason);}}
+  resetAfter();
+
+  /* 4. stage moves */
+  const mk=(st)=>TRIPS.find(x=>x.stage===st);
+  {const q=TRIPS.find(x=>isOpenQ(x)&&x.qst==='Draft'),P0=portfolio(TRIPS),T0=dbTeam(),n0=TRIPS.filter(isOpenQ).length;
+    if(!q)out.push('no draft quote');
+    else{const rev=calc(q).rev;
+      if(markLost(mk('Operations')).ok)out.push('markLost on a file');
+      const r=markLost(q);if(!r.ok||q.qst!=='Lost'||q.stage!=='Quote')out.push('markLost failed');
+      if(markLost(q).ok)out.push('markLost twice');
+      const P1=portfolio(TRIPS),T1=dbTeam();
+      if(P1.pipelineN!==P0.pipelineN-1||Math.abs(P1.pipeline-(P0.pipeline-rev))>.05)out.push('pipeline still counts a lost quote');
+      if(P1.rev!==P0.rev||P1.fp!==P0.fp)out.push('booked totals changed by a lost quote');
+      if(T1.openN!==T0.openN-1)out.push('team open quotes count a lost quote');
+      if(TRIPS.filter(isOpenQ).length!==n0-1)out.push('isOpenQ');
+      if(nextSteps(q).length)out.push('lost quote has next steps');
+      if(!FX_IDN(q))out.push('identity lost quote');
+      for(const lang of ['en','he']){S.lang=lang;S.role='manager';S.tripId=q.id;
+        ['home','quotes'].forEach(v=>{S.tab=v;S.qtab='archive';const html=VIEWS[v]();h.chk(html,'lost '+v+lang);if(lang==='en')h.scan(html,'lost '+v);});
+        if(!VIEWS.quotes().includes(q.name))out.push('lost quote missing from Archive '+lang);
+        S.qtab='quotes';if(VIEWS.quotes().includes(q.name))out.push('lost quote still under Quotes '+lang);S.qtab='quotes';
+        S.tab='trip';S.ptab='general';const html=vTrip();h.chk(html,'lost trip '+lang);if(lang==='en'){h.scan(html,'lost trip');if(!html.includes('Lost'))out.push('Lost label missing');}}}}
+  resetAfter();
+  /* Operations -> Finance */
+  {const o=mk('Operations');
+    if(!o)out.push('no Operations trip');
+    else{const r=advanceStage(o);if(r.ok||o.stage!=='Operations'||!r.why.length)out.push('moved to finance before return');
+      if(!/returns on/.test(r.why[0].en))out.push('why text');
+      if(nextSteps(o).some(s=>s.k==='finclose'))out.push('finclose step before return');
+      S.lang='en';S.role='manager';S.tripId=o.id;S.ptab='odash';if(vTrip().includes('data-act="advance"'))out.push('advance control before return');
+      o.dep=addDays(iso(TODAY),-(o.nights+5));
+      if(!nextSteps(o).some(s=>s.k==='finclose'&&s.act.a==='advance'))out.push('finclose step after return');
+      if(!vTrip().includes('data-act="advance"'))out.push('advance control missing after return');
+      const r2=stmGo('advance',o.id);if(!r2||o.stage!=='Finance'||S.ptab!=='fdash')out.push('advance after return (UI handler)');
+      if(!FX_IDN(o))out.push('identity after advance');}}
+  resetAfter();
+  /* Finance -> Closed */
+  {const f=TRIPS.find(x=>x.stage==='Finance'&&(stmCheck(x,'close').why.length>=1));
+    if(!f)out.push('no blocked Finance trip');
+    else{const r=advanceStage(f);if(r.ok||f.stage!=='Finance'||!r.why.length)out.push('closed with blockers');
+      S.lang='en';S.role='manager';S.tripId=f.id;S.ptab='fdash';S.pjMenu=true;let html=vTrip();
+      if(!/pj-mi off"[^>]*disabled/.test(html)||!html.includes('role="menu"'))out.push('menu not disabled with blockers');
+      r.why.forEach(w=>{if(!html.includes(w.en.replace(/&/g,'&amp;')))out.push('blocker not listed: '+w.en);});
+      /* resolve through the UI functions, one blocker at a time */
+      if((f.inbox||[]).length)applyInbox(f);
+      if(advanceStage(f).ok)out.push('closed with open gaps/balance');
+      tripGaps(f).filter(x=>isOpenGap(x.s)).forEach(x=>gapCredit(x.l));
+      f.groups.forEach(g=>{g.depPaid=true;g.balPaid=true;});
+      if(stmCheck(f,'close').why.length)out.push('still blocked: '+JSON.stringify(stmCheck(f,'close').why));
+      if(!nextSteps(f).some(s=>s.k==='close'&&s.act.a==='advance'&&s.sev==='todo'))out.push('close-the-file step');
+      html=vTrip();if(/pj-mi off"/.test(html))out.push('menu still disabled when clear');
+      for(const lang of ['en','he']){S.lang=lang;const hh=vTrip();h.chk(hh,'menu '+lang);if(lang==='en')h.scan(hh,'status menu');}
+      S.lang='en';
+      const r2=advanceStage(f);if(!r2.ok||f.stage!=='Closed')out.push('close failed when clear');
+      if(advanceStage(f).ok)out.push('advanced a closed file');
+      if(nextSteps(f).length)out.push('closed file has steps');
+      if(!FX_IDN(f))out.push('identity after close');S.pjMenu=false;}}
+  resetAfter();
+  /* the status menu renders for every stage and role in both languages, closed by default */
+  for(const lang of ['en','he'])for(const role of ['manager','accountant','Marcus'])for(const t of [mk('Quote'),mk('Operations'),mk('Finance'),mk('Closed')]){
+    S.lang=lang;S.role=role;S.tripId=t.id;S.ptab=stageOf(S.ptab)===(t.stage==='Quote'?'q':t.stage==='Operations'?'o':'f')?S.ptab:(t.stage==='Quote'?'general':t.stage==='Operations'?'odash':'fdash');
+    S.pjMenu=false;let html=vTrip();if(html.includes('class="pj-menu"'))out.push('menu open by default');
+    S.pjMenu=true;html=vTrip();h.chk(html,`pjmenu ${t.id} ${lang} ${role}`);if(lang==='en')h.scan(html,'pjmenu');
+    if(!html.includes('aria-haspopup="menu"'))out.push('menu button aria');S.pjMenu=false;}
+  resetAfter();
+
+  /* 5. locked rate */
+  {const q=TRIPS.find(x=>x.stage==='Quote'&&x.cur!=='USD'),o=TRIPS.find(x=>x.stage!=='Quote'&&x.cur!=='USD');
+    S.lang='en';S.role='manager';
+    if(q){S.tripId=q.id;S.ptab='costs';if(!vTrip().includes('data-ch="rate"'))out.push('quote lacks rate input');S.ptab='general';if(!vTrip().includes('data-ch="rate"'))out.push('general lacks rate input');}
+    if(o){S.tripId=o.id;for(const pt of ['costs','general']){S.ptab=pt;const html=vTrip();
+      if(html.includes('data-ch="rate"'))out.push('rate editable after acceptance '+pt);
+      if(!html.includes('Locked at acceptance'))out.push('rate note '+pt);}
+      o.wonOn='2026-09-02';S.ptab='general';if(!/Locked when the quote was accepted on [^<]*2026/.test(vTrip()))out.push('rate note with date');
+      S.lang='he';if(!vTrip().includes('ננעל כשההצעה אושרה'))out.push('rate note he');S.lang='en';}
+    {const w=TRIPS.find(x=>x.stage==='Quote'&&x.cur!=='USD'&&x.qst==='Sent');if(w){winQuote(w);if(w.wonOn!==iso(TODAY))out.push('winQuote wonOn');S.tripId=w.id;S.ptab='general';if(!vTrip().includes('Locked when the quote was accepted on'))out.push('won rate note');}}}
+  resetAfter();
+
+  /* 6. receipts */
+  {const t=TRIPS.find(x=>x.stage==='Finance');S.tripId=t.id;S.ptab='income';S.role='manager';S.incTab='all';
+    S.lang='en';let html=vTrip();if(/Tax invoice/.test(html))out.push('Tax invoice label remains');if(!/>Receipts </.test(html)&&!html.includes('Receipts'))out.push('Receipts tab');if(!html.includes('role="tab"'))out.push('income tabs role');
+    S.lang='he';html=vTrip();if(!html.includes('קבלה'))out.push('קבלה label');if(html.includes('חשבונית מס קבלה'))out.push('old he label');S.lang='en';}
+  /* tab roles on the stage row */
+  {const t=TRIPS[0];S.tripId=t.id;S.ptab='general';S.lang='en';const html=vTrip();
+    if(!/class="tabs pj-tabs" role="tablist"/.test(html)||!/role="tab" aria-selected="true" class="on" data-act="pt"/.test(html))out.push('pj-tabs aria');}
+  S.role=role0;S.lang=lang0;S.perms=null;S.pjMenu=false;
+  return out;
+}});
+function resetAfter(){try{resetDemo();}catch(e){}S.perms=null;S.pjMenu=false;S.role='manager';S.lang='en';S.tab='home';S.qtab='quotes';}
 
 /* ---------- v8.1 global search (module code gs) ----------
    The header search icon opens a popover: input + results grouped Projects, Clients, Suppliers, Hotels, Pages.
@@ -9760,7 +10024,7 @@ dvAdd('settings',{title:'Settings',
    {label:'Permission switch',does:'Overrides a permission for admin, agent or accountant.',rule:'Owner column is locked; 8 permissions are enforced in the demo, the rest are matrix only'},
    {label:'Organization fields',does:'Edit name, logo letter, currency, date, time, timezone, tax.',rule:'Preview line only; the rest of the app is not reformatted'},
    {label:'Stages editor',does:'Rename, recolor, reorder, add statuses.',rule:'Preview only; trip data does not change'}],
-  rules:['effective permission = S.perms override else role default  (can(k))','enforced: users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, price.edit, forms.build','40 permissions in 9 groups'],
+  rules:['effective permission = S.perms override else role default  (can(k))','enforced (13, ST_ENFORCED): users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit','40 permissions in 9 groups'],
   states:{empty:'Not applicable',loading:DV_EMPTY_LOAD,error:DV_ERR},status:'live',
   api:['GET /roles (proposed)','PATCH /roles/{role}/permissions (proposed)','GET /settings (proposed)','PATCH /settings (proposed)'],
   tests:['TEST st settings'],
@@ -9910,7 +10174,7 @@ SPEC['trip:general']={
   data:['Trip.name','Trip.client','Trip.ctype','Trip.dest','Trip.seg','Trip.pax','Trip.dep','Trip.nights','Trip.agent','Trip.cur','Trip.rate','Trip.pct','Trip.depDue','Trip.balDue'],
   actions:[
     {label:'Project name (text)',does:'Sets Trip.name. An empty value keeps the old name.',rule:'Any role that can open the trip. proj.edit is not enforced here.'},
-    {label:'Locked rate, USD per currency (number)',does:'Sets Trip.rate and reprices every non-USD line.',rule:'Shown only when Trip.cur is not USD. Clamped to 0.5 to 2; an empty value falls back to the base rate.'},
+    {label:'Locked rate, USD per currency (number)',does:'Sets Trip.rate and reprices every non-USD line.',rule:'Shown only when Trip.cur is not USD. Editable only in Quote stage; later it is read-only: Locked when the quote was accepted on the win date (Trip.wonOn, otherwise Locked at acceptance). Clamped to 0.5 to 2; an empty value falls back to the base rate.'},
     {label:'Deposit (%) (number)',does:'Sets Trip.pct. Group deposits and balances recompute.',rule:'Clamped to 0 to 100. Due dates do not change.'},
     {label:'Client, destination, group type, travelers, dates, file owner, due dates',does:'Read-only rows.',rule:'Changed elsewhere: pax and dates on the trip record, owner via proj.assign.'}],
   rules:[
@@ -9982,8 +10246,8 @@ SPEC['trip:plan:comp']={
   data:['Line.name','Line.sup','Line.type','Line.qty','Line.unit','Line.cost','Line.cur','Line.comm','Line.scope','Line.inv','Line.alt0','Supplier.id','Supplier.real','Supplier.rating','Supplier.pref','Supplier.cancel','Trip.sups','Trip.room'],
   actions:[
     {label:'Alternatives / Compare (per line)',does:'Opens the comparison table: current supplier first, then alternatives with rating, preference, cancellation, commission, unit cost, cost change and profit impact.',rule:'Disabled when the line has no alternatives and was not swapped.'},
-    {label:'Swap supplier',does:'Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow.',rule:'UI: Quote stage only, no Line.inv, can price.edit (enforced). Function also allows Operation.'},
-    {label:'Undo swap / Swap back',does:'Restores the exact original sup, cost and comm from alt0 and deletes alt0.',rule:'Blocked when the line has an invoice.'}],
+    {label:'Swap supplier',does:'Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow.',rule:'UI: Quote stage only, no Line.inv, can sup.swap. tbSwap itself refuses without sup.swap (reason perm) and also allows Operation.'},
+    {label:'Undo swap / Swap back',does:'Restores the exact original sup, cost and comm from alt0 and deletes alt0.',rule:'Blocked when the line has an invoice, or without sup.swap.'}],
   rules:[
     'Alternative unit cost = round(l.cost * rate(alt) / rate(incumbent)). The current supplier returns l.cost exactly.',
     'A real brand whose catalog rate differs from the line cost by more than 15% is anchored on the market median of fictional suppliers (altCost).',
@@ -10024,7 +10288,7 @@ SPEC['trip:costs']={
   data:['Trip.markups','Trip.basis','Trip.disc','Trip.rate','Trip.cur','Trip.pax','Trip.ovh','Trip.brk','Line.qty','Line.cost','Line.cur','Line.ov','Line.comm','Line.type','Line.scope'],
   actions:[
     {label:'Markup is calculated: On cost / Of price',does:'Sets Trip.basis.',rule:'Changes every price.'},
-    {label:'Locked rate (number)',does:'Sets Trip.rate.',rule:'Shown only for non-USD trips. 0.5 to 2.'},
+    {label:'Locked rate (number)',does:'Sets Trip.rate.',rule:'Shown only for non-USD trips. 0.5 to 2. Editable in Quote stage only; read-only after acceptance (the change handler also refuses).'},
     {label:'Line detail (chevron)',does:'Expands the lines of a service type.',rule:'Per scope: shared or per person.'},
     {label:'Mark up % per service type',does:'Sets Trip.markups[type].',rule:'0 to 90.'},
     {label:'Discount type and value per type',does:'Sets Trip.disc[scope|type] as % or $.',rule:'Value min 0; empty clears it.'},
@@ -10157,10 +10421,11 @@ SPEC['trip:approve']={
   data:['Trip.qst','Trip.qdays','Trip.stage','Trip.groups','Trip.tasks','Trip.sups','Trip.trav','Trip.room'],
   actions:[
     {label:'Send for manager approval',does:'Sets Trip.qst = Approval, qdays = 0.',rule:'Draft only.'},
-    {label:'Approve and send to client',does:'Sets Trip.qst = Sent.',rule:'Role manager only (S.role check). Others see: only a manager can approve and send.'},
+    {label:'Approve and send to client',does:'Sets Trip.qst = Sent.',rule:'Needs can(prop.approve) (enforced in pApprove and in the qs handler). Others see: only someone who can approve proposals can approve and send.'},
     {label:'Client asked to close',does:'Sets Trip.qst = Negotiating.',rule:'Sent only.'},
     {label:'Client accepted: open the file',does:'winQuote: Trip.stage = Operations; creates groups (unpaid), tasks, supplier confirmations (Sent), travelers and a room block. Opens the Operation dashboard.',rule:'Shown when Sent or Negotiating (and from any gate card).'},
-    {label:'To operations',does:'Opens the Operation dashboard.',rule:'Shown after the file is open.'}],
+    {label:'To operations',does:'Opens the Operation dashboard.',rule:'Shown after the file is open.'},
+    {label:'Status menu (project header): Mark as lost',does:'markLost: Trip.qst = Lost, qdays = 0. The stage stays Quote.',rule:'Open quotes only. A Lost quote leaves the pipeline, open-quote counts, team and agent dashboards, and shows under Archive.'}],
   rules:[
     'Steps: Draft, Approval, Sent, Negotiating, then File opened.',
     'Approval step shows price and planned margin = planProfit / rev.',
@@ -10181,7 +10446,8 @@ SPEC['trip:odash']={
   actions:[
     {label:'Urgent tasks card',does:'Opens the Tasks tab.',rule:'None.'},
     {label:'Suppliers not confirmed card',does:'Opens the Suppliers tab.',rule:'None.'},
-    {label:'Estimated revenue card',does:'Opens the Finance dashboard.',rule:'None.'}],
+    {label:'Estimated revenue card',does:'Opens the Finance dashboard.',rule:'None.'},
+    {label:'Move to financial close (card, only after the trip returned)',does:'advanceStage: Trip.stage = Finance and opens the Finance dashboard.',rule:'Return date on or before today (none of the generated trips qualifies). The same move is in the project status menu, with the reason when it is not allowed.'}],
   rules:[
     'Days to trip = max(0, round((dep - today) / day)). Closed or Finance files say Trip is home.',
     'Urgent tasks = not done and due on or before today + 7 days (overdue included).',
@@ -10224,7 +10490,7 @@ SPEC['trip:spm']={
   actions:[
     {label:'Status: Contact / Pending / Approved / Price comparison',does:'Sets Supplier.flow and st (Not sent, Sent, Confirmed). A No reply status stays under Pending.',rule:'ops.suppliers (enforced: buttons disabled).'},
     {label:'Request quotes',does:'Marks every alternative as requested, reply by today + 3, and sets the flow to comparison.',rule:'ops.suppliers.'},
-    {label:'Choose (in the comparison)',does:'Swaps the line supplier through tbSwap and clears requests.',rule:'Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap.'},
+    {label:'Choose (in the comparison)',does:'Swaps the line supplier through tbSwap and clears requests.',rule:'Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap (tbSwap enforces it too). The list buttons need ops.suppliers.'},
     {label:'Add to list (unassigned components)',does:'Adds a supplier row for a line whose supplier is missing.',rule:'ops.suppliers.'},
     {label:'Supplier name link',does:'Opens the supplier card.',rule:'None.'},
     {label:'Confirmation message: supplier select, Copy message',does:'Builds a booking confirmation text for the chosen supplier and copies it.',rule:'Shown in Operation and Finance.'}],
@@ -10290,7 +10556,8 @@ SPEC['trip:fdash']={
   data:['Trip.pax','Trip.groups','Line.inv','Invoice.amt','Invoice.credit','Invoice.st','Gap.usd','Group.depPaid','Group.balPaid'],
   actions:[
     {label:'Open expenses',does:'Opens the Expenses tab, shown when open gaps exist.',rule:'None.'},
-    {label:'Accounting sync chip',does:'Shows the books system once connected.',rule:'Pilot; appears only after Accounting sync is connected.'}],
+    {label:'Accounting sync chip',does:'Shows the books system once connected.',rule:'Pilot; appears only after Accounting sync is connected.'},
+    {label:'Close the file (next-step bar, status menu)',does:'advanceStage: Trip.stage = Closed.',rule:'Allowed only with no open gaps, no supplier invoices waiting in the inbox and nothing left to collect (groupsCalc outstanding = 0); otherwise disabled with the reasons listed.'}],
   rules:[
     'Stats: trip total = rev; planned profit = rev - plan + comm; expected profit = rev - fc + comm; remaining = rev - collected.',
     'Leak = planProfit - fcProfit (leakModel). The bridge is supplier differences by kind plus FX.',
@@ -10304,19 +10571,19 @@ SPEC['trip:fdash']={
 
 SPEC['trip:income']={
   title:'Income',
-  purpose:'See the deal invoices and tax invoices for each household and how much is billed, received and remaining.',
+  purpose:'See the deal invoices and receipts for each household and how much is billed, received and remaining.',
   roles:{view:['manager','accountant','agent'],act:['manager','accountant']},
   perms:['fin.view','fin.issueDocs'],
   data:['Group.name','Group.dep','Group.bal','Group.depPaid','Group.balPaid','Trip.pct','Trip.depDue','Trip.balDue','Trip.no'],
   actions:[
     {label:'Search (text)',does:'Filters documents by client name.',rule:'Resets to page 1.'},
-    {label:'Tabs: All / Deal invoices / Tax invoices',does:'Filters by document type.',rule:'Counts shown.'},
+    {label:'Tabs: All / Deal invoices / Receipts',does:'Filters by document type.',rule:'Counts shown.'},
     {label:'Rows per page (5, 10, 25) and paging',does:'Pages the table.',rule:'None.'},
-    {label:'Issue document, Filters',does:'Show a toast only (simulated).',rule:'fin.issueDocs is not enforced.'}],
+    {label:'Issue document, Filters',does:'Show a toast only (simulated).',rule:'Issue document is disabled without fin.issueDocs (enforced).'}],
   rules:[
     'Documents are derived, not stored: per household a deal invoice for the deposit and for the balance.',
     'A deal invoice exists if paid or its due date is within today + 30 days; dated due - 21 days.',
-    'A paid item also gets a tax invoice dated on the due date.',
+    'A paid item also gets a receipt (type receipt) dated on the due date.',
     'Footer: Trip total = rev; Amount billed = sum of deal invoices; Payment received = collected; Remaining = outstanding.',
     'Status: Payment received, or Payment requested.'],
   states:{empty:'No documents.',loading:DT_LOAD,error:DT_ERR,gated:DT_GATE},
@@ -10334,7 +10601,7 @@ SPEC['trip:tfin']={
   actions:[
     {label:'Read and match invoices',does:'Reads the inbox sample files and attaches them to quote lines (applyInbox) with an animation.',rule:'Shown while Trip.inbox has files.'},
     {label:'Draft dispute / View email / Copy / Mark as sent',does:'Builds the credit-note email; Mark as sent sets Invoice.st = disputed.',rule:'Open gaps with an overbill. fin.dispute is not enforced.'},
-    {label:'Credit received',does:'Adds the difference to Invoice.credit, sets st = credited and paid.',rule:'Disputed gaps only.'},
+    {label:'Credit received',does:'gapCredit: adds the difference to Invoice.credit, sets st = credited and Invoice.paid = true (as the generator does).',rule:'Disputed gaps only.'},
     {label:'Accept charge / Checked, nothing missing',does:'Sets Invoice.st = accepted.',rule:'Under-billed gaps use Checked.'},
     {label:'Request invoice',does:'Toast only.',rule:'Missing invoices, Finance and Closed files.'},
     {label:'Documents: Payment request / Supplier voucher',does:'Switches the sample document and its household or supplier select.',rule:'Sample layout.'}],

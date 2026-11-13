@@ -39,7 +39,8 @@ const stPreviewLine=()=>{const p=stPreview();
 
 /* ---------- permissions ---------- */
 const ST_ROLES=['owner','admin','agent','accountant'];
-const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','price.edit','forms.build'];
+/* exactly the keys the code checks with can() (a TEST in s11_fix.js pins the list): pages, approvals, document issue, supplier work, clients, settings, forms */
+const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','settings.stages','price.edit','forms.build','sup.edit','sup.swap','ops.suppliers','cli.edit'];
 PERSIST.push({key:'st-perms',get:()=>S.perms?JSON.parse(JSON.stringify(S.perms)):null,set:v=>{S.perms=v&&typeof v==='object'?v:null;},reset:()=>{S.perms=null;}});
 /* effective value of a permission for a role key (owner|admin|agent|accountant) */
 const stPermOf=(role,k)=>{const p=PERM_BY[k];if(!p)return false;const o=S.perms&&S.perms[role];return o&&typeof o[k]==='boolean'?o[k]:!!p[role];};
@@ -120,7 +121,7 @@ function stRoles(ro){
         ST_ROLES.map(r=>{const on=stPermOf(r,p.k),lock=r==='owner',ch=!lock&&on!==!!p[r];
           return `<td class="st-c"><label class="st-sw${ch?' chg':''}"><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
   return `<div class="card st-card"><div class="st-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
-  <p class="muted st-note">${L('שמונה הרשאות נאכפות בדמו (למשל כספים, משתמשים, סנכרון הנהלת חשבונות). האחרות מוצגות במטריצה בלבד. עמודת הבעלים נעולה.','Eight permissions are enforced in this demo (for example finance, users, accounting sync). The rest only show in the matrix. The owner column is locked.')}</p>
+  <p class="muted st-note">${L('13 הרשאות נאכפות בדמו (למשל כספים, משתמשים, אישור הצעות, החלפת ספקים). האחרות מוצגות במטריצה בלבד. עמודת הבעלים נעולה.','13 permissions are enforced in this demo (for example finance, users, approving proposals, swapping suppliers). The rest only show in the matrix. The owner column is locked.')}</p>
   <div class="scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function stStages(ro){
@@ -195,9 +196,9 @@ TESTS.push({name:'st settings',run:h=>{const out=[],S=h.S,role0=S.role,lang0=S.l
       const ro=!can('settings.edit');if(ro!==html.includes('st-ro'))out.push(`read-only note mismatch ${role} ${tb}`);
       if(tb==='roles'&&ro&&(html.match(/<input type="checkbox" class="st-tg"[^>]*>/g)||[]).some(x=>!/disabled/.test(x)))out.push('read-only matrix has an enabled toggle for '+role);});});});
   S.lang='en';S.role='manager';S.stSub='roles';
-  /* 40 x 4 = 160 toggles; 8 enforced tags, 32 matrix-only tags; owner column locked on */
+  /* 40 x 4 = 160 toggles; 13 enforced tags, 27 matrix-only tags; owner column locked on */
   {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==160)out.push('toggles '+n);
-    if(count(html,'class="st-mx"')!==32)out.push('matrix-only tags '+count(html,'class="st-mx"'));
+    if(count(html,'class="st-mx"')!==27)out.push('matrix-only tags '+count(html,'class="st-mx"'));
     if((html.match(/pill ok/g)||[]).length!==ST_ENFORCED.length)out.push('enforced tags');
     const own=html.match(/<input type="checkbox" class="st-tg"[^>]*data-role="owner"[^>]*>/g)||[];if(own.length!==40||own.some(x=>!/checked/.test(x)||!/disabled/.test(x)))out.push('owner column not locked on');}
   /* fin.view off for agent: can() false for Priya, Finance and Invoice check render noAccess, owner unaffected */

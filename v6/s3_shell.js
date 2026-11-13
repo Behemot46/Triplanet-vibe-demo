@@ -14,6 +14,8 @@ const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
 /* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
 const ROLE_KEYS=['manager','accountant',...AGENTS];
+const canApprove=()=>typeof can==='function'?can('prop.approve'):isMgr();
+const canIssueDocs=()=>typeof can==='function'?can('fin.issueDocs'):(isMgr()||isAcct());
 const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
 const seesAll=()=>isMgr()||isAcct();
 AGN.accountant='נורה קים';AGE.accountant='Nora Kim';

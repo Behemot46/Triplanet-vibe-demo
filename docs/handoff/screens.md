@@ -479,7 +479,7 @@ Organization formats, roles and permissions matrix, stages and statuses, and lin
 
 **Rules**
 - `effective permission = S.perms override else role default  (can(k))`
-- enforced: users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, price.edit, forms.build
+- enforced (13, ST_ENFORCED): users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit
 - 40 permissions in 9 groups
 
 **States**
@@ -944,7 +944,7 @@ Check and edit the basic facts of a trip: name, deposit percent and the locked e
 | Control | Does | Guard |
 |---|---|---|
 | Project name (text) | Sets Trip.name. An empty value keeps the old name. | Any role that can open the trip. proj.edit is not enforced here. |
-| Locked rate, USD per currency (number) | Sets Trip.rate and reprices every non-USD line. | Shown only when Trip.cur is not USD. Clamped to 0.5 to 2; an empty value falls back to the base rate. |
+| Locked rate, USD per currency (number) | Sets Trip.rate and reprices every non-USD line. | Shown only when Trip.cur is not USD. Editable only in Quote stage; later it is read-only: Locked when the quote was accepted on the win date (Trip.wonOn, otherwise Locked at acceptance). Clamped to 0.5 to 2; an empty value falls back to the base rate. |
 | Deposit (%) (number) | Sets Trip.pct. Group deposits and balances recompute. | Clamped to 0 to 100. Due dates do not change. |
 | Client, destination, group type, travelers, dates, file owner, due dates | Read-only rows. | Changed elsewhere: pax and dates on the trip record, owner via proj.assign. |
 
@@ -1038,7 +1038,7 @@ Set markups, discounts and unit costs and see the client price and planned profi
 | Control | Does | Guard |
 |---|---|---|
 | Markup is calculated: On cost / Of price | Sets Trip.basis. | Changes every price. |
-| Locked rate (number) | Sets Trip.rate. | Shown only for non-USD trips. 0.5 to 2. |
+| Locked rate (number) | Sets Trip.rate. | Shown only for non-USD trips. 0.5 to 2. Editable in Quote stage only; read-only after acceptance (the change handler also refuses). |
 | Line detail (chevron) | Expands the lines of a service type. | Per scope: shared or per person. |
 | Mark up % per service type | Sets Trip.markups[type]. | 0 to 90. |
 | Discount type and value per type | Sets Trip.disc[scope|type] as % or $. | Value min 0; empty clears it. |
@@ -1133,10 +1133,11 @@ Move the quote from draft to manager approval, to the client, and open the file 
 | Control | Does | Guard |
 |---|---|---|
 | Send for manager approval | Sets Trip.qst = Approval, qdays = 0. | Draft only. |
-| Approve and send to client | Sets Trip.qst = Sent. | Role manager only (S.role check). Others see: only a manager can approve and send. |
+| Approve and send to client | Sets Trip.qst = Sent. | Needs can(prop.approve) (enforced in pApprove and in the qs handler). Others see: only someone who can approve proposals can approve and send. |
 | Client asked to close | Sets Trip.qst = Negotiating. | Sent only. |
 | Client accepted: open the file | winQuote: Trip.stage = Operations; creates groups (unpaid), tasks, supplier confirmations (Sent), travelers and a room block. Opens the Operation dashboard. | Shown when Sent or Negotiating (and from any gate card). |
 | To operations | Opens the Operation dashboard. | Shown after the file is open. |
+| Status menu (project header): Mark as lost | markLost: Trip.qst = Lost, qdays = 0. The stage stays Quote. | Open quotes only. A Lost quote leaves the pipeline, open-quote counts, team and agent dashboards, and shows under Archive. |
 
 **Rules**
 - Steps: Draft, Approval, Sent, Negotiating, then File opened.
@@ -1269,6 +1270,7 @@ See what needs attention before departure and jump to tasks, suppliers or financ
 | Urgent tasks card | Opens the Tasks tab. | None. |
 | Suppliers not confirmed card | Opens the Suppliers tab. | None. |
 | Estimated revenue card | Opens the Finance dashboard. | None. |
+| Move to financial close (card, only after the trip returned) | advanceStage: Trip.stage = Finance and opens the Finance dashboard. | Return date on or before today (none of the generated trips qualifies). The same move is in the project status menu, with the reason when it is not allowed. |
 
 **Rules**
 - `Days to trip = max(0, round((dep - today) / day)). Closed or Finance files say Trip is home.`
@@ -1311,7 +1313,7 @@ Move each supplier from contact to approved and compare prices before choosing.
 |---|---|---|
 | Status: Contact / Pending / Approved / Price comparison | Sets Supplier.flow and st (Not sent, Sent, Confirmed). A No reply status stays under Pending. | ops.suppliers (enforced: buttons disabled). |
 | Request quotes | Marks every alternative as requested, reply by today + 3, and sets the flow to comparison. | ops.suppliers. |
-| Choose (in the comparison) | Swaps the line supplier through tbSwap and clears requests. | Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap. |
+| Choose (in the comparison) | Swaps the line supplier through tbSwap and clears requests. | Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap (tbSwap enforces it too). The list buttons need ops.suppliers. |
 | Add to list (unassigned components) | Adds a supplier row for a line whose supplier is missing. | ops.suppliers. |
 | Supplier name link | Opens the supplier card. | None. |
 | Confirmation message: supplier select, Copy message | Builds a booking confirmation text for the chosen supplier and copies it. | Shown in Operation and Finance. |
@@ -1454,7 +1456,7 @@ Match each supplier invoice line to what was quoted and recover the difference.
 |---|---|---|
 | Read and match invoices | Reads the inbox sample files and attaches them to quote lines (applyInbox) with an animation. | Shown while Trip.inbox has files. |
 | Draft dispute / View email / Copy / Mark as sent | Builds the credit-note email; Mark as sent sets Invoice.st = disputed. | Open gaps with an overbill. fin.dispute is not enforced. |
-| Credit received | Adds the difference to Invoice.credit, sets st = credited and paid. | Disputed gaps only. |
+| Credit received | gapCredit: adds the difference to Invoice.credit, sets st = credited and Invoice.paid = true (as the generator does). | Disputed gaps only. |
 | Accept charge / Checked, nothing missing | Sets Invoice.st = accepted. | Under-billed gaps use Checked. |
 | Request invoice | Toast only. | Missing invoices, Finance and Closed files. |
 | Documents: Payment request / Supplier voucher | Switches the sample document and its household or supplier select. | Sample layout. |
@@ -1510,6 +1512,7 @@ See the trip money at a glance: planned versus expected profit and what is still
 |---|---|---|
 | Open expenses | Opens the Expenses tab, shown when open gaps exist. | None. |
 | Accounting sync chip | Shows the books system once connected. | Pilot; appears only after Accounting sync is connected. |
+| Close the file (next-step bar, status menu) | advanceStage: Trip.stage = Closed. | Allowed only with no open gaps, no supplier invoices waiting in the inbox and nothing left to collect (groupsCalc outstanding = 0); otherwise disabled with the reasons listed. |
 
 **Rules**
 - `Stats: trip total = rev; planned profit = rev - plan + comm; expected profit = rev - fc + comm; remaining = rev - collected.`
@@ -1541,7 +1544,7 @@ See the trip money at a glance: planned versus expected profit and what is still
 
 `trip:income` · Status: Pilot
 
-See the deal invoices and tax invoices for each household and how much is billed, received and remaining.
+See the deal invoices and receipts for each household and how much is billed, received and remaining.
 
 **Roles.** View: manager, accountant, agent. Act: manager, accountant. Permissions: `fin.view`, `fin.issueDocs`.
 
@@ -1550,14 +1553,14 @@ See the deal invoices and tax invoices for each household and how much is billed
 | Control | Does | Guard |
 |---|---|---|
 | Search (text) | Filters documents by client name. | Resets to page 1. |
-| Tabs: All / Deal invoices / Tax invoices | Filters by document type. | Counts shown. |
+| Tabs: All / Deal invoices / Receipts | Filters by document type. | Counts shown. |
 | Rows per page (5, 10, 25) and paging | Pages the table. | None. |
-| Issue document, Filters | Show a toast only (simulated). | fin.issueDocs is not enforced. |
+| Issue document, Filters | Show a toast only (simulated). | Issue document is disabled without fin.issueDocs (enforced). |
 
 **Rules**
 - Documents are derived, not stored: per household a deal invoice for the deposit and for the balance.
 - A deal invoice exists if paid or its due date is within today + 30 days; dated due - 21 days.
-- A paid item also gets a tax invoice dated on the due date.
+- A paid item also gets a receipt (type receipt) dated on the due date.
 - `Footer: Trip total = rev; Amount billed = sum of deal invoices; Payment received = collected; Remaining = outstanding.`
 - Status: Payment received, or Payment requested.
 
@@ -1802,8 +1805,8 @@ See every cost line by service type and compare or swap the supplier, with the p
 | Control | Does | Guard |
 |---|---|---|
 | Alternatives / Compare (per line) | Opens the comparison table: current supplier first, then alternatives with rating, preference, cancellation, commission, unit cost, cost change and profit impact. | Disabled when the line has no alternatives and was not swapped. |
-| Swap supplier | Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow. | UI: Quote stage only, no Line.inv, can price.edit (enforced). Function also allows Operation. |
-| Undo swap / Swap back | Restores the exact original sup, cost and comm from alt0 and deletes alt0. | Blocked when the line has an invoice. |
+| Swap supplier | Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow. | UI: Quote stage only, no Line.inv, can sup.swap. tbSwap itself refuses without sup.swap (reason perm) and also allows Operation. |
+| Undo swap / Swap back | Restores the exact original sup, cost and comm from alt0 and deletes alt0. | Blocked when the line has an invoice, or without sup.swap. |
 
 **Rules**
 - `Alternative unit cost = round(l.cost * rate(alt) / rate(incumbent)). The current supplier returns l.cost exactly.`

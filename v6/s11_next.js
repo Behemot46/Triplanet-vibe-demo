@@ -7,6 +7,68 @@
      room block open with cutoff within 30 days.
    - Finance: invoices waiting, open gaps, open balance, else "close the file" (info). Closed: none.
    Severity: urgent = overdue / late / past cutoff / follow-up due; info = nothing for this person to do. */
+/* ---------- stage moves: named, guarded, reused by the status menu, the dashboard control and the next-step bar ----------
+   stmCheck(t,mv) -> {ok,why:[{he,en}]} for mv = 'lost' (Quote -> Lost), 'fin' (Operations -> Finance), 'close' (Finance -> Closed).
+   fin needs the return date to have passed; close needs no open gaps, nothing in the supplier-invoice inbox and no balance to collect. */
+const stmReturned=t=>!!t&&endOf(t)<=iso(TODAY);
+const stmOpenGaps=t=>tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);
+function stmCheck(t,mv){
+  const why=[],add=(he,en)=>why.push({he,en});
+  if(!t){add('אין תיק','No file');return {ok:false,why};}
+  if(mv==='lost'){if(t.stage!=='Quote'||t.qst==='Lost')add('אפשר לסמן כאבודה רק הצעה פתוחה','Only an open quote can be marked lost');}
+  else if(mv==='fin'){
+    if(t.stage!=='Operations')add('רק תיק בתפעול עובר לסגירה כספית','Only a file in operations can move to financial close');
+    else if(!stmReturned(t))add(`הטיול חוזר ב-${fmtDate(endOf(t))}. אפשר לעבור לסגירה כספית אחרי החזרה`,`The trip returns on ${fmtDate(endOf(t))}. It can move to financial close after it returns`);}
+  else if(mv==='close'){
+    if(t.stage!=='Finance')add('רק תיק בסגירה כספית אפשר לסגור','Only a file in financial close can be closed');
+    else{const ni=(t.inbox||[]).length,gp=stmOpenGaps(t),g=t.groups&&t.groups.length?groupsCalc(t):null;
+      if(ni)add(`${ni} חשבוניות ספקים ממתינות לבדיקה`,`${ni} supplier invoice${ni>1?'s are':' is'} waiting to be checked`);
+      if(gp.length)add(`${gp.length} פערי חשבוניות פתוחים, ${usd(r2(gp.reduce((s,x)=>s+x.usd,0)))}`,`${gp.length} open invoice gap${gp.length>1?'s':''}, ${usd(r2(gp.reduce((s,x)=>s+x.usd,0)))}`);
+      if(g&&g.outstanding>0.005)add(`יתרה לגבייה: ${usd(g.outstanding)}`,`Open balance to collect: ${usd(g.outstanding)}`);}}
+  else add('מעבר לא מוכר','Unknown move');
+  return {ok:!why.length,why};
+}
+/* Operations -> Finance (only after the trip returned), Finance -> Closed (only when nothing is open) */
+function advanceStage(t){
+  const mv=t&&t.stage==='Finance'?'close':'fin',r=stmCheck(t,mv);
+  if(!r.ok)return {ok:false,mv,why:r.why};
+  const from=t.stage;t.stage=mv==='fin'?'Finance':'Closed';
+  return {ok:true,mv,from,to:t.stage,why:[]};
+}
+/* an open quote the client turned down: stage stays Quote, status becomes Lost, and it leaves every open-quote total */
+function markLost(t){
+  const r=stmCheck(t,'lost');if(!r.ok)return {ok:false,mv:'lost',why:r.why};
+  t.qst='Lost';t.qdays=0;return {ok:true,mv:'lost',from:'Quote',to:'Lost',why:[]};
+}
+function stmGo(mv,id){
+  const t=id?byId(id):T();if(!t)return false;
+  const r=mv==='lost'?markLost(t):mv==='fin'||mv==='close'||mv==='advance'?advanceStage(t):{ok:false,why:[{he:'מעבר לא מוכר',en:'Unknown move'}]};
+  S.pjMenu=false;
+  if(r.ok){if(r.to==='Finance')S.ptab='fdash';
+    render();toast(r.mv==='lost'?L('ההצעה סומנה כאבודה','The quote is marked lost'):r.to==='Finance'?L('התיק עבר לסגירה כספית','The file moved to financial close'):L('התיק נסגר','The file is closed'));}
+  else{render();toast(L('אי אפשר לעבור עדיין: ','Cannot move yet: ')+r.why.map(w=>L(w.he,w.en)).join('; '));}
+  return r.ok;
+}
+/* the moves the project status menu offers for a trip, each with its guard result */
+function stmMoves(t){
+  const m=(mv,he,en,dhe,den)=>{const r=stmCheck(t,mv);return {mv,he,en,dhe,den,ok:r.ok,why:r.why};};
+  if(t.stage==='Quote')return t.qst==='Lost'?[]:[m('lost','סימון כאבודה','Mark as lost','הלקוח לא אישר. ההצעה יוצאת מסכומי ההצעות הפתוחות.','The client did not accept. The quote leaves the open-quote totals.')];
+  if(t.stage==='Operations')return [m('fin','מעבר לסגירה כספית','Move to financial close','הטיול חזר. מעבירים לבדיקת חשבוניות וגבייה.','The trip is back. Moves to invoice checks and collection.')];
+  if(t.stage==='Finance')return [m('close','סגירת התיק','Close the file','הכול מסודר. התיק עובר לארכיון.','Everything is settled. The file moves to the archive.')];
+  return [];
+}
+/* Operation dashboard: the explicit control, shown only once the trip has returned */
+{const f0=pOpsDash;pOpsDash=function(t){const h=f0.apply(this,arguments);
+  if(!t||t.stage!=='Operations'||!stmReturned(t))return h;
+  return `<div class="card stm-card"><div><b>${L('הטיול חזר','The trip is back')}</b><div class="small muted">${L('מעבירים את התיק לסגירה כספית: בדיקת חשבוניות ספקים וגבייה.','Move the file to financial close: supplier invoice checks and collection.')}</div></div><button class="btn pri" data-act="advance" data-v="${t.id}">${L('מעבר לסגירה כספית','Move to financial close')}</button></div>`+h;};}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act]'),a=b&&b.dataset.act;
+  if(a==='pjmenu'){S.pjMenu=!S.pjMenu;render();return;}
+  if(a==='pjmove'){if(!b.disabled)stmGo(b.dataset.v);return;}
+  if(a==='advance'){stmGo('advance',b.dataset.v);return;}
+  if(S.pjMenu&&!(e.target.closest&&e.target.closest('.pj-stwrap'))){S.pjMenu=false;if(document.querySelector('.pj-menu'))render();}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.pjMenu){S.pjMenu=false;render();}});
 const NX_SEV={urgent:0,todo:1,info:2};
 function nextSteps(t){
   const out=[],T0=iso(TODAY);
@@ -14,13 +76,14 @@ function nextSteps(t){
   const pt=v=>({a:'pt',v});
   if(!t)return out;
   if(t.stage==='Quote'){
+    if(t.qst==='Lost')return out;
     const q=t.qst||'Draft',nm=t.client||'',d=t.qdays||0;
     if(q==='Draft'){
       const bad=(t.lines||[]).filter(l=>!l.extra&&(!(l.cost>0)||!l.sup)).length;
       if(bad)add('price','todo',`להשלים את התמחור: ${bad} שורות בלי עלות או ספק`,`Finish pricing: ${bad} line${bad>1?'s':''} without a cost or supplier`,pt('costs'),['לתמחור','Open pricing']);
       else add('send','todo','התמחור מוכן. שלחו לאישור מנהל','Pricing is complete. Send it for manager approval',pt('approve'),['שליחה לאישור','Send for approval']);
     }else if(q==='Approval'){
-      if(isMgr())add('approve','urgent','ההצעה ממתינה לאישורך','This quote is waiting for your approval',pt('approve'),['אישור ההצעה','Approve this quote']);
+      if(canApprove())add('approve','urgent','ההצעה ממתינה לאישורך','This quote is waiting for your approval',pt('approve'),['אישור ההצעה','Approve this quote']);
       else add('wait','info',`ממתין לאישור הבעלים (${d} ימים)`,`Waiting for the owner's approval (${d} day${d===1?'':'s'})`,pt('approve'),['לסטטוס','View status']);
     }else if(q==='Sent'){
       if(d>7)add('follow','urgent',`לחזור ללקוח ${nm} (ההצעה נשלחה לפני ${d} ימים)`,`Follow up with ${nm} (sent ${d} days ago)`,pt('quote'),['להצעה','Open the proposal']);
@@ -29,6 +92,7 @@ function nextSteps(t){
     return out;
   }
   if(t.stage==='Operations'){
+    if(stmReturned(t))add('finclose','todo','הטיול חזר. מעבירים את התיק לסגירה כספית','The trip is back. Move the file to financial close',{a:'advance',v:t.id},['מעבר לסגירה כספית','Move to financial close']);
     const od=(t.tasks||[]).filter(x=>!x.done&&x.due<T0).length;
     if(od)add('tasks','urgent',`${od} משימות באיחור`,`${od} overdue task${od>1?'s':''}`,pt('optasks'),['למשימות','Open tasks']);
     const tr=t.trav||[],intl=!!(DESTS[t.dest]&&DESTS[t.dest].intl),mp=intl?tr.filter(x=>x.pass==='Missing').length:0;
@@ -51,7 +115,7 @@ function nextSteps(t){
     if(gp.length)add('gaps','urgent',`${gp.length} פערי חשבוניות פתוחים, ${usd(gu)}`,`${gp.length} open invoice gap${gp.length>1?'s':''}, ${usd(gu)}`,pt('tfin'),['לטיפול בפערים','Resolve the gaps']);
     const g=t.groups&&t.groups.length?groupsCalc(t):null;
     if(g&&g.outstanding>0.005)add('bal','todo',`יתרה פתוחה לגבייה: ${usd(g.outstanding)}`,`Open balance to collect: ${usd(g.outstanding)}`,pt('income'),['להכנסות','Open income']);
-    if(!out.length)add('close','info','הכול מסודר. אפשר לסגור את התיק','Everything is settled. The file can be closed',pt('fdash'),['לדשבורד הכספים','Open finance dashboard']);
+    if(!out.length)add('close','todo','הכול מסודר. אפשר לסגור את התיק','Everything is settled. The file can be closed',{a:'advance',v:t.id},['סגירת התיק','Close the file']);
   }
   return out;
 }
@@ -75,7 +139,7 @@ function nxAgentSteps(ts,max){
 function nxMyCard(ts){
   const r=nxAgentSteps(ts,6);
   return `<div class="card da-card nx-card"><div class="da-h"><h3>${L('הצעדים הבאים שלי','My next steps')}</h3><span class="da-sum">${r.length}</span></div>
-   ${r.length?r.map(x=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn nx-go" data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}">${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
+   ${r.length?r.map(x=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn nx-go" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
 }
 function nxCloseRows(ts){return ts.filter(t=>t.stage==='Finance').map(t=>{const gp=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);return {t,gaps:gp.length,gapUsd:r2(gp.reduce((s,x)=>s+x.usd,0)),open:r2(groupsCalc(t).outstanding)};});}
 const nxHasUpcoming=ts=>ts.some(t=>t.stage!=='Quote'&&t.stage!=='Finance'&&t.stage!=='Closed'&&t.dep>=iso(TODAY));
@@ -91,7 +155,7 @@ function nxCloseCard(ts){
 TESTS.push({name:'nx next steps',run:h=>{const out=[],role0=S.role,lang0=S.lang,meet0=S.meet,tour0=S.tour,ptab0=S.ptab,tr0=S.tripId;
   const tabs=new Set(PTABS.map(p=>p[0])),T0=iso(TODAY),cnt={};
   TRIPS.forEach(t=>{S.role='manager';const st=nextSteps(t);
-    st.forEach(s=>{if(!tabs.has(s.act.v))out.push(`${t.id}: step ${s.k} tab ${s.act.v} not in PTABS`);if(!['urgent','todo','info'].includes(s.sev))out.push('sev '+s.k);
+    st.forEach(s=>{if(s.act.a!=='advance'&&!tabs.has(s.act.v))out.push(`${t.id}: step ${s.k} tab ${s.act.v} not in PTABS`);if(!['urgent','todo','info'].includes(s.sev))out.push('sev '+s.k);
       if(!s.he||!s.en||!s.label||!s.label[0]||!s.label[1])out.push(`${t.id}: step ${s.k} text`);if(/NaN|undefined/.test(s.he+s.en))out.push(`${t.id}: step ${s.k} NaN`);});
     const by={};st.forEach(s=>by[s.k]=s);cnt[t.stage]=(cnt[t.stage]||0)+1;
     const has=k=>!!by[k];

@@ -24,3 +24,15 @@
 .db-hero .hp-st small,.da-hero .hp-st small,.db-hero .hp-kpi span,.da-hero .hp-kpi span,.db-hero .hp-hi p,.da-hero .hp-hi p,.db-hero .da-leg,.da-hero .da-leg{color:color-mix(in srgb,var(--hero-ink) 88%,transparent)}
 .db-hero .hp-kpi span,.da-hero .hp-kpi span{font-weight:700}
 .db-hero .hp-k,.da-hero .hp-k{font-weight:700}
+
+/* accessibility (design-system section 10): contrast of at least 4.5:1 for normal text */
+/* light mode: darker green and amber text tokens (pills, chips, positive figures); dark mode keeps its light shades */
+:root[data-theme="light"]{--green:#0B7442;--orange:#8F5500;--yellow:#8F5500;--amber:#8F5500}
+/* small headings that people read use the muted token (the disabled grey is for disabled controls only) */
+.nvh,.dv-s h4{color:var(--muted)}
+/* green button: dark green with white text in both modes (5.4:1) */
+.btn.grn{background:#0B7A47;border-color:#0B7A47;color:#fff}
+.btn.grn:hover{background:#08633A;border-color:#08633A}
+/* the Presentation button is a demo control, not a product one: brand dark blue gives 7.6:1 with white text */
+.tourbtn.meetbtn{background:var(--primary-dark)!important;border-color:var(--primary-dark)!important}
+.tourbtn.meetbtn:hover{background:var(--primary-darker)!important}

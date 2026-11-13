@@ -7,7 +7,7 @@ let HP_PREV='';
 const hpAnim=()=>HP_PREV!=='home|'+S.role+'|'+S.lang;
 function hpHero(ts,P,up){
   const c=f=>ts.filter(f).length,tot=ts.length||1;
-  const st=[['quote',L('הצעת מחיר','Quotation'),c(t=>t.stage==='Quote'),'#68CDF9',L('הצעות','quotes')],
+  const st=[['quote',L('הצעת מחיר','Quotation'),c(isOpenQ),'#68CDF9',L('הצעות','quotes')],
     ['ops',L('תפעול','Operation'),c(t=>t.stage==='Operations'),'#FFC145',L('תיקים פעילים','active files')],
     ['fin',L('כספים','Finance'),c(t=>t.stage==='Finance'),'#C684FF',L('בסגירה כספית','in financial close')],
     ['done',L('נסגרו','Closed'),c(t=>t.stage==='Closed'),'#5BE49B',L('הושלמו','completed')]];
@@ -42,14 +42,14 @@ function vHome(){
   const ts=visibleTrips();if(!ts.length)return noTrip();
   const c=f=>ts.filter(f).length,P=portfolio(ts),G=gapStats(ts);
   const qL=n=>L('הצעות',n===1?'quote':'quotes'),fL=n=>L('תיקים',n===1?'file':'files');
-  const n1=c(t=>t.stage==='Quote'&&(t.qst||'Draft')==='Draft'),n2=c(t=>t.stage==='Quote'&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
+  const n1=c(t=>isOpenQ(t)&&(t.qst||'Draft')==='Draft'),n2=c(t=>isOpenQ(t)&&(t.qst||'Draft')!=='Draft'),n3=c(t=>t.stage==='Operations'),n4=c(t=>t.stage==='Finance'),n5=c(t=>t.stage==='Closed');
   const tiles=[[L('סך הכל','Total'),ts.length,L('הצעות ותיקים','quotes and files'),'',ic('folder')],[L('בבנייה','In progress'),n1,qL(n1),'orange',ic('draft')],[L('ממתינות','Pending'),n2,qL(n2),'amber',ic('hourglass')],[L('בתפעול','In operations'),n3,fL(n3),'blue',ic('ops')],[L('סגירה כספית','Financial close'),n4,fL(n4),'purple',ic('wallet')],[L('נסגרו','Closed'),n5,fL(n5),'green',ic('done')]];
   const tl=tiles.map(x=>`<div class="tile"><span class="ring" style="${x[3]?`--c:var(--${x[3]})`:''}">${x[4]}</span><div><div class="l">${x[0]}</div><div class="s">${x[1]} ${x[2]}</div></div></div>`).join('');
   const up=ts.filter(t=>D(t.dep)>=TODAY).sort((a,b)=>D(a.dep)-D(b.dep)).slice(0,7);
   let lastD='',ev='';
   up.forEach(t=>{if(t.dep!==lastD){lastD=t.dep;ev+=`<div class="evh">${fmtDate(t.dep)}</div>`;}
     ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span>${phImg('dest',t.dest,'ev-ph','')}<a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
-  const won=c(t=>t.stage!=='Quote'),lost=seesAll()?3:0;
+  const won=c(t=>t.stage!=='Quote'),lost=(seesAll()?3:0)+c(t=>t.stage==='Quote'&&t.qst==='Lost');
   const H=[['2023',9,4],['2024',11,5],['2025',12,3],['2026',won,lost]];
   const mx=Math.max(...H.map(h=>Math.max(h[1],h[2])),1);
   const bars=H.map(h=>`<div class="col"><div class="bars"><div class="b won" style="height:${h[1]/mx*100}%"><i>${h[1]}</i></div><div class="b lost" style="height:${Math.max(h[2]/mx*100,2)}%"><i>${h[2]}</i></div></div></div>`).join('');
@@ -78,7 +78,7 @@ function vHome(){
 /* ---------- projects list ---------- */
 function vQuotes(){
   const all=visibleTrips();if(!all.length)return noTrip();
-  const inTab=(t,k)=>k==='all'||(k==='quotes'&&t.stage==='Quote')||(k==='files'&&(t.stage==='Operations'||t.stage==='Finance'))||(k==='archive'&&t.stage==='Closed');
+  const inTab=(t,k)=>k==='all'||(k==='quotes'&&isOpenQ(t))||(k==='files'&&(t.stage==='Operations'||t.stage==='Finance'))||(k==='archive'&&(t.stage==='Closed'||(t.stage==='Quote'&&t.qst==='Lost')));
   const q=S.q.trim().toLowerCase();
   const base=all.filter(t=>(S.qseg==='All'||t.seg===S.qseg)&&(!q||(t.name+' '+t.client+' #'+t.no+' '+dn(t.dest)).toLowerCase().includes(q)));
   const list=base.filter(t=>inTab(t,S.qtab)).sort((a,b)=>D(a.dep)-D(b.dep));
@@ -114,7 +114,7 @@ function pGeneral(t){
   const d=DESTS[t.dest];
   const rows=[[L('שם הפרוייקט','Project name'),`<input type="text" data-ch="name" value="${esc(t.name)}" aria-label="${L('שם','Name')}" style="width:min(340px,100%)">`],[L('לקוח','Client'),`${esc(t.client)} (${ctn(t.ctype)})`],[L('יעד','Destination'),dn(t.dest)+', '+cn(t.dest)],[L('סוג קבוצה','Group type'),sn(t.seg)],[L('מספר נוסעים','Travelers'),t.pax],[L('תאריכי טיול','Trip dates'),range(t)],[L('אחראי תיק','File owner'),agn(t.agent)],
     [L('מטבע ספקים','Supplier currency'),t.cur+(d.air?L(' (טיסות ב-USD)',' (air in USD)'):'')],
-    ...(t.cur!=='USD'?[[L(`שער נעול, דולר ל-${t.cur}`,`Locked rate, USD per ${t.cur}`),`<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}">`]]:[]),
+    ...(t.cur!=='USD'?[[L(`שער נעול, דולר ל-${t.cur}`,`Locked rate, USD per ${t.cur}`),rateField(t)]]:[]),
     [L('מקדמה (%)','Deposit (%)'),`<input type="number" min="0" max="100" data-ch="pct" value="${t.pct}" aria-label="${L('אחוז מקדמה','Deposit percent')}">`],[L('מועד מקדמה','Deposit due'),fmtDate(t.depDue)],[L('מועד יתרה','Balance due'),fmtDate(t.balDue)]];
   return master(t)+`<div class="card"><table class="tbl"><tbody>${rows.map(r=>`<tr><td class="muted" style="width:220px">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</tbody></table></div>`;
 }
@@ -180,7 +180,7 @@ function pCosts(t){
   return master(t,`<button class="btn pri" data-act="pt" data-v="quote">${L('צור הצעת מחיר','Create proposal')}</button>`)+`
   <div class="stats"><div class="stat"><div class="l">${L('מחיר ללקוח','Client price')}</div><div class="v">${usd(c.rev)}</div><div class="s">${usd(c.rev/t.pax,2)} ${L('לנוסע','per traveler')}</div></div><div class="stat"><div class="l">${L('עלות מתוכננת','Planned cost')}</div><div class="v">${usd(c.plan)}</div></div><div class="stat"><div class="l">${L('רווח מתוכנן','Planned profit')}</div><div class="v">${usd(c.planProfit)}</div><div class="s">${pct(c.planProfit/c.rev)} ${L('מהמחיר, כולל עמלות','of price, incl. commission')}</div></div><div class="stat"><div class="l">${L('עמלת ספקים צפויה','Expected supplier commission')}</div><div class="v">${usd(c.comm)}</div><div class="s">${L('לא מוצגת ללקוח','not shown to client')}</div></div>${c.disc?`<div class="stat"><div class="l">${L('הנחות','Discounts')}</div><div class="v">${usd(c.disc)}</div></div>`:''}</div>
   <div class="card sec"><div class="row" style="justify-content:space-between"><div class="row"><strong>${L('המרקאפ מחושב','Markup is calculated')}</strong><div class="row"><button class="btn sm ${t.basis==='cost'?'pri':''}" data-act="basis" data-v="cost">${L('על העלות','On cost')}</button><button class="btn sm ${t.basis==='price'?'pri':''}" data-act="basis" data-v="price">${L('מהמחיר','Of price')}</button></div></div>
-    ${usdOnly?'':`<label class="row small muted">${L(`שער נעול, דולר ל-${cs}`,`Locked rate, USD per ${cs}`)}<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}"></label>`}</div><p class="small muted" style="margin:8px 0 0">${usdOnly?L('כל הספקים בטיול הזה מחייבים בדולרים, אז אין חשיפה לשער חליפין.','Every supplier on this trip bills in USD, so there is no exchange-rate exposure.'):L(`עלויות הספקים ב-${cs} (טיסות וביטוח בדולרים), והמחיר ללקוח בדולרים לפי השער הנעול.`,`Supplier costs are in ${cs} (air and travel protection in USD); the client price is in dollars at the locked rate.`)} ${ex}</p></div>
+    ${usdOnly?'':`<label class="row small muted">${L(`שער נעול, דולר ל-${cs}`,`Locked rate, USD per ${cs}`)}${rateField(t)}</label>`}</div><p class="small muted" style="margin:8px 0 0">${usdOnly?L('כל הספקים בטיול הזה מחייבים בדולרים, אז אין חשיפה לשער חליפין.','Every supplier on this trip bills in USD, so there is no exchange-rate exposure.'):L(`עלויות הספקים ב-${cs} (טיסות וביטוח בדולרים), והמחיר ללקוח בדולרים לפי השער הנעול.`,`Supplier costs are in ${cs} (air and travel protection in USD); the client price is in dollars at the locked rate.`)} ${ex}</p></div>
   ${a.has?`<div class="card sec"><h3>${L('הוצאות משותפות','Shared expenses')}</h3><div class="scroll"><table class="tbl">${th(L('סוג השירות','Service type'),'Tot Global')}<tbody>${a.rows}</tbody><tfoot><tr><td>${L('סה"כ','Total')}</td><td></td><td></td><td></td><td class="n">${usd(a.tot)}</td></tr></tfoot></table></div></div>`:''}
   ${b.has?`<div class="card sec"><h3>${L('הוצאות פר אדם','Per-person expenses')}</h3><div class="scroll"><table class="tbl">${th(L('סוג השירות','Service type'),'Tot PP')}<tbody>${b.rows}</tbody><tfoot><tr><td>${L('סה"כ לאדם','Total per person')}</td><td></td><td></td><td></td><td class="n">${usd(b.tot/t.pax,2)}</td></tr><tr><td>${paxL(t.pax)}</td><td></td><td></td><td></td><td class="n">${usd(b.tot)}</td></tr></tfoot></table></div></div>`:''}`;
 }
@@ -203,6 +203,11 @@ function pQuote(t){
     <div class="row" style="margin-top:12px"><button class="btn" data-act="pt" data-v="approve">${L('לשלב אישור ההצעה','To quote approval')}</button></div></div></div>`;
 }
 
+/* the locked FX rate: editable only while the trip is a quote; afterwards it is the rate fixed at acceptance */
+function rateField(t){
+  if(t.stage==='Quote')return `<input type="number" step="0.01" min="0.5" max="2" data-ch="rate" value="${t.rate}" aria-label="${L('שער נעול','Locked rate')}">`;
+  return `<span class="rate-ro"><b><bdi>${t.rate}</bdi></b> <span class="muted small">${t.wonOn?L(`ננעל כשההצעה אושרה ב-${fmtDate(t.wonOn)}`,`Locked when the quote was accepted on ${fmtDate(t.wonOn)}`):L('ננעל בעת אישור ההצעה','Locked at acceptance')}</span></span>`;
+}
 /* ---------- approval ---------- */
 function pApprove(t){
   const steps=[['Draft',L('בבנייה','In progress')],['Approval',L('לאישור מנהל','Manager approval')],['Sent',L('נשלח ללקוח','Sent to client')],['Negotiating',L('ממתין לסגירה','Awaiting close')]];
@@ -211,7 +216,7 @@ function pApprove(t){
   let act='';
   if(t.stage!=='Quote')act=`<p>${L('ההצעה אושרה והתיק פעיל.','The quote is accepted and the file is live.')}</p><button class="btn" data-act="pt" data-v="odash">${L('לתפעול','To operations')}</button>`;
   else if((t.qst||'Draft')==='Draft')act=`<button class="btn pri" data-act="qs" data-v="Approval">${L('שלח לאישור מנהל','Send for manager approval')}</button>`;
-  else if(t.qst==='Approval')act=S.role==='manager'?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מנהל יכול לאשר ולשלוח.','The quote is waiting for manager approval. Only a manager can approve and send it.')}</p>`;
+  else if(t.qst==='Approval')act=canApprove()?`<p>${L(`ההצעה ממתינה לאישורך. מחיר ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}.`,`The quote is waiting for your approval. Price ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}.`)}</p><button class="btn grn" data-act="qs" data-v="Sent">${L('אשר ושלח ללקוח','Approve and send to client')}</button>`:`<p class="muted">${L('ההצעה ממתינה לאישור מנהל. רק מי שמורשה לאשר הצעות יכול לאשר ולשלוח.','The quote is waiting for approval. Only someone who can approve proposals can approve and send it.')}</p>`;
   else if(t.qst==='Sent')act=`<p>${L(`ההצעה נשלחה ללקוח לפני ${t.qdays} ימים.`,`The quote was sent to the client ${t.qdays} days ago.`)}</p><button class="btn" data-act="qs" data-v="Negotiating">${L('הלקוח ביקש לסגור','Client asked to close')}</button>`;
   else act=`<p>${L('הלקוח מוכן לסגור.','The client is ready to close.')}</p>`;
   if(t.stage==='Quote'&&(t.qst==='Sent'||t.qst==='Negotiating'))act+=` <button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button>`;

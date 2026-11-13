@@ -33,7 +33,7 @@ const dbDepartures=(ts,days)=>{const lo=DB_TODAY(),hi=addDays(lo,days);
 /* team leaderboard: one row per agent */
 function dbTeam(){
   const rows=AGENTS.map(a=>{
-    const ts=dbAgentTrips(a),open=ts.filter(t=>t.stage==='Quote'),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
+    const ts=dbAgentTrips(a),open=ts.filter(isOpenQ),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
     const tgt=(STAFF_BY[a]&&STAFF_BY[a].target)||0,booked=P.rev;
     return {agent:a,openN:open.length,openVal:r2(open.reduce((s,t)=>s+calc(t).rev,0)),files:won.length,all:ts.length,
       booked,fp:P.fp,margin:booked?P.fp/booked:0,target:tgt,att:tgt?booked/tgt:0};});
@@ -67,7 +67,7 @@ function dbFormsPending(ts){
 /* the agent's KPIs and everything the dashboard shows */
 function dbAgentKpis(agent,ts){
   ts=(ts||dbAgentTrips(agent)).filter(t=>t.agent===agent);
-  const open=ts.filter(t=>t.stage==='Quote'),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
+  const open=ts.filter(isOpenQ),won=ts.filter(t=>t.stage!=='Quote'),P=portfolio(ts);
   const tgt=(STAFF_BY[agent]&&STAFF_BY[agent].target)||0,team=dbTeam();
   return {agent,openN:open.length,openVal:r2(open.reduce((s,t)=>s+calc(t).rev,0)),
     followN:dbFollowUps(agent,ts).length,depN:dbDepartures(ts,60).length,overN:dbTasks(ts,0).filter(z=>z.over).length,
@@ -105,7 +105,7 @@ function dbReadyRows(ts,days){
 function dbApprovalsCard(){
   const a=dbApprovals(TRIPS),tot=r2(a.reduce((s,x)=>s+x.rev,0));
   const rows=a.map(x=>`<div class="da-li db-ap"><div><strong>${esc(x.t.name)}</strong><div class="small muted">${esc(x.t.client)} · ${agn(x.t.agent)} · ${L(`ממתינה ${dbDays(x.days)}`,`waiting ${dbDays(x.days)}`)} · ${L('רווח מתוכנן','planned margin')} <bdi>${pct(x.margin)}</bdi></div></div>
-    <span class="da-amt">${usd(x.rev)}</span><button class="btn sm pri" data-act="open" data-v="${x.t.id}" data-pt="approve">${L('אשר','Approve')}</button></div>`).join('');
+    <span class="da-amt">${usd(x.rev)}</span>${canApprove()?`<button class="btn sm pri" data-act="open" data-v="${x.t.id}" data-pt="approve">${L('אשר','Approve')}</button>`:`<button class="btn sm" data-act="open" data-v="${x.t.id}" data-pt="approve" title="${L('התפקיד שלך לא כולל אישור הצעות','Your role cannot approve proposals')}">${L('פתח','Open')}</button>`}</div>`).join('');
   return `<div class="card da-card db-card"><div class="da-h"><h3>${L('הצעות הממתינות לאישור','Approvals waiting')}</h3><span class="da-sum">${usd(tot)}</span></div>
    ${rows||`<p class="muted">${L('אין הצעות הממתינות לאישור.','No quotes are waiting for approval.')}</p>`}</div>`;
 }
@@ -126,7 +126,7 @@ function dbMgrCards(){
 
 function dbHero(K,ts){
   const first=String(userName()).split(' ')[0],day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const open=ts.filter(t=>t.stage==='Quote'),cols=['Draft','Approval','Sent','Negotiating'],cc=['#68CDF9','#C684FF','#FFC145','#5BE49B'];
+  const open=ts.filter(isOpenQ),cols=['Draft','Approval','Sent','Negotiating'],cc=['#68CDF9','#C684FF','#FFC145','#5BE49B'];
   const seg=cols.map((k,i)=>{const x=open.filter(t=>dbQst(t)===k);return [r2(x.reduce((s,t)=>s+calc(t).rev,0)),cc[i],qn(k),x.length];});
   const tot=Math.max(1,seg.reduce((s,x)=>s+x[0],0));
   const nx=dbDepartures(ts,400)[0],dd=nx?Math.round((D(nx.dep)-TODAY)/DAY):0;
@@ -146,7 +146,7 @@ function dbHero(K,ts){
 }
 
 function dbPipelineCard(ts){
-  const cols=['Draft','Approval','Sent','Negotiating'],open=ts.filter(t=>t.stage==='Quote');
+  const cols=['Draft','Approval','Sent','Negotiating'],open=ts.filter(isOpenQ);
   const col=k=>{const x=open.filter(t=>dbQst(t)===k).sort((a,b)=>(b.qdays||0)-(a.qdays||0));
     return `<div class="db-col"><div class="db-ch"><span class="pill ${QST[k][2]}">${qn(k)}</span><b>${x.length}</b></div>
      ${x.map(t=>{const c=calc(t),late=k==='Sent'&&(t.qdays||0)>7;
@@ -201,12 +201,12 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     if(Math.abs(T.booked-P.rev)>.02)out.push(`leaderboard booked ${T.booked} vs portfolio ${P.rev}`);
     if(Math.abs(T.fp-P.fp)>.05)out.push(`leaderboard fp ${T.fp} vs ${P.fp}`);
     if(T.rows.length!==AGENTS.length)out.push('leaderboard rows');
-    let n=0,v=0;TRIPS.forEach(t=>{if(t.stage==='Quote'){n++;v+=calc(t).rev;}});
+    let n=0,v=0;TRIPS.forEach(t=>{if(isOpenQ(t)){n++;v+=calc(t).rev;}});
     if(T.openN!==n||Math.abs(T.openVal-r2(v))>.05)out.push(`open quotes ${T.openN}/${T.openVal} vs ${n}/${r2(v)}`);
     T.rows.forEach(r=>{if(!isFinite(r.att)||!isFinite(r.margin))out.push('non-finite team row '+r.agent);});}
   /* agent KPIs count only that agent's trips (every agent) */
   AGENTS.forEach(a=>{const K=dbAgentKpis(a),mine=TRIPS.filter(t=>t.agent===a),lo=iso(TODAY);
-    const q=mine.filter(t=>t.stage==='Quote'),exp={n:q.length,v:r2(q.reduce((s,t)=>s+calc(t).rev,0)),
+    const q=mine.filter(isOpenQ),exp={n:q.length,v:r2(q.reduce((s,t)=>s+calc(t).rev,0)),
       f:q.filter(t=>t.qst==='Sent'&&t.qdays>7).length,
       d:mine.filter(t=>t.stage!=='Quote'&&t.dep>=lo&&t.dep<=addDays(lo,60)).length,
       o:mine.reduce((s,t)=>s+(t.stage==='Quote'?0:t.tasks.filter(x=>!x.done&&x.due<lo).length),0),
@@ -215,7 +215,7 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     if(K.followN!==exp.f||K.depN!==exp.d||K.overN!==exp.o)out.push(`agent ${a} counts ${K.followN}/${K.depN}/${K.overN} vs ${exp.f}/${exp.d}/${exp.o}`);
     if(Math.abs(K.booked-exp.b)>.05)out.push(`agent ${a} booked ${K.booked} vs ${exp.b}`);
     if(dbFollowUps(a).some(t=>t.agent!==a))out.push('follow-ups include another agent');});
-  if(AGENTS.reduce((s,a)=>s+dbAgentKpis(a).openN,0)!==TRIPS.filter(t=>t.stage==='Quote').length)out.push('agent open quotes do not add up');
+  if(AGENTS.reduce((s,a)=>s+dbAgentKpis(a).openN,0)!==TRIPS.filter(isOpenQ).length)out.push('agent open quotes do not add up');
   /* readiness: finite and in [0,100] for every non-Quote trip, with any number of tasks */
   TRIPS.forEach(t=>{if(t.stage==='Quote')return;const r=dbReadiness(t);
     ['tasks','pass','sups','dep','overall'].forEach(k=>{if(!isFinite(r[k])||r[k]<0||r[k]>100)out.push(`readiness ${t.id}.${k}=${r[k]}`);});});

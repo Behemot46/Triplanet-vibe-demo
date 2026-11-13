@@ -373,7 +373,7 @@ function portfolio(ts){
   MONTHS.forEach(m=>P.cash[m]={in:0,out:0});
   ts.forEach(t=>{
     const c=calc(t);
-    if(t.stage==='Quote'){P.pipeline=r2(P.pipeline+c.rev);P.pipelineN++;return;}
+    if(t.stage==='Quote'){if(t.qst!=='Lost'){P.pipeline=r2(P.pipeline+c.rev);P.pipelineN++;}return;}
     const g=groupsCalc(t);
     P.rev=r2(P.rev+c.rev);P.plan=r2(P.plan+c.plan);P.fc=r2(P.fc+c.fc);P.amtDiff=r2(P.amtDiff+c.amtDiff);P.fx=r2(P.fx+c.fx);P.comm=r2(P.comm+c.comm);
     P.pax+=t.pax;P.col=r2(P.col+g.collected);P.late=r2(P.late+g.late);

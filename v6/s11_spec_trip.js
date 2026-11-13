@@ -16,7 +16,7 @@ SPEC['trip:general']={
   data:['Trip.name','Trip.client','Trip.ctype','Trip.dest','Trip.seg','Trip.pax','Trip.dep','Trip.nights','Trip.agent','Trip.cur','Trip.rate','Trip.pct','Trip.depDue','Trip.balDue'],
   actions:[
     {label:'Project name (text)',does:'Sets Trip.name. An empty value keeps the old name.',rule:'Any role that can open the trip. proj.edit is not enforced here.'},
-    {label:'Locked rate, USD per currency (number)',does:'Sets Trip.rate and reprices every non-USD line.',rule:'Shown only when Trip.cur is not USD. Clamped to 0.5 to 2; an empty value falls back to the base rate.'},
+    {label:'Locked rate, USD per currency (number)',does:'Sets Trip.rate and reprices every non-USD line.',rule:'Shown only when Trip.cur is not USD. Editable only in Quote stage; later it is read-only: Locked when the quote was accepted on the win date (Trip.wonOn, otherwise Locked at acceptance). Clamped to 0.5 to 2; an empty value falls back to the base rate.'},
     {label:'Deposit (%) (number)',does:'Sets Trip.pct. Group deposits and balances recompute.',rule:'Clamped to 0 to 100. Due dates do not change.'},
     {label:'Client, destination, group type, travelers, dates, file owner, due dates',does:'Read-only rows.',rule:'Changed elsewhere: pax and dates on the trip record, owner via proj.assign.'}],
   rules:[
@@ -88,8 +88,8 @@ SPEC['trip:plan:comp']={
   data:['Line.name','Line.sup','Line.type','Line.qty','Line.unit','Line.cost','Line.cur','Line.comm','Line.scope','Line.inv','Line.alt0','Supplier.id','Supplier.real','Supplier.rating','Supplier.pref','Supplier.cancel','Trip.sups','Trip.room'],
   actions:[
     {label:'Alternatives / Compare (per line)',does:'Opens the comparison table: current supplier first, then alternatives with rating, preference, cancellation, commission, unit cost, cost change and profit impact.',rule:'Disabled when the line has no alternatives and was not swapped.'},
-    {label:'Swap supplier',does:'Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow.',rule:'UI: Quote stage only, no Line.inv, can price.edit (enforced). Function also allows Operation.'},
-    {label:'Undo swap / Swap back',does:'Restores the exact original sup, cost and comm from alt0 and deletes alt0.',rule:'Blocked when the line has an invoice.'}],
+    {label:'Swap supplier',does:'Sets Line.sup, Line.cost, Line.comm and stores Line.alt0 once; the trip supplier list and room block hotel follow.',rule:'UI: Quote stage only, no Line.inv, can sup.swap. tbSwap itself refuses without sup.swap (reason perm) and also allows Operation.'},
+    {label:'Undo swap / Swap back',does:'Restores the exact original sup, cost and comm from alt0 and deletes alt0.',rule:'Blocked when the line has an invoice, or without sup.swap.'}],
   rules:[
     'Alternative unit cost = round(l.cost * rate(alt) / rate(incumbent)). The current supplier returns l.cost exactly.',
     'A real brand whose catalog rate differs from the line cost by more than 15% is anchored on the market median of fictional suppliers (altCost).',
@@ -130,7 +130,7 @@ SPEC['trip:costs']={
   data:['Trip.markups','Trip.basis','Trip.disc','Trip.rate','Trip.cur','Trip.pax','Trip.ovh','Trip.brk','Line.qty','Line.cost','Line.cur','Line.ov','Line.comm','Line.type','Line.scope'],
   actions:[
     {label:'Markup is calculated: On cost / Of price',does:'Sets Trip.basis.',rule:'Changes every price.'},
-    {label:'Locked rate (number)',does:'Sets Trip.rate.',rule:'Shown only for non-USD trips. 0.5 to 2.'},
+    {label:'Locked rate (number)',does:'Sets Trip.rate.',rule:'Shown only for non-USD trips. 0.5 to 2. Editable in Quote stage only; read-only after acceptance (the change handler also refuses).'},
     {label:'Line detail (chevron)',does:'Expands the lines of a service type.',rule:'Per scope: shared or per person.'},
     {label:'Mark up % per service type',does:'Sets Trip.markups[type].',rule:'0 to 90.'},
     {label:'Discount type and value per type',does:'Sets Trip.disc[scope|type] as % or $.',rule:'Value min 0; empty clears it.'},
@@ -263,10 +263,11 @@ SPEC['trip:approve']={
   data:['Trip.qst','Trip.qdays','Trip.stage','Trip.groups','Trip.tasks','Trip.sups','Trip.trav','Trip.room'],
   actions:[
     {label:'Send for manager approval',does:'Sets Trip.qst = Approval, qdays = 0.',rule:'Draft only.'},
-    {label:'Approve and send to client',does:'Sets Trip.qst = Sent.',rule:'Role manager only (S.role check). Others see: only a manager can approve and send.'},
+    {label:'Approve and send to client',does:'Sets Trip.qst = Sent.',rule:'Needs can(prop.approve) (enforced in pApprove and in the qs handler). Others see: only someone who can approve proposals can approve and send.'},
     {label:'Client asked to close',does:'Sets Trip.qst = Negotiating.',rule:'Sent only.'},
     {label:'Client accepted: open the file',does:'winQuote: Trip.stage = Operations; creates groups (unpaid), tasks, supplier confirmations (Sent), travelers and a room block. Opens the Operation dashboard.',rule:'Shown when Sent or Negotiating (and from any gate card).'},
-    {label:'To operations',does:'Opens the Operation dashboard.',rule:'Shown after the file is open.'}],
+    {label:'To operations',does:'Opens the Operation dashboard.',rule:'Shown after the file is open.'},
+    {label:'Status menu (project header): Mark as lost',does:'markLost: Trip.qst = Lost, qdays = 0. The stage stays Quote.',rule:'Open quotes only. A Lost quote leaves the pipeline, open-quote counts, team and agent dashboards, and shows under Archive.'}],
   rules:[
     'Steps: Draft, Approval, Sent, Negotiating, then File opened.',
     'Approval step shows price and planned margin = planProfit / rev.',
@@ -287,7 +288,8 @@ SPEC['trip:odash']={
   actions:[
     {label:'Urgent tasks card',does:'Opens the Tasks tab.',rule:'None.'},
     {label:'Suppliers not confirmed card',does:'Opens the Suppliers tab.',rule:'None.'},
-    {label:'Estimated revenue card',does:'Opens the Finance dashboard.',rule:'None.'}],
+    {label:'Estimated revenue card',does:'Opens the Finance dashboard.',rule:'None.'},
+    {label:'Move to financial close (card, only after the trip returned)',does:'advanceStage: Trip.stage = Finance and opens the Finance dashboard.',rule:'Return date on or before today (none of the generated trips qualifies). The same move is in the project status menu, with the reason when it is not allowed.'}],
   rules:[
     'Days to trip = max(0, round((dep - today) / day)). Closed or Finance files say Trip is home.',
     'Urgent tasks = not done and due on or before today + 7 days (overdue included).',
@@ -330,7 +332,7 @@ SPEC['trip:spm']={
   actions:[
     {label:'Status: Contact / Pending / Approved / Price comparison',does:'Sets Supplier.flow and st (Not sent, Sent, Confirmed). A No reply status stays under Pending.',rule:'ops.suppliers (enforced: buttons disabled).'},
     {label:'Request quotes',does:'Marks every alternative as requested, reply by today + 3, and sets the flow to comparison.',rule:'ops.suppliers.'},
-    {label:'Choose (in the comparison)',does:'Swaps the line supplier through tbSwap and clears requests.',rule:'Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap.'},
+    {label:'Choose (in the comparison)',does:'Swaps the line supplier through tbSwap and clears requests.',rule:'Disabled if approved, the line has an invoice, the trip is Closed, or no sup.swap (tbSwap enforces it too). The list buttons need ops.suppliers.'},
     {label:'Add to list (unassigned components)',does:'Adds a supplier row for a line whose supplier is missing.',rule:'ops.suppliers.'},
     {label:'Supplier name link',does:'Opens the supplier card.',rule:'None.'},
     {label:'Confirmation message: supplier select, Copy message',does:'Builds a booking confirmation text for the chosen supplier and copies it.',rule:'Shown in Operation and Finance.'}],
@@ -396,7 +398,8 @@ SPEC['trip:fdash']={
   data:['Trip.pax','Trip.groups','Line.inv','Invoice.amt','Invoice.credit','Invoice.st','Gap.usd','Group.depPaid','Group.balPaid'],
   actions:[
     {label:'Open expenses',does:'Opens the Expenses tab, shown when open gaps exist.',rule:'None.'},
-    {label:'Accounting sync chip',does:'Shows the books system once connected.',rule:'Pilot; appears only after Accounting sync is connected.'}],
+    {label:'Accounting sync chip',does:'Shows the books system once connected.',rule:'Pilot; appears only after Accounting sync is connected.'},
+    {label:'Close the file (next-step bar, status menu)',does:'advanceStage: Trip.stage = Closed.',rule:'Allowed only with no open gaps, no supplier invoices waiting in the inbox and nothing left to collect (groupsCalc outstanding = 0); otherwise disabled with the reasons listed.'}],
   rules:[
     'Stats: trip total = rev; planned profit = rev - plan + comm; expected profit = rev - fc + comm; remaining = rev - collected.',
     'Leak = planProfit - fcProfit (leakModel). The bridge is supplier differences by kind plus FX.',
@@ -410,19 +413,19 @@ SPEC['trip:fdash']={
 
 SPEC['trip:income']={
   title:'Income',
-  purpose:'See the deal invoices and tax invoices for each household and how much is billed, received and remaining.',
+  purpose:'See the deal invoices and receipts for each household and how much is billed, received and remaining.',
   roles:{view:['manager','accountant','agent'],act:['manager','accountant']},
   perms:['fin.view','fin.issueDocs'],
   data:['Group.name','Group.dep','Group.bal','Group.depPaid','Group.balPaid','Trip.pct','Trip.depDue','Trip.balDue','Trip.no'],
   actions:[
     {label:'Search (text)',does:'Filters documents by client name.',rule:'Resets to page 1.'},
-    {label:'Tabs: All / Deal invoices / Tax invoices',does:'Filters by document type.',rule:'Counts shown.'},
+    {label:'Tabs: All / Deal invoices / Receipts',does:'Filters by document type.',rule:'Counts shown.'},
     {label:'Rows per page (5, 10, 25) and paging',does:'Pages the table.',rule:'None.'},
-    {label:'Issue document, Filters',does:'Show a toast only (simulated).',rule:'fin.issueDocs is not enforced.'}],
+    {label:'Issue document, Filters',does:'Show a toast only (simulated).',rule:'Issue document is disabled without fin.issueDocs (enforced).'}],
   rules:[
     'Documents are derived, not stored: per household a deal invoice for the deposit and for the balance.',
     'A deal invoice exists if paid or its due date is within today + 30 days; dated due - 21 days.',
-    'A paid item also gets a tax invoice dated on the due date.',
+    'A paid item also gets a receipt (type receipt) dated on the due date.',
     'Footer: Trip total = rev; Amount billed = sum of deal invoices; Payment received = collected; Remaining = outstanding.',
     'Status: Payment received, or Payment requested.'],
   states:{empty:'No documents.',loading:DT_LOAD,error:DT_ERR,gated:DT_GATE},
@@ -440,7 +443,7 @@ SPEC['trip:tfin']={
   actions:[
     {label:'Read and match invoices',does:'Reads the inbox sample files and attaches them to quote lines (applyInbox) with an animation.',rule:'Shown while Trip.inbox has files.'},
     {label:'Draft dispute / View email / Copy / Mark as sent',does:'Builds the credit-note email; Mark as sent sets Invoice.st = disputed.',rule:'Open gaps with an overbill. fin.dispute is not enforced.'},
-    {label:'Credit received',does:'Adds the difference to Invoice.credit, sets st = credited and paid.',rule:'Disputed gaps only.'},
+    {label:'Credit received',does:'gapCredit: adds the difference to Invoice.credit, sets st = credited and Invoice.paid = true (as the generator does).',rule:'Disputed gaps only.'},
     {label:'Accept charge / Checked, nothing missing',does:'Sets Invoice.st = accepted.',rule:'Under-billed gaps use Checked.'},
     {label:'Request invoice',does:'Toast only.',rule:'Missing invoices, Finance and Closed files.'},
     {label:'Documents: Payment request / Supplier voucher',does:'Switches the sample document and its household or supplier select.',rule:'Sample layout.'}],

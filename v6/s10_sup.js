@@ -257,7 +257,7 @@ function spCliOpen(name){
   S.cliId=c?c.id:name;S.cliTab='ov';S.tab='clients';S.menu=false;render();window.scrollTo(0,0);return !!spCli();
 }
 function spCliClose(){S.cliId=null;render();window.scrollTo(0,0);}
-/* a client's money: documents from incomeDocs across its non-Quote trips; billed = deal invoices, received = tax invoices (receipts) */
+/* a client's money: documents from incomeDocs across its non-Quote trips; billed = deal invoices, received = receipts */
 function spCliFin(name){
   const trips=TRIPS.filter(t=>t.client===name&&canSee(t)),rows=[],docs=[];let billed=0,received=0,booked=0;
   trips.filter(t=>t.stage!=='Quote').forEach(t=>{
@@ -268,14 +268,14 @@ function spCliFin(name){
 function spCliHtml(c,tab){
   tab=tab||S.cliTab||'ov';
   const F=spCliFin(c.name),ty=CTYPE[c.type]||[c.type,c.type,''],ct=c.contact||{};
-  const quotes=F.trips.filter(t=>t.stage==='Quote'),qv=r2(quotes.reduce((a,t)=>a+calc(t).rev,0));
+  const quotes=F.trips.filter(isOpenQ),qv=r2(quotes.reduce((a,t)=>a+calc(t).rev,0));
   const editWhy=spNoForm()||(!spCan('cli.edit')?L('התפקיד שלך לא כולל עריכת לקוחות','Your role cannot edit clients'):'');
   const kv=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`,sr=SP_SRC[c.source];
   const tabs=[['ov',L('סקירה','Overview')],['fin',L('כספים','Finance')]];
   const tripRows=F.trips.slice().sort((a,b)=>D(b.dep)-D(a.dep)).map(t=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${t.id}">#${t.no} ${esc(t.name)}</button></td><td>${t.stage==='Quote'?pillF(qn(t.qst),''):pillF(stn(t.stage),'blue')}</td><td>${range(t)}</td><td class="n">${t.pax}</td><td class="n">${usd(calc(t).rev)}</td><td>${agn(t.agent)}</td></tr>`).join('');
   let body='';
   if(tab==='fin'){
-    const docLab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('חשבונית מס קבלה','Tax invoice')};
+    const docLab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')};
     body=`<div class="sp-sum sp-fin"><span class="sp-kpi"><small>${L('הכנסה סגורה','Booked revenue')}</small><b>${usd(F.booked,2)}</b></span><span class="sp-kpi"><small>${L('חויב','Billed')}</small><b>${usd(F.billed,2)}</b></span><span class="sp-kpi"><small>${L('התקבל','Received')}</small><b>${usd(F.received,2)}</b></span><span class="sp-kpi"><small>${L('פתוח','Open')}</small><b class="${F.open>0?'due':''}">${usd(F.open,2)}</b></span></div>
     ${F.rows.length?`<div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('סך הטיול','Trip total'),'n')}${alTh(L('חויב','Billed'),'n')}${alTh(L('התקבל','Received'),'n')}${alTh(L('פתוח','Open'),'n')}</tr></thead><tbody>${F.rows.map(r=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${r.t.id}|income">#${r.t.no} ${esc(r.t.name)}</button></td><td class="n">${usd(r.rev,2)}</td><td class="n">${usd(r.billed,2)}</td><td class="n">${usd(r.received,2)}</td><td class="n">${usd(r.open,2)}</td></tr>`).join('')}</tbody></table></div></div>
     <h3 class="al-h2">${L('מסמכים','Documents')}</h3><div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('מסמך','Document'))}${alTh(L('מספר','Number'))}${alTh(L('טיול','Trip'))}${alTh(L('תאריך','Date'))}${alTh(L('סכום','Amount'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${F.docs.map(d=>`<tr><td>${docLab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>#${d.t.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber')}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div></div>`

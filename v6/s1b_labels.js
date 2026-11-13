@@ -17,7 +17,9 @@ const STE={Quote:'Quote',Operations:'Operations',Finance:'Financial close',Close
 const stn=k=>L(STH[k],STE[k]);
 const stCls=s=>({Quote:'orange',Operations:'blue',Finance:'purple',Closed:'green'}[s]);
 const supCls=s=>({Confirmed:'green',Sent:'blue','No reply':'red','Not sent':''}[s]||'');
-const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple']};
+/* an open quote: still in play (a Lost quote keeps stage Quote but leaves every pipeline total) */
+const isOpenQ=t=>!!t&&t.stage==='Quote'&&t.qst!=='Lost';
+const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple'],Lost:['לא נסגרה','Lost','red']};
 const qn=k=>{const q=QST[k||'Draft'];return L(q[0],q[1]);};
 const sd=s=>S.lang==='en'?s.slice(5,7)+'/'+s.slice(8,10)+'/'+s.slice(0,4):s.split('-').reverse().join('/');
 const endOf=t=>addDays(t.dep,t.nights);

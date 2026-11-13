@@ -99,8 +99,10 @@ function daMonthEnd(){
 function daDet(k){S.daDet=k;if(k!=='ap')S.daWk=-1;render();}
 function daWk(i){S.daDet='ap';S.daWk=S.daWk===i?-1:i;render();}
 function daIssue(key){
+  if(!canIssueDocs()){try{toast(L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents'));}catch(e){}return false;}
   if(!DA_STATE.iss.includes(key)){DA_STATE.iss.push(key);try{toast(L('החשבונית הופקה ונשלחה ללקוח','Deal invoice issued and sent to the client'));}catch(e){}}
   render();
+  return true;
 }
 function daApprove(key){
   if(DA_STATE.ap.includes(key))return;
@@ -143,7 +145,7 @@ function daDetail(key){
   if(key==='docs'){const d=daDocsToIssue();
     return {title:L('חשבוניות עסקה להפקה','Deal invoices to issue'),sum:usd(d.total),page:'finance',
       body:tbl([[L('קבוצת חיוב','Billing group')],[L('טיול','Trip')],[L('סוג','Type')],[L('תאריך','Date')],[L('סכום','Amount'),'n'],['']],
-        d.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.d.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.d.kind)}</td><td>${fmtDate(x.d.date)}</td>${daNum(usd(x.amt))}<td><button class="btn sm pri" data-act="da-issue" data-v="${x.key}">${L('הפק','Issue')}</button></td></tr>`).join(''),daMore(d.n-CAP,'finance',L('לכל הכספים','Open Finance')))};}
+        d.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.d.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.d.kind)}</td><td>${fmtDate(x.d.date)}</td>${daNum(usd(x.amt))}<td><button class="btn sm pri" data-act="da-issue" data-v="${x.key}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${L('הפק','Issue')}</button></td></tr>`).join(''),daMore(d.n-CAP,'finance',L('לכל הכספים','Open Finance')))};}
   if(key==='ap'){const w=daApWeeks(8),sel=S.daWk>=0?w.weeks[S.daWk]:null,items=(sel?sel.items:w.weeks.flatMap(x=>x.items)).slice().sort((a,b)=>b.amt-a.amt);
     return {title:sel?L(`תשלומים לספקים: ${daDate(sel.from)} עד ${daDate(sel.to)}`,`Supplier payments: ${daDate(sel.from)} to ${daDate(sel.to)}`):L('תשלומים לספקים ב-8 השבועות הקרובים','Supplier payments, next 8 weeks'),sum:usd(sel?sel.total:w.total),page:'finance',
       body:tbl([[L('טיול','Trip')],[L('קטגוריה','Category')],[L('תאריך תשלום','Pay date')],[L('סכום','Amount'),'n'],['']],
@@ -211,7 +213,7 @@ function daDocsCard(){
   const d=daDocsToIssue(),CAP=5;
   return `<div class="card da-card"><div class="da-h"><h3>${L('מסמכים להפקה','Documents to issue')}</h3><span class="da-sum">${d.n}</span></div>
    <p class="small muted da-note">${L('חשבוניות עסקה לתשלומי לקוחות שמועדם בתוך 30 יום או שעבר.','Deal invoices for client installments due within 30 days or already past due.')}</p>
-   ${d.items.slice(0,CAP).map(x=>`<div class="da-li"><div><strong>${esc(x.d.name)}</strong><div class="small muted">${esc(x.t.name)} · ${daKind(x.d.kind)} · ${fmtDate(x.d.date)}</div></div><span class="da-amt">${usd(x.amt)}</span><button class="btn sm pri" data-act="da-issue" data-v="${x.key}">${L('הפק','Issue')}</button></div>`).join('')||`<p class="muted">${L('כל המסמכים הופקו.','Everything is issued.')}</p>`}
+   ${d.items.slice(0,CAP).map(x=>`<div class="da-li"><div><strong>${esc(x.d.name)}</strong><div class="small muted">${esc(x.t.name)} · ${daKind(x.d.kind)} · ${fmtDate(x.d.date)}</div></div><span class="da-amt">${usd(x.amt)}</span><button class="btn sm pri" data-act="da-issue" data-v="${x.key}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${L('הפק','Issue')}</button></div>`).join('')||`<p class="muted">${L('כל המסמכים הופקו.','Everything is issued.')}</p>`}
    <div class="da-more">${d.n>CAP?`<span class="muted small">${L(`ועוד ${d.n-CAP}`,`and ${d.n-CAP} more`)}</span>`:'<span></span>'}<button class="btn sm" data-act="da-det" data-v="docs">${L('לכל המסמכים','See all')}</button></div></div>`;
 }
 

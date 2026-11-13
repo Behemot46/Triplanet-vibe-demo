@@ -134,7 +134,7 @@ const QS=[
  {g:2,he:'אילו הצעות ממתינות ללקוח יותר משבועיים?',en:'Which quotes have waited more than two weeks for the client?',r:/two weeks|waited|waiting.*client|שבועיים|ממתינות ללקוח/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Sent'&&t.qdays>14);
    return {t:q.length?listL(q.map(t=>L(`${t.name}: נשלחה לפני ${t.qdays} ימים, ${usd(calc(t).rev)}. ${agn(t.agent)} אחראי/ת.`,`${t.name}: sent ${t.qdays} days ago, ${usd(calc(t).rev)}. Owner: ${agn(t.agent)}.`)))+L('\nכדאי שיחת מעקב השבוע.','\nWorth a follow-up call this week.'):L('אין הצעות שממתינות יותר משבועיים.','No quote has waited more than two weeks.')};}},
  {g:2,he:'אילו הצעות ממתינות לאישור שלי?',en:'Which quotes are waiting for my approval?',r:/approv|לאישור/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Approval');
-   if(S.role!=='manager')return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
+   if(!canApprove())return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
    return {t:q.length?listL(q.map(t=>{const c=calc(t);return L(`${t.name}: ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}, ${agn(t.agent)}.`,`${t.name}: ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}, from ${agn(t.agent)}.`);})):L('אין הצעות שממתינות לאישור.','Nothing is waiting for approval.'),btn:q.length?{label:L('פתח לאישור','Open for approval'),act:'open',v:q[0].id+'|approve'}:null};}},
  {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
    return {t:listL(ag.map(([a,w,n])=>`${agn(a)}: ${w}/${n} (${Math.round(w/n*100)}%)`))+L('\nכולל הצעות פתוחות, כך שהשיעור יעלה ככל שייסגרו.','\nOpen quotes are included, so rates rise as they close.')};}},
@@ -179,7 +179,7 @@ const VIEWS={home:vHome,quotes:vQuotes,templates:vTemplates,hotels:vHotels,suppl
 /* ---------- actions ---------- */
 function winQuote(t){
   const R=rng(9000+t.id.length*31+S.nid++);
-  t.stage='Operations';t.qst='';
+  t.stage='Operations';t.qst='';t.wonOn=iso(TODAY);
   t.groups=genGroups(t.seg,t.pax,R);t.groups.forEach(g=>{g.depPaid=false;g.balPaid=false;});
   t.tasks=genTasks(t,R).map(x=>({...x,done:false}));
   t.sups=genSups(t.lines,'Operations',R).map(s=>({...s,st:'Sent'}));
@@ -221,7 +221,7 @@ document.addEventListener('click',e=>{
   else if(a==='clearchat'){S.chat=[];render();}
   else if(a==='chen'){S.chen=!S.chen;render();}
   else if(a==='win'){winQuote(byId(v));openTrip(v,'odash');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
-  else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
+  else if(a==='qs'){if(v==='Sent'&&t.qst==='Approval'&&!canApprove()){toast(L('התפקיד שלך לא כולל אישור הצעות','Your role cannot approve proposals'));return;}t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
   else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
     openTrip(c.id,'plan');render();window.scrollTo(0,0);toast(L('שוכפל כהצעה חדשה','Duplicated as a new quote'));}
@@ -246,7 +246,7 @@ document.addEventListener('click',e=>{
   else if(a==='gapdisp'){S.disp=v||null;render();}
   else if(a==='copydisp'){const {t:tt,l}=gapLineOf(v);if(l)copy(disputeMail(tt,l));}
   else if(a==='gapsent'){const {l}=gapLineOf(v);if(l){l.inv.st='disputed';S.disp=null;render();toast(L(`דרישת זיכוי נשלחה ל-${l.sup}`,`Dispute sent to ${l.sup}`));}}
-  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=r2(effAmt(l.inv)-planC(l));l.inv.credit=r2((l.inv.credit||0)+amt);l.inv.st='credited';render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
+  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=gapCredit(l);render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
   else if(a==='gapacc'){const {l}=gapLineOf(v);if(l){l.inv.st='accepted';S.disp=null;render();toast(L('החיוב אושר','Charge accepted'));}}
   else if(a==='print'){try{window.print();}catch(err){}toast(L('אם חלון ההדפסה לא נפתח כאן, הדפיסו מהקובץ המקומי.','If no print dialog opened here, print from the offline file.'));}
 });
@@ -260,7 +260,7 @@ document.addEventListener('change',e=>{
   else if(k==='cost')t.lines.find(l=>l.id===+v).cost=Math.max(0,+val||0);
   else if(k==='itemcost'){const l=t.lines.find(x=>x.id===+v);l.cost=Math.max(0,r2((+val||0)/lrate(t,l)));}
   else if(k==='ov')t.lines.find(l=>l.id===+v).ov=val===''?'':Math.min(90,Math.max(0,+val||0));
-  else if(k==='rate')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));
+  else if(k==='rate'){if(t.stage==='Quote')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));}
   else if(k==='dm'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.m=val;}
   else if(k==='dv'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.v=val===''?'':Math.max(0,+val||0);}
   else if(k==='mv')t.items.find(i=>i.id===+v).day=+val;

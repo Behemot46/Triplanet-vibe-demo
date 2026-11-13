@@ -4,6 +4,8 @@
 Object.assign(S,{tbAlt:0,tbVerA:0,tbVerB:0,tbNote:'',tbRestore:0});
 
 const tbcCan=()=>typeof can!=='function'||can('price.edit');
+/* swapping a supplier is its own permission (sup.swap); tbSwap and tbUndo refuse without it unless a seed passes force */
+const tbcCanSwap=()=>typeof can!=='function'||can('sup.swap');
 const tbcLines=t=>t.lines.filter(l=>!l.extra);
 const tbcSg=n=>(n<0?'-':n>0?'+':'')+usd(Math.abs(n));
 const tbcWho=by=>by==='manager'?MGR():(typeof STAFF_BY!=='undefined'&&STAFF_BY[by]&&by!=='manager'?L(STAFF_BY[by].he,STAFF_BY[by].en):agn(by));
@@ -35,9 +37,10 @@ function tbcProfitDelta(t,l,a){
   const t2=Object.assign({},t,{lines:t.lines.map(x=>x===l?Object.assign({},x,{sup:a.sup.name,cost:a.cost,comm:a.comm}):x)});
   return r2(calc(t2).planProfit-calc(t).planProfit);
 }
-function tbUndo(t,lineId){
+function tbUndo(t,lineId,force){
   const l=t.lines.find(x=>x.id===lineId);
   if(!l)return {ok:false,delta:0,reason:'line'};
+  if(!force&&!tbcCanSwap())return {ok:false,delta:0,reason:'perm'};
   if(!l.alt0)return {ok:false,delta:0,reason:'nothing'};
   if(l.inv)return {ok:false,delta:0,reason:'invoiced'};
   const p0=calc(t).planProfit,old=l.sup,a=l.alt0;
@@ -45,15 +48,16 @@ function tbUndo(t,lineId){
   tbcSupSync(t,l,old);tbcRoomSync(t,old,l.sup);
   return {ok:true,delta:r2(calc(t).planProfit-p0),reason:''};
 }
-function tbSwap(t,lineId,supId){
+function tbSwap(t,lineId,supId,force){
   const l=t.lines.find(x=>x.id===lineId);
   if(!l)return {ok:false,delta:0,reason:'line'};
+  if(!force&&!tbcCanSwap())return {ok:false,delta:0,reason:'perm'};
   if(l.inv)return {ok:false,delta:0,reason:'invoiced'};
   if(t.stage!=='Quote'&&t.stage!=='Operations')return {ok:false,delta:0,reason:'stage'};
   const a=tbcAltOf(t,l,supId);
   if(!a)return {ok:false,delta:0,reason:'unknown'};
   if(a.sup.name===l.sup)return {ok:false,delta:0,reason:'same'};
-  if(l.alt0&&a.sup.name===l.alt0.sup)return tbUndo(t,lineId);   // swapping back restores the exact original
+  if(l.alt0&&a.sup.name===l.alt0.sup)return tbUndo(t,lineId,true);   // swapping back restores the exact original
   const p0=calc(t).planProfit,old=l.sup;
   if(!l.alt0)l.alt0={sup:l.sup,cost:l.cost,comm:l.comm};
   l.sup=a.sup.name;l.cost=a.cost;l.comm=a.comm;
@@ -61,7 +65,7 @@ function tbSwap(t,lineId,supId){
   return {ok:true,delta:r2(calc(t).planProfit-p0),reason:''};
 }
 function tbcMsg(r,l){
-  if(!r.ok)return {invoiced:L('השורה כבר חויבה בחשבונית, אי אפשר להחליף ספק.','This line already has an invoice, so the supplier cannot be changed.'),stage:L('החלפת ספק אפשרית רק בשלב הצעה או תפעול.','Suppliers can be swapped only in Quotation or Operation.'),nothing:L('אין החלפה לבטל.','Nothing to undo.')}[r.reason]||L('לא ניתן להחליף.','Could not swap.');
+  if(!r.ok)return {invoiced:L('השורה כבר חויבה בחשבונית, אי אפשר להחליף ספק.','This line already has an invoice, so the supplier cannot be changed.'),stage:L('החלפת ספק אפשרית רק בשלב הצעה או תפעול.','Suppliers can be swapped only in Quotation or Operation.'),nothing:L('אין החלפה לבטל.','Nothing to undo.'),perm:L('התפקיד שלך לא כולל החלפת ספקים.','Your role cannot swap suppliers.')}[r.reason]||L('לא ניתן להחליף.','Could not swap.');
   const s=tbcSg(r.delta);
   return L(`הספק הוחלף: ${l?l.sup:''}. השפעה על הרווח המתוכנן ${s}`,`Supplier changed${l?' to '+l.sup:''}. Planned profit ${s}`);
 }
@@ -89,9 +93,9 @@ const tbcScope=l=>l.scope==='shared'?L('משותף','Shared'):L('לנוסע','Pe
 
 /* ---------- By components view ---------- */
 function tbcAltPanel(t,l){
-  const alts=altsFor(t,l),canSwap=tbcCan()&&t.stage==='Quote'&&!l.inv,ops=t.stage==='Operations';
+  const alts=altsFor(t,l),canSwap=tbcCanSwap()&&t.stage==='Quote'&&!l.inv,ops=t.stage==='Operations';
   const hint=l.inv?L('לשורה יש חשבונית, הספק נעול. אפשר להשוות בלבד.','This line has an invoice, so the supplier is locked. Comparison only.')
-    :t.stage==='Quote'?(tbcCan()?L('החלפה משנה את עלות היחידה והעמלה בלבד, לא את המטבע או השער. אפשר לבטל.','A swap changes the unit cost and commission only, never the currency or rate. You can undo it.'):L('התפקיד שלך לא יכול לערוך מחירים.','Your role cannot edit prices.'))
+    :t.stage==='Quote'?(tbcCanSwap()?L('החלפה משנה את עלות היחידה והעמלה בלבד, לא את המטבע או השער. אפשר לבטל.','A swap changes the unit cost and commission only, never the currency or rate. You can undo it.'):L('התפקיד שלך לא כולל החלפת ספקים.','Your role cannot swap suppliers.'))
     :ops?L('בתפעול בוחרים ספק מתוך מסך הספקים של התיק.','In Operation, the supplier is chosen from the trip Suppliers tab.')
     :L('תצוגה לקריאה בלבד בשלב הזה.','Read-only at this stage.');
   const rows=alts.map(a=>{
@@ -216,7 +220,7 @@ TRIP_INIT.push(t=>{
   if(t.id==='hl'||t.id==='irl'){
     const c=JSON.parse(JSON.stringify(t)),l=c.lines.find(x=>x.type==='Lodging'&&!x.inv);
     if(!l)return;const a=altsFor(c,l).filter(x=>!x.inc)[0];if(!a)return;
-    if(tbSwap(c,l.id,a.sup.id).ok)t.versions.push(tbVerSnap(c,2,at2,t.agent,'Alternative hotel: '+a.sup.name,'מלון חלופי: '+a.sup.name));
+    if(tbSwap(c,l.id,a.sup.id,true).ok)t.versions.push(tbVerSnap(c,2,at2,t.agent,'Alternative hotel: '+a.sup.name,'מלון חלופי: '+a.sup.name));
   }
 });
 

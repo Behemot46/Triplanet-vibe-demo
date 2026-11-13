@@ -22,9 +22,10 @@ function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)retur
 const stageOf=pt=>(STAGES.find(s=>s[2].some(x=>x[0]===pt))||STAGES[0])[0];
 const tabIcon=k=>k.startsWith('N:')?nic(k.slice(2)):ic(k);
 function pjStatus(t){
-  if(t.stage==='Quote')return `<span class="pj-status q">${qn(t.qst)} ${ic('down')}</span>`;
-  const lab={Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
-  return `<span class="pj-status s-${t.stage}">${lab} ${ic('down')}</span>`;
+  const lab=t.stage==='Quote'?qn(t.qst):{Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
+  const cls=t.stage==='Quote'?'q':'s-'+t.stage,open=!!S.pjMenu,mv=typeof stmMoves==='function'?stmMoves(t):[];
+  const items=mv.map(m=>`<button type="button" role="menuitem" class="pj-mi${m.ok?'':' off'}" data-act="pjmove" data-v="${m.mv}" ${m.ok?'':'disabled'}><b>${L(m.he,m.en)}</b><span class="small muted">${m.ok?L(m.dhe,m.den):m.why.map(w=>L(w.he,w.en)).join('. ')}</span></button>`).join('')||`<p class="small muted pj-mn">${L('אין מעברים זמינים.','No moves available.')}</p>`;
+  return `<span class="pj-stwrap"><button type="button" class="pj-status ${cls}" data-act="pjmenu" aria-haspopup="menu" aria-expanded="${open}" aria-label="${L('סטטוס הפרויקט','Project status')}: ${esc(lab)}">${lab} ${ic('down')}</button>${open?`<div class="pj-menu" role="menu" aria-label="${L('מעברי סטטוס','Status moves')}">${items}</div>`:''}</span>`;
 }
 vTrip=function(){
   const t=T();if(!t)return noTrip();
@@ -35,7 +36,7 @@ vTrip=function(){
   return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
    <div class="pj-sub">${range(t)} · ${L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`)} · ${dn(t.dest)} · <bdi>${esc(t.client)}</bdi> · ${paxL(t.pax)}</div>
-   <div class="tabs pj-tabs">${SG[2].map(x=>`<button class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
+   <div class="tabs pj-tabs" role="tablist" aria-label="${L('לשוניות הפרויקט','Project tabs')}">${SG[2].map(x=>`<button role="tab" aria-selected="${S.ptab===x[0]}" class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
 };
 /* Operation dashboard, as in the product: days to trip, urgent tasks, suppliers, revenue */
 function ocard(cls,icon,val,label,act){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span></button>`;}
@@ -75,11 +76,11 @@ function pIncome(t){
   const {docs,g}=incomeDocs(t),c=calc(t),tab=S.incTab||'all',q=(S.incQ||'').toLowerCase();
   const billed=r2(docs.filter(d=>d.type==='deal').reduce((a,d)=>a+d.amt,0));
   const all=docs.filter(d=>(tab==='all'||d.type===tab)&&(!q||d.name.toLowerCase().includes(q))),rpp=S.incRpp||10,pages=Math.max(1,Math.ceil(all.length/rpp)),pg=Math.min(S.incPage||0,pages-1),rows=all.slice(pg*rpp,pg*rpp+rpp);
-  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('חשבונית מס קבלה','Tax invoice')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
+  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
   const stl=d=>d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber');
-  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}">${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
    <div class="card inc" style="padding:0;overflow:hidden"><div class="row inc-f"><input type="text" data-inc="q" value="${esc(S.incQ||'')}" placeholder="${L('חיפוש...','Search...')}" aria-label="${L('חיפוש','Search')}"><button class="btn" data-act="toast" data-v="${L('סינון לפי סוג, סטטוס ותאריך','Filter by type, status and date')}">${ic('filter')} ${L('סינון','Filters')}</button></div>
-    <div class="tabs inc-t">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('חשבוניות מס','Tax invoices')]].map(x=>`<button class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
+    <div class="tabs inc-t" role="tablist" aria-label="${L('סוג מסמך','Document type')}">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('קבלות','Receipts')]].map(x=>`<button role="tab" aria-selected="${tab===x[0]}" class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
     <div class="scroll"><table class="tbl"><thead><tr><th>${L('שם לקוח','Client name')}</th><th>${L('סוג מסמך','Document type')}</th><th>${L('מספר','Number')}</th><th>${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
     <tbody>${rows.map(d=>`<tr><td><strong>${esc(d.name)}</strong></td><td>${lab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${stl(d)}</td></tr>`).join('')||`<tr><td colspan="6" class="muted">${L('אין מסמכים.','No documents.')}</td></tr>`}</tbody></table></div>
     <div class="inc-pg"><label class="small muted">${L('שורות בעמוד','Rows per page')} <select data-ch="incrpp" aria-label="${L('שורות בעמוד','Rows per page')}">${[5,10,25].map(n=>`<option value="${n}" ${rpp===n?'selected':''}>${n}</option>`).join('')}</select></label><span class="small muted" dir="ltr">${all.length?pg*rpp+1:0}–${Math.min(all.length,pg*rpp+rpp)} ${L('מתוך','of')} ${all.length}</span><button class="iconb" data-act="incpg" data-v="${pg-1}" ${pg===0?'disabled':''} aria-label="${L('הקודם','Previous')}">${ic('chev','flip back')}</button><button class="iconb" data-act="incpg" data-v="${pg+1}" ${pg>=pages-1?'disabled':''} aria-label="${L('הבא','Next')}">${ic('chev','flip')}</button></div>
