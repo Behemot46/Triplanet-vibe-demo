@@ -10,7 +10,7 @@ FLAG.en=`<svg viewBox="0 0 60 40" width="30" height="20" aria-hidden="true"><cli
 /* ---------- project page: stage switch + stage tabs ---------- */
 const STAGES=[
   ['q',['הצעת מחיר','Quotation'],[['general','כללי','General','document'],['plan','תוכנית טיול','Trip plan','calendar'],['costs','תמחור ומרווחים','Pricing','cash'],['quote','הצעה ללקוח','Proposal','invoice'],['approve','אישור','Approval','check']]],
-  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','משימות וספקים','Tasks & suppliers','checklist'],['people','חיוב ותשלומים','Billing','wallet']]],
+  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','תקציר והודעות','Digest & messages','mail'],['people','חיוב ותשלומים','Billing','wallet']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
 /* v8: fixed tab order per stage, so modules can register tabs in any load order */
