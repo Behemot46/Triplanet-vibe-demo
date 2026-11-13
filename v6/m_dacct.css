@@ -1,0 +1,55 @@
+/* v8 module da: accountant home dashboard. Tokens only (var(--...)); the hero keeps the product's fixed dark-blue band like .hp. */
+.da-grid{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
+.da-t b{font-size:30px}
+.da-t.on{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border-color:color-mix(in srgb,var(--c) 70%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 50%,transparent)}
+.da-leg{display:flex;flex-wrap:wrap;gap:6px 18px;margin:-4px 0 16px;font-size:12.5px;color:#B7D4F2}
+.da-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px}
+.da-leg b{color:#fff;font:700 12.5px var(--f-num)}
+.da-card{margin-bottom:24px}
+.two>.da-card{margin-bottom:0}
+.da-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.da-h h3{margin:0}
+.da-sum{font:700 22px/1.1 var(--f-num);color:var(--ink);white-space:nowrap}
+.da-note{margin:0 0 10px}
+.da-tbl th.n,.da-tbl td.n{text-align:end;white-space:nowrap}
+.da-tbl td.neg{color:var(--red)}
+.da-tbl tfoot th{font-weight:700;border-top:1px solid var(--line2);background:var(--recess)}
+.da-row{cursor:pointer}
+.da-row:hover td{background:var(--navonbg)}
+.da-row.on td{background:var(--navonbg)}
+.da-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.da-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:99px;background:var(--recess);font-size:13px;color:var(--ink2)}
+.da-chip b{font:700 14px var(--f-num);color:var(--ink)}
+.da-chip em{font:600 12px var(--f-num);font-style:normal;color:var(--muted)}
+.da-more{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+.da-li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px dashed var(--line2);min-width:0}
+.da-li>div{flex:1;min-width:0}
+.da-li strong{overflow-wrap:anywhere}
+.da-amt{font:700 15px var(--f-num);color:var(--ink);white-space:nowrap}
+.da-btn{all:unset;box-sizing:border-box;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px dashed var(--line2)}
+.da-btn:hover strong{color:var(--primary)}
+.da-btn:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:8px}
+.da-go{color:var(--muted);display:inline-flex}
+.da-go .ic{width:16px;height:16px}
+.da-tick{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--line2);color:#fff}
+.da-ck.done .da-tick{background:var(--green);border-color:var(--green)}
+.da-tick .ic{width:14px;height:14px}
+.da-ck.done strong{color:var(--muted);font-weight:500}
+.da-prog{height:6px;border-radius:99px;background:var(--recess);overflow:hidden;margin-bottom:6px}
+.da-prog i{display:block;height:100%;border-radius:99px;background:var(--green)}
+.da-ch{width:100%;height:auto;display:block;direction:ltr;margin-bottom:8px}
+.da-ch .g line{stroke:var(--line2);stroke-dasharray:2 5}
+.da-bar{cursor:pointer;outline:none}
+.da-bar .hit{fill:transparent}
+.da-bar .b{fill:var(--primary-light);transition:fill .15s}
+.da-bar:hover .b,.da-bar.on .b,.da-bar:focus-visible .b{fill:var(--primary)}
+.da-bar text.v{font:600 11px var(--f-num);fill:var(--muted);text-anchor:middle}
+.da-bar text.x{font:600 11px var(--f-num);fill:var(--muted);text-anchor:middle}
+.da-bar.on text.x,.da-bar.on text.v{fill:var(--ink);font-weight:700}
+.da-sync{gap:12px;margin-bottom:6px}
+@media (max-width:700px){
+  .da-t b{font-size:24px}
+  .da-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .da-sum{font-size:18px}
+  .da-h{flex-wrap:wrap}
+}
