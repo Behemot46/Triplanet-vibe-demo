@@ -4,7 +4,7 @@ For the developers who will build the real Triplanet product (React + MUI front 
 
 The demo is a single offline HTML file for trade shows: Triplanet is an AI-assisted SaaS for group tour operators. The agency in it, "Redbud Group Tours" (Tulsa), 20 trips and 6 agents, is fictional. Hotel and venue names are real; their rates are illustrative.
 
-Written from the code at commit `c250ab3`, branch `claude/upbeat-dirac-kiveik`. When a document and the code disagree, the code is right. Please tell us.
+Written from the code on branch `claude/upbeat-dirac-kiveik` (13 Nov 2026). When a document and the code disagree, the code is right. Please tell us.
 
 ## 1. Run the demo
 
@@ -22,7 +22,15 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 
 - **Developer notes.** Settings (gear) menu > **Show developer notes**. Each screen then shows a panel with purpose, roles, data, actions, rules, states, tests and suggested API, from one registry (`SPEC[key]`, contract in `docs/spec-v8.1-clarity.md`). The toggle is stored in `localStorage` key `triplanet-devnotes`. The menu entry appears only when the module is in the build (`s3_shell.js` checks `typeof devPanel === 'function'`).
 - **UI kit page.** `VIEWS.uikit`, linked from Settings and from developer notes: live examples of every component with class names and usage notes (module `s11_uikit.js`).
-- **Status of those modules.** At commit `c250ab3` the registry hook (`SPEC = {}` in `s1_core.js`) and the menu code in `s3_shell.js` exist; the modules `s11_spec.js`, `s11_spec_trip.js`, `s11_uikit.js`, `s11_next.js`, `s11_search.js` and `s11_trdata.js` are listed in `build.py` but are being built by other agents and are not in the tree yet. `build.py` skips missing files. If your build shows no "Show developer notes" entry, they have not landed.
+- **Coverage.** Every page, role home, trip tab, trip sub-view, drawer and modal has an entry (46 of 46, checked by `TEST dv developer notes`). The panel follows the screen you are on, including the trip plan view (By day, By components, Map) and the proposal format. Use **Copy as Markdown** to paste a screen's spec into a ticket.
+
+### What to look at first (clarity features)
+
+- **Sidebar by job**: Home, then Sales, Catalog, Money, Help, Admin (`s3_shell.js: NAV_SECTIONS`). "New" pills mark the features the product does not have yet.
+- **Next step on every file**: a bar under the project header says what to do now, from the data, with one primary button (`s11_next.js: nextSteps`, `nxBar`). The agent home lists the agent's next steps across files.
+- **Global search**: the header magnifier (or Ctrl/Cmd+Shift+F) finds projects, clients, suppliers, hotels and pages (`s11_search.js: gsSearch`).
+- **Role homes**: owner, accountant and agent each get their own dashboard; every number drills to the screen that explains it.
+- **Developer notes and UI kit**: the spec and the component reference, inside the product.
 
 ## 2. The documents
 
@@ -32,7 +40,7 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 | `data-model.md` | Every entity as tables (field, type, meaning, example, where set or read, origin) and a Mermaid ER diagram. Mapping to `docs/backend-plan` tables | Schema design |
 | `business-rules.md` | 30 rules with formulas, inputs, edge cases, the test that guards each, and a worked example with real demo numbers. A list of code inconsistencies (§32) | Finance engine, services, tests |
 | `design-system.md` | Tokens (light and dark), typography, spacing, layout, components, RTL, dark mode, mobile, accessibility, content rules | Front end, MUI theme |
-| `screens.md` | One section per screen from the developer-notes registry: purpose, roles, data, actions, rules, states, API. **Generated** by `node tools/spec/export_spec.js`; another agent is building that script, so the file may not exist yet in your checkout | Page by page build |
+| `screens.md` | One section per screen from the developer-notes registry: purpose, roles, data, actions, rules, states, suggested API, tests, code pointers. **Generated** by `node tools/spec/export_spec.js` after `python3 build.py`; do not edit by hand | Page by page build |
 
 Other documents in the repository:
 
@@ -120,7 +128,7 @@ From `CLAUDE.md` and the code. These are decisions for the owner, not for you, b
 2. **FEAT statuses** (`s9b_status.js`): 8 Live, 12 Pilot, 4 Roadmap. Finance stage, invoices, payments, trip P&L, integrations and multi-currency were moved to Pilot on 13 Nov 2026 after a read-only walkthrough of dev.triplanet.io (Sep 2026 report, not verified with the product team). **The product team must confirm what is live in finance before IITA (31 Jan 2027).**
 3. **Fictional supplier names** (`SUP_FICT`, 156 generated names across hotels, coaches, shuttles, guides, meals, air and insurance desks). The owner reviews the list before a show. Print it with `node check6.js | grep "^SUPPLIERS"`.
 4. **Sample waiver wording** (`s10_fbuild.js: FB_TERMS`) is marked "SAMPLE WORDING ONLY". Counsel must write the real text.
-5. **Hebrew data translation scope.** English and Hebrew UI strings are complete. Generic data strings (line names such as "Twin rooms, 9 nights", service variants, room types, well-known sites) are translated by `s11_trdata.js` (`heData`), in progress; company, hotel and venue names are never translated. Until it lands, Hebrew mode shows English for generated data.
+5. **Hebrew data translation scope.** English and Hebrew UI strings are complete. In Hebrew mode, generic data strings (line names such as "Twin rooms, 9 nights", service variants, room types, plan items and well-known sites) are translated by `s11_trdata.js` (`heData`, about 360 phrases and 26 patterns). Company, hotel, venue, client and traveler names stay as written. Client-facing documents (the PDF proposal, payment requests, supplier emails) stay in English on purpose, because they go to US clients and suppliers.
 6. **Real brands** are shown with a neutral badge (no logos; permission needed). Real names never sit next to negative wording. Some Israeli hotels' operating status and some star ratings are approximate (catalog caveat).
 7. **Gap frequency** (about 20% of invoices carry a gap) is an estimate, not a benchmark.
 8. **Placeholders**: payment and email domains are `.example`; tax id `73-0000000`.

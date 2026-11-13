@@ -42,7 +42,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - finance identities;
   - every view for each role in EN and HE;
   - leftover Hebrew in EN mode (must be 0);
-  - all 25 Maya routes;
+  - all 28 Maya routes;
   - the tour and the win/new/draft flows;
   - since v7: leak-bridge identities per scope and per dimension, the studio for all 16 destinations in both languages, gen-quote identities, and the real-brand guard.
 - Screenshots: `shot6.js`, `shot7.js` (v6 paths) and `shot8.js [prefix]` (v7: leaks, studio, Hebrew, mobile, meeting mode), run from the repo root. Output goes to `shots/` (git-ignored).
@@ -58,7 +58,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/s1e_people.js` - (v8) CLIENTS (24 incl. 10 prospects), STAFF (owner Ella Brooks, accountant Nora Kim, 6 agents with annual targets: illustrative, owner to confirm), ROLES, 40 PERMS in 9 groups, `can(perm)`, traveler extras (passport no/expiry, DOB, emergency contact, room type, form status), `blockOf(t)`.
 - `v6/s1b_labels.js` - labels, gap explanations, alerts
 - `v6/s2_i18n.js` - Hebrew-to-English translator (DICT, trHtml), English answers
-- `v6/s3_shell.js` - state, save/load/reset (localStorage key v7), navigation, render shell, Maya drawer, guided tour (TOUR), invoice-reading animation
+- `v6/s3_shell.js` - state, save/load/reset (localStorage key v8), navigation (sidebar grouped by job: `NAV_SECTIONS`), render shell, Maya drawer, guided tour (TOUR), invoice-reading animation
 - `v6/s4_views.js` - home, quotes, trip tabs
 - `v6/s5_fin.js` - trip invoice check, gap cards, dispute email, Invoice check page, finance dashboard
 - `v6/s6_rest.js` - templates, hotels, suppliers, activities, users, import, Maya questions (QS), event wiring (no boot lines any more)
@@ -92,6 +92,13 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - `s10_ops.js` - Operation Tasks tab (48-task library by time window), Master list tab (forms, custom columns, CSV export, import preview), room blocks card on Hotels.
   - `s10_settings.js` - Settings: organization, roles and permissions matrix (8 enforced, the rest matrix only), stages preview, links to forms and integrations.
   - `s10_dacct.js` / `s10_dash.js` - role dashboards: accountant (AR, AP schedule, FX, documents, month end), manager additions (approvals, team leaderboard vs target, departure readiness), agent home.
+- v8.1 clarity and handoff modules (spec `docs/spec-v8.1-clarity.md`):
+  - `s11_trdata.js` - Hebrew for generic data strings in Hebrew mode (`heData`, called by `render()` through `heDataIf`); names and client-facing documents stay English.
+  - `s11_next.js` - `nextSteps(t)`: the "Next step" bar under every project header and the agent home's next steps; hidden in meeting mode and the tour.
+  - `s11_search.js` - global search (header magnifier, Ctrl/Cmd+Shift+F): projects, clients, suppliers, hotels, pages.
+  - `s11_uikit.js` - UI kit page (`VIEWS.uikit`, linked from Settings) with live components, tokens and icons.
+  - `s11_spec.js` / `s11_spec_trip.js` - developer notes: the `SPEC` registry (46 screens), the in-app panel (settings menu > Show developer notes, English, per laptop in localStorage `triplanet-devnotes`) and `tools/spec/export_spec.js`, which writes `docs/handoff/screens.md`. Update the registry when a screen changes, then re-export.
+- Developer handoff package: `docs/handoff/` (README, screens, data model, business rules, design system). Start there.
 - `v6/s9_meet.js` - meeting mode:
   - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;
@@ -105,7 +112,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - Hooks in `s1_core.js`: `PERSIST` (extra saved datasets with reset), `TESTS` (module self-tests run by check6), `TRIP_TABS`, `TRIP_INIT` (idempotent per-trip initializers, run at boot after brandSwap, after load/reset and on new trips), `TB_VIEWS`. Trip tabs are added with `tabInsert(stage, tab)` and ordered by `TAB_ORDER` (`s7b_product.js`).
 - `calc(t)` supports optional overhead `t.ovh` (added to price) and brokerage `t.brk` (added to price and cost, profit unchanged). Absent = 0.
 - Storage key is v8 (`triplanet-booth-demo-v8`); older saves are ignored.
-- check6 now takes about 14 s and prints one `TEST <name> ok` line per module.
+- check6 now takes about 20 s and prints one `TEST <name> ok` line per module.
 
 ## Decisions already made
 - Assistant name: Maya / מאיה. Hebrew is secondary, EN is the default.
