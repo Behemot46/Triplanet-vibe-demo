@@ -136,7 +136,7 @@ const QS=[
  {g:2,he:'אילו הצעות ממתינות לאישור שלי?',en:'Which quotes are waiting for my approval?',r:/approv|לאישור/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Approval');
    if(S.role!=='manager')return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
    return {t:q.length?listL(q.map(t=>{const c=calc(t);return L(`${t.name}: ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}, ${agn(t.agent)}.`,`${t.name}: ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}, from ${agn(t.agent)}.`);})):L('אין הצעות שממתינות לאישור.','Nothing is waiting for approval.'),btn:q.length?{label:L('פתח לאישור','Open for approval'),act:'open',v:q[0].id+'|approve'}:null};}},
- {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
+ {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
    return {t:listL(ag.map(([a,w,n])=>`${agn(a)}: ${w}/${n} (${Math.round(w/n*100)}%)`))+L('\nכולל הצעות פתוחות, כך שהשיעור יעלה ככל שייסגרו.','\nOpen quotes are included, so rates rise as they close.')};}},
  {g:2,he:'מי הסוכן המוביל לפי רווח צפוי?',en:'Who is our top agent by expected profit?',r:/top agent|best agent|מוביל/,f:()=>{const m={};booked().forEach(t=>{const c=calc(t);m[t.agent]=r2((m[t.agent]||0)+c.fcProfit);});const e=Object.entries(m).sort((a,b)=>b[1]-a[1]);
    return {t:e.length?L(`${agn(e[0][0])} מוביל/ה עם ${usd(e[0][1])} רווח צפוי בטיולים שהוזמנו.\n`,`${agn(e[0][0])} leads with ${usd(e[0][1])} expected profit on booked trips.\n`)+listL(e.slice(1).map(([a,v])=>`${agn(a)}: ${usd(v)}`)):L('אין עדיין טיולים שהוזמנו.','No booked trips yet.')};}},
@@ -192,7 +192,7 @@ function blankQuote(o){
     pct:25,depDue:addDays(iso(TODAY),60),balDue:addDays(iso(TODAY),150),lines:genLines(o.seg,o.dest,o.pax,o.nights),items:genItems(o.dest,o.nights,R),groups:[],trav:[],tasks:[]};
   t.sups=genSups(t.lines,'Quote',R);t.room={hotel:t.lines[0].sup,held:0,used:0};TRIPS.push(t);return t;
 }
-const agentNow=()=>S.role==='manager'?'Priya':S.role;
+const agentNow=()=>seesAll()?'Priya':S.role;
 function openTrip(id,pt){S.tripId=id;S.tab='trip';S.ptab=pt||'costs';S.openDay=1;S.disp=null;}
 function gapLineOf(v){const [tid,lid]=v.split('|');const t=byId(tid);return {t,l:t&&t.lines.find(x=>String(x.id)===lid)};}
 document.addEventListener('click',e=>{
@@ -222,7 +222,7 @@ document.addEventListener('click',e=>{
   else if(a==='chen'){S.chen=!S.chen;render();}
   else if(a==='win'){winQuote(byId(v));openTrip(v,'ops');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
   else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
-  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:S.role==='manager'?s.agent:S.role,client:s.client,ctype:s.ctype});
+  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
     openTrip(c.id,'plan');render();window.scrollTo(0,0);toast(L('שוכפל כהצעה חדשה','Duplicated as a new quote'));}
   else if(a==='newq'){const c=blankQuote({name:L('טיול חדש','New trip'),dest:'Branson',seg:'Senior',pax:44,nights:3,agent:agentNow()});openTrip(c.id,'general');render();window.scrollTo(0,0);toast(L('נוצרה הצעה חדשה','New quote created'));}

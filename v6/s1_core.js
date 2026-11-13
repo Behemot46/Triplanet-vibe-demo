@@ -1,4 +1,7 @@
 const TODAY=new Date('2026-10-20T00:00:00');
+/* v8 extension hooks (see docs/spec-v8-parity.md §2): extra persisted datasets, self-tests run by check6.js,
+   renderers for new trip tabs, and idempotent per-trip initializers (run by buildTrip and after load) */
+const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[];
 const D=s=>new Date(s+'T00:00:00');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d);};
@@ -267,6 +270,7 @@ function buildTrip(sp,i){
   const lod=t.lines[0],rooms=Math.round(lod.qty/nights);
   t.room={hotel:lod.sup,held:rooms+(stage==='Operations'?3:2),used:stage==='Quote'?0:rooms};
   t.trav=stage==='Quote'?[]:genTravelers(t,rng(5000+i));
+  TRIP_INIT.forEach(f=>f(t,i));
   return t;
 }
 const TRIPS=TRIP_SPECS.map(buildTrip);
@@ -310,6 +314,15 @@ function calc(t){
   });
   o.disc=0;o.discBy=discOf(t,o);
   Object.keys(o.discBy).forEach(k=>{const a=o.discBy[k],ty=k.split('|')[1];o.rev=r2(o.rev-a);o.byType[ty].rev=r2(o.byType[ty].rev-a);o.disc=r2(o.disc+a);});
+  /* v8: overhead (added to price) and brokerage fee (added to price and passed through as cost). Absent = 0. */
+  const base={s:0,p:0};o.lines.forEach(x=>{if(!x.l.extra)base[x.l.scope==='shared'?'s':'p']+=x.price;});
+  Object.keys(o.discBy).forEach(k=>{base[k[0]]-=o.discBy[k];});
+  const addOn=a=>{if(!a||!(+a.v>0))return 0;const on=a.on||'both',v=+a.v;
+    if(a.m==='$')return r2(on==='pp'?v*t.pax:v);
+    return r2(v/100*((on!=='pp'?base.s:0)+(on!=='shared'?base.p:0)));};
+  o.ovh=addOn(t.ovh);o.brk=addOn(t.brk);
+  if(o.ovh){o.rev=r2(o.rev+o.ovh);}
+  if(o.brk){o.rev=r2(o.rev+o.brk);o.plan=r2(o.plan+o.brk);o.fc=r2(o.fc+o.brk);}
   o.planProfit=r2(o.rev-o.plan+o.comm);o.fcProfit=r2(o.rev-o.fc+o.comm);
   return o;
 }
@@ -393,3 +406,14 @@ function portfolio(ts){
   P.outstanding=r2(P.rev-P.col);
   return P;
 }
+
+/* v8 core test: overhead raises price only; brokerage raises price and cost equally; the identity holds */
+TESTS.push({name:'core ovh/brk',run:()=>{const out=[];
+  TRIPS.forEach(t=>{const c0=calc(t);
+    t.ovh={m:'%',v:5,on:'both'};const c1=calc(t),base=r2(c0.rev);
+    if(Math.abs(c1.rev-c0.rev-r2(base*.05))>.05)out.push('ovh '+t.id+' '+c1.rev+' vs '+c0.rev);
+    t.brk={m:'$',v:10,on:'pp'};const c2=calc(t);
+    if(Math.abs(c2.rev-c1.rev-10*t.pax)>.05||Math.abs(c2.planProfit-c1.planProfit)>.05)out.push('brk '+t.id);
+    if(Math.abs(c2.planProfit-c2.amtDiff-c2.fx-c2.fcProfit)>.05)out.push('identity '+t.id);
+    delete t.ovh;delete t.brk;const c3=calc(t);if(c3.rev!==c0.rev)out.push('restore '+t.id);});
+  return out;}});

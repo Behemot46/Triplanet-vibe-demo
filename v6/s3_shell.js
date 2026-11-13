@@ -5,14 +5,21 @@ const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
   page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
 const S=S0();
-const VER=7,KEY='triplanet-booth-demo-v7';
+const VER=8,KEY='triplanet-booth-demo-v8';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
-function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS}));}catch(e){}}
-function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});}catch(e){}}
-function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);try{localStorage.removeItem(KEY);}catch(e){}}
+function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
+function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);PERSIST.forEach(p=>{try{p.reset();}catch(e){}});try{localStorage.removeItem(KEY);}catch(e){}}
 const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
-const canSee=t=>S.role==='manager'||t.agent===S.role;
+/* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
+const ROLE_KEYS=['manager','accountant',...AGENTS];
+const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
+const seesAll=()=>isMgr()||isAcct();
+AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
+const userName=()=>isMgr()?MGR():agn(S.role);
+const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
+const canSee=t=>seesAll()||t.agent===S.role;
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -35,7 +42,7 @@ let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}
 function render(){
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
-  const user=S.role==='manager'?MGR():agn(S.role);
+  const user=userName();
   const act=S.tab==='trip'?'quotes':S.tab;
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
@@ -54,6 +61,7 @@ function render(){
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
      <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
        <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
+       <option value="accountant" ${isAcct()?'selected':''}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>

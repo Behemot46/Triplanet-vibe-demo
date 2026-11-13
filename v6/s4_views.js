@@ -12,7 +12,7 @@ function hpHero(ts,P,up){
     ['fin',L('כספים','Finance'),c(t=>t.stage==='Finance'),'#C684FF',L('בסגירה כספית','in financial close')],
     ['done',L('נסגרו','Closed'),c(t=>t.stage==='Closed'),'#5BE49B',L('הושלמו','completed')]];
   const nx=up[0],dd=nx?Math.round((D(nx.dep)-TODAY)/864e5):0;
-  const nm=S.role==='manager'?MGR():agn(S.role),first=String(nm).split(' ')[0];
+  const nm=userName(),first=String(nm).split(' ')[0];
   const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const bar=st.map(x=>`<i style="--w:${(x[2]/tot*100).toFixed(2)}%;--c:${x[3]}" title="${x[1]}: ${x[2]}"></i>`).join('');
   const cards=st.map((x,i)=>`<button class="hp-st" data-act="go" data-v="quotes" style="--c:${x[3]};--d:${i*70}ms"><span class="hp-k"><i></i>${x[1]}</span><b>${x[2]}</b><small>${x[4]}</small><span class="hp-p"><i style="width:${(x[2]/tot*100).toFixed(1)}%"></i></span></button>`).join('');
@@ -49,16 +49,16 @@ function vHome(){
   let lastD='',ev='';
   up.forEach(t=>{if(t.dep!==lastD){lastD=t.dep;ev+=`<div class="evh">${fmtDate(t.dep)}</div>`;}
     ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span>${phImg('dest',t.dest,'ev-ph','')}<a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
-  const won=c(t=>t.stage!=='Quote'),lost=S.role==='manager'?3:0;
+  const won=c(t=>t.stage!=='Quote'),lost=seesAll()?3:0;
   const H=[['2023',9,4],['2024',11,5],['2025',12,3],['2026',won,lost]];
   const mx=Math.max(...H.map(h=>Math.max(h[1],h[2])),1);
   const bars=H.map(h=>`<div class="col"><div class="bars"><div class="b won" style="height:${h[1]/mx*100}%"><i>${h[1]}</i></div><div class="b lost" style="height:${Math.max(h[2]/mx*100,2)}%"><i>${h[2]}</i></div></div></div>`).join('');
   const labs=H.map(h=>`<span>${h[0]}</span>`).join('');
-  const chg=S.role==='manager'?`${sgn(Math.round((won-12)/12*100),v=>v)}% ${L('ביחס לשנה קודמת','vs last year')}`:'';
+  const chg=seesAll()?`${sgn(Math.round((won-12)/12*100),v=>v)}% ${L('ביחס לשנה קודמת','vs last year')}`:'';
   const latest=ts.slice().sort((a,b)=>b.no-a.no).slice(0,5).map(t=>{
     const ring=t.stage==='Operations'?(()=>{const d=t.tasks.filter(x=>x.done).length;return `<div class="pr" style="--p:${Math.round(d/t.tasks.length*100)}"><span>${d}/${t.tasks.length}</span></div>`;})():t.stage!=='Quote'?'<span class="okc">'+ic('check')+'</span>':'';
     return `<tr><td><strong>${esc(t.name)}</strong><div class="small muted">${sn(t.seg)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td><td>${qchip(t)}</td><td>${ring}</td><td><button class="btn sm" data-act="open" data-v="${t.id}" aria-label="${L('פתח','Open')}">›</button></td></tr>`;}).join('');
-  const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
+  const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
     return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n"><span class="hp-chip ${up?'good':'bad'}">${ic(up?'arrup':'arrdown')}<bdi>${Math.round(r*100)}%</bdi></span></td></tr>`;}).join('');
   const al=alertsFor(ts,S.thresh).slice(0,6).map(a=>`<div class="alert">${pillF(a.sev==='bad'?L('דחוף','Urgent'):a.sev==='warn'?L('לבדיקה','Check'):L('לידיעה','FYI'),a.sev==='bad'?'red':a.sev==='warn'?'amber':'blue')}<div>${a.txt}</div>${a.trip?`<button class="btn sm" data-act="open" data-v="${a.trip}" data-pt="${a.pt||'costs'}">${L('פתח','Open')}</button>`:`<button class="btn sm" data-act="go" data-v="${a.go}">${L('הצג','View')}</button>`}</div>`).join('')||`<p class="muted">${L('אין התראות.','No alerts.')}</p>`;
   return `${hpHero(ts,P,up)}

@@ -1112,6 +1112,7 @@ body.dnd,body.dnd *{cursor:grabbing!important;user-select:none!important;-webkit
 .ic.al-l{transform:scaleX(-1)}
 [dir=rtl] .ic.al-l{transform:none}
 
+
 </style>
 <div id="app"></div>
 <div id="toast" role="status"></div>
@@ -1211,6 +1212,9 @@ function geoMap(view,opts){
 }
 
 const TODAY=new Date('2026-10-20T00:00:00');
+/* v8 extension hooks (see docs/spec-v8-parity.md §2): extra persisted datasets, self-tests run by check6.js,
+   renderers for new trip tabs, and idempotent per-trip initializers (run by buildTrip and after load) */
+const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[];
 const D=s=>new Date(s+'T00:00:00');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d);};
@@ -1479,6 +1483,7 @@ function buildTrip(sp,i){
   const lod=t.lines[0],rooms=Math.round(lod.qty/nights);
   t.room={hotel:lod.sup,held:rooms+(stage==='Operations'?3:2),used:stage==='Quote'?0:rooms};
   t.trav=stage==='Quote'?[]:genTravelers(t,rng(5000+i));
+  TRIP_INIT.forEach(f=>f(t,i));
   return t;
 }
 const TRIPS=TRIP_SPECS.map(buildTrip);
@@ -1522,6 +1527,15 @@ function calc(t){
   });
   o.disc=0;o.discBy=discOf(t,o);
   Object.keys(o.discBy).forEach(k=>{const a=o.discBy[k],ty=k.split('|')[1];o.rev=r2(o.rev-a);o.byType[ty].rev=r2(o.byType[ty].rev-a);o.disc=r2(o.disc+a);});
+  /* v8: overhead (added to price) and brokerage fee (added to price and passed through as cost). Absent = 0. */
+  const base={s:0,p:0};o.lines.forEach(x=>{if(!x.l.extra)base[x.l.scope==='shared'?'s':'p']+=x.price;});
+  Object.keys(o.discBy).forEach(k=>{base[k[0]]-=o.discBy[k];});
+  const addOn=a=>{if(!a||!(+a.v>0))return 0;const on=a.on||'both',v=+a.v;
+    if(a.m==='$')return r2(on==='pp'?v*t.pax:v);
+    return r2(v/100*((on!=='pp'?base.s:0)+(on!=='shared'?base.p:0)));};
+  o.ovh=addOn(t.ovh);o.brk=addOn(t.brk);
+  if(o.ovh){o.rev=r2(o.rev+o.ovh);}
+  if(o.brk){o.rev=r2(o.rev+o.brk);o.plan=r2(o.plan+o.brk);o.fc=r2(o.fc+o.brk);}
   o.planProfit=r2(o.rev-o.plan+o.comm);o.fcProfit=r2(o.rev-o.fc+o.comm);
   return o;
 }
@@ -1605,6 +1619,17 @@ function portfolio(ts){
   P.outstanding=r2(P.rev-P.col);
   return P;
 }
+
+/* v8 core test: overhead raises price only; brokerage raises price and cost equally; the identity holds */
+TESTS.push({name:'core ovh/brk',run:()=>{const out=[];
+  TRIPS.forEach(t=>{const c0=calc(t);
+    t.ovh={m:'%',v:5,on:'both'};const c1=calc(t),base=r2(c0.rev);
+    if(Math.abs(c1.rev-c0.rev-r2(base*.05))>.05)out.push('ovh '+t.id+' '+c1.rev+' vs '+c0.rev);
+    t.brk={m:'$',v:10,on:'pp'};const c2=calc(t);
+    if(Math.abs(c2.rev-c1.rev-10*t.pax)>.05||Math.abs(c2.planProfit-c1.planProfit)>.05)out.push('brk '+t.id);
+    if(Math.abs(c2.planProfit-c2.amtDiff-c2.fx-c2.fcProfit)>.05)out.push('identity '+t.id);
+    delete t.ovh;delete t.brk;const c3=calc(t);if(c3.rev!==c0.rev)out.push('restore '+t.id);});
+  return out;}});
 
 /* Real hotels and venues for the trip generator and hotel catalog. Names are real; rates, costs and commissions are illustrative group figures, not quotes. Sources verified 2026-11-12 (URLs seen in web search results; confirm before booking). */
 const BRANDS={
@@ -2059,14 +2084,21 @@ const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
   page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
 const S=S0();
-const VER=7,KEY='triplanet-booth-demo-v7';
+const VER=8,KEY='triplanet-booth-demo-v8';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
-function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS}));}catch(e){}}
-function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});}catch(e){}}
-function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);try{localStorage.removeItem(KEY);}catch(e){}}
+function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
+function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);PERSIST.forEach(p=>{try{p.reset();}catch(e){}});try{localStorage.removeItem(KEY);}catch(e){}}
 const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
-const canSee=t=>S.role==='manager'||t.agent===S.role;
+/* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
+const ROLE_KEYS=['manager','accountant',...AGENTS];
+const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
+const seesAll=()=>isMgr()||isAcct();
+AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
+const userName=()=>isMgr()?MGR():agn(S.role);
+const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
+const canSee=t=>seesAll()||t.agent===S.role;
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -2089,7 +2121,7 @@ let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}
 function render(){
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
-  const user=S.role==='manager'?MGR():agn(S.role);
+  const user=userName();
   const act=S.tab==='trip'?'quotes':S.tab;
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
@@ -2108,6 +2140,7 @@ function render(){
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
      <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
        <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
+       <option value="accountant" ${isAcct()?'selected':''}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
@@ -2214,7 +2247,7 @@ function hpHero(ts,P,up){
     ['fin',L('כספים','Finance'),c(t=>t.stage==='Finance'),'#C684FF',L('בסגירה כספית','in financial close')],
     ['done',L('נסגרו','Closed'),c(t=>t.stage==='Closed'),'#5BE49B',L('הושלמו','completed')]];
   const nx=up[0],dd=nx?Math.round((D(nx.dep)-TODAY)/864e5):0;
-  const nm=S.role==='manager'?MGR():agn(S.role),first=String(nm).split(' ')[0];
+  const nm=userName(),first=String(nm).split(' ')[0];
   const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const bar=st.map(x=>`<i style="--w:${(x[2]/tot*100).toFixed(2)}%;--c:${x[3]}" title="${x[1]}: ${x[2]}"></i>`).join('');
   const cards=st.map((x,i)=>`<button class="hp-st" data-act="go" data-v="quotes" style="--c:${x[3]};--d:${i*70}ms"><span class="hp-k"><i></i>${x[1]}</span><b>${x[2]}</b><small>${x[4]}</small><span class="hp-p"><i style="width:${(x[2]/tot*100).toFixed(1)}%"></i></span></button>`).join('');
@@ -2251,16 +2284,16 @@ function vHome(){
   let lastD='',ev='';
   up.forEach(t=>{if(t.dep!==lastD){lastD=t.dep;ev+=`<div class="evh">${fmtDate(t.dep)}</div>`;}
     ev+=`<div class="ev"><span class="dot" style="background:var(--${stCls(t.stage)})"></span>${phImg('dest',t.dest,'ev-ph','')}<a href="#" data-act="open" data-v="${t.id}" style="flex:1;color:inherit;text-decoration:none">${esc(t.name)}</a><span class="muted small">${range(t)}</span></div>`;});
-  const won=c(t=>t.stage!=='Quote'),lost=S.role==='manager'?3:0;
+  const won=c(t=>t.stage!=='Quote'),lost=seesAll()?3:0;
   const H=[['2023',9,4],['2024',11,5],['2025',12,3],['2026',won,lost]];
   const mx=Math.max(...H.map(h=>Math.max(h[1],h[2])),1);
   const bars=H.map(h=>`<div class="col"><div class="bars"><div class="b won" style="height:${h[1]/mx*100}%"><i>${h[1]}</i></div><div class="b lost" style="height:${Math.max(h[2]/mx*100,2)}%"><i>${h[2]}</i></div></div></div>`).join('');
   const labs=H.map(h=>`<span>${h[0]}</span>`).join('');
-  const chg=S.role==='manager'?`${sgn(Math.round((won-12)/12*100),v=>v)}% ${L('ביחס לשנה קודמת','vs last year')}`:'';
+  const chg=seesAll()?`${sgn(Math.round((won-12)/12*100),v=>v)}% ${L('ביחס לשנה קודמת','vs last year')}`:'';
   const latest=ts.slice().sort((a,b)=>b.no-a.no).slice(0,5).map(t=>{
     const ring=t.stage==='Operations'?(()=>{const d=t.tasks.filter(x=>x.done).length;return `<div class="pr" style="--p:${Math.round(d/t.tasks.length*100)}"><span>${d}/${t.tasks.length}</span></div>`;})():t.stage!=='Quote'?'<span class="okc">'+ic('check')+'</span>':'';
     return `<tr><td><strong>${esc(t.name)}</strong><div class="small muted">${sn(t.seg)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td><td>${qchip(t)}</td><td>${ring}</td><td><button class="btn sm" data-act="open" data-v="${t.id}" aria-label="${L('פתח','Open')}">›</button></td></tr>`;}).join('');
-  const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
+  const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length,r=x.length?w/x.length:0,up=r>=LY[a];
     return `<tr><td><span class="row">${avatarOf(agn(a))}${agn(a)}</span></td><td class="n">${x.length}</td><td class="n"><span class="hp-chip ${up?'good':'bad'}">${ic(up?'arrup':'arrdown')}<bdi>${Math.round(r*100)}%</bdi></span></td></tr>`;}).join('');
   const al=alertsFor(ts,S.thresh).slice(0,6).map(a=>`<div class="alert">${pillF(a.sev==='bad'?L('דחוף','Urgent'):a.sev==='warn'?L('לבדיקה','Check'):L('לידיעה','FYI'),a.sev==='bad'?'red':a.sev==='warn'?'amber':'blue')}<div>${a.txt}</div>${a.trip?`<button class="btn sm" data-act="open" data-v="${a.trip}" data-pt="${a.pt||'costs'}">${L('פתח','Open')}</button>`:`<button class="btn sm" data-act="go" data-v="${a.go}">${L('הצג','View')}</button>`}</div>`).join('')||`<p class="muted">${L('אין התראות.','No alerts.')}</p>`;
   return `${hpHero(ts,P,up)}
@@ -2563,7 +2596,7 @@ function vFinance(){
   const segs=['All',...Object.keys(SEG)],stages=['All','Operations','Finance','Closed'],agents=['All',...AGENTS];
   ts=ts.filter(t=>(S.fSeg==='All'||t.seg===S.fSeg)&&(S.fStage==='All'||t.stage===S.fStage||t.stage==='Quote')&&(S.fAgent==='All'||t.agent===S.fAgent));
   const sel=(k,arr,v,lab)=>`<select data-ch="${k}">${arr.map(x=>`<option value="${x}" ${x===v?'selected':''}>${x==='All'?L('הכל','All'):lab(x)}</option>`).join('')}</select>`;
-  const filt=`<div class="row sec"><label class="row small muted">${L('סוג קבוצה','Group type')} ${sel('fseg',segs,S.fSeg,sn)}</label><label class="row small muted">${L('שלב','Stage')} ${sel('fstage',stages,S.fStage,stn)}</label>${S.role==='manager'?`<label class="row small muted">${L('סוכן','Agent')} ${sel('fagent',agents,S.fAgent,agn)}</label>`:''}<label class="row small muted">${L('קו התראה לשולי רווח','Margin alert line')} <input type="number" min="0" max="50" data-ch="thresh" value="${S.thresh}" aria-label="${L('קו התראה','Alert line')}">%</label></div>`;
+  const filt=`<div class="row sec"><label class="row small muted">${L('סוג קבוצה','Group type')} ${sel('fseg',segs,S.fSeg,sn)}</label><label class="row small muted">${L('שלב','Stage')} ${sel('fstage',stages,S.fStage,stn)}</label>${seesAll()?`<label class="row small muted">${L('סוכן','Agent')} ${sel('fagent',agents,S.fAgent,agn)}</label>`:''}<label class="row small muted">${L('קו התראה לשולי רווח','Margin alert line')} <input type="number" min="0" max="50" data-ch="thresh" value="${S.thresh}" aria-label="${L('קו התראה','Alert line')}">%</label></div>`;
   const P=portfolio(ts);
   if(!P.rows.length)return head(L('כספים','Finance'))+filt+`<div class="card"><p class="muted">${L('אין טיולים שהוזמנו בסינון הזה.','No booked trips in this filter.')} ${P.pipelineN?L(`${P.pipelineN} הצעות (${usd(P.pipeline)}) נחשבות צנרת ולא הכנסה.`,`${P.pipelineN} quotes (${usd(P.pipeline)}) count as pipeline, not revenue.`):''}</p></div>`;
   const rows=[...P.rows].sort((a,b)=>D(a.t.dep)-D(b.t.dep));
@@ -2742,7 +2775,7 @@ const QS=[
  {g:2,he:'אילו הצעות ממתינות לאישור שלי?',en:'Which quotes are waiting for my approval?',r:/approv|לאישור/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Approval');
    if(S.role!=='manager')return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
    return {t:q.length?listL(q.map(t=>{const c=calc(t);return L(`${t.name}: ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}, ${agn(t.agent)}.`,`${t.name}: ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}, from ${agn(t.agent)}.`);})):L('אין הצעות שממתינות לאישור.','Nothing is waiting for approval.'),btn:q.length?{label:L('פתח לאישור','Open for approval'),act:'open',v:q[0].id+'|approve'}:null};}},
- {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
+ {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
    return {t:listL(ag.map(([a,w,n])=>`${agn(a)}: ${w}/${n} (${Math.round(w/n*100)}%)`))+L('\nכולל הצעות פתוחות, כך שהשיעור יעלה ככל שייסגרו.','\nOpen quotes are included, so rates rise as they close.')};}},
  {g:2,he:'מי הסוכן המוביל לפי רווח צפוי?',en:'Who is our top agent by expected profit?',r:/top agent|best agent|מוביל/,f:()=>{const m={};booked().forEach(t=>{const c=calc(t);m[t.agent]=r2((m[t.agent]||0)+c.fcProfit);});const e=Object.entries(m).sort((a,b)=>b[1]-a[1]);
    return {t:e.length?L(`${agn(e[0][0])} מוביל/ה עם ${usd(e[0][1])} רווח צפוי בטיולים שהוזמנו.\n`,`${agn(e[0][0])} leads with ${usd(e[0][1])} expected profit on booked trips.\n`)+listL(e.slice(1).map(([a,v])=>`${agn(a)}: ${usd(v)}`)):L('אין עדיין טיולים שהוזמנו.','No booked trips yet.')};}},
@@ -2798,7 +2831,7 @@ function blankQuote(o){
     pct:25,depDue:addDays(iso(TODAY),60),balDue:addDays(iso(TODAY),150),lines:genLines(o.seg,o.dest,o.pax,o.nights),items:genItems(o.dest,o.nights,R),groups:[],trav:[],tasks:[]};
   t.sups=genSups(t.lines,'Quote',R);t.room={hotel:t.lines[0].sup,held:0,used:0};TRIPS.push(t);return t;
 }
-const agentNow=()=>S.role==='manager'?'Priya':S.role;
+const agentNow=()=>seesAll()?'Priya':S.role;
 function openTrip(id,pt){S.tripId=id;S.tab='trip';S.ptab=pt||'costs';S.openDay=1;S.disp=null;}
 function gapLineOf(v){const [tid,lid]=v.split('|');const t=byId(tid);return {t,l:t&&t.lines.find(x=>String(x.id)===lid)};}
 document.addEventListener('click',e=>{
@@ -2828,7 +2861,7 @@ document.addEventListener('click',e=>{
   else if(a==='chen'){S.chen=!S.chen;render();}
   else if(a==='win'){winQuote(byId(v));openTrip(v,'ops');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
   else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
-  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:S.role==='manager'?s.agent:S.role,client:s.client,ctype:s.ctype});
+  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
     openTrip(c.id,'plan');render();window.scrollTo(0,0);toast(L('שוכפל כהצעה חדשה','Duplicated as a new quote'));}
   else if(a==='newq'){const c=blankQuote({name:L('טיול חדש','New trip'),dest:'Branson',seg:'Senior',pax:44,nights:3,agent:agentNow()});openTrip(c.id,'general');render();window.scrollTo(0,0);toast(L('נוצרה הצעה חדשה','New quote created'));}
@@ -3170,7 +3203,7 @@ function pjStatus(t){
 vTrip=function(){
   const t=T();if(!t)return noTrip();
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
-  const f={general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
+  const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
   return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
@@ -4150,6 +4183,10 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 if(typeof vHotelsList==='function')VIEWS.hotels=vHotelsList;
 if(typeof vClients==='function'&&!NAV.some(n=>n[0]==='clients')){VIEWS.clients=vClients;NAV.push(['clients',['לקוחות','Clients'],ic('clients')]);}
 TOUR[0].sel='.ptiles';
+/* v8: new trips (blank quote, won quote) get the per-trip initializers too */
+{const runInit=()=>TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));
+ if(typeof winQuote==='function'){const w0=winQuote;winQuote=function(){const r=w0.apply(this,arguments);runInit();return r;};}
+ if(typeof blankQuote==='function'){const b0=blankQuote;blankQuote=function(){const r=b0.apply(this,arguments);runInit();return r;};}}
 load();
 render();
 

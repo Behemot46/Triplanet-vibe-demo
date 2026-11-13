@@ -23,7 +23,7 @@ function pjStatus(t){
 vTrip=function(){
   const t=T();if(!t)return noTrip();
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
-  const f={general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
+  const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
   return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
