@@ -1774,7 +1774,7 @@ const TODAY=new Date('2026-10-20T00:00:00');
 /* v8 extension hooks (see docs/spec-v8-parity.md §2): extra persisted datasets, self-tests run by check6.js,
    renderers for new trip tabs, and idempotent per-trip initializers (run at boot, after load, after reset and on new
    trips; always after brandSwap, see s9_boot.js) */
-const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[],TB_VIEWS={};
+const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[],TB_VIEWS={},SPEC={};
 const D=s=>new Date(s+'T00:00:00');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d);};
