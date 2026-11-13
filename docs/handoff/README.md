@@ -4,7 +4,7 @@ For the developers who will build the real Triplanet product (React + MUI front 
 
 The demo is a single offline HTML file for trade shows: Triplanet is an AI-assisted SaaS for group tour operators. The agency in it, "Redbud Group Tours" (Tulsa), 20 trips and 6 agents, is fictional. Hotel and venue names are real; their rates are illustrative.
 
-Written from the code on branch `claude/upbeat-dirac-kiveik` (13 Nov 2026). When a document and the code disagree, the code is right. Please tell us.
+Written from the code on branch `claude/upbeat-dirac-kiveik` (13 Nov 2026, up to commit `a9fdf77`). When a document and the code disagree, the code is right. Please tell us.
 
 ## 1. Run the demo
 
@@ -28,6 +28,7 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 
 - **Sidebar by job**: Home, then Sales, Catalog, Money, Help, Admin (`s3_shell.js: NAV_SECTIONS`). "New" pills mark the features the product does not have yet.
 - **Next step on every file**: a bar under the project header says what to do now, from the data, with one primary button (`s11_next.js: nextSteps`, `nxBar`). The agent home lists the agent's next steps across files.
+- **Stage moves**: the status chip in the project header opens a menu (Mark as lost, Move to financial close, Close the file). Each move has a guard that says why it is blocked, the same guard drives a card on the Operation dashboard and the next-step bar, and a lost quote leaves every open-quote total (`s11_next.js: stmCheck, advanceStage, markLost`; rules in `business-rules.md` §28).
 - **Global search**: the header magnifier (or Ctrl/Cmd+Shift+F) finds projects, clients, suppliers, hotels and pages (`s11_search.js: gsSearch`).
 - **Role homes**: owner, accountant and agent each get their own dashboard; every number drills to the screen that explains it.
 - **Developer notes and UI kit**: the spec and the component reference, inside the product.
@@ -38,7 +39,7 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 |---|---|---|
 | `README.md` (this) | The map, simulated-vs-real, build order, open decisions | Start here |
 | `data-model.md` | Every entity as tables (field, type, meaning, example, where set or read, origin) and a Mermaid ER diagram. Mapping to `docs/backend-plan` tables | Schema design |
-| `business-rules.md` | 30 rules with formulas, inputs, edge cases, the test that guards each, and a worked example with real demo numbers. A list of code inconsistencies (§32) | Finance engine, services, tests |
+| `business-rules.md` | 30 rules with formulas, inputs, edge cases, the test that guards each, and a worked example with real demo numbers. A list of code inconsistencies (§32; seven of the twelve are marked resolved) | Finance engine, services, tests |
 | `design-system.md` | Tokens (light and dark), typography, spacing, layout, components, RTL, dark mode, mobile, accessibility, content rules | Front end, MUI theme |
 | `screens.md` | One section per screen from the developer-notes registry: purpose, roles, data, actions, rules, states, suggested API, tests, code pointers. **Generated** by `node tools/spec/export_spec.js` after `python3 build.py`; do not edit by hand | Page by page build |
 
@@ -91,6 +92,8 @@ All in `v6/`; build order is in `build.py: JS_ORDER`. One HTML file, no framewor
 | `s10_ops.js` | Tasks (48-task library), Master list, room blocks |
 | `s10_settings.js` | Settings: organization, roles and permissions, stages, links |
 | `s10_dacct.js`, `s10_dash.js` | Role dashboards: accountant, manager, agent |
+| `s11_next.js` | Next-step bar, stage moves (`stmCheck`, `advanceStage`, `markLost`), status menu, Operation dashboard move card |
+| `s11_fix.js` | `gapCredit` (the one credit function) and the test that pins permissions, credits, stage moves, the locked rate and receipts |
 | `s9_meet.js` | Meeting mode: three cuts of one story, booth lead capture, kiosk idle reset |
 | `s9_boot.js` | Wraps render and reset, then `load(); render()`. Must stay last |
 | `base.css`, `extra.css`, `v7.css`, `brand-fonts.css`, `theme.css`, `lists.css`, `m_*.css` | Styles in load order; `theme.css` holds the theme |
@@ -112,7 +115,7 @@ How strings and events work: every visible string is `L(he, en)`; data goes thro
 | Supplier directory, rates, alternatives, swap, versions | Shapes and guards (§18 to §21) | 344 suppliers, 156 generated names, rate multipliers and jitter, ratings, reply times, documents |
 | Forms and traveler forms | Engine, builder, completion states (§24) | Responses are computed from traveler data; no public form pages; sample waiver wording |
 | Tasks, master list, room blocks | Library, windows, overdue, block types (§22, §23) | Task completion is generated; import is a 5-row preview; release cutoff is a fixed `dep − 30 d` |
-| Roles and permissions | The 40-key matrix as a proposal (§25) | Roles are a "view as" switch; only some permissions are enforced |
+| Roles and permissions | The 40-key matrix as a proposal (§25) | Roles are a "view as" switch; 13 of the 40 permissions are enforced, 27 are matrix only |
 | Accounting sync | Object mapping per system (`s9a_books.js: ACCT`) | Entire flow is simulated against a sample company file; badged Pilot |
 | Maya | The idea; the live-mode grounding (`liveSnapshot`) | 28 scripted answers; live mode needs a key kept in the browser |
 | Trip studio | Same lines and `calc` as quotes (§27) | Routing is straight-line geometry over a 48-city map |
@@ -135,10 +138,10 @@ From `CLAUDE.md` and the code. These are decisions for the owner, not for you, b
 9. **Accounting object names** for Priority and Hashavshevet must be verified with an accountant before any Israeli demo. Live connections (Intuit, Xero, Priority, Hashavshevet) are product work.
 10. **The demo's "today"** stays 2026-10-20 (moving it re-baselines every dated figure).
 11. **Prior-year statistics** on Home (won and canceled projects, year-on-year chips) are fictional.
-12. **Permissions**: only some of the 40 are enforced; the settings screen's "8 enforced" list is inaccurate (`business-rules.md` §25, §32.1). Decide the real enforcement list.
+12. **Permissions**: 13 of the 40 are enforced (`ST_ENFORCED` in `s10_settings.js`, pinned to the code by a test: `users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit`); the other 27 show in the matrix only. The earlier mismatch between the "8 enforced" list and the code was fixed in a9fdf77 (`business-rules.md` §25, §32.1). Decide the production enforcement list; the matrix defaults are a proposal. CLAUDE.md still says "8 enforced" for `s10_settings.js`.
 13. **Real-brand wording** and `brandSwap` are demo rules; they do not apply to customer data.
 
-Code inconsistencies found while writing these documents are in `business-rules.md` §32 (permissions list, partial credits, credit not marking paid, swap permission by screen, `byType` vs overhead, receipt label, free "locked" rate, no stage moves after win).
+Code inconsistencies found while writing these documents are in `business-rules.md` §32. Fixed in a9fdf77 (permissions list and the two unchecked permissions, credit not marking paid, swap permission by screen, receipt label, free "locked" rate, no stage moves after win) and marked so there. Still open: partial credits, `byType` vs overhead and brokerage, `Trip.ctype` and the join by client name, `qdays` as a counter, `themeGet()` and `prefers-color-scheme`.
 
 ## 6. Suggested build order for the real product
 

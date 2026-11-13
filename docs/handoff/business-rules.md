@@ -2,7 +2,7 @@
 
 What a backend must implement so the real product gives the same answers as this demo. Each rule has: what it does, the formula, the inputs, edge cases, the test that guards it, and a worked example with numbers computed from the built demo (`python3 build.py`, then the same node `vm` loader as `check6.js`).
 
-Every statement is true to `v6/*.js` at commit `c250ab3`. Citation format is `file: function` (files are under `v6/`). Test citations are `check6.js:<line>` or `TEST <name>` (the names printed by `node check6.js`). Where the backend plan (`origin/claude/fervent-babbage-bkgptx`, `docs/backend-plan/04-finance-engine.md`) says the same thing, it is cited as `04 §x`; where it differs, **Difference** says so. The plan's own line numbers (e.g. `:78`) are from an older commit and have shifted; use function names.
+Every statement is true to `v6/*.js` at commit `a9fdf77`. Citation format is `file: function` (files are under `v6/`). Test citations are `check6.js:<line>` or `TEST <name>` (the names printed by `node check6.js`). Where the backend plan (`origin/claude/fervent-babbage-bkgptx`, `docs/backend-plan/04-finance-engine.md`) says the same thing, it is cited as `04 §x`; where it differs, **Difference** says so. The plan's own line numbers (e.g. `:78`) are from an older commit and have shifted; use function names.
 
 Run state for all examples: `resetDemo()` (so every figure is reproducible). The demo's "today" is **2026-10-20**. Season totals at reset: revenue $950,103.70, planned profit $142,334.70, expected profit $138,322.99 (printed by `check6.js` as `P rev 950103.7 pp 142334.7 fp 138322.99`). If a change of yours moves these numbers, you changed a rule.
 
@@ -35,7 +35,7 @@ Run state for all examples: `resetDemo()` (so every figure is reproducible). The
 25. Permissions enforcement
 26. Real-brand rule
 27. Default lines for a trip (generator rules)
-28. Quote workflow
+28. Quote workflow and stage moves
 29. Dashboard definitions and alerts
 30. Day plan rules (overloaded day, day costs)
 31. Differences from the backend plan, in one table
@@ -161,14 +161,14 @@ fcProfit   = r2(rev − fc_total + comm)
 
 **Rules.**
 - A trip has **one** locked rate. Every non-USD line converts at it. Air and insurance lines are always USD, so they ignore it (`s1_core.js: genLines`).
-- Planned USD = `planC × rate`. The rate is editable on the Pricing tab (0.5 to 2) at **any** stage (`s6_rest.js: data-ch="rate"`).
+- Planned USD = `planC × rate`. The rate is editable (0.5 to 2) **only while the trip is a quote** (`Trip.stage = 'Quote'`): on the General and Pricing tabs through `s4_views.js: rateField(t)`, and the `data-ch="rate"` handler in `s6_rest.js` ignores the value for any other stage. Once the quote is won (`winQuote` sets `Trip.wonOn` = today) the rate is a read-only figure with the note "Locked when the quote was accepted on <date>" (Hebrew: ננעל כשההצעה אושרה ב-<date>); a trip without `wonOn`, such as every generated trip, reads "Locked at acceptance".
 - **Realized FX** counts only when the invoice is **paid**: `fx = r2(e × (inv.rate − t.rate))`, with `e = effAmt`. Positive `fx` means the agency paid more USD than planned (a loss). It is computed on the amount **after credit**.
 - **Unpaid** foreign-currency lines are *exposure*, not P&L: `portfolio().fxExp[cur] = {amt (native), usd (= amt × t.rate)}`, summed over unpaid lines of non-Quote trips (`s1_core.js: portfolio`; shown by `s10_dacct.js: daFxExposure`).
 - `inv.rate` in the demo is the locked rate plus a seeded random offset (−0.012 to +0.028) (`s1_core.js: mkInv`). In production it comes from the accounting system's bill payment (`04 §3.4`).
 
-**Edge cases.** USD trips and USD lines never produce `fx`. `fx` can be negative (a gain), e.g. guide line on `irl0`. A credit received after payment changes `e` and therefore `fx`. The demo's credit action does **not** mark the invoice paid, so FX is not recognized on credits made in the UI (§32.3).
+**Edge cases.** USD trips and USD lines never produce `fx`. `fx` can be negative (a gain), e.g. guide line on `irl0`. A credit received after payment changes `e` and therefore `fx`. Crediting a gap in the UI (`gapCredit`, §9) sets `inv.paid = true`, as the generator's `settle` does, so a credited foreign-currency line recognizes FX at once (example in §9).
 
-**Difference.** `04 §3.4`: one lock per (trip, currency), changeable only by an admin with an audit row and a reason; demo: one rate per trip, editable by anyone who can open Pricing.
+**Difference.** `04 §3.4`: one lock per (trip, currency), changeable only by an admin with an audit row and a reason; demo: one rate per trip, free while the trip is a quote and read-only afterwards, with no override path (no admin change, no audit row).
 
 **Test.** `check6.js:12` covers `fx` through the identity (trips `ita` and `irl0` carry non-zero realized FX; `gre` and `nia` have no paid foreign invoices yet). `check6.js:51-57` ties FX into the leak bridge (§11). `P.fxExp` currencies are printed at the end of `check6.js` (`fx [ 'CAD', 'EUR' ]`).
 
@@ -241,17 +241,19 @@ Planned profit stays **$15,337.80**; expected profit falls from $15,337.80 to **
 |---|---|---|
 | Draft dispute (`gapdisp`) | gap `open` with positive diff | Opens the generated email (`s5_fin.js: disputeMail`); no state change |
 | Mark as sent (`gapsent`) | `open` | `inv.st = 'disputed'` |
-| Credit received (`gapcred`) | `disputed` | `amt = effAmt − planC`; `inv.credit += amt`; `inv.st = 'credited'`. The credit always brings the line back to plan |
+| Credit received (`gapcred`) | `disputed` | `gapCredit(l)` (`s11_fix.js`): `amt = effAmt − planC`; `inv.credit += amt`; `inv.st = 'credited'`; `inv.paid = true`. The credit always brings the line back to plan |
 | Accept charge (`gapacc`) | `open` or `disputed` | `inv.st = 'accepted'`: the money is lost |
 | Checked, nothing missing (`gapacc`) | `under` gaps, `open` | `inv.st = 'accepted'` |
 
 Credit amount shown in the toast is `usd(amt × lrate)`. Reading the inbox creates all new gaps with `st='open'` (`s1_core.js: applyInboxFile`).
 
-**Edge cases.** The demo has no partial credits and no credit larger than the gap. A credit does not set `inv.paid` (the generator's `settle` does, §32.3). No timestamps, actors or dispute history are kept. The dispute text is always English.
+**Edge cases.** The demo has no partial credits and no credit larger than the gap. `gapCredit` marks the invoice paid, exactly as the generator's `settle` does for generated credited invoices, so realized FX (§6) and the AP schedule (§15) treat a credit made in the UI and a generated one the same way; a second call changes nothing (`effAmt` is already the plan, so the amount is 0). The function does not check the status: the `disputed` rule is a UI condition on the button. No timestamps, actors or dispute history are kept. The dispute text is always English.
 
-**Tests.** `check6.js:39` flips half the flagship gaps to disputed and half to credited and re-checks the identity. `TEST sp …` covers supplier performance from gap stats.
+**Tests.** `check6.js:39` flips half the flagship gaps to disputed and half to credited and re-checks the identity. `TEST fix credit, permissions, stage moves` credits a gap through `gapCredit`, checks `paid`, status `credited`, the identity, the USD amount against the gap and idempotence, and compares with a generated credit. `TEST sp …` covers supplier performance from gap stats.
 
-**Worked example.** `nen` gap 1 (Maple Ridge rooms, $1,374): "Mark as sent" → `disputed`; "Credit received" → credit = 31,602 − 30,228 = **$1,374**, `credited`; the line's `amtDiff` returns to 0 and expected profit rises by $1,374.
+**Worked example.** `nen` gap 1 (Maple Ridge rooms, $1,374; read from the inbox first): "Mark as sent" → `disputed`; "Credit received" → credit = 31,602 − 30,228 = **$1,374**, `credited`, `paid = true`; the line's `amtDiff` returns to 0 and expected profit rises by $1,374 (**$11,291.80 → $12,665.80** once all six inbox files are read; USD, so no FX).
+
+Foreign-currency example, trip `ita` (EUR, locked 1.08), gap 1 "Twin rooms, 8 nights": invoice €16,896 against €15,840 planned, unpaid, a **$1,140.48** gap (€1,056 × 1.08). Credit €1,056 → effective €15,840, `paid = true` at the invoice rate **1.09**, so realized FX becomes 15,840 × (1.09 − 1.08) = **$158.40**. Trip `fx` rises **$141.20 → $299.60**, `amtDiff` falls $1,448.28 → $307.80, expected profit moves **$10,201.43 → $11,183.51** (+$982.08 = 1,140.48 − 158.40) and `planProfit − amtDiff − fx − fcProfit` stays 0. Before a9fdf77 the UI credit left the invoice unpaid and the $158.40 would not have been recognized.
 
 ## 10. Gap statistics
 
@@ -381,11 +383,11 @@ All in `s1_core.js: portfolio` (monthly cash calendar) and `s10_dacct.js` (accou
 **Rule** (`s7b_product.js: incomeDocs`). For each household and each installment (deposit with `depDue`, balance with `balDue`) with amount > 0:
 - A document exists only if the installment is **paid** or its due date is on or before **today + 30 days**.
 - A **deal invoice** (`type 'deal'`) is dated `due − 21 days`, status `paid` if the installment is paid, else `req` (payment requested).
-- If paid, a **receipt** (`type 'receipt'`, shown as "Tax invoice") is also created, dated the due date, status `paid`.
+- If paid, a **receipt** (`type 'receipt'`, shown as "Receipt" / קבלה) is also created, dated the due date, status `paid`. The Income filter tabs are All / Deal invoices / Receipts ("Receipts" in English, קבלות in Hebrew) and have `role="tab"` with `aria-selected`.
 - Numbers: deals `90001 + (trip.no % 50) × 20` counting up; receipts `70001 + …`.
 - Totals footer: trip total = `calc(t).rev`; billed = Σ deal amounts; received = `groupsCalc().collected`; remaining = outstanding.
 
-**Edge cases.** Nothing is stored, so numbering changes if the trip number changes and a document disappears if the due date moves. "Issue document" is a toast only (`data-act="toast"`). Sales tax is not modeled; `ST_ORG.tax` is preview-only. Hebrew labels it "tax invoice receipt", English "Tax invoice" (§32.7).
+**Edge cases.** Nothing is stored, so numbering changes if the trip number changes and a document disappears if the due date moves. "Issue document" is a toast only (`data-act="toast"`) and is disabled, with the reason in `title`, when the role lacks `fin.issueDocs` (`canIssueDocs()`). Sales tax is not modeled; `ST_ORG.tax` is preview-only. The label is "Receipt" (קבלה in Hebrew); it is not claimed to be a legal tax document, and which document a receipt must be (a tax invoice receipt in some jurisdictions) is a production decision (§32.7).
 
 **Test.** `TEST st settings` and `TEST da accountant dashboard` (documents to issue).
 
@@ -449,10 +451,11 @@ If `den ≤ 0` the line cost is returned. The current supplier always returns `l
 
 ## 20. Swap and undo guards
 
-`s10_tbcomp.js: tbSwap(t, lineId, supId)` and `tbUndo(t, lineId)`. Both return `{ok, delta, reason}`.
+`s10_tbcomp.js: tbSwap(t, lineId, supId, force)` and `tbUndo(t, lineId, force)`. Both return `{ok, delta, reason}`.
 
 | Guard (in this order) | Reason code |
 |---|---|
+| Role can `sup.swap` (skipped when the caller passes `force`, used by seeds and by the internal undo of a swap-back) | `perm` |
 | Line exists | `line` |
 | `tbSwap`: line has **no invoice** (`l.inv` null) | `invoiced` |
 | `tbSwap`: `stage` is `Quote` or `Operations` | `stage` |
@@ -464,15 +467,15 @@ If `den ≤ 0` the line cost is returned. The current supplier always returns `l
 
 **Effect.** First swap saves `alt0 = {sup, cost, comm}`; `l.sup`, `l.cost`, `l.comm` take the alternative's values. A second swap (B to C) **keeps the first `alt0`**, so Undo always returns to the **original**, not the previous supplier. `delta` = change in **planned profit** (it includes the commission change: a cheaper supplier with higher commission moves profit twice). Side effects: the trip's supplier list is synced (`tbcSupSync`: the old entry is renamed to the new supplier if no other line uses the old one; its status resets to `Sent` in Operations, `Not sent` in Quotation), and the room block hotel follows if it was the old hotel (`tbcRoomSync`).
 
-**Permissions.** The By-components buttons check `price.edit` (`tbcCan`); the Price-comparison "Choose" checks `sup.swap`, `ops.suppliers` and also refuses when the supplier is already **Approved**, or the trip is **Closed** (`s10_sup.js: spChooseWhy`). `tbSwap` itself checks none of these (§32.4).
+**Permissions.** Swapping is one permission, `sup.swap`: `tbSwap` and `tbUndo` return `{ok:false, delta:0, reason:'perm'}` without it, so no caller can bypass it; the By-components buttons and the Price-comparison "Choose" use the same key (`s10_tbcomp.js: tbcCanSwap`, `s10_sup.js: spCan('sup.swap')`; the message is "Your role cannot swap suppliers"). The Price-comparison list buttons also need `ops.suppliers`, and "Choose" refuses when the supplier is already **Approved**, the line has an invoice, or the trip is **Closed** (`s10_sup.js: spChooseWhy`). Saving and restoring **versions** (§21) is `price.edit` (`tbcCan`), not `sup.swap`. An accountant has neither key by default (cannot swap); agents and the owner have both.
 
-**Test.** `TEST tbcomp swaps and versions`; `TEST sp suppliers table, cards, in-trip flow, client card`.
+**Test.** `TEST tbcomp swaps and versions`; `TEST sp suppliers table, cards, in-trip flow, client card`; `TEST fix credit, permissions, stage moves` (owner without `sup.swap` and the accountant get `perm` and the line is unchanged; an agent swaps by default).
 
 **Worked example.** `rom` lodging line, swap Sheraton → Casa San Pietro Hotel: line cost stays €132, commission 0% → 9%; planned profit **$12,562.43 → $14,219.93**, delta **+$1,657.50** (= 9% × 128 × €132 × 1.09, all from commission). Undo: delta **−$1,657.50**, profit back to $12,562.43, `alt0` removed. On `nen` (Finance stage) a swap returns `stage`; on a line with an invoice, `invoiced`.
 
 ## 21. Versions
 
-`s10_tbcomp.js`. **Quote stage only.**
+`s10_tbcomp.js`. **Quote stage only.** The Save and Restore buttons need `price.edit` (`tbcCan`), not `sup.swap`; the seeded version 2 of `hl` swaps a hotel with `force` so it does not depend on the viewer's role.
 - **Save** (`tbVerSave`): `v = max(v) + 1`, snapshot of every line's `{id, sup, qty, cost, cur, comm, ov}`, markups, discounts, overhead, brokerage and frozen totals `{rev, plan, planProfit, comm}`; label defaults to `Version n`.
 - **Restore** (`tbVerRestore`): for each line **id present in the snapshot and still on the trip**, copy the saved values and delete `alt0`; lines added later keep their current values; lines in the snapshot but deleted are ignored. Replace markups, discounts, overhead and brokerage; rebuild the supplier list (`tbcSupRebuild`); set the room-block hotel to the first line's supplier when that line is Lodging. Totals of the live trip are recomputed by `calc`, not read from the snapshot.
 - **Diff** (`tbVerDiff`): compares per line id `sup, qty, cost, cur, comm, ov`, then markups, discount keys, overhead, brokerage, then the four totals. `empty` is true when there is no difference and every total delta < 0.005.
@@ -545,18 +548,21 @@ exposure    = open > 0 and releaseDate < today ? r2(open × nights × lodging.co
 | `users.manage` | `NAV_PERM.users` (`s3_shell.js:26`); view wrapper `s9_boot.js:14` | Hides the Users item; page renders `noAccess()` |
 | `fin.sync` | `NAV_PERM.books`; `s10_dacct.js:226`; `s10_settings.js:145` | Hides Accounting sync; gates posting from the accountant home and the Integrations tab |
 | `fin.view` | `NAV_PERM.finance`, `NAV_PERM.gaps` (`s10_settings.js:7`) | Finance and Invoice check render `noAccess()` |
-| `price.edit` | `s10_prop.js: prCan`; `s10_tbcomp.js: tbcCan` | Overhead/brokerage setters; swap buttons on By components |
+| `price.edit` | `s10_prop.js: prCan`; `s10_tbcomp.js: tbcCan` | Overhead/brokerage setters; saving and restoring versions |
+| `prop.approve` | `s3_shell.js: canApprove`, used by `s4_views.js: pApprove`, the `qs` handler (`s6_rest.js`), Maya's approval answer, `s10_dash.js: dbApprovalsCard`, `s11_next.js: nextSteps` | The "Approve and send to client" control, the `Approval → Sent` change itself (the handler refuses and toasts), Maya's button, the Approve button on the manager approvals card (others get "Open"), and the `approve` next step (others get `wait`) |
+| `fin.issueDocs` | `s3_shell.js: canIssueDocs`, used by `s10_dacct.js: daIssue` and the Issue buttons, `s7b_product.js: pIncome` | "Issue" on the accountant home and "Issue document" on Income are disabled with a reason; `daIssue` returns false and toasts |
 | `settings.edit`, `settings.stages` | `s10_settings.js: stCanEdit, stCanStages` | Settings page read-only; every `st*` mutation returns false |
 | `forms.build` | `s10_fbuild.js: fbCan` | Every form-builder mutation returns false/−1/0 |
-| `sup.edit`, `ops.suppliers`, `sup.swap`, `cli.edit` | `s10_sup.js: spCan` | Edit buttons and in-trip supplier actions disabled with a reason |
+| `sup.edit`, `ops.suppliers`, `cli.edit` | `s10_sup.js: spCan` | Edit buttons and in-trip supplier actions disabled with a reason |
+| `sup.swap` | `s10_tbcomp.js: tbSwap`, `tbUndo` (`tbcCanSwap`); `s10_sup.js: spChooseWhy` | The functions themselves refuse (`perm`); both swap UIs are disabled with a reason |
 
-The settings screen advertises **8** as enforced (`s10_settings.js: ST_ENFORCED`: `users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, price.edit, forms.build`). That list is not accurate; see §32.1. **Agent scoping** is separate: agents see only trips where `Trip.agent === S.role` (`s3_shell.js: canSee`; owner and accountant see all, `seesAll`). Quote approval from `Approval` to `Sent` checks `S.role === 'manager'` directly (`s4_views.js: pApprove`), not `prop.approve`.
+That is **13** distinct keys, and the settings screen lists exactly these (`s10_settings.js: ST_ENFORCED`: `users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit`): it shows an "enforced" tag on 13 of the 40 rows and a matrix-only tag on the other 27, and says "13 permissions are enforced". The list is pinned by a test to the keys the code checks (§32.1). The other 27 are matrix-only: toggling them changes nothing. **Agent scoping** is separate: agents see only trips where `Trip.agent === S.role` (`s3_shell.js: canSee`; owner and accountant see all, `seesAll`). Defaults: `prop.approve` is owner only; `fin.issueDocs` is owner and accountant; `sup.swap` is owner and agents.
 
 **Production.** Enforce on the server for every permission in the matrix; scope agents at the database (`02-data-model.md` §4 row-level security). The matrix is a proposal for the owner to confirm; `users.roles` is owner-only even for admin.
 
-**Test.** `TEST people data` (defaults per role, override works, owner has all), `TEST st settings` (override persistence, `fin.view` off removes Finance, mutation refused without `settings.edit`, 8 enforced tags drawn).
+**Test.** `TEST people data` (defaults per role, override works, owner has all), `TEST st settings` (override persistence, `fin.view` off removes Finance, mutation refused without `settings.edit`, 13 enforced tags and 27 matrix-only tags drawn); `TEST fix credit, permissions, stage moves` (`ST_ENFORCED` equals the 13 keys; approval control, Maya answer, next step, approvals card, `daIssue`, Income button and `tbSwap` follow `prop.approve`, `fin.issueDocs` and `sup.swap`, including when an owner or agent override flips them).
 
-**Worked example.** Remove `fin.view` from agents: Priya's sidebar loses Finance and Invoice check and both pages return "No access"; Ella (owner) and Nora (accountant) are unaffected.
+**Worked example.** Remove `fin.view` from agents: Priya's sidebar loses Finance and Invoice check and both pages return "No access"; Ella (owner) and Nora (accountant) are unaffected. Give agents `prop.approve`: Priya sees "Approve and send to client" on her quote in `Approval`, and the `approve` next step appears for her; take `prop.approve` from the owner: Ella sees no approve control, the next step reads `wait`, and Maya's approval answer shows no button.
 
 ## 26. Real-brand rule
 
@@ -593,20 +599,36 @@ Costs are rounded to whole units. **Test.** `check6.js:65-69` (studio for all 16
 
 **Studio.** `s8_gen.js: genPlan`: hotels define bases; each attraction belongs to its nearest base within 170 km; nights are split by attractions (max 1, 2 or 3 bases for ≤ 3, ≤ 6, more nights). Drive time from Tulsa: straight-line km × 1.12 at 100 km/h + 1 h, rounded to half hours, capped at 13 h (`driveH`); coach transfers and day trips: km × 1.35 at 80 km/h, minimum 0.5 h (`coachH`). A day's active hours (visits, not travel or meals) stay ≤ 9.6.
 
-## 28. Quote workflow
+## 28. Quote workflow and stage moves
 
-`s6_rest.js` (`qs`, `win`), `s4_views.js: pApprove`, `s10_prop.js: prAccept`.
-- `Draft → Approval` (anyone), `Approval → Sent` (UI: owner only), `Sent → Negotiating`.
-- **Win** is offered for `Sent` and `Negotiating` only: `winQuote` sets `stage = 'Operations'`, `qst = ''`, creates households (`genGroups`, all unpaid), tasks (open), supplier list (status `Sent`), travelers and the room block (`held = rooms + 3`, `used = rooms`). It does not lock the FX rate (the rate is already a trip field).
+`s6_rest.js` (`qs`, `win`), `s4_views.js: pApprove`, `s10_prop.js: prAccept`, `s11_next.js` (`stmCheck`, `advanceStage`, `markLost`, `stmGo`, `stmMoves`).
+- `Draft → Approval` (anyone), `Approval → Sent` (needs `prop.approve`, checked by `pApprove` and again in the `qs` handler; owner only by default), `Sent → Negotiating`.
+- **Win** is offered for `Sent` and `Negotiating` only: `winQuote` sets `stage = 'Operations'`, `qst = ''`, **`wonOn = today`** (ISO date; this is what locks the FX rate, §6), creates households (`genGroups`, all unpaid), tasks (open), supplier list (status `Sent`), travelers and the room block (`held = rooms + 3`, `used = rooms`).
 - Client acceptance (`prAccept`): only `Draft` or `Sent` → `Negotiating`; `Approval` is never skipped.
 - Duplicate a past trip (`dup`): new `Quote/Draft`, lines without invoices and without extra lines, departure `+364 d`, deposit and balance dates recomputed from it.
 
-**Missing in the demo:** `lost`; moving Operations to Finance and to Closed; reopening. **Test.** `TEST prop formats and extras`; `check6.js:45-46` (won and new quotes keep the identity and render every tab).
+**Stage moves.** `stmCheck(t, mv)` returns `{ok, why[]}` (each reason has Hebrew and English text); the same guard feeds the project status menu, the dashboard card and the next-step bar, so they can never disagree.
+
+| Move | Function | Allowed when | Effect |
+|---|---|---|---|
+| Mark as lost (`lost`) | `markLost(t)` | `stage = 'Quote'` and `qst` is not `Lost` | `qst = 'Lost'`, `qdays = 0`. The **stage stays `Quote`**. Status label "Lost" (red); it shows under Archive and counts in "Lost" on Home |
+| Move to financial close (`fin`) | `advanceStage(t)` on an Operations trip | `stage = 'Operations'` and the return date has passed: `endOf(t) <= today` (reason: "The trip returns on <date>. It can move to financial close after it returns") | `stage = 'Finance'`; the UI opens the Finance dashboard |
+| Close the file (`close`) | `advanceStage(t)` on a Finance trip | `stage = 'Finance'` and **all** of: no supplier invoice waiting in `Trip.inbox`; no open gap (`isOpenGap` with usd > 0); `groupsCalc(t).outstanding` is 0 | `stage = 'Closed'`; the file goes to the archive |
+
+Each reason lists what is blocking (for example "6 supplier invoices are waiting to be checked", "3 open invoice gaps, $1,564", "Open balance to collect: $X"). `advanceStage` picks the move from the stage (`Finance` → close, anything else → fin) and returns `{ok, mv, from, to, why}`. There is no move out of `Closed` or out of `Lost`, and no re-opening.
+
+**Where the moves live.** (1) The project status chip in the project header is a button that opens a menu (`role="menu"`, closes on Esc or an outside click); blocked moves are disabled and show their reasons. (2) The Operation dashboard shows a "Move to financial close" card, but only once the trip has returned. (3) The next-step bar: `finclose` (todo) after return on an Operations trip, and on a Finance trip with nothing left, `close` ("Everything is settled. The file can be closed", todo, button "Close the file"); a `Lost` quote has no next steps.
+
+**What "Lost" does to totals.** `isOpenQ(t)` = `stage === 'Quote' && qst !== 'Lost'` (`s1b_labels.js`). Open-quote counts and values use it: `portfolio().pipeline` and `pipelineN`, the Home stage cards and bar, the Quotes list (a Lost quote is under Archive, not Quotes), the manager team table and agent dashboards (`dbTeam`, `dbAgentKpis`), the Kanban columns and the expected-revenue card. Booked revenue, planned and expected profit are unchanged (a quote was never booked). The identity still holds on a Lost quote.
+
+**Missing in the demo:** reopening a lost quote or a closed file; any audit of who moved a stage or when (only `wonOn` and the reset `qdays` exist); `won` as a status. **Test.** `TEST prop formats and extras`; `check6.js:45-46` (won and new quotes keep the identity and render every tab); `TEST fix credit, permissions, stage moves` (guards, reasons, menu in both languages and three roles, totals after a loss, every blocker resolved through the UI functions, then close).
+
+**Worked example (reset).** Six quotes, all open: pipeline **$526,355.76**, `pipelineN` 6. Mark "Grace Fellowship Holy Land Pilgrimage" (Draft, $130,930.74) as lost: pipeline **$395,425.02**, `pipelineN` 5; booked revenue stays $950,103.70. Operations trips at reset all return in the future (`nas` returns 2026-11-16, `bra` 2026-12-03), so the move to financial close is blocked on each; it opens for `nas` once today is on or after Nov 16. Finance trips: `nen` is blocked by 6 invoices waiting in the inbox, `gc` by 3 open gaps ($1,564), `ita` by 2 open gaps ($1,448); `nsh` has no blocker, so "Close the file" is allowed and moves it to `Closed`.
 
 ## 29. Dashboard definitions and alerts
 
 `s10_dash.js` (spec A19). All figures come from `calc`, `groupsCalc`, `portfolio`.
-- **Booked revenue** = Σ `calc(t).rev` of non-Quote trips (= `portfolio().rev`). **Open quote value** = Σ rev of Quote trips.
+- **Booked revenue** = Σ `calc(t).rev` of non-Quote trips (= `portfolio().rev`). **Open quote value** = Σ rev of open quotes (`isOpenQ`: `Quote` stage and not `Lost`, §28).
 - **Expected margin** = `portfolio().fp / rev`. **Target attainment** = booked / `STAFF.target`.
 - **Readiness of a non-Quote trip** (`dbReadiness`): four percentages, each `round(n / d × 100)`, an empty denominator counting as 100: tasks done; passports received (international trips only, otherwise 100 "n/a"); suppliers confirmed (`st == 'Confirmed'`); deposits collected (by amount). `overall = round(mean of the four)`.
 - **Follow-up due** = quote `Sent` with `qdays > 7` (`dbFollowUps`); the Alerts list uses `qdays > 14` (`s1b_labels.js: alertsFor`).
@@ -627,7 +649,7 @@ Costs are rounded to whole units. **Test.** `check6.js:65-69` (studio for all 16
 | Topic | Demo | Backend plan (`04`, `02`) |
 |---|---|---|
 | Money | floats, `r2` each step, 0.05 test tolerance | `bigint` minor units, tolerance 0 |
-| FX | one locked rate per trip, editable by anyone with Pricing | one lock per (trip, currency); admin only, audited |
+| FX | one locked rate per trip, editable only while the trip is a quote (`wonOn` marks acceptance) | one lock per (trip, currency); admin only, audited |
 | Gap kind | written by the generator | inferred by the matcher |
 | Invoice to line | one invoice per line | many-to-many allocations |
 | Tolerance | none | per tenant ($1 or 0.5%) |
@@ -637,22 +659,22 @@ Costs are rounded to whole units. **Test.** `check6.js:65-69` (studio for all 16
 | Aging | by the oldest installment per household | per installment |
 | Release exposure | fixed cutoff `dep − 30 d` | contract cutoff, attrition, schedule |
 | Roles | owner, admin, agent, accountant (+ Ops desk, not a role) | + `viewer` |
-| Trip stage | `Quote, Operations, Finance, Closed` | `quotation, operation, finance, closed, lost` + quote status incl. `won, lost` |
+| Trip stage | `Quote, Operations, Finance, Closed`; lost is `Quote` + `qst = 'Lost'`; moves guarded by `stmCheck`, no audit | `quotation, operation, finance, closed, lost` + quote status incl. `won, lost` |
 | Versions | light snapshot | `quote_version` owns the lines; sent versions immutable |
 
 ## 32. Things in the code that look inconsistent
 
-Reported for the owner and the developers; none were changed. Listed so you decide before copying a behaviour.
+Reported for the owner and the developers. The first report listed twelve; seven were fixed in commit `a9fdf77` and are marked **Resolved in a9fdf77** with one line on how (kept so you can see what changed and why). The rest are still true: decide them before copying a behaviour.
 
-1. **Enforced permissions.** `ST_ENFORCED` (and CLAUDE.md, "8 enforced") lists `prop.approve` and `fin.issueDocs`, but neither is checked by `can()` anywhere (`prop.approve` is a role check on `manager` in `s4_views.js: pApprove`; `daIssue` has no guard). Meanwhile `sup.edit`, `sup.swap`, `ops.suppliers`, `cli.edit` and `settings.stages` **are** enforced (`s10_sup.js: spCan`, `s10_settings.js: stCanStages`) but not in the list. Real count of distinct `can()` keys: 11 (`users.manage, fin.sync, fin.view, price.edit, settings.edit, settings.stages, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit`).
-2. **Partial credits.** `invStatus` yields `k:'gap', st:'credited'` for a partial credit. `leakModel` would put it in `steps` and then in `lost` (status is neither open/disputed). The demo never creates one (credits are always full), so tests do not catch it.
-3. **Credit does not mark paid.** The generator's `settle` sets `inv.paid = true` on credited invoices; the UI action `gapcred` does not. So realized FX (§6) and the AP schedule differ between a generated credited invoice and one credited in the UI.
-4. **Swap permission differs by screen.** By components checks `price.edit`; Price comparison "Choose" checks `sup.swap` and `ops.suppliers`; `tbSwap` checks nothing.
+1. **Enforced permissions.** *Resolved in a9fdf77.* `prop.approve` and `fin.issueDocs` are now real `can()` checks (`canApprove()`, `canIssueDocs()` in `s3_shell.js`), and `ST_ENFORCED` lists exactly the 13 keys the code checks (the four supplier and client keys and `settings.stages` were added); a test pins the list. CLAUDE.md still says "8 enforced" on the `s10_settings.js` line.
+2. **Partial credits.** `invStatus` yields `k:'gap', st:'credited'` for a partial credit. `leakModel` would put it in `steps` and then in `lost` (status is neither open/disputed). The demo never creates one (credits are always full, `gapCredit` always brings the line to plan), so tests do not catch it.
+3. **Credit does not mark paid.** *Resolved in a9fdf77.* The UI action `gapcred` now calls `gapCredit(l)`, which sets `inv.paid = true` like the generator's `settle`, so realized FX (§6) and the AP schedule (§15) agree (example in §9).
+4. **Swap permission differs by screen.** *Resolved in a9fdf77.* `sup.swap` is the swap key everywhere: `tbSwap` and `tbUndo` refuse without it (`perm`) and both UIs use it; versions stay on `price.edit`. What is left is by design: Price comparison also needs `ops.suppliers`, and an owner with `sup.swap` turned off cannot swap even though they own the column default.
 5. **`byType` and overhead/brokerage.** `calc().byType[t].rev` includes discounts but not overhead or brokerage, and `byType[t].plan` excludes brokerage. Σ `byType.rev` therefore differs from `rev` when `ovh`/`brk` are set. The Invoice check cost-by-type bars use `byType.plan/fc`. Decide where overhead and brokerage post.
 6. **`Trip.ctype`** duplicates `Client.type`, kept equal by a test, and the trip joins the client by **name**.
-7. **Receipt label.** Income type `receipt` shows "Tax invoice" in English and "חשבונית מס קבלה" (tax invoice receipt) in Hebrew.
-8. **Rate lock.** The "locked" rate is a free field, editable at any stage; changing it silently re-baselines every planned figure of the trip.
-9. **No stage moves after win.** Nothing moves a trip from Operations to Finance or Closed; those stages exist only in generated data.
-10. **`qdays` and dates.** `qdays` is a stored counter reset on status change, not derived from a timestamp; version dates are `TODAY` based.
+7. **Receipt label.** *Resolved in a9fdf77.* Income type `receipt` reads "Receipt" / קבלה and the filter tab "Receipts" / קבלות, so the label no longer claims a tax document. Still open for production: which legal document the receipt must be, and sales tax (not modeled).
+8. **Rate lock.** *Resolved in a9fdf77.* The locked rate is editable only in the Quote stage (`rateField`, and the change handler refuses otherwise); after `winQuote` it is read-only and shows the acceptance date (`Trip.wonOn`; generated trips have none and read "Locked at acceptance"). Still open: one rate per trip, no per-currency lock, no admin override or audit (§31).
+9. **No stage moves after win.** *Resolved in a9fdf77.* `advanceStage` (Operations → Finance after the trip returns; Finance → Closed with no open gaps, empty inbox and nothing to collect) and `markLost` (Quote status `Lost`, §28), from the project status menu, the Operation dashboard card and the next-step bar. Still open: no reopening and no audit trail; Lost is a status of a Quote-stage trip, not a stage.
+10. **`qdays` and dates.** `qdays` is a stored counter reset on status change (including `markLost`), not derived from a timestamp; version dates are `TODAY` based; `wonOn` is the only stored move date.
 11. **`themeGet()`** defaults to light and always writes `data-theme`, so the `prefers-color-scheme` CSS rules in `theme.css` never apply; the user's choice is stored in `triplanet-theme`.
-12. **Docs vs code.** CLAUDE.md says check6 covers "all 25 Maya routes"; `QS.length` is 28 (questions 26 to 28 were added by the accounting module) and check6 loops over all of them (`check6.js:32`).
+12. **Docs vs code.** *Resolved (before a9fdf77).* CLAUDE.md now says Maya answers from 28 scripted questions, and check6 loops over all of `QS` (`check6.js:32`).

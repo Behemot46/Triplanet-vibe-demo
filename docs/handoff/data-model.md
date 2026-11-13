@@ -1,6 +1,6 @@
 # Data model
 
-What this is: every record the booth demo keeps, as the demo actually stores it, so the real product can model the same things. It is written from the code in `v6/*.js` (commit `c250ab3`). When this file and the code disagree, the code is right; tell us.
+What this is: every record the booth demo keeps, as the demo actually stores it, so the real product can model the same things. It is written from the code in `v6/*.js` (commit `a9fdf77`). When this file and the code disagree, the code is right; tell us.
 
 Read first: `README.md` in this folder. Rules (formulas, edge cases, tests) are in `business-rules.md`. Screens are in `screens.md` (generated).
 
@@ -25,13 +25,13 @@ The backend plan is on branch `origin/claude/fervent-babbage-bkgptx`, `docs/back
 | Agency (const `AGENCY`) | `tenant` | The demo has exactly one agency and no `tenant_id`. Org settings live in `ST_ORG` (§22). |
 | Staff | `user` + `membership` | Demo staff is one list; role is a string on the row. The backend splits identity from per-tenant role. |
 | Role | `membership.role` (owner/admin/agent/accountant/viewer) | Demo has `owner, admin, agent, accountant` only; no `viewer`. Staff row `Ops desk` has role `ops`, which is not in `ROLES` (it cannot log in; `s1e_people.js: roleOf` maps unknown roles to `agent`). |
-| Permission | none yet | The backend plan has no permission table. Add one (§4). Demo: 40 keys, 8 claimed as enforced, actually 11 (see `business-rules.md` §25). |
+| Permission | none yet | The backend plan has no permission table. Add one (§4). Demo: 40 keys, 13 enforced (`ST_ENFORCED`; the other 27 are matrix-only; see `business-rules.md` §25). |
 | Client | `client`, `client_contact` | Demo joins trip to client by **name string** (`Trip.client` equals `Client.name`), not by id. Contact is one embedded object, not a table. |
-| Trip | `trip` | Demo `stage` has 4 values (`Quote, Operations, Finance, Closed`); backend has `quotation/operation/finance/closed/lost`. Demo has no `lost` or `won`; winning a quote sets `stage='Operations'`. |
+| Trip | `trip` | Demo `stage` has 4 values (`Quote, Operations, Finance, Closed`); backend has `quotation/operation/finance/closed/lost`. In the demo a lost quote is `stage='Quote'` with `qst='Lost'` (no `lost` stage, no `won` status); winning a quote sets `stage='Operations'` and `wonOn`. |
 | Line | `quote_line` | Demo has one set of lines per trip, no `quote_version` parent. Versions are snapshots (§16). `scope` is `'shared'` or `'per person'` (with a space); backend uses `shared/per_person`. |
 | Invoice | `supplier_invoice` + `supplier_invoice_line` + `allocation` | Demo: at most **one** invoice per line, embedded in `line.inv`, one amount. Backend is many-to-many through `allocation` (`04` §3.3). |
 | Gap | `gap` + `gap_event` | Demo derives gaps from `line.inv` on every read; status lives on the invoice (`inv.st`). Backend stores them with history. |
-| Dispute / Credit | `dispute`, `supplier_credit` | Demo has no dispute entity: "Mark as sent" only sets `inv.st='disputed'`; "Credit received" sets `inv.credit` and `inv.st='credited'`. The email text is generated, never stored. |
+| Dispute / Credit | `dispute`, `supplier_credit` | Demo has no dispute entity: "Mark as sent" only sets `inv.st='disputed'`; "Credit received" (`gapCredit`) sets `inv.credit`, `inv.st='credited'` and `inv.paid=true`. The email text is generated, never stored. |
 | Group | `booking_group` | Same idea. Demo stores two booleans (`depPaid`, `balPaid`); backend stores payments against invoices. |
 | Traveler | `traveller` | Spelling differs (demo `trav`, UI "traveler"). Demo masks passport numbers (`•••• 1234`) and keeps dates as plain strings; backend encrypts them. |
 | Task | `trip_task` | Demo has a 48-task library plus 12 older tasks (§13). |
@@ -131,7 +131,7 @@ Field list of a permission: `k` (string key), `group`, `en`, `he`, and one boole
 | `ai.maya` | AI | Use Maya, the AI assistant | yes | yes | yes |
 | `ai.live` | AI | Use live AI answers | yes | yes | yes |
 
-Notes: `users.roles` is denied even for admin (owner only). The mismatch between "8 enforced" and what the code really enforces is in `business-rules.md` §25, §32.1.
+Notes: `users.roles` is denied even for admin (owner only). The code checks 13 of the 40 keys: `users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit` (list `ST_ENFORCED`, pinned to the code by a test; `canApprove()` wraps `prop.approve` and `canIssueDocs()` wraps `fin.issueDocs`). The rest only show in the matrix. Details in `business-rules.md` §25; the earlier mismatch ("8 enforced") was fixed in a9fdf77, §32.1.
 
 ## 5. Client
 
@@ -170,11 +170,12 @@ Derived: a client's finance tab (`s10_sup.js: spCliFin`) sums, over the client's
 | `pax` | number | Paying travelers planned | `42` | `TRIP_SPECS` | R |
 | `dep` | date | Departure date | `2026-10-06` | `TRIP_SPECS`; `blankQuote` = today + 210 d | R |
 | `nights` | number | Number of nights. Days = nights + 1 | `6` | `TRIP_SPECS` | R |
-| `stage` | enum(Quote\|Operations\|Finance\|Closed) | Lifecycle stage. See §6.1 | `Finance` | `TRIP_SPECS`; `s6_rest.js: winQuote` is the only code that changes it | R |
-| `qst` | enum(Draft\|Approval\|Sent\|Negotiating) \| `''` | Quote status; empty after the quote is won | `Sent` | `s6_rest.js` `data-act="qs"`; `s10_prop.js: prAccept` | R |
+| `stage` | enum(Quote\|Operations\|Finance\|Closed) | Lifecycle stage. See §6.1 | `Finance` | `TRIP_SPECS`; changed by `s6_rest.js: winQuote` (Quote → Operations) and `s11_next.js: advanceStage` (Operations → Finance → Closed) | R |
+| `qst` | enum(Draft\|Approval\|Sent\|Negotiating\|Lost) \| `''` | Quote status; empty after the quote is won. `Lost` keeps `stage='Quote'` but removes the quote from every open-quote total (`isOpenQ`, `s1b_labels.js`) | `Sent` | `s6_rest.js` `data-act="qs"`; `s10_prop.js: prAccept`; `s11_next.js: markLost` | R |
+| `wonOn` | date \| absent | The day the quote was accepted. Locks the FX rate (the rate field turns read-only and says when). Generated trips and trips that never went through `winQuote` have none (the note then reads "Locked at acceptance") | `2026-10-20` | `s6_rest.js: winQuote` (= `iso(TODAY)`); read by `s4_views.js: rateField` | R |
 | `qdays` | number | Days in the current quote status | `9` | `buildTrip`; reset to 0 on status change | D (should be computed from a timestamp) |
 | `cur` | enum(USD\|EUR\|GBP\|CAD) | Destination currency of the trip | `EUR` | `buildTrip` from `DESTS[dest].cur` | R |
-| `rate` | number | **Locked FX rate**, USD per 1 unit of `cur`. `1` when `cur=USD` | `1.08` | `buildTrip`; editable in `s4_views.js: pCosts` (`data-ch="rate"`, range 0.5 to 2) | R |
+| `rate` | number | **Locked FX rate**, USD per 1 unit of `cur`. `1` when `cur=USD` | `1.08` | `buildTrip`; editable only while `stage='Quote'` (`s4_views.js: rateField` on General and Pricing, `data-ch="rate"`, range 0.5 to 2; the handler refuses otherwise); read-only after acceptance | R |
 | `basis` | enum(cost\|price) | Markup basis: on cost, or of price | `cost` | `data-act="basis"` | R |
 | `markups` | `{Lodging, Transport, Guide, Activities, Meals, Insurance: number}` | Markup % per service type; default from `SEG[seg].mk` | `{Lodging:25,…}` | `buildTrip`; `data-ch="mk"` clamps 0 to 90 | R |
 | `disc` | `{ "s\|Type" or "p\|Type": {m:'%'\|'$', v} }` | Discount per scope and service type. `s` = shared, `p` = per person | `{"s\|Lodging":{m:'%',v:5}}` | `data-ch="dm"`, `"dv"`; `s1_core.js: discOf` | R |
@@ -201,16 +202,16 @@ Two levels, kept separate in the demo:
 
 | `stage` | `qst` values | Shown as | Stage switch (UI) | Set by |
 |---|---|---|---|---|
-| `Quote` | `Draft` In progress, `Approval` Manager approval, `Sent` Sent to client, `Negotiating` Awaiting close | "Quotation" | Quotation | generator, `qs`, `prAccept` |
-| `Operations` | `''` | "Operation", status "Ready" | Operation | `winQuote` only |
-| `Finance` | `''` | "Finance", status "In close" | Finance | generator only (no code path moves a trip here) |
-| `Closed` | `''` | "Finance", status "Closed" | Finance | generator only |
+| `Quote` | `Draft` In progress, `Approval` Manager approval, `Sent` Sent to client, `Negotiating` Awaiting close, `Lost` Lost | "Quotation" (a Lost quote is listed under Archive) | Quotation | generator, `qs`, `prAccept`, `markLost` |
+| `Operations` | `''` | "Operation", status "Ready" | Operation | `winQuote` |
+| `Finance` | `''` | "Finance", status "In close" | Finance | generator; `advanceStage` from Operations once the trip has returned |
+| `Closed` | `''` | "Finance", status "Closed" | Finance | generator; `advanceStage` from Finance when nothing is open |
 
 The three-tab stage switch (`s7b_product.js: STAGES`: Quotation, Operation, Finance) is a **view** grouping tabs; it is not the same thing as `Trip.stage`. Operations, Finance and Closed trips all show the Operation and Finance tabs. Quote trips show those tabs behind a gate (`s3_shell.js: gate`).
 
-Allowed quote moves in the demo: `Draft → Approval` (any user, `qs`), `Approval → Sent` (manager only; this is a UI check in `s4_views.js: pApprove`, the `qs` handler itself does not check), `Sent → Negotiating` ("Client asked to close", or `prAccept`), and from `Sent` or `Negotiating`: win (`winQuote`) which sets `stage='Operations'` and creates groups, tasks, supplier list, travelers and a room block. `prAccept` never skips `Approval` (test `prop formats and extras`).
+Allowed quote moves in the demo: `Draft → Approval` (any user, `qs`), `Approval → Sent` (needs `can('prop.approve')`, owner only by default; checked in `s4_views.js: pApprove` and again in the `qs` handler), `Sent → Negotiating` ("Client asked to close", or `prAccept`), and from `Sent` or `Negotiating`: win (`winQuote`) which sets `stage='Operations'` and `wonOn`, and creates groups, tasks, supplier list, travelers and a room block. `prAccept` never skips `Approval` (test `prop formats and extras`).
 
-Missing in the demo and needed in production: `lost`, moving Operations to Finance and Finance to Closed, re-opening, and an audit trail. The stage and status **configuration** (§23) is a preview only and does not drive trips.
+Other moves, each guarded by `s11_next.js: stmCheck` (rules and worked example in `business-rules.md` §28): **mark as lost** (an open quote → `qst='Lost'`, `qdays=0`; stage stays `Quote`); **Operations → Finance** (`advanceStage`, only once the return date `endOf(t)` has passed); **Finance → Closed** (`advanceStage`, only with no open gaps, an empty `inbox` and nothing left to collect). They are offered from the project status menu (the status chip in the project header), a "Move to financial close" card on the Operation dashboard, and the next-step bar. Missing in the demo and needed in production: a `lost` stage (or a lost reason), re-opening a lost quote or a closed file, and an audit trail of who moved what and when. The stage and status **configuration** (§23) is a preview only and does not drive trips.
 
 ### 6.2 Itinerary item (`Trip.items[]`)
 
@@ -268,10 +269,10 @@ Derived per line (`s1_core.js: calc`, `calc(t).lines[]`): `planUSD`, `price`, `f
 | `qty` | number | Quantity billed | `138` | `mkInv` | R |
 | `unit` | number | Unit price billed | `229` | `mkInv` | R |
 | `rate` | number | Rate at which the bill was **paid** (for FX). `1` for USD lines | `1.1` | `mkInv` (locked rate + noise) | D (random); R as a concept |
-| `paid` | bool | Paid by the agency | `true` | `genInvoices`; `settle` | R |
+| `paid` | bool | Paid by the agency. Also set when a credit is received, by the generator's `settle` and by the UI's `gapCredit` | `true` | `genInvoices`; `settle`; `s11_fix.js: gapCredit` | R |
 | `kind` | enum(qty\|rate\|comp\|extra\|dup\|under\|'') | Gap kind. `''` = a matching invoice | `qty` | `genInvoices` (random), `NEN_INBOX` (set by hand) | D (production derives it, `04` §3.3) |
 | `st` | enum(open\|disputed\|accepted\|credited\|'') | Gap status | `open` | `genInvoices`; `data-act="gapsent"`, `gapacc`, `gapcred` | R |
-| `credit` | number | Supplier credit received, same currency | `1374` | `settle`; `data-act="gapcred"` | R |
+| `credit` | number | Supplier credit received, same currency | `1374` | `settle`; `data-act="gapcred"` (via `gapCredit`) | R |
 | `ref` | string | For a duplicate: the original invoice number | `INV-0412` | `addExtra` | R |
 
 Effective amount: `effAmt(inv) = amt − credit` (`s1_core.js: effAmt`).
@@ -303,10 +304,10 @@ There is no stored dispute. What exists:
 |---|---|---|
 | Dispute email text | `s5_fin.js: disputeMail` | Generated English text: subject `Invoice <no> - request for a credit note`, the gap explanation (`s1b_labels.js: gapExplain`), contracted vs invoiced vs difference. Always English, even in Hebrew mode. |
 | "Mark as sent" | `s6_rest.js` `data-act="gapsent"` | Sets `inv.st='disputed'`. No date, no recipient, no copy of the text. |
-| "Credit received" | `data-act="gapcred"` | `credit += effAmt − planC`, `st='credited'`. Always a full credit back to the planned amount. Does not set `inv.paid`. |
+| "Credit received" | `data-act="gapcred"` → `s11_fix.js: gapCredit(l)` | `credit += effAmt − planC`, `st='credited'`, `paid=true` (as the generator's `settle` does, so FX and the AP schedule treat both alike). Always a full credit back to the planned amount; calling it again changes nothing. |
 | "Accept charge" / "Checked, nothing missing" | `data-act="gapacc"` | `st='accepted'`. |
 
-Production entities: `dispute` and `supplier_credit` (`02-data-model.md` §3.5). Partial credits are not modeled in the demo (see `business-rules.md` §9 and §32.2).
+Production entities: `dispute` and `supplier_credit` (`02-data-model.md` §3.5). Partial credits are not modeled in the demo (see `business-rules.md` §9 and §32.2). The credit rule and a worked example are in §9.
 
 ## 11. Group (billing household)
 
@@ -463,14 +464,14 @@ There is no stored response. The Responses tab (`s10_fbuild.js: fbResp, fbAnswer
 | Field | Type | Meaning | Example | Origin |
 |---|---|---|---|---|
 | `name` | string | Household name | `Davis household` | C |
-| `type` | enum(deal\|receipt) | Deal invoice, or tax invoice receipt | `deal` | C |
+| `type` | enum(deal\|receipt) | Deal invoice, or receipt | `deal` | C |
 | `no` | number | Document number: deal from `90001 + (trip no % 50) × 20`, receipt from `70001 + …` | `90081` | C (D: numbering is fake) |
 | `date` | date | Deal: due date − 21 d. Receipt: the due date | `2026-05-26` | C |
 | `amt` | number | The deposit or the balance of that household | `174.09` | C |
 | `st` | enum(paid\|req) | `paid` = payment received; `req` = payment requested | `req` | C |
 | `kind` | enum(dep\|bal) | Deposit or balance | `dep` | C |
 
-Rule (when a document exists) is in `business-rules.md` §16. The UI label for `type='receipt'` is "Tax invoice" in English and "חשבונית מס קבלה" (tax invoice receipt) in Hebrew; the English label is short of the Hebrew meaning.
+Rule (when a document exists) is in `business-rules.md` §16. The UI label for `type='receipt'` is "Receipt" in English and "קבלה" in Hebrew (the filter tab reads "Receipts" / קבלות); before a9fdf77 it said "Tax invoice" and "חשבונית מס קבלה". Which legal document a receipt must be is a production decision; sales tax is not modeled.
 
 **Voucher** (`s5_fin.js: pTripFin`, doc mode `vch`, shown in the Vouchers tab by `s7b_product.js: pVouch`): a printable layout for one trip supplier: `To`, `Group`, `Service`, `Quantity`, `Agreed cost`, number `V-<trip no>-<line id>`. Nothing is stored. Origin D (sample layout).
 
@@ -495,7 +496,7 @@ Rule (when a document exists) is in `business-rules.md` §16. The UI label for `
 
 ## 24. FX (locked rate per trip)
 
-Stored as two trip fields, no table: `Trip.cur` and `Trip.rate` (§6). A line converts with `lrate(t, l) = l.cur === 'USD' ? 1 : t.rate` (`s1_core.js: lrate`). Default values at build: `BASE_RATE` (EUR 1.08, GBP 1.27, CAD 0.73, USD 1) plus a seeded random offset of ±0.015 (`buildTrip`). The **paid rate** is `Invoice.rate`. Realized FX on a line = `effAmt × (inv.rate − t.rate)` once the invoice is paid. Exposure on open payables is summed per currency by `portfolio().fxExp`. Production: one `fx_lock` per (trip, currency), lockable only by an admin with an audit entry (`04` §3.4).
+Stored as two trip fields, no table: `Trip.cur` and `Trip.rate` (§6). A line converts with `lrate(t, l) = l.cur === 'USD' ? 1 : t.rate` (`s1_core.js: lrate`). Default values at build: `BASE_RATE` (EUR 1.08, GBP 1.27, CAD 0.73, USD 1) plus a seeded random offset of ±0.015 (`buildTrip`). The **paid rate** is `Invoice.rate`. The rate is free while the trip is a quote and read-only after acceptance (`wonOn`, §6). Realized FX on a line = `effAmt × (inv.rate − t.rate)` once the invoice is paid (a credit received in the UI marks it paid). Exposure on open payables is summed per currency by `portfolio().fxExp`. Production: one `fx_lock` per (trip, currency), lockable only by an admin with an audit entry (`04` §3.4).
 
 ## 25. Other stored state worth knowing
 
@@ -503,6 +504,7 @@ Stored as two trip fields, no table: `Trip.cur` and `Trip.rate` (§6). A line co
 |---|---|---|
 | `S` | `s3_shell.js` | UI state (language, role, tab, filters). Saved fields are listed in `KEEP`. Not business data. |
 | `S.perms` | `s10_settings.js` | Permission overrides, §4 |
+| `S.pjMenu` | `s11_next.js` | Whether the project status menu is open. UI only, not in `KEEP`, never saved |
 | `S.acct` | `s9a_books.js: A()` | Simulated accounting connection `{sys, phase, step, opt, log[]}`. Four systems: QuickBooks Online, Xero, Priority, Hashavshevet (object mapping in `ACCT`). Pilot, simulated. |
 | `DA_STATE` | `s10_dacct.js` | Accountant's "issued" and "approved" checkmarks `{iss[], ap[]}`, persisted `da_state` |
 | Leads | `s9_meet.js` | Booth leads captured in meeting mode, kept in their own localStorage key; CSV export from the settings menu |
@@ -559,6 +561,7 @@ erDiagram
     number no
     enum stage
     enum qst
+    date wonOn
     string dest
     string client_name
     string agent_key

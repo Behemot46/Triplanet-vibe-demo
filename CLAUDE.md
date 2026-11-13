@@ -90,7 +90,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - `s10_tbcomp.js` - By components view with supplier alternatives and swap/undo (`tbSwap`, `tbUndo`), and the Versions tab (save, compare, restore).
   - `s10_sup.js` - supplier list and card (rate card, terms, documents), in-trip Suppliers tab (Contact / Pending / Approved / Price comparison), client card with a finance tab.
   - `s10_ops.js` - Operation Tasks tab (48-task library by time window), Master list tab (forms, custom columns, CSV export, import preview), room blocks card on Hotels.
-  - `s10_settings.js` - Settings: organization, roles and permissions matrix (8 enforced, the rest matrix only), stages preview, links to forms and integrations.
+  - `s10_settings.js` - Settings: organization, roles and permissions matrix (13 enforced, the rest matrix only), stages preview, links to forms and integrations.
   - `s10_dacct.js` / `s10_dash.js` - role dashboards: accountant (AR, AP schedule, FX, documents, month end), manager additions (approvals, team leaderboard vs target, departure readiness), agent home.
 - v8.1 clarity and handoff modules (spec `docs/spec-v8.1-clarity.md`):
   - `s11_trdata.js` - Hebrew for generic data strings in Hebrew mode (`heData`, called by `render()` through `heDataIf`); names and client-facing documents stay English.

@@ -1,6 +1,6 @@
 # Design system
 
-The visual and interaction rules of the demo, written so a React + MUI team can rebuild the screens. Everything here is read from `v6/*.css` and the helper functions in `v6/*.js` (commit `c250ab3`). The demo is plain HTML strings and CSS; there is no component library. This file names each pattern, its CSS class and its helper so you can map it to an MUI component.
+The visual and interaction rules of the demo, written so a React + MUI team can rebuild the screens. Everything here is read from `v6/*.css` and the helper functions in `v6/*.js` (commit `a9fdf77`). The demo is plain HTML strings and CSS; there is no component library. This file names each pattern, its CSS class and its helper so you can map it to an MUI component.
 
 A live "UI kit" page (`VIEWS.uikit`, from Settings and from the developer notes) is built by another module (`s11_uikit.js`, spec `docs/spec-v8.1-clarity.md`). If it is not in your build, `python3 build.py` simply skips it (the build lists it in `JS_ORDER`).
 
@@ -30,16 +30,16 @@ All colors come from CSS custom properties on `:root` in `v6/theme.css`. **Never
 | `--ink` | `#1C252E` | `#FFFFFF` | Primary text; primary button fill |
 | `--ink2` | `#454F5B` | `#DFE3E8` | Secondary text, hover fill of primary button |
 | `--muted` | `#637381` | `#919EAB` | Captions, table headers, inactive tabs |
-| `--dis` | `#919EAB` | `#637381` | Disabled text, nav section headings, toggle off |
+| `--dis` | `#919EAB` | `#637381` | Disabled text and toggle off only (2.73:1 on `--bg`; do not use for text people must read; nav section headings use `--muted` since a9fdf77) |
 | `--line` | `rgba(145,158,171,.2)` | same | Dashed row dividers |
 | `--line2` | `rgba(145,158,171,.32)` | same | Input and button borders, solid dividers, nav divider |
 | `--side` | `#FFFFFF` | `#141A21` | Sidebar background |
 | `--side2` | `rgba(145,158,171,.08)` | same | Hover fill (nav items, icon buttons, ghost buttons) |
 | `--side-ink` | `#637381` | `#919EAB` | Sidebar text |
-| `--orange` / `--yellow` / `--amber` | `#B76E00` | `#FFD666` | Warning and "in progress" status color (three names, one value) |
+| `--orange` / `--yellow` / `--amber` | `#8F5500` | `#FFD666` | Warning and "in progress" status color (three names, one value). Light value darkened in `m_zfix.css` (was `#B76E00`, 4.0:1) |
 | `--blue` | `#0351AB` | `#68CDF9` | Info status color |
 | `--purple` | `#5119B7` | `#C684FF` | Finance, "manager approval" status |
-| `--green` | `#118D57` | `#77ED8B` | Success, positive amounts |
+| `--green` | `#0B7442` | `#77ED8B` | Success, positive amounts. Light value darkened in `m_zfix.css` (was `#118D57`, 4.22:1) |
 | `--red` | `#B71D18` | `#FFAC82` | Error, negative amounts, late |
 | `--teal` | `#078DEE` | `#68CDF9` | Chart series and "AI" pill (same as primary) |
 | `--tile` / `--tile-ink` | `#012972` / `#FFFFFF` | same | Dark tile |
@@ -100,7 +100,7 @@ Base: `body { font: 400 14.5px/1.57 var(--f-ui); -webkit-font-smoothing: antiali
 | Body | 14.5px / 400, line-height 1.57 | |
 | Small, muted | 12.5px (`.small`), color `--muted` | captions, helper text |
 | Nav item | 14px / 500; active 600 | `.nv` |
-| Nav section heading | 11px / 700, uppercase, letter-spacing .06em, color `--dis` | `.nvh` |
+| Nav section heading | 11px / 700, uppercase, letter-spacing .06em, color `--muted` | `.nvh` |
 | Table header | 13.5px / 600, color `--muted` | `.tbl th` |
 | Table cell | 14px | `.tbl td` |
 | Button | 13.5px / 700 (small 13px) | `.btn` |
@@ -180,12 +180,14 @@ Left to right: hamburger (≤ 900px), "Guided tour" button, spacer, **View as** 
 ### 4.5 Project page: stage switch and tabs (`s7b_product.js: vTrip, STAGES`)
 
 ```
-.pj-head   [back] #no  name   .pj-stage (Quotation | Operation | Finance, role=tablist)   .pj-status chip
+.pj-head   [back] #no  name   .pj-stage (Quotation | Operation | Finance, role=tablist)   .pj-status button + .pj-menu
 .pj-sub    dates · days, nights · destination · client · travelers
-.tabs.pj-tabs   tabs of the chosen stage (icon + label + optional count badge)
+.tabs.pj-tabs   tabs of the chosen stage (role=tablist; each tab role=tab + aria-selected; icon + label + optional count badge)
 (tab content)
 ```
-Tabs per stage (`TAB_ORDER`): Quotation: General, Trip plan, Pricing, Proposal, Versions, Approval. Operation: Dashboard, Tasks, Suppliers, Master list, Billing. Finance: Dashboard, Income, Expenses (invoice check, with a badge of open gaps or waiting files), Vouchers. Tabs of a stage not yet reached render `gate(t, what)`: a card explaining that the section opens after the quote is accepted. Status chip (`pjStatus`): Quotation and Operation use the default amber tint (label is the quote status, or "Ready"), Finance purple ("In close"), Closed green.
+Tabs per stage (`TAB_ORDER`): Quotation: General, Trip plan, Pricing, Proposal, Versions, Approval. Operation: Dashboard, Tasks, Suppliers, Master list, Billing. Finance: Dashboard, Income, Expenses (invoice check, with a badge of open gaps or waiting files), Vouchers. Tabs of a stage not yet reached render `gate(t, what)`: a card explaining that the section opens after the quote is accepted. Status chip (`pjStatus`, `s7b_product.js`): Quotation and Operation use the default amber tint (label is the quote status, or "Ready"), Lost red, Finance purple ("In close"), Closed green. Since a9fdf77 the chip is a real `<button class="pj-status" aria-haspopup="menu" aria-expanded aria-label="Project status: <label>">` inside `.pj-stwrap` (relative). It opens the **status menu** `.pj-menu[role=menu]` (absolute under the chip, `inset-inline-end: 0`, min 260px, max `min(340px, 86vw)`, `--panel` fill, 12px radius, 1px `--line2` border, shadow, z-index 30), listing the moves of `stmMoves(t)` as `.pj-mi[role=menuitem]` rows (bold title and a small muted sentence; a blocked move has `.off`, `disabled`, a muted title and shows its reasons instead of the description; with no moves, `.pj-mn` "No moves available."). Closed by default; closes on Esc and on a click outside `.pj-stwrap`. Moves: Mark as lost (open quote), Move to financial close (Operations), Close the file (Finance); rules in `business-rules.md` §28.
+
+Two more project-page pieces from the same commit: the **stage-move card** `.stm-card` (a `.card`, flex row, title and one small sentence, one `.btn.pri`; shown at the top of the Operation dashboard only after the trip has returned), and the **read-only locked rate** `.rate-ro` (inline flex: the rate in bold, then a muted small note "Locked when the quote was accepted on <date>"), which replaces the number input outside the Quote stage.
 
 ### 4.6 Surfaces
 
@@ -303,7 +305,7 @@ The app root gets `dir="rtl"` and `lang="he"` in Hebrew, `dir="ltr"` and `lang="
 - Status colors invert **lightness**: dark mode uses the light MUI shades (`#77ED8B`, `#FFAC82`, `#FFD666`, `#68CDF9`, `#C684FF`) so text on `--panel` keeps contrast (see §10).
 - The primary button inverts (`--btn` white, `--btn-ink` dark). Active nav uses a stronger tint (`--navonbg` .16).
 - **Always the same in both modes** (by design): hero bands and dark cards (`--hero1/2`, `.ocard.dark`), meeting mode, the landing-page phone frame (`.pr-dev`, `m_zfix.css`), and the `.doc` paper preview.
-- **Known literal colors** (exceptions to "tokens only"; they read in both modes): status chip tints `#FFAB00`, `#8E33FF`, `#22C55E`, `#FF5630` in `.pj-status`, `.ocard`, `.inc-sum b.due`; `.btn.grn` `#22C55E`; star rating `#FFAB00`; chart gradients. Replace with tokens when rebuilding.
+- **Known literal colors** (exceptions to "tokens only"; they read in both modes): status chip tints `#FFAB00`, `#8E33FF`, `#22C55E`, `#FF5630` in `.pj-status`, `.ocard`, `.inc-sum b.due`; `.btn.grn` `#0B7A47` (hover `#08633A`, white text, both modes); star rating `#FFAB00`; chart gradients. Replace with tokens when rebuilding.
 - Form builder and form modal have two dark-only rules that lighten text to `--primary-light` (`m_fbuild.css`, `m_forms.css`).
 - Do not rely on `prefers-color-scheme` alone; the demo's stored choice wins.
 
@@ -324,9 +326,9 @@ Breakpoints: 1100 (cards go two-up), 900 (sidebar becomes a drawer), 760, 640 (p
 
 What is in place:
 - **Focus**: `:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px }` globally; inputs show a 1px ink ring on focus; switches and checkbox chips show the outline on the hidden input's sibling.
-- **Roles and ARIA**: stage switch `role=tablist` / `role=tab` + `aria-selected`; itinerary view bar and form-builder tabs likewise; settings menu `role=menu` / `menuitem` with `aria-expanded` on the trigger; drawer `role=dialog aria-modal=true aria-labelledby`; fields `aria-required`, `aria-invalid`, `aria-describedby` (error); icons `aria-hidden`; icon buttons have `aria-label`; charts `role=img` with a text `aria-label`; the waiver text is a focusable scroll region (`tabindex=0`, `role=region`).
+- **Roles and ARIA**: stage switch `role=tablist` / `role=tab` + `aria-selected`; the tab row under it (`.pj-tabs`) and the Income filter tabs (`.inc-t`) likewise (since a9fdf77); the project status chip is a button with `aria-haspopup="menu"` and `aria-expanded`, its menu `role=menu` / `menuitem`; itinerary view bar and form-builder tabs likewise; settings menu `role=menu` / `menuitem` with `aria-expanded` on the trigger; drawer `role=dialog aria-modal=true aria-labelledby`; fields `aria-required`, `aria-invalid`, `aria-describedby` (error); icons `aria-hidden`; icon buttons have `aria-label`; charts `role=img` with a text `aria-label`; the waiver text is a focusable scroll region (`tabindex=0`, `role=region`).
 - **Keyboard**: Esc closes the form drawer first, then the menu, then Maya; `/` or Ctrl/Cmd+K opens Maya; meeting mode: arrows, R, Esc, keys 1/3/0.
-- **Contrast fixes made**: light-mode status colors are the dark MUI shades (`#B71D18`, `#118D57`, `#B76E00`, `#0351AB`, `#5119B7`); hero-band labels are forced to `hero-ink` (88% mix) in `m_zfix.css` (QA fix, commit `68569c7`); the landing-page phone frame is dark in both modes; `.scroll` edge shadows are darker in dark mode.
+- **Contrast fixes made**: light-mode status colors are the dark MUI shades (`#B71D18`, `#0351AB`, `#5119B7`), with green and amber/orange/yellow darkened further to `#0B7442` and `#8F5500` so small text passes 4.5:1 (`m_zfix.css`, a9fdf77); `.nvh` and `.dv-s h4` headings use `--muted`; `.btn.grn` is `#0B7A47` with white text; the Presentation button (`.tourbtn.meetbtn`) is `--primary-dark`; hero-band labels are forced to `hero-ink` (88% mix) in `m_zfix.css` (QA fix, commit `68569c7`); the landing-page phone frame is dark in both modes; `.scroll` edge shadows are darker in dark mode.
 
 Measured contrast (WCAG, computed from the token values; a rebuild should fix the ones marked low):
 
@@ -335,17 +337,17 @@ Measured contrast (WCAG, computed from the token values; a rebuild should fix th
 | `--ink` on `--bg` | 15.5:1 | |
 | `--muted` on `--bg` | 4.88:1 | passes AA for text |
 | `--muted` on `--recess` (table header) | 4.51:1 | borderline pass |
-| `--dis` on `--bg` | **2.73:1** | **low**; used for the 11px nav section headings and disabled text; use `--muted` for text people must read |
-| White on `--primary` `#078DEE` | **3.47:1** | **low** for 13.5px text (`.tourbtn.meetbtn`); use `--primary-dark` or larger text |
-| White on `.btn.grn` `#22C55E` | **2.28:1** | **low**; darken or use dark text |
+| `--dis` on `--bg` | **2.73:1** | **low by design**: now only for disabled text and toggles; the 11px nav section headings moved to `--muted` (4.88:1) |
+| White on `--primary` `#078DEE` | **3.47:1** | **low** for 13.5px text; any new small text button should use `--primary-dark` (white on it: 7.58:1, as `.tourbtn.meetbtn` now does) or larger text |
+| White on `.btn.grn` `#0B7A47` | 5.40:1 | passes (hover `#08633A`: 7.35:1); was 2.28:1 on `#22C55E` |
 | `--red` on `--bg` | 6.56:1 | |
-| `--green` on `--bg` | 4.22:1 | slightly low for small text |
-| `--orange`/`--amber` on `--bg` | 4.00:1 | slightly low for small text |
-| Pill text on its 16% tint, light: green / amber / red | 3.46 / 3.30 / 4.98:1 | **low** for green and amber at 12px |
+| `--green` `#0B7442` on `--bg` | 5.85:1 | passes (was 4.22:1) |
+| `--orange`/`--amber` `#8F5500` on `--bg` | 6.06:1 | passes (was 4.00:1) |
+| Pill text on its 16% tint over `--bg`, light: green / amber / red | 4.64 / 4.81 / 4.98:1 | passes at 12px (was 3.46 / 3.30 for green and amber). On `--recess` (table header, `#F4F6F8`) green and amber drop to 4.30 / 4.45:1, just under AA; avoid pills there or darken the tint |
 | Dark: muted on panel / blue / green / red / amber / purple on panel | 5.68 / 8.64 / 10.54 / 8.48 / 11.13 / 6.02:1 | all pass |
 | `--hero-mute` and `--mint` on `--hero1` | 8.78 / 10.55:1 | |
 
-Known gaps to close in the rebuild: tabs under the stage switch (`.pj-tabs`) and the Income tabs are plain buttons without `role=tab` / `aria-selected`; a unified empty-state component; the search icon in the header only navigates to Projects (a global search popover is specified in `spec-v8.1-clarity.md`, module `gs`); the drawer does not trap focus (it restores focus on close).
+Known gaps to close in the rebuild: a unified empty-state component; the status menu has no arrow-key navigation or focus return (it opens and closes with the mouse, Enter or Esc); the search icon in the header only navigates to Projects (a global search popover is specified in `spec-v8.1-clarity.md`, module `gs`); the drawer does not trap focus (it restores focus on close).
 
 ## 11. Content rules
 
