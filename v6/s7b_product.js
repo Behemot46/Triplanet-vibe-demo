@@ -13,6 +13,12 @@ const STAGES=[
   ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','משימות וספקים','Tasks & suppliers','checklist'],['people','נוסעים וחיוב','Manifest & billing','users2']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
+/* v8: fixed tab order per stage, so modules can register tabs in any load order */
+const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people','ops'],f:['fdash','income','tfin','vouch']};
+function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)return;
+  if(!sg[2].some(x=>x[0]===tab[0]))sg[2].push(tab);
+  const o=TAB_ORDER[stage]||[],ix=k=>{const i=o.indexOf(k);return i<0?99:i;};sg[2].sort((a,b)=>ix(a[0])-ix(b[0]));
+  if(!PTABS.some(p=>p[0]===tab[0]))PTABS.push([tab[0],[tab[1],tab[2]]]);}
 const stageOf=pt=>(STAGES.find(s=>s[2].some(x=>x[0]===pt))||STAGES[0])[0];
 const tabIcon=k=>k.startsWith('N:')?nic(k.slice(2)):ic(k);
 function pjStatus(t){

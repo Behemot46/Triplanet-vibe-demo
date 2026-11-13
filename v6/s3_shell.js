@@ -20,6 +20,8 @@ AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
 const userName=()=>isMgr()?MGR():agn(S.role);
 const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
 const canSee=t=>seesAll()||t.agent===S.role;
+/* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
+const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -44,6 +46,7 @@ function render(){
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
   const user=userName();
   const act=S.tab==='trip'?'quotes':S.tab;
+  const navOk=n=>typeof can!=='function'||!NAV_PERM[n[0]]||can(NAV_PERM[n[0]]);
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
   const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
@@ -53,7 +56,7 @@ function render(){
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
   app.innerHTML=trHtml(`<div class="app${S.drawer?' drawer':''}">
-   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.filter(navOk).map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.filter(navOk).map(nb).join('')}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>

@@ -1,6 +1,7 @@
 const TODAY=new Date('2026-10-20T00:00:00');
 /* v8 extension hooks (see docs/spec-v8-parity.md §2): extra persisted datasets, self-tests run by check6.js,
-   renderers for new trip tabs, and idempotent per-trip initializers (run by buildTrip and after load) */
+   renderers for new trip tabs, and idempotent per-trip initializers (run at boot, after load, after reset and on new
+   trips; always after brandSwap, see s9_boot.js) */
 const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[];
 const D=s=>new Date(s+'T00:00:00');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -270,7 +271,6 @@ function buildTrip(sp,i){
   const lod=t.lines[0],rooms=Math.round(lod.qty/nights);
   t.room={hotel:lod.sup,held:rooms+(stage==='Operations'?3:2),used:stage==='Quote'?0:rooms};
   t.trav=stage==='Quote'?[]:genTravelers(t,rng(5000+i));
-  TRIP_INIT.forEach(f=>f(t,i));
   return t;
 }
 const TRIPS=TRIP_SPECS.map(buildTrip);

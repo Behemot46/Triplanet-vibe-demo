@@ -1,6 +1,6 @@
 # v8 spec: closing the gaps between the demo and the product (dev.triplanet.io)
 
-Status: draft for sanity review · 13 Nov 2026 · owner: Gabi · lead: Opus session · builders: Sonnet/Haiku agents
+Status: reviewed (independent Sonnet review, 20 findings, all resolved in §A) · 13 Nov 2026 · owner: Gabi · lead: Opus session · builders: Sonnet/Haiku agents
 
 ## 0. Goal and boundary
 
@@ -32,6 +32,41 @@ Parity items the product has and the demo lacks (from `demo_walkthrough.md` 9 Se
 And beyond the product (US gaps from the walkthrough that the demo should show as the target): organization settings (currency, MM/DD dates, 12h time, sales tax, timezone), supplier rate cards with seasons/pax bands/validity/cancellation/payment terms/W-9/COI, traveler forms.
 
 **Out of scope:** real backend, real email or payment, new photos/avatars (the accountant uses the initial fallback in `avatarOf`), changing `TODAY`, changing existing finance identities.
+
+## A. Binding amendments after the sanity review (these override anything below)
+
+**Foundation (already in the code, lead):**
+- A1. `TRIP_INIT` initializers run at boot (`runTripInit()` in `s9_boot.js`), after `load()`, after `resetDemo()`, and after `winQuote`/`blankQuote`. They always run **after `brandSwap`**. They must be idempotent (only fill missing fields) and use their own `rng(seed)`, never a shared generator. Hotel-derived data (blocks) is computed by a function on demand, never stored.
+- A2. `NAV_PERM` (in `s3_shell.js`) hides pages a role lacks; the gated views render `noAccess()`. Currently gated: `users→users.manage`, `books→fin.sync`. Settings adds its own gate inside its view (read-only without `settings.edit`). `can()` is defined in `s1e_people.js` and every caller guards with `typeof can==='function'`.
+- A3. Trip tabs: call `tabInsert(stage,[key,he,en,icon])` (`s7b_product.js`). It adds to `STAGES` and `PTABS` and sorts by the fixed `TAB_ORDER`: Quotation `general, plan, costs, quote, tbver (Versions), approve`; Operation `odash, optasks (Tasks), spm (Suppliers), manifest (Master list), people, ops`; Finance unchanged. The icon must be one of the brief's icon list. Then set `TRIP_TABS[key]=fn`. **Never** set `TRIP_TABS` for an existing key; wrap the existing function instead. Every new Operation/Finance tab returns `gate(t,label)` for Quote-stage trips. After the ops and sup modules land, the lead relabels `ops` to "Digest & messages" and `people` to "Billing".
+- A4. Data module split: `s1d_data.js` (suppliers, rates, alternatives) and `s1e_people.js` (clients, staff, roles, permissions, traveler extras). Both are in `build.py`.
+
+**State and tests (all builders):**
+- A5. All new persistent state (templates you save, org settings, perms, custom forms, edited suppliers/clients, versions live on trips) goes through `PERSIST` with a working `reset()`. Not `KEEP` (reset does not clear `KEEP` keys that `S0` lacks). Transient UI state (`S.supId`, `S.form`, `S.tbView`, `S.hSub`, `S.stSub`, `S.tbAlt`) is plain `Object.assign(S,…)` and must default safely. PERSIST keys are prefixed with the module code. No `Date.now()`, no `Math.random()`.
+- A6. Every mutation is a **named function** (`tbSwap`, `tbVerSave`, `tbVerRestore`, `spChoose`, `formSave`, `fmPublish`, `opExportCsv`, …). Click handlers only call these. TESTS call them directly, because the check6 vm has no DOM (no `createElement`, `querySelector` returns null, clicks never fire).
+- A7. Modals, drawers and sub-views are driven by state and rendered inside `render()` output (wrap `render` or the owning view), so tests can set the state and `h.chk()` the HTML. Inputs inside forms write to a draft object on `input` without re-render; `change`/blur validates and re-renders, then refocuses by element id.
+- A8. Every module test renders each new screen, sub-tab, drawer, modal and view mode in **both languages** (set `S.lang` yourself) and for manager, accountant and one agent, calling `h.chk` always and `h.scan` in English. Budget: the whole check run may grow by ≤ 5 s.
+
+**Data rules:**
+- A9. Currency: suppliers use only `USD` or the destination's currency (`DESTS[k].cur`). No ILS (HolyLand bills in USD). `altCost` returns the cost in the line's currency (convert with `BASE_RATE` if the supplier's differs). A swap never changes `l.cur` and never touches `t.rate`.
+- A10. Real brands (`real:true`): no invented `rating`, no `replyHrs`, `pref` only High or Medium, `docs` null (shown as "On file"), contact "Group sales desk", stars from CATALOG. Amber states, "expiring", "Low", "late", "slow" and performance metrics only for `real:false`. A data test fails if any rendered supplier list/card puts those words within the same table row/card as a catalog name.
+- A11. Alternatives coverage applies to **Lodging, Transport, Guide, Meals** per destination, and to air and insurance globally. Activities are exempt (each attraction is its own operator). The incumbent alternative copies the line's own `comm`. `altsFor` synthesizes the incumbent from the line when the supplier is not in `SUPPLIERS` (studio and blank quotes). Remove the "≥ 180" target; the count follows the coverage rule (about 250). Fictional names come from generator patterns (place word + service word, like "Show-Me Motorcoach"), checked against CATALOG so none collides; the module prints the list for an owner review.
+- A12. Swaps (§4.2 Swap, §4.3 Choose) are allowed only on lines **without** `l.inv`. The first swap stores `l.alt0={sup,cost,comm}` so Undo/swap-back restores exactly. After a swap, `t.sups` is synced (the entry's `n` follows the line's supplier; status resets to `Not sent` in Quote, `Sent` in Operations).
+- A13. Traveler extras: `passNo`/`passExp` only when `pass!=='Missing'`. The stage name in data is `'Operations'` (not "Operation"). Blocks reuse `releaseRisk(t)` from `s7_leak.js` for exposure, so Profit leaks and Blocks show the same number.
+
+**Feature rules:**
+- A14. Tiers (§4.4): each tier price = clone the trip with `pax=n`, regenerate quantities with the same rules `genLines` uses (rooms by segment occupancy, per-person qty, comps `floor(n/20)` as today), then `calc(clone).rev / n`. The FOC column shows `floor(n/20)` and is informational. The "Your quote" row is `calc(t).rev / t.pax`. Single supplement only for Twin-occupancy segments (Faith, Senior, Alumni): lodging price per room-night × nights × 0.5; "n/a" otherwise. Delete the formula `pp(n)=…` and `t.focPer`.
+- A15. Overhead and brokerage are computed on the same post-discount base and are not compounded. `byType` does not include them; the tie is `Σ byType.rev + ovh + brk = rev`, `Σ byType.plan + brk = plan`. The §4.2 day-total tie is to `Σ lines planUSD` (excludes brk), with the rounding remainder on the last active day.
+- A16. Tasks (§4.6): existing 12 tasks keep their ids and done state; new library tasks get ids ≥ 101, their own `rng`, and are added only to Operations/Finance/Closed trips. Alert counts, Maya tips and home rings will change; that is expected. The finance printout (`P rev/pp/fp`) must not change.
+- A17. Manifest import updates fields of existing travelers only (no pax change). CSV export is wrapped in try/catch (the vm has no Blob); the test calls the pure `opCsv(t)` string builder.
+- A18. Settings: the matrix shows 40 permissions, but only these are enforced: `users.manage` (Users page), `fin.sync` (Accounting sync), `fin.view` (Finance and Invoice check pages, if an owner turns it off), `prop.approve` (approve button), `fin.issueDocs` (issue buttons on Income), `settings.edit` (Settings read-only), `price.edit` (pricing inputs disabled), `forms.build` (form builder). The rest show "Matrix only in this demo". Stages editing is a UI preview and does not change trip data.
+- A19. Dashboards: manager home = `vHome()` output plus new cards appended (keep `.ptiles`). Accountant AR-next-30 = unpaid deposits/balances with `depDue`/`balDue` in `[TODAY, TODAY+30]`; overdue is shown separately from `portfolio().aging`. AP schedule = unpaid lines of non-Quote trips, amount `effAmt(inv)` or `planC(l)`, × `lrate`, dated by the `portfolio()` rule (Finance/Closed → TODAY+20, Operations → dep−14), past dates clamped to this week, grouped by week for 8 weeks. The test recomputes it independently.
+- A20. `s7c_lists.js` buttons `al-new` (activities, hotels, clients) and row clicks: the lead rewires them to `formOpen` / the client card after the forms and sup modules merge. Builders do not edit `s7c_lists.js`. To replace the Hotels or Clients page body, reassign the global function (`vHotelsList=function…`, `vClients=function…`), because `s9_boot.js` assigns `VIEWS.hotels`/`VIEWS.clients` last.
+
+**Waves (replaces §5 step 2):**
+- Wave 1 (parallel, Sonnet): `s1d_data.js` suppliers+rates+alternatives · `s1e_people.js` clients+staff+roles+perms+traveler extras · `s10_forms.js` engine+modal+entity schemas (guards `typeof SUPPLIERS`) · `s10_prop.js` proposal formats+pricing extras · `s10_dacct.js` accountant dashboard.
+- Wave 2 (parallel, Sonnet, after wave 1 merges): `s10_tbday.js` builder day details, payment tables, save-as-template, map · `s10_tbcomp.js` components, alternatives, versions (both register in `TB_VIEWS[key]=fn`, and `s10_tbday.js` owns the single `pPlan` wrapper and the view switch; `s10_tbcomp.js` only registers `TB_VIEWS.comp` and the `tbver` tab) · `s10_sup.js` suppliers page, card, in-trip suppliers, client card · `s10_fbuild.js` form builder and traveler forms · `s10_ops.js` tasks, master list, blocks · `s10_settings.js` · `s10_dash.js` manager additions and agent dashboard (`VIEWS.home` role switch; calls `dbAcct()` from wave 1).
+- Haiku: screenshot QA and the Hebrew wording review, after each wave merges.
 
 ## 1. Hard rules (from CLAUDE.md, restated for builders)
 

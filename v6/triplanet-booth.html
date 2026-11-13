@@ -1213,7 +1213,8 @@ function geoMap(view,opts){
 
 const TODAY=new Date('2026-10-20T00:00:00');
 /* v8 extension hooks (see docs/spec-v8-parity.md §2): extra persisted datasets, self-tests run by check6.js,
-   renderers for new trip tabs, and idempotent per-trip initializers (run by buildTrip and after load) */
+   renderers for new trip tabs, and idempotent per-trip initializers (run at boot, after load, after reset and on new
+   trips; always after brandSwap, see s9_boot.js) */
 const PERSIST=[],TESTS=[],TRIP_TABS={},TRIP_INIT=[];
 const D=s=>new Date(s+'T00:00:00');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -1483,7 +1484,6 @@ function buildTrip(sp,i){
   const lod=t.lines[0],rooms=Math.round(lod.qty/nights);
   t.room={hotel:lod.sup,held:rooms+(stage==='Operations'?3:2),used:stage==='Quote'?0:rooms};
   t.trav=stage==='Quote'?[]:genTravelers(t,rng(5000+i));
-  TRIP_INIT.forEach(f=>f(t,i));
   return t;
 }
 const TRIPS=TRIP_SPECS.map(buildTrip);
@@ -2099,6 +2099,8 @@ AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
 const userName=()=>isMgr()?MGR():agn(S.role);
 const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
 const canSee=t=>seesAll()||t.agent===S.role;
+/* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
+const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -2123,6 +2125,7 @@ function render(){
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
   const user=userName();
   const act=S.tab==='trip'?'quotes':S.tab;
+  const navOk=n=>typeof can!=='function'||!NAV_PERM[n[0]]||can(NAV_PERM[n[0]]);
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
   const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
@@ -2132,7 +2135,7 @@ function render(){
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
   app.innerHTML=trHtml(`<div class="app${S.drawer?' drawer':''}">
-   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.filter(navOk).map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.filter(navOk).map(nb).join('')}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
@@ -3193,6 +3196,12 @@ const STAGES=[
   ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','משימות וספקים','Tasks & suppliers','checklist'],['people','נוסעים וחיוב','Manifest & billing','users2']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
+/* v8: fixed tab order per stage, so modules can register tabs in any load order */
+const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people','ops'],f:['fdash','income','tfin','vouch']};
+function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)return;
+  if(!sg[2].some(x=>x[0]===tab[0]))sg[2].push(tab);
+  const o=TAB_ORDER[stage]||[],ix=k=>{const i=o.indexOf(k);return i<0?99:i;};sg[2].sort((a,b)=>ix(a[0])-ix(b[0]));
+  if(!PTABS.some(p=>p[0]===tab[0]))PTABS.push([tab[0],[tab[1],tab[2]]]);}
 const stageOf=pt=>(STAGES.find(s=>s[2].some(x=>x[0]===pt))||STAGES[0])[0];
 const tabIcon=k=>k.startsWith('N:')?nic(k.slice(2)):ic(k);
 function pjStatus(t){
@@ -4183,10 +4192,14 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 if(typeof vHotelsList==='function')VIEWS.hotels=vHotelsList;
 if(typeof vClients==='function'&&!NAV.some(n=>n[0]==='clients')){VIEWS.clients=vClients;NAV.push(['clients',['לקוחות','Clients'],ic('clients')]);}
 TOUR[0].sel='.ptiles';
-/* v8: new trips (blank quote, won quote) get the per-trip initializers too */
-{const runInit=()=>TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));
- if(typeof winQuote==='function'){const w0=winQuote;winQuote=function(){const r=w0.apply(this,arguments);runInit();return r;};}
- if(typeof blankQuote==='function'){const b0=blankQuote;blankQuote=function(){const r=b0.apply(this,arguments);runInit();return r;};}}
+/* v8: per-trip initializers run after brandSwap: at boot, after load, after reset and on new trips */
+function runTripInit(){TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>{try{f(t,i);}catch(e){if(typeof console!=='undefined')console.error(e);}}));}
+{const z1=resetDemo;resetDemo=function(){z1();runTripInit();};}
+if(typeof winQuote==='function'){const w0=winQuote;winQuote=function(){const r=w0.apply(this,arguments);runTripInit();return r;};}
+if(typeof blankQuote==='function'){const b0=blankQuote;blankQuote=function(){const r=b0.apply(this,arguments);runTripInit();return r;};}
+/* v8: permission-gated pages */
+Object.keys(NAV_PERM).forEach(k=>{const v0=VIEWS[k];if(v0)VIEWS[k]=function(){return typeof can==='function'&&!can(NAV_PERM[k])?noAccess():v0.apply(this,arguments);};});
+runTripInit();
 load();
 render();
 
