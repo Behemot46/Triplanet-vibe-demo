@@ -66,7 +66,7 @@ function render(){
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
      ${typeof devPanel==='function'?`<button data-act="devnotes" role="menuitem">${ic('document')} ${devOn()?L('הסתר הערות למפתחים','Hide developer notes'):L('הצג הערות למפתחים','Show developer notes')}</button>`:''}
      <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
-  const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
+  const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab${S.tab==='home'?'':' cmp'}" data-act="chen" aria-label="${L('שאלו את מאיה','Ask Maya')}" data-tip="${L('שאלו את מאיה','Ask Maya')}">${chenAv(S.tab==='home'?28:40)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
   app.innerHTML=heDataIf(trHtml(`<div class="app${S.drawer?' drawer':''}">

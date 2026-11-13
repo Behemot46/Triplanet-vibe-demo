@@ -150,7 +150,8 @@ function dbPipelineCard(ts){
   const col=k=>{const x=open.filter(t=>dbQst(t)===k).sort((a,b)=>(b.qdays||0)-(a.qdays||0));
     return `<div class="db-col"><div class="db-ch"><span class="pill ${QST[k][2]}">${qn(k)}</span><b>${x.length}</b></div>
      ${x.map(t=>{const c=calc(t),late=k==='Sent'&&(t.qdays||0)>7;
-       return `<button class="db-q${late?' late':''}" data-act="open" data-v="${t.id}" data-pt="${k==='Approval'?'approve':'costs'}"><strong>${esc(t.name)}</strong><span class="small muted">${esc(t.client)}</span><span class="db-qf"><b>${usd(c.rev)}</b><em>${L(`${dbDays(t.qdays||0)} בסטטוס`,`${dbDays(t.qdays||0)} in status`)}${late?' · '+L('לעקוב','follow up'):''}</em></span></button>`;}).join('')||`<p class="small muted db-empty">${L('ריק','Empty')}</p>`}</div>`;};
+       return `<button class="db-q${late?' late':''}" data-act="open" data-v="${t.id}" data-pt="${k==='Approval'?'approve':'costs'}"><strong>${esc(t.name)}</strong><span class="small muted">${esc(t.client)}</span><span class="db-qf"><b>${usd(c.rev)}</b><em>${L(`${dbDays(t.qdays||0)} בסטטוס`,`${dbDays(t.qdays||0)} in status`)}${late?' · '+L('לעקוב','follow up'):''}</em></span></button>`;}).join('')||`<p class="small muted db-empty" aria-label="${L('ריק','Empty')}">&ndash;</p>`}</div>`;};
+  if(!open.length)return `<div class="card da-card db-card"><div class="da-h"><h3>${L('צנרת ההצעות שלי','My pipeline')}</h3></div><div class="row" style="justify-content:space-between"><span class="muted">${L('אין הצעות פתוחות. התחילו אחת מסטודיו הטיולים.','No open quotes. Start one from Trip studio.')}</span><button class="btn pri" data-act="go" data-v="studio">${L('לסטודיו הטיולים','Open Trip studio')}</button></div></div>`;
   return `<div class="card da-card db-card"><div class="da-h"><h3>${L('צנרת ההצעות שלי','My pipeline')}</h3><span class="da-sum">${open.length}</span></div><div class="db-kan">${cols.map(col).join('')}</div></div>`;
 }
 function dbWeekCard(ts){
@@ -235,6 +236,6 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     ['manager','accountant',...AGENTS].forEach(role=>{S.role=role;const html=VIEWS.home();h.chk(html,`db ${role} ${lang}`);if(lang==='en')h.scan(html,`db ${role}`);
       if(role==='manager'){if(!html.includes('ptiles'))out.push('manager home lost ptiles');if(!html.includes('db-card'))out.push('manager home lacks db cards');}
       else if(role==='accountant'){if(!html.includes('da-hero')||html.includes('db-hero'))out.push('accountant home changed');}
-      else if(!html.includes('db-hero')||!html.includes('db-kan'))out.push('agent home lacks dashboard '+role);});}
+      else if(!html.includes('db-hero')||!(html.includes('db-kan')||html.includes('data-v="studio"')))out.push('agent home lacks dashboard '+role);});}
   S.role=role0;S.lang=lang0;
   return out;}});

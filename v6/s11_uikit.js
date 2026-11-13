@@ -13,6 +13,8 @@ const UK_TOK=[
  ['Controls and hero',[['--btn','#1C252E'],['--btn-ink','#FFFFFF'],['--tile','#012972'],['--tile-ink','#FFFFFF'],['--hero1','#012972'],['--hero2','#0351AB'],['--hero-ink','#FFFFFF'],['--hero-mute','#B7D4F2'],['--glow','rgba(7,141,238,.16)']]]];
 function ukTokVal(n){try{if(typeof getComputedStyle==='function'&&document.documentElement)return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}catch(e){}return '';}
 /* every --token found in the stylesheets' :root rules, so a token added to theme.css shows up without editing this file */
+const UK_GRP={'Brand':'מותג','Surface and text':'משטחים וטקסט','Navigation':'ניווט','Status colors':'צבעי סטטוס','Controls and hero':'כפתורים ובאנר','Other tokens':'טוקנים נוספים'};
+const ukGrp=n=>S.lang==='he'&&UK_GRP[n]?UK_GRP[n]:n;
 function ukTokens(){
   const known=new Set(UK_TOK.flatMap(g=>g[1].map(x=>x[0])));const extra=[],seen=new Set();
   try{if(typeof document!=='undefined'&&document.styleSheets){
@@ -32,7 +34,7 @@ const ukSec=(id,title,sub,body)=>`<section class="uk-sec" id="uk-${id}"><h2>${ti
 /* ---- 1. tokens ---- */
 function ukTokensHtml(){
   const sw=(n,fb)=>{const v=ukTokVal(n)||fb||'';return `<div class="uk-sw"><span class="uk-chip" style="background:var(${n})"></span><div><code>${n}</code><small>${esc(v)}</small></div></div>`;};
-  const groups=ukTokens().map(g=>`<div class="uk-tgrp"><h4>${esc(g[0])}</h4><div class="uk-swg">${g[1].map(x=>sw(x[0],x[1])).join('')}</div></div>`).join('');
+  const groups=ukTokens().map(g=>`<div class="uk-tgrp"><h4>${esc(ukGrp(g[0]))}</h4><div class="uk-swg">${g[1].map(x=>sw(x[0],x[1])).join('')}</div></div>`).join('');
   const typo=[['h1','24px / 700',`<h1 class="uk-h">${L('כותרת עמוד','Page title')}</h1>`],['h2','18px / 700',`<h2 class="uk-h">${L('כותרת כרטיס','Card title')}</h2>`],['h3','16.5px / 600',`<h3 class="uk-h">${L('כותרת משנה','Section title')}</h3>`],['body','14.5px / 400 Public Sans',`<span>${L('טקסט רגיל לשימוש כללי','Body text for general use')}</span>`],['small','12 to 13px',`<span class="small muted">${L('טקסט עזר ותוויות','Helper text and labels')}</span>`],['figures','Barlow, tabular',`<span class="uk-fig">$1,234,567.89</span>`]];
   const typoH=`<div class="uk-typo">${typo.map(t=>`<div class="uk-ty"><code>${t[0]}</code><small>${t[1]}</small>${t[2]}</div>`).join('')}</div>`;
   const rad=[['6px','6px',L('תיבות קלט, צ׳יפים','inputs, chips')],['8px','8px',L('כפתורים, פריטי ניווט','buttons, nav items')],['14 to 16px','16px',L('כרטיסים, אריחים','cards, tiles')],['24px','24px',L('פס הגיבור בדף הבית','Home hero band')],['99px','99px',L('גלולות, מתגים','pills, toggles')]];
@@ -168,7 +170,7 @@ function vUikit(){
   const secs=[['tokens',L('טוקנים','Tokens')],['nav',L('ניווט','Navigation')],['data',L('נתונים','Data')],['inputs',L('קלטים','Inputs')],['feedback',L('משוב','Feedback')],['icons',L('אייקונים','Icons')],['patterns',L('תבניות','Patterns')]];
   const body=ukTokensHtml()+ukNav()+ukData()+ukInputs()+ukFeedback()+ukIcons()+ukPatterns();
   return head(L('ערכת רכיבים למפתחים','UI kit for developers'),`<button class="btn" data-act="go" data-v="settings">${ic('left','flip')} ${L('חזרה להגדרות','Back to settings')}</button><button class="btn" data-act="uk-theme">${ic(themeGet()==='dark'?'sun':'moon')} ${L('יום / לילה','Day / night')}</button>`)+
-   `<p class="muted uk-intro">${L('דוגמאות חיות, בנויות מאותם עוזרים ומחלקות של המוצר. לכל רכיב: מתי משתמשים, קוד להעתקה, ומה כן ומה לא.','Live examples built from the product\'s own helpers and classes. Each component lists when to use it, copyable code, and do and don\'t notes.')}</p>
+   `<p class="muted uk-intro">${L('דוגמאות חיות, בנויות מאותם עוזרים ומחלקות CSS של המוצר. לכל רכיב: מתי משתמשים, קוד להעתקה, ומה כן ומה לא.','Live examples built from the product\'s own helpers and classes. Each component lists when to use it, copyable code, and do and don\'t notes.')}</p>
    <nav class="uk-jump" aria-label="${L('קפיצה לסעיף','Jump to section')}">${secs.map(s=>`<button class="btn sm" data-act="uk-jump" data-v="${s[0]}">${s[1]}</button>`).join('')}</nav>${body}`;
 }
 VIEWS.uikit=vUikit;
@@ -176,7 +178,7 @@ VIEWS.uikit=vUikit;
 /* link from Settings: wraps the existing view and appends one card (all roles; the kit is a reference) */
 {const f0=VIEWS.settings;
  if(typeof f0==='function')VIEWS.settings=function(){
-  return f0.apply(this,arguments)+`<div class="card uk-link"><span class="uk-lico">${ic('widget')}</span><div><h3>${L('ערכת רכיבים למפתחים','UI kit for developers')}</h3><p class="muted">${L('כל הרכיבים, הטוקנים והאייקונים של המוצר עם קוד להעתקה.','Every component, token and icon of the product, with code to copy.')}</p></div><button class="btn" data-act="go" data-v="uikit">${L('פתיחה','Open')}</button></div>`;
+  return f0.apply(this,arguments)+(typeof devOn==='function'&&devOn()?`<div class="card uk-link"><span class="uk-lico">${ic('widget')}</span><div><h3>${L('ערכת רכיבים למפתחים','UI kit for developers')}</h3><p class="muted">${L('כל הרכיבים, הטוקנים והאייקונים של המוצר עם קוד להעתקה.','Every component, token and icon of the product, with code to copy.')}</p></div><button class="btn" data-act="go" data-v="uikit">${L('פתיחה','Open')}</button></div>`:'');
  };}
 
 document.addEventListener('click',e=>{
@@ -202,6 +204,7 @@ TESTS.push({name:'uikit page',run:h=>{const out=[],role0=S.role,lang0=S.lang;
     const sn=(html.match(/data-act="uk-copy"/g)||[]).length;if(sn<20)out.push('copy buttons '+sn);
     if(/NaN|undefined/.test(html.replace(/<code>[\s\S]*?<\/code>/g,'')))out.push('NaN/undefined '+role+' '+lang);
     Object.keys(ICONS).forEach(k=>{const n=html.split('data-uk-icon="'+k+'"').length-1;if(n!==1)out.push('icon '+k+' x'+n);});
-    const sh=VIEWS.settings();if(!sh.includes('data-v="uikit"'))out.push('settings link missing '+role+' '+lang);
+    const on0=DV_ON;DV_ON=false;const sh0=VIEWS.settings();if(sh0.includes('data-v="uikit"'))out.push('uikit link shown without developer notes');
+    DV_ON=true;const sh=VIEWS.settings();DV_ON=on0;if(!sh.includes('data-v="uikit"'))out.push('settings link missing '+role+' '+lang);
     h.chk(sh,'settings+uikit link '+role+' '+lang);});});
   S.role=role0;S.lang=lang0;return out;}});

@@ -1040,7 +1040,7 @@ Set markups, discounts and unit costs and see the client price and planned profi
 | Markup is calculated: On cost / Of price | Sets Trip.basis. | Changes every price. |
 | Locked rate (number) | Sets Trip.rate. | Shown only for non-USD trips. 0.5 to 2. Editable in Quote stage only; read-only after acceptance (the change handler also refuses). |
 | Line detail (chevron) | Expands the lines of a service type. | Per scope: shared or per person. |
-| Mark up % per service type | Sets Trip.markups[type]. | 0 to 90. |
+| Markup % per service type | Sets Trip.markups[type]. | 0 to 90. |
 | Discount type and value per type | Sets Trip.disc[scope|type] as % or $. | Value min 0; empty clears it. |
 | Unit cost and Markup override per line | Sets Line.cost (min 0) and Line.ov (0 to 90, empty = type markup). | Overrides are counted under the type. |
 | Pricing extras: overhead and brokerage fee | Sets Trip.ovh and Trip.brk (kind %, $, applies to shared, per person or both). | price.edit enforced: the controls are disabled without it. |
@@ -1267,14 +1267,14 @@ See what needs attention before departure and jump to tasks, suppliers or financ
 
 | Control | Does | Guard |
 |---|---|---|
-| Urgent tasks card | Opens the Tasks tab. | None. |
+| Due this week card | Opens the Tasks tab. Subline: n overdue. | None. |
 | Suppliers not confirmed card | Opens the Suppliers tab. | None. |
 | Estimated revenue card | Opens the Finance dashboard. | None. |
 | Move to financial close (card, only after the trip returned) | advanceStage: Trip.stage = Finance and opens the Finance dashboard. | Return date on or before today (none of the generated trips qualifies). The same move is in the project status menu, with the reason when it is not allowed. |
 
 **Rules**
 - `Days to trip = max(0, round((dep - today) / day)). Closed or Finance files say Trip is home.`
-- `Urgent tasks = not done and due on or before today + 7 days (overdue included).`
+- `Due this week = not done and due on or before today + 7 days (overdue included); the subline counts the overdue ones, as the next-step bar does.`
 - `Suppliers not confirmed = Trip.sups with st not Confirmed.`
 - Next tasks: the 6 earliest open tasks; pill Overdue, This week, or Planned.
 - `Room block: used / held; releasable = held - used, by dep - 30 days.`
@@ -1403,7 +1403,7 @@ Keep every traveler record complete: rooms, passports, forms and custom columns.
 
 | Control | Does | Guard |
 |---|---|---|
-| Send forms | Marks every not sent form (registration, medical, waiver) as sent and copies the forms link. | Demo send. ops.messages is not enforced. |
+| Send forms (primary) | Marks every not sent form (registration, medical, waiver) as sent and copies the forms link. | Demo send. ops.messages is not enforced. |
 | Export CSV | Downloads master-list-<no>.csv: one row per traveler, labels in the current language. | Falls back to a toast if the browser blocks the download. |
 | Import, then Apply updates / Cancel | Previews 5 rows and applies them to existing travelers only. | Traveler and room counts never change; missing passports are first. |
 | Add column / remove column | Adds or removes a custom column in Trip.mcols. | Name up to 28 characters, unique, at most 6 columns. |
@@ -1510,7 +1510,8 @@ See the trip money at a glance: planned versus expected profit and what is still
 
 | Control | Does | Guard |
 |---|---|---|
-| Open expenses | Opens the Expenses tab, shown when open gaps exist. | None. |
+| Check invoices | Opens the Expenses tab. Shown when supplier invoices are waiting in the inbox; the heading then says they are not checked yet and profit may change. | Primary button when the inbox is not empty. |
+| Open expenses | Opens the Expenses tab, shown when open gaps exist and no invoices are waiting. | None. |
 | Accounting sync chip | Shows the books system once connected. | Pilot; appears only after Accounting sync is connected. |
 | Close the file (next-step bar, status menu) | advanceStage: Trip.stage = Closed. | Allowed only with no open gaps, no supplier invoices waiting in the inbox and nothing left to collect (groupsCalc outstanding = 0); otherwise disabled with the reasons listed. |
 
@@ -1521,7 +1522,7 @@ See the trip money at a glance: planned versus expected profit and what is still
 - `The identity planProfit - amtDiff - fx - fcProfit = 0 holds for every trip.`
 
 **States**
-- empty: No leak: Planned profit is intact.
+- empty: No leak and nothing waiting: No differences between invoices and the quote.
 - loading: Not applicable in the demo: the tab renders at once from in-memory data. In the product, show a skeleton of the same layout.
 - error: The demo makes no server calls. In the product, show an inline error card with a Retry button and keep the last good data.
 

@@ -132,7 +132,7 @@ SPEC['trip:costs']={
     {label:'Markup is calculated: On cost / Of price',does:'Sets Trip.basis.',rule:'Changes every price.'},
     {label:'Locked rate (number)',does:'Sets Trip.rate.',rule:'Shown only for non-USD trips. 0.5 to 2. Editable in Quote stage only; read-only after acceptance (the change handler also refuses).'},
     {label:'Line detail (chevron)',does:'Expands the lines of a service type.',rule:'Per scope: shared or per person.'},
-    {label:'Mark up % per service type',does:'Sets Trip.markups[type].',rule:'0 to 90.'},
+    {label:'Markup % per service type',does:'Sets Trip.markups[type].',rule:'0 to 90.'},
     {label:'Discount type and value per type',does:'Sets Trip.disc[scope|type] as % or $.',rule:'Value min 0; empty clears it.'},
     {label:'Unit cost and Markup override per line',does:'Sets Line.cost (min 0) and Line.ov (0 to 90, empty = type markup).',rule:'Overrides are counted under the type.'},
     {label:'Pricing extras: overhead and brokerage fee',does:'Sets Trip.ovh and Trip.brk (kind %, $, applies to shared, per person or both).',rule:'price.edit enforced: the controls are disabled without it.'},
@@ -286,13 +286,13 @@ SPEC['trip:odash']={
   perms:['ops.tasks','ops.suppliers','ops.blocks'],
   data:['Trip.dep','Trip.stage','Trip.tasks','Task.due','Task.done','Task.who','Trip.sups','Trip.room','Trip.room.held','Trip.room.used'],
   actions:[
-    {label:'Urgent tasks card',does:'Opens the Tasks tab.',rule:'None.'},
+    {label:'Due this week card',does:'Opens the Tasks tab. Subline: n overdue.',rule:'None.'},
     {label:'Suppliers not confirmed card',does:'Opens the Suppliers tab.',rule:'None.'},
     {label:'Estimated revenue card',does:'Opens the Finance dashboard.',rule:'None.'},
     {label:'Move to financial close (card, only after the trip returned)',does:'advanceStage: Trip.stage = Finance and opens the Finance dashboard.',rule:'Return date on or before today (none of the generated trips qualifies). The same move is in the project status menu, with the reason when it is not allowed.'}],
   rules:[
     'Days to trip = max(0, round((dep - today) / day)). Closed or Finance files say Trip is home.',
-    'Urgent tasks = not done and due on or before today + 7 days (overdue included).',
+    'Due this week = not done and due on or before today + 7 days (overdue included); the subline counts the overdue ones, as the next-step bar does.',
     'Suppliers not confirmed = Trip.sups with st not Confirmed.',
     'Next tasks: the 6 earliest open tasks; pill Overdue, This week, or Planned.',
     'Room block: used / held; releasable = held - used, by dep - 30 days.'],
@@ -354,7 +354,7 @@ SPEC['trip:manifest']={
   perms:['ops.manifest','ops.messages','cli.export'],
   data:['Traveler.n','Traveler.g','Traveler.room','Traveler.roomType','Traveler.dob','Traveler.pass','Traveler.passNo','Traveler.passExp','Traveler.diet','Traveler.emerg','Traveler.form','Traveler.x','Trip.mcols'],
   actions:[
-    {label:'Send forms',does:'Marks every not sent form (registration, medical, waiver) as sent and copies the forms link.',rule:'Demo send. ops.messages is not enforced.'},
+    {label:'Send forms (primary)',does:'Marks every not sent form (registration, medical, waiver) as sent and copies the forms link.',rule:'Demo send. ops.messages is not enforced.'},
     {label:'Export CSV',does:'Downloads master-list-<no>.csv: one row per traveler, labels in the current language.',rule:'Falls back to a toast if the browser blocks the download.'},
     {label:'Import, then Apply updates / Cancel',does:'Previews 5 rows and applies them to existing travelers only.',rule:'Traveler and room counts never change; missing passports are first.'},
     {label:'Add column / remove column',does:'Adds or removes a custom column in Trip.mcols.',rule:'Name up to 28 characters, unique, at most 6 columns.'},
@@ -397,7 +397,8 @@ SPEC['trip:fdash']={
   perms:['fin.view'],
   data:['Trip.pax','Trip.groups','Line.inv','Invoice.amt','Invoice.credit','Invoice.st','Gap.usd','Group.depPaid','Group.balPaid'],
   actions:[
-    {label:'Open expenses',does:'Opens the Expenses tab, shown when open gaps exist.',rule:'None.'},
+    {label:'Check invoices',does:'Opens the Expenses tab. Shown when supplier invoices are waiting in the inbox; the heading then says they are not checked yet and profit may change.',rule:'Primary button when the inbox is not empty.'},
+    {label:'Open expenses',does:'Opens the Expenses tab, shown when open gaps exist and no invoices are waiting.',rule:'None.'},
     {label:'Accounting sync chip',does:'Shows the books system once connected.',rule:'Pilot; appears only after Accounting sync is connected.'},
     {label:'Close the file (next-step bar, status menu)',does:'advanceStage: Trip.stage = Closed.',rule:'Allowed only with no open gaps, no supplier invoices waiting in the inbox and nothing left to collect (groupsCalc outstanding = 0); otherwise disabled with the reasons listed.'}],
   rules:[
@@ -405,7 +406,7 @@ SPEC['trip:fdash']={
     'Leak = planProfit - fcProfit (leakModel). The bridge is supplier differences by kind plus FX.',
     'Open gaps: gaps with status open or disputed and usd above 0.',
     'The identity planProfit - amtDiff - fx - fcProfit = 0 holds for every trip.'],
-  states:{empty:'No leak: Planned profit is intact.',loading:DT_LOAD,error:DT_ERR,gated:DT_GATE},
+  states:{empty:'No leak and nothing waiting: No differences between invoices and the quote.',loading:DT_LOAD,error:DT_ERR,gated:DT_GATE},
   status:'pilot',
   api:['GET /reports/trip-pnl/{tripId}','GET /reports/leaks?scope=trip&id={tripId}'],
   tests:['check6: leak bridge identities per scope and dimension','check6: finance identities'],

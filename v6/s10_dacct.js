@@ -152,10 +152,12 @@ function daDetail(key){
         items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'tfin')}><td><strong>${esc(x.t.name)}</strong></td><td>${tn(x.l.type)}</td><td>${daDate(x.date)}</td>${daNum(usd(x.amt)+(x.cur!=='USD'?` <span class="muted small">(${x.cur} ${Math.round(x.native).toLocaleString('en-US')})</span>`:''))}<td>${daOpen(x.t,'tfin')}</td></tr>`).join(''),daMore(items.length-CAP,'finance',L('לכל הכספים','Open Finance')))};}
   /* default: ar30 */
   const a=daArNext30();
-  return {title:L('לגבייה ב-30 הימים הקרובים','To collect in the next 30 days'),sum:usd(a.total),page:'finance',
-    body:tbl([[L('קבוצת חיוב','Billing group')],[L('טיול','Trip')],[L('סוג','Type')],[L('מועד','Due')],[L('סכום','Amount'),'n'],['']],
-      a.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.row.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.kind)}</td><td>${fmtDate(x.due)}<div class="small muted">${x.days===0?L('היום','Today'):L(`בעוד ${x.days} ימים`,`in ${x.days} ${PLN(x.days,'day','days')}`)}</div></td>${daNum(usd(x.amt))}<td>${daOpen(x.t,'income')}</td></tr>`).join(''),daMore(a.n-CAP,'finance',L('לכל הכספים','Open Finance')))};
+  return {title:L('לגבייה ב-30 הימים הקרובים, לפי משק בית','Due in the next 30 days, by household'),sum:'',page:'finance',
+    body:daFoot(tbl([[L('קבוצת חיוב','Billing group')],[L('טיול','Trip')],[L('סוג','Type')],[L('מועד','Due')],[L('סכום','Amount'),'n'],['']],
+      a.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.row.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.kind)}</td><td>${fmtDate(x.due)}<div class="small muted">${x.days===0?L('היום','Today'):L(`בעוד ${x.days} ימים`,`in ${x.days} ${PLN(x.days,'day','days')}`)}</div></td>${daNum(usd(x.amt))}<td>${daOpen(x.t,'income')}</td></tr>`).join(''),daMore(a.n-CAP,'finance',L('לכל הכספים','Open Finance'))),a.total,4)};
 }
+/* column total in the table footer (the hero tile above carries the same figure; it is not repeated in the card header) */
+const daFoot=(h,total,span)=>h.replace('</tbody></table>',`</tbody><tfoot><tr><th colspan="${span}">${L('סך הכל','Total')}</th><th class="n"><bdi>${usd(total)}</bdi></th><th></th></tr></tfoot></table>`);
 
 /* receivables by client: overdue in three buckets (portfolio().aging rule) plus what falls due in 30 days */
 function daArByClient(){
@@ -248,7 +250,7 @@ function dbAcct(){
   const P=portfolio(ts),G=gapStats(ts),ar=daArNext30(),od=daOverdue(),bills=daBillsToApprove(),cm=daCommReceivable();
   const dt=daDetail(S.daDet);
   return `${daHero(P,ar,od,bills,G,cm)}
-  <div class="card da-card da-det"><div class="da-h"><h3>${dt.title}</h3><span class="da-sum">${dt.sum}</span></div>${dt.body}</div>
+  <div class="card da-card da-det"><div class="da-h"><h3>${dt.title}</h3>${dt.sum?`<span class="da-sum">${dt.sum}</span>`:''}</div>${dt.body}</div>
   ${daArCard()}
   <div class="two">${daApCard()}${daFxCard()}</div>
   <div class="two">${daDocsCard()}${daSyncCard()}</div>

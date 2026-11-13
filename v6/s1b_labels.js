@@ -26,9 +26,10 @@ const endOf=t=>addDays(t.dep,t.nights);
 const range=t=>`<bdi dir="ltr">${sd(t.dep)} - ${sd(endOf(t))}</bdi>`;
 const m=(t,n,dp)=>money(n,t.cur,dp||0);
 const pillF=(txt,c)=>`<span class="pill ${c||''}">${txt}</span>`;
+const stageW=s=>({Quote:L('הצעת מחיר','Quotation'),Operations:L('תפעול','Operation'),Finance:L('כספים','Finance'),Closed:L('נסגר','Closed')}[s]||stn(s));
 function qchip(t){
-  if(t.stage==='Quote'){const q=QST[t.qst||'Draft'];return `<span class="stq"><b>Q</b>${pillF(qn(t.qst),q[2])}</span>`;}
-  return `<span class="stq"><b>F</b>${pillF(stn(t.stage),stCls(t.stage))}</span>`;
+  if(t.stage==='Quote'){const q=QST[t.qst||'Draft'];return `<span class="stq">${pillF(stageW('Quote'),stCls('Quote'))}<small class="muted">${qn(t.qst)}</small></span>`;}
+  return `<span class="stq">${pillF(stageW(t.stage),stCls(t.stage))}</span>`;
 }
 const nightsL=n=>L(n===1?'לילה אחד':n+' לילות',n+(n===1?' night':' nights'));
 const hrsL=n=>L(n===1?'שעה':n+' שעות',n+(n===1?' hour':' hours'));

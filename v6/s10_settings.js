@@ -113,15 +113,15 @@ function stOrg(ro){
 }
 function stRoles(ro){
   const d=stDis(ro),n=stPermChanges();
-  const roleH=ST_ROLES.map(r=>`<th class="st-c">${L(ROLES[r].he,ROLES[r].en)}${r==='owner'?` <span class="st-lock" title="${L('תמיד פעיל','Always on')}">${ic('lock')}</span>`:''}</th>`).join('');
+  const roleH=ST_ROLES.map(r=>`<th class="st-c">${L(ROLES[r].he,ROLES[r].en)}${r==='owner'?` <span class="st-lock" title="${L('תמיד פעיל עבור הבעלים','Always on for the owner')}">${ic('lock')}</span>`:''}</th>`).join('');
   const rows=PERM_GROUPS.map(g=>{const ps=PERMS.filter(p=>p.group===g.k);
     return `<tr class="st-grp"><th colspan="6">${L(g.he,g.en)}</th></tr>`+ps.map(p=>{
       const enf=ST_ENFORCED.includes(p.k);
-      return `<tr><td class="st-pn">${L(p.he,p.en)}<small class="muted"><bdi>${p.k}</bdi></small></td><td class="st-tagc">${enf?pillF(L('נאכף','Enforced'),'ok'):`<span class="st-mx">${L('מטריצה בלבד בדמו','Matrix only in this demo')}</span>`}</td>`+
+      return `<tr><td class="st-pn">${L(p.he,p.en)}${typeof devOn==='function'&&devOn()?`<small class="muted"><bdi>${p.k}</bdi></small>`:''}</td><td class="st-tagc">${enf?pillF(L('נאכף','Enforced'),'ok'):''}</td>`+
         ST_ROLES.map(r=>{const on=stPermOf(r,p.k),lock=r==='owner',ch=!lock&&on!==!!p[r];
-          return `<td class="st-c"><label class="st-sw${ch?' chg':''}"><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
+          return `<td class="st-c" data-r="${esc(L(ROLES[r].he,ROLES[r].en))}"><label class="st-sw${ch?' chg':''}"${lock?` title="${L('תמיד פעיל עבור הבעלים','Always on for the owner')}"`:''}><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
   return `<div class="card st-card"><div class="st-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
-  <p class="muted st-note">${L('13 הרשאות נאכפות בדמו (למשל כספים, משתמשים, אישור הצעות, החלפת ספקים). האחרות מוצגות במטריצה בלבד. עמודת הבעלים נעולה.','13 permissions are enforced in this demo (for example finance, users, approving proposals, swapping suppliers). The rest only show in the matrix. The owner column is locked.')}</p>
+  <p class="muted st-note">${L('שורות שמסומנות ״נאכף״ פועלות בדמו. השאר מציגות את המדיניות המוצעת. עמודת הבעלים נעולה.','Rows marked Enforced are applied in this demo. The others show the proposed policy. The owner column is locked.')}</p>
   <div class="scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function stStages(ro){
@@ -196,9 +196,9 @@ TESTS.push({name:'st settings',run:h=>{const out=[],S=h.S,role0=S.role,lang0=S.l
       const ro=!can('settings.edit');if(ro!==html.includes('st-ro'))out.push(`read-only note mismatch ${role} ${tb}`);
       if(tb==='roles'&&ro&&(html.match(/<input type="checkbox" class="st-tg"[^>]*>/g)||[]).some(x=>!/disabled/.test(x)))out.push('read-only matrix has an enabled toggle for '+role);});});});
   S.lang='en';S.role='manager';S.stSub='roles';
-  /* 40 x 4 = 160 toggles; 13 enforced tags, 27 matrix-only tags; owner column locked on */
+  /* 40 x 4 = 160 toggles; 13 enforced tags, no matrix-only tags; owner column locked on */
   {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==160)out.push('toggles '+n);
-    if(count(html,'class="st-mx"')!==27)out.push('matrix-only tags '+count(html,'class="st-mx"'));
+    if(count(html,'class="st-mx"')!==0)out.push('matrix-only tags '+count(html,'class="st-mx"'));
     if((html.match(/pill ok/g)||[]).length!==ST_ENFORCED.length)out.push('enforced tags');
     const own=html.match(/<input type="checkbox" class="st-tg"[^>]*data-role="owner"[^>]*>/g)||[];if(own.length!==40||own.some(x=>!/checked/.test(x)||!/disabled/.test(x)))out.push('owner column not locked on');}
   /* fin.view off for agent: can() false for Priya, Finance and Invoice check render noAccess, owner unaffected */

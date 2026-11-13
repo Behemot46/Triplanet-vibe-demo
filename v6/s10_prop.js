@@ -2,7 +2,7 @@
    Wraps pQuote and pCosts. Every mutation is a named function (prSetFmt, prCopyLink, prPdf, prAccept, prSetFee) so tests can call it. */
 Object.assign(S,{prFmt:'pdf'});
 const PR_TIERS=[10,15,20,25,30,40];
-const PR_FMTS=[['pdf',['עיצוב PDF','PDF design'],'document'],['table',['טבלת סוכנים','Agents table'],'checklist'],['landing',['דף נחיתה','Landing page'],'cloud']];
+const PR_FMTS=[['pdf',['עיצוב PDF','PDF design'],'document'],['table',['טבלת מחירים לסוכנים','Agents table'],'checklist'],['landing',['דף נחיתה','Landing page'],'cloud']];
 const prFmt=()=>PR_FMTS.some(f=>f[0]===S.prFmt)?S.prFmt:'pdf';
 const prLink=t=>'https://go.redbudtours.example/p/'+t.no;
 const prCan=()=>typeof can!=='function'||can('price.edit');
@@ -61,7 +61,7 @@ function prSetFee(t,kind,o){
 
 /* ---------- UI pieces ---------- */
 function prMaster(t){
-  return `<div class="master"><strong>${L('תוכנית מאסטר','Master plan')}</strong><div class="row"><button class="btn sm" data-act="pr-copy">${ic('link')} ${L('העתקת קישור ציבורי','Copy public link')}</button><button class="btn sm" data-act="pr-pdf">${ic('printer')} ${L('הורדת PDF','Download PDF')}</button></div></div>`;
+  return `<div class="master"><strong>${masterTitle()}</strong><div class="row"><button class="btn sm" data-act="pr-copy">${ic('link')} ${L('העתקת קישור ציבורי','Copy public link')}</button><button class="btn sm" data-act="pr-pdf">${ic('printer')} ${L('הורדת PDF','Download PDF')}</button></div></div>`;
 }
 function prBar(t){
   const f=prFmt();
@@ -71,7 +71,7 @@ function prBar(t){
 function prTable(t){
   const rows=prRows(t),ss=rows[0].ss,seg=['Faith','Senior','Alumni'].includes(t.seg);
   const body=rows.map(r=>`<tr class="${r.you?'pr-you':''}"><td>${r.you?`<strong>${L('ההצעה שלכם','Your quote')}</strong> <span class="small muted">(${paxL(r.n)})</span>`:`<strong><bdi>${r.n}+</bdi></strong> ${L('נוסעים','travelers')}`}</td><td class="n">${r.foc||'-'}</td><td class="n"><strong>${usd(r.pp,2)}</strong></td><td class="n">${r.ss==null?'<span class="muted">n/a</span>':usd(r.ss,2)}</td><td class="n">${usd(r.tot)}</td></tr>`).join('');
-  return `<div class="card pr-agt"><h3>${L('טבלת סוכנים: מחיר משוער לנוסע לפי גודל קבוצה','Agents table: indicative price per traveler by group size')}</h3>
+  return `<div class="card pr-agt"><h3>${L('טבלת מחירים לסוכנים: מחיר משוער לנוסע לפי גודל קבוצה','Agents table: indicative price per traveler by group size')}</h3>
   <div class="scroll"><table class="tbl"><thead><tr><th>${L('גודל קבוצה','Group size')}</th><th class="n">${L('מקומות חינם (FOC)','FOC places')}</th><th class="n">${L('מחיר לנוסע','Price per traveler')}</th><th class="n">${L('תוספת חדר יחיד','Single supplement')}</th><th class="n">${L('סך הקבוצה','Group total')}</th></tr></thead><tbody>${body}</tbody></table></div>
   <p class="small muted" style="margin-top:10px">${L('כל שורה מחושבת מחדש: עותק של הטיול עם מספר הנוסעים בשורה, כמויות מחדש לפי אותם כללים של מחולל השורות (חדרים לפי תפוסה, שירותים לנוסע, מקומות חינם לכל 20), ואז מחיר הלקוח חלקי מספר הנוסעים.','Each row re-prices a copy of this trip at that group size: quantities are regenerated with the same rules as the line generator (rooms by occupancy, per-person services, one comp per 20), then client price divided by travelers.')}</p>
   <p class="small muted">${L('הקירוב: עלויות יחידה, מרקאפים, חריגים, הנחות, תקורה ועמלת תיווך נלקחים מהטיול כפי שהוא. הנחות ותקורה בסכום קבוע נשארות קבועות. שורת "ההצעה שלכם" היא המחיר האמיתי של ההצעה.','Approximation: unit costs, markups, overrides, discounts, overhead and brokerage come from this trip as it stands; fixed-dollar discounts and fees stay fixed. The "Your quote" row is the real proposal price.')}</p>
@@ -115,7 +115,7 @@ function prFeeRow(t,kind,c,c0){
   const eff=kind==='ovh'?L(`מוסיף ${usd(amt,2)} למחיר (${usd(amt/t.pax,2)} לנוסע). הרווח המתוכנן עולה באותו סכום.`,`Adds ${usd(amt,2)} to the price (${usd(amt/t.pax,2)} per traveler). Planned profit rises by the same amount.`)
     :L(`מוסיף ${usd(amt,2)} למחיר (${usd(amt/t.pax,2)} לנוסע) ומועבר למתווך כעלות. הרווח המתוכנן לא משתנה.`,`Adds ${usd(amt,2)} to the price (${usd(amt/t.pax,2)} per traveler) and passes through to the broker as cost. Planned profit does not change.`);
   return `<tr><td><strong>${nm}</strong></td><td><span class="inl"><select ${dis} data-ch="pr-fee" data-k="${kind}" data-f="m" aria-label="${nm}: ${L('סוג','type')}"><option value="%" ${f.m!=='$'?'selected':''}>%</option><option value="$" ${f.m==='$'?'selected':''}>$</option></select><input type="number" min="0" step="any" ${dis} data-ch="pr-fee" data-k="${kind}" data-f="v" value="${+f.v||0}" aria-label="${nm}: ${L('ערך','value')}"></span></td>
-  <td><select ${dis} data-ch="pr-fee" data-k="${kind}" data-f="on" aria-label="${nm}: ${L('חל על','applies to')}"><option value="shared" ${f.on==='shared'?'selected':''}>${L('הוצאות משותפות','Shared expenses')}</option><option value="pp" ${f.on==='pp'?'selected':''}>${L('הוצאות פר אדם','Per-person expenses')}</option><option value="both" ${(f.on||'both')==='both'?'selected':''}>${L('שניהם','Both')}</option></select></td>
+  <td><select ${dis} data-ch="pr-fee" data-k="${kind}" data-f="on" aria-label="${nm}: ${L('חל על','applies to')}"><option value="shared" ${f.on==='shared'?'selected':''}>${L('עלויות משותפות לקבוצה','Shared expenses')}</option><option value="pp" ${f.on==='pp'?'selected':''}>${L('הוצאות פר אדם','Per-person expenses')}</option><option value="both" ${(f.on||'both')==='both'?'selected':''}>${L('שניהם','Both')}</option></select></td>
   <td class="small">${amt?eff:`<span class="muted">${L('לא פעיל','Not applied')}</span>`}</td></tr>`;
 }
 function prFeesCard(t){

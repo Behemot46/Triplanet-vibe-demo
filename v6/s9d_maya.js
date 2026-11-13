@@ -21,7 +21,7 @@ function mayaPlanFix(t){
 function mayaTip(){
   const t=T(),vt=visibleTrips();
   if(S.tab==='trip'&&t&&S.ptab==='plan'){const f=mayaPlanFix(t);if(!f)return null;
-    return {k:'plan:'+t.id+':'+f.it.id+':'+f.to,txt:L(`יום ${f.from} עמוס: ${f.fromH} שעות. להעביר את "${f.it.name}" (${hrsL(f.it.hrs)}) ליום ${f.to}, שיש בו ${f.toH} שעות?`,`Day ${f.from} is overloaded at ${f.fromH} hours. Move "${f.it.name}" (${hrsL(f.it.hrs)}) to Day ${f.to}, which has ${f.toH}?`),
+    return {k:'plan:'+t.id+':'+f.it.id+':'+f.to,txt:L(`יום ${f.from} עמוס: ${f.fromH} שעות. להעביר את "${f.it.name}" (${hrsL(f.it.hrs)}) ליום ${f.to}, שיש בו ${f.toH} שעות?`,`Day ${f.from} is overloaded at ${f.fromH} hours. Move "${f.it.name}" (${hrsL(f.it.hrs)}) to Day ${f.to}, which has ${f.toH} hours?`),
       act:'mayafix',v:`${f.it.id}|${f.to}`,lab:L('להעביר','Move it')};}
   if(S.tab==='home'){const G=gapStats(vt),n=G.openN+G.dispN;if(!n)return null;return {k:'home',txt:L(`יש ${n} פערי חשבוניות פתוחים בסך ${usd(r2(G.open+G.disp))}. להציג את הרשימה?`,`You have ${n} open invoice gaps worth ${usd(r2(G.open+G.disp))}. Want the list?`),act:'ask',v:1,lab:L('הצג','Show me')};}
   if(S.tab==='gaps')return {k:'gaps',txt:L('רוצים לראות איזה ספק מחייב ביתר הכי הרבה?','Want to see which supplier overbills you the most?'),act:'ask',v:2,lab:L('הצג','Show me')};
@@ -50,7 +50,7 @@ function mayaSchedule(){
 /* the floating button: her face, an online dot and the shortcut hint */
 function mayaFab(){
   if(!document.querySelector)return;const b=document.querySelector('.chenfab');if(!b||b.dataset.m)return;b.dataset.m='1';
-  b.title=trHe(L('שאלו את מאיה (/)','Ask Maya (/)'));
+  b.setAttribute('aria-label',trHe(L('שאלו את מאיה (/)','Ask Maya (/)')));b.dataset.tip=trHe(L('שאלו את מאיה (/)','Ask Maya (/)'));
   const s=b.querySelector('span:not(.chenav)');if(s)s.innerHTML=`${L('שאלו את מאיה','Ask Maya')}<kbd>/</kbd>`;
 }
 {const r0=render;render=function(){r0();try{mayaFab();mayaSchedule();}catch(e){}};}

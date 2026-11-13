@@ -23,6 +23,10 @@ function gsPages(){
     ST_TABS.forEach(t=>add('settings:'+t[0],['הגדרות: '+t[1][0],'Settings: '+t[1][1]]));
   return out;
 }
+const gsHe=()=>S.lang==='he';
+const gsCity=c=>!c?'':gsHe()&&typeof tdCity==='function'?tdCity(c):c;
+const gsCat=c=>!c?'':gsHe()&&typeof TH!=='undefined'&&TH[c]?TH[c]:c;
+const gsCType=c=>!c?'':gsHe()&&typeof CTH!=='undefined'&&CTH[c]?CTH[c]:c;
 const gsDestTxt=k=>typeof DESTS!=='undefined'&&DESTS[k]?DESTS[k].he+' '+DESTS[k].en:k;
 const gsTripItem=t=>({type:'trip',key:t.id,label:t.name,meta:'#'+t.no+' · '+t.client+' · '+(typeof dn==='function'?dn(t.dest):t.dest),tags:t.name+' '+t.client+' #'+t.no+' '+gsDestTxt(t.dest)});
 function gsSearch(q){
@@ -39,16 +43,16 @@ function gsSearch(q){
     m.sort((a,b)=>a.s-b.s||a.i-b.i);
     if(m.length)G.push({k,title,items:m.slice(0,GS_MAX).map(x=>x.r)});};
   pick('trips',['פרויקטים','Projects'],trips.map(gsTripItem));
-  pick('clients',['לקוחות','Clients'],(typeof CLIENTS!=='undefined'?CLIENTS:[]).map(c=>({type:'client',key:c.name,label:c.name,meta:[c.type,c.city].filter(Boolean).join(' · '),tags:c.name+' '+(c.city||'')+' '+(c.contact&&c.contact.name||'')})));
-  pick('sups',['ספקים','Suppliers'],(typeof SUPPLIERS!=='undefined'?SUPPLIERS:[]).filter(s=>!(s.real&&s.cat==='Lodging')).map(s=>({type:'sup',key:s.id,label:s.name,meta:[s.cat,s.city].filter(Boolean).join(' · '),tags:s.name+' '+(s.city||'')+' '+(s.cat||'')})));
-  pick('hotels',['מלונות','Hotels'],(typeof CATALOG!=='undefined'&&CATALOG.hotels||[]).map(h=>({type:'hotel',key:h.name,label:h.name,meta:[h.city?h.city.charAt(0).toUpperCase()+h.city.slice(1):'',h.dest&&typeof DESTS!=='undefined'&&DESTS[h.dest]?L(DESTS[h.dest].he,DESTS[h.dest].en):h.dest].filter((x,i,a)=>x&&a.indexOf(x)===i).join(' · '),tags:h.name+' '+(h.city||'')+' '+gsDestTxt(h.dest)})));
+  pick('clients',['לקוחות','Clients'],(typeof CLIENTS!=='undefined'?CLIENTS:[]).map(c=>({type:'client',key:c.name,label:c.name,meta:[gsCType(c.type),gsCity(c.city)].filter(Boolean).join(' · '),tags:c.name+' '+(c.city||'')+' '+gsCity(c.city)+' '+(c.contact&&c.contact.name||'')})));
+  pick('sups',['ספקים','Suppliers'],(typeof SUPPLIERS!=='undefined'?SUPPLIERS:[]).filter(s=>!(s.real&&s.cat==='Lodging')).map(s=>({type:'sup',key:s.id,label:s.name,meta:[gsCat(s.cat),gsCity(s.city)].filter(Boolean).join(' · '),tags:s.name+' '+(s.city||'')+' '+gsCity(s.city)+' '+(s.cat||'')+' '+gsCat(s.cat)})));
+  pick('hotels',['מלונות','Hotels'],(typeof CATALOG!=='undefined'&&CATALOG.hotels||[]).map(h=>({type:'hotel',key:h.name,label:h.name,meta:[h.city?gsCity(h.city.charAt(0).toUpperCase()+h.city.slice(1)):'',h.dest&&typeof DESTS!=='undefined'&&DESTS[h.dest]?L(DESTS[h.dest].he,DESTS[h.dest].en):h.dest].filter((x,i,a)=>x&&a.indexOf(x)===i).join(' · '),tags:h.name+' '+(h.city||'')+' '+gsDestTxt(h.dest)})));
   pick('pages',['עמודים','Pages'],gsPages());
   return G;
 }
 const gsFlat=G=>G.reduce((a,g)=>a.concat(g.items),[]);
 function gsMark(text,toks){
   const s=String(text==null?'':text),n=gsN(s),on=new Array(s.length).fill(false);
-  toks.forEach(t=>{let i=n.indexOf(t);while(i>=0){for(let j=i;j<i+t.length;j++)on[j]=true;i=n.indexOf(t,i+t.length);}});
+  toks.forEach(t=>{let i=n.indexOf(t);while(i>=0){let k=i;while(k>0&&/[\p{L}\p{N}]/u.test(s[k-1]))k--;for(let j=k;j<i+t.length;j++)on[j]=true;i=n.indexOf(t,i+t.length);}});
   let out='',open=false;
   for(let i=0;i<s.length;i++){if(on[i]&&!open){out+='<mark>';open=true;}else if(!on[i]&&open){out+='</mark>';open=false;}out+=esc(s[i]);}
   return open?out+'</mark>':out;
@@ -83,12 +87,12 @@ function gsGo(it){
   else if(it.type==='page'){const a=String(it.act||it.key);if(a.indexOf('settings:')===0){S.tab='settings';S.stSub=a.slice(9);}else S.tab=a;}
   render();window.scrollTo(0,0);return true;
 }
-function gsRedraw(scroll){const el=document.getElementById('gs-res');if(!el)return;el.innerHTML=trHtml(gsResults());
+function gsRedraw(scroll){const el=document.getElementById('gs-res');if(!el)return;el.innerHTML=heDataIf(trHtml(gsResults()));
   if(scroll){const r=document.getElementById('gs-r'+S.gs.sel);if(r&&r.scrollIntoView)r.scrollIntoView({block:'nearest'});}
   const i=document.getElementById('gs-in');if(i&&i.setAttribute)i.setAttribute('aria-activedescendant','gs-r'+S.gs.sel);}
 function gsMove(d){const n=gsFlat(gsSearch(S.gs.q)).length;if(!n)return;S.gs.sel=(S.gs.sel+d+n)%n;gsRedraw(true);}
 /* ---- render wrap: the popover is appended after the app (state driven) ---- */
-{const r0=render;render=function(){r0();try{if(!S.gs)return;const app=document.getElementById('app');if(!app)return;const h=trHtml(gsHtml());
+{const r0=render;render=function(){r0();try{if(!S.gs)return;const app=document.getElementById('app');if(!app)return;const h=heDataIf(trHtml(gsHtml()));
   if(app.insertAdjacentHTML)app.insertAdjacentHTML('beforeend',h);else app.innerHTML+=h;}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 /* ---- events (capture phase: the icon's own go-to-Projects handler never sees the click) ---- */
 document.addEventListener('click',e=>{
@@ -157,5 +161,6 @@ TESTS.push({name:'global search',run:h=>{
   S.gs=null;
   /* highlight and escaping */
   {const m=gsMark('Nashville Music Tour',['nash']);if(m!=='<mark>Nash</mark>ville Music Tour')out.push('mark '+m);
+    const w=gsMark('Nashville',['ash']);if(w!=='<mark>Nash</mark>ville')out.push('mark from word start '+w);
     const e=gsMark('<b>x</b>',['b']);if(e!=='&lt;<mark>b</mark>&gt;x&lt;/<mark>b</mark>&gt;')out.push('mark escapes '+e);}
   S.gs=null;S.role=role0;S.lang=lang0;return out;}});

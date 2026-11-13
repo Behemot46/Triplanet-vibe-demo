@@ -49,7 +49,7 @@ function spDocs(s){
   if(s.real||!s.docs)return pillF(L('בתיק','On file'),'');
   const d=s.docs,parts=[];let warn=false,any=false;
   if(d.w9===false){parts.push(pillF(L('חסר W-9','W-9 missing'),'amber'));warn=true;}else if(d.w9===true)any=true;
-  if(d.coi){const n=spDays(d.coi);any=true;if(n<0){parts.push(pillF(L('COI פג תוקף','COI expired'),'red'));warn=true;}else if(n<60){parts.push(pillF(L(`COI עוד ${n} י׳`,`COI ${n} d`),'amber'));warn=true;}}
+  if(d.coi){const n=spDays(d.coi);any=true;if(n<0){parts.push(pillF(L('אישור ביטוח פג תוקף','COI expired'),'red'));warn=true;}else if(n<60){parts.push(pillF(L(`אישור ביטוח: עוד ${n} ימים`,`COI ${n} d`),'amber'));warn=true;}}
   if(!parts.length)parts.push(any?pillF(L('תקין','Complete'),'green'):'<span class="muted">–</span>');
   return `<span class="sp-docs">${parts.join('')}</span>`;
 }

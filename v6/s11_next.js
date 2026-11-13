@@ -89,6 +89,7 @@ function nextSteps(t){
       if(d>7)add('follow','urgent',`לחזור ללקוח ${nm} (ההצעה נשלחה לפני ${d} ימים)`,`Follow up with ${nm} (sent ${d} days ago)`,pt('quote'),['להצעה','Open the proposal']);
       else add('await','info',`ההצעה נשלחה לפני ${d} ימים. ממתינים ללקוח`,`The proposal was sent ${d} day${d===1?'':'s'} ago. Waiting for the client`,pt('approve'),['לסטטוס','View status']);
     }else if(q==='Negotiating')add('answer','todo','לרשום את תשובת הלקוח','Record the client\'s answer',pt('approve'),['לרישום','Record the answer']);
+    if(t.depDue&&D(t.depDue)<TODAY)add('deposit','todo',`מועד המקדמה (${fmtDate(t.depDue)}) עבר. קבעו מועדי תשלום חדשים`,`The deposit date (${fmtDate(t.depDue)}) has passed. Set new payment dates.`,pt('general'),['לקביעת מועדים','Set payment dates']);
     return out;
   }
   if(t.stage==='Operations'){
@@ -139,14 +140,14 @@ function nxAgentSteps(ts,max){
 function nxMyCard(ts){
   const r=nxAgentSteps(ts,6);
   return `<div class="card da-card nx-card"><div class="da-h"><h3>${L('הצעדים הבאים שלי','My next steps')}</h3><span class="da-sum">${r.length}</span></div>
-   ${r.length?r.map(x=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn nx-go" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
+   ${r.length?r.map((x,i)=>`<div class="nx-li ${x.s.sev}"><span class="nx-dot"></span><div class="nx-lt"><b>${L(x.s.he,x.s.en)}</b><span class="small muted"><bdi>${esc(x.t.name)}</bdi></span></div><button class="btn${i?'':' pri'} nx-go" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button></div>`).join(''):`<p class="muted" style="margin:0">${L('אין צעדים פתוחים. כל התיקים שלך מעודכנים.','No open steps. All your files are up to date.')}</p>`}</div>`;
 }
 function nxCloseRows(ts){return ts.filter(t=>t.stage==='Finance').map(t=>{const gp=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);return {t,gaps:gp.length,gapUsd:r2(gp.reduce((s,x)=>s+x.usd,0)),open:r2(groupsCalc(t).outstanding)};});}
 const nxHasUpcoming=ts=>ts.some(t=>t.stage!=='Quote'&&t.stage!=='Finance'&&t.stage!=='Closed'&&t.dep>=iso(TODAY));
 function nxCloseCard(ts){
   const r=nxCloseRows(ts);
   return `<div class="card da-card nx-card"><div class="da-h"><h3>${L('תיקים בסגירה כספית','Files in financial close')}</h3><span class="da-sum">${r.length}</span></div>
-   ${r.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('טיול','Trip')}</th><th class="n">${L('פערים פתוחים','Open gaps')}</th><th class="n">${L('יתרה פתוחה','Open balance')}</th><th></th></tr></thead><tbody>${r.map(x=>`<tr><td><bdi>${esc(x.t.name)}</bdi></td><td class="n">${x.gaps?`${x.gaps} · ${usd(x.gapUsd)}`:'0'}</td><td class="n">${usd(x.open)}</td><td><button class="btn nx-go" data-act="open" data-v="${x.t.id}" data-pt="tfin">${L('לסגירה','Open close')}</button></td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('אין תיקים בסגירה כספית.','No files in financial close.')}</p>`}</div>`;
+   ${r.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('טיול','Trip')}</th><th class="n">${L('פערים פתוחים','Open gaps')}</th><th class="n">${L('יתרה פתוחה','Open balance')}</th><th></th></tr></thead><tbody>${r.map(x=>`<tr><td><bdi>${esc(x.t.name)}</bdi></td><td class="n">${x.gaps?`${x.gaps} · ${usd(x.gapUsd)}`:'0'}</td><td class="n">${usd(x.open)}</td><td><button class="btn nx-go" data-act="open" data-v="${x.t.id}" data-pt="tfin">${L('לבדיקת הסגירה','Review the close')}</button></td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('אין תיקים בסגירה כספית.','No files in financial close.')}</p>`}</div>`;
 }
 {const h0=dbHero;dbHero=function(K,ts){const h=h0.apply(this,arguments);if(S.meet>=0||S.tour>=0||!isAgent())return h;
   return h+nxMyCard(ts)+(nxHasUpcoming(ts)?'':nxCloseCard(ts));};}
@@ -162,6 +163,7 @@ TESTS.push({name:'nx next steps',run:h=>{const out=[],role0=S.role,lang0=S.lang,
     if(t.stage==='Closed'&&st.length)out.push(t.id+': closed trip has steps');
     if(t.stage==='Quote'){const q=t.qst||'Draft';
       if(q==='Draft'){const bad=t.lines.filter(l=>!l.extra&&(!(l.cost>0)||!l.sup)).length;if(bad&&!has('price'))out.push(t.id+': draft lacks price');if(!bad&&!has('send'))out.push(t.id+': draft lacks send');if(bad&&!by.price.en.includes(': '+bad+' line'))out.push(t.id+': price count');}
+      if(!!(t.depDue&&D(t.depDue)<TODAY)!==has('deposit'))out.push(t.id+': deposit-date rule');
       if(q==='Approval'&&!has('approve'))out.push(t.id+': approval lacks approve');
       if(q==='Sent'&&((t.qdays>7)!==has('follow')))out.push(t.id+': follow-up rule');
       if(q==='Negotiating'&&!has('answer'))out.push(t.id+': negotiating lacks answer');

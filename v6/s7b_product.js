@@ -39,14 +39,14 @@ vTrip=function(){
    <div class="tabs pj-tabs" role="tablist" aria-label="${L('לשוניות הפרויקט','Project tabs')}">${SG[2].map(x=>`<button role="tab" aria-selected="${S.ptab===x[0]}" class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
 };
 /* Operation dashboard, as in the product: days to trip, urgent tasks, suppliers, revenue */
-function ocard(cls,icon,val,label,act){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span></button>`;}
+function ocard(cls,icon,val,label,act,sub){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span>${sub?`<span class="oc-s">${sub}</span>`:''}</button>`;}
 function pOpsDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד התפעול','The operation dashboard'));
   const days=Math.max(0,Math.round((D(t.dep)-TODAY)/DAY)),soon=addDays(iso(TODAY),7);
-  const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
+  const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),odue=t.tasks.filter(x=>!x.done&&x.due<iso(TODAY)).length,open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
   const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6);
   return `<div class="ogrid">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
-    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="optasks"')}
+    ${ocard('red',ic('bell'),urgent.length,L('לביצוע השבוע','Due this week'),'data-act="pt" data-v="optasks"',L(`${odue} באיחור`,`${odue} overdue`))}
     ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="spm"')}
     ${ocard('amber',ic('chart2'),usd(c.rev),L('הכנסה צפויה','Estimated revenue'),'data-act="pt" data-v="fdash"')}</div>
    <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>${t.room?`<div class="card sec"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3><p class="small muted"><bdi>${esc(t.room.hotel)}</bdi>, ${fmtDate(t.dep)}</p><div class="prog"><div style="width:${t.room.held?Math.round(t.room.used/t.room.held*100):0}%"></div></div><p class="small" style="margin-top:8px">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div>`:''}`;
@@ -55,12 +55,15 @@ function pOpsDash(t){
 function pFinDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד הכספים','The finance dashboard'));
   const c=calc(t),g=groupsCalc(t),M=leakModel([t]),open=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);
+  const nIn=(t.inbox||[]).length,nChk=L(`${nIn} חשבוניות ספקים עדיין לא נבדקו. הרווח עשוי להשתנות.`,`${nIn} supplier invoice${nIn===1?' is':'s are'} not checked yet. Profit may change.`);
   return `<div class="stats"><div class="stat"><div class="l">${L('סך הטיול','Trip total')}</div><div class="v">${usd(c.rev)}</div><div class="s">${paxL(t.pax)}</div></div>
    <div class="stat"><div class="l">${L('רווח מתוכנן','Planned profit')}</div><div class="v">${usd(c.planProfit)}</div><div class="s">${pct(c.planProfit/c.rev)}</div></div>
    <div class="stat"><div class="l">${L('רווח צפוי','Expected profit')}</div><div class="v ${c.fcProfit<c.planProfit?'neg':''}">${usd(c.fcProfit)}</div><div class="s">${pct(c.fcProfit/c.rev)}</div></div>
    <div class="stat"><div class="l">${L('יתרה לגבייה','Remaining to collect')}</div><div class="v">${usd(g.outstanding)}</div><div class="s">${usd(g.collected)} ${L('התקבלו','received')}</div></div></div>
-   <div class="card"><h3>${M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו בטיול הזה`,`${usd(M.leak)} of planned profit leaked on this trip`):L('הרווח המתוכנן נשמר','Planned profit is intact')}</h3>${wfSvg(M)}
-    ${open.length?`<div class="row" style="margin-top:8px"><span class="muted">${L(`${open.length} פערים פתוחים בסך ${usd(open.reduce((a,x)=>a+x.usd,0))}`,`${open.length} open gaps worth ${usd(open.reduce((a,x)=>a+x.usd,0))}`)}</span><button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button></div>`:''}</div>`;
+   <div class="card"><h3>${M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו בטיול הזה`,`${usd(M.leak)} of planned profit leaked on this trip`):nIn?nChk:L('אין פערים בין החשבוניות להצעה.','No differences between invoices and the quote.')}</h3>${wfSvg(M).startsWith('<p class="muted">')?'':wfSvg(M)}
+    ${nIn&&M.leak>0?`<div class="row" style="margin-top:8px"><span class="muted">${nChk}</span><button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button></div>`:''}
+    ${nIn&&!(M.leak>0)?`<div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button></div>`:''}
+    ${open.length?`<div class="row" style="margin-top:8px"><span class="muted">${L(`${open.length} פערים פתוחים בסך ${usd(open.reduce((a,x)=>a+x.usd,0))}`,`${open.length} open gaps worth ${usd(open.reduce((a,x)=>a+x.usd,0))}`)}</span>${nIn?'':`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button>`}</div>`:''}</div>`;
 }
 /* Income: client documents per billing group, with the product's totals footer */
 function incomeDocs(t){
