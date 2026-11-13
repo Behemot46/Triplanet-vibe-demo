@@ -1,0 +1,53 @@
+/* v8 module db: manager cards and the agent dashboard. Tokens only (var(--...)); it reuses the da-* card language from m_dacct.css. */
+.db-card{margin-bottom:24px}
+.two>.db-card{margin-bottom:0}
+.db-two{margin-bottom:24px}
+.db-hero .da-t b{font-size:34px}
+.db-who{flex-wrap:nowrap;gap:8px}
+.db-ap{align-items:center}
+.db-ap .btn{flex:none}
+.db-red{color:var(--red);font-weight:600}
+.db-att{min-width:150px}
+.db-bar{height:8px;border-radius:99px;background:var(--recess);overflow:hidden;margin-bottom:4px}
+.db-bar i{display:block;height:100%;border-radius:99px;background:var(--primary)}
+.db-bar i.ok{background:var(--green)}
+.db-bar i.mid{background:var(--primary)}
+.db-bar i.low{background:var(--amber)}
+.db-bar.big{height:12px;margin-bottom:14px}
+.db-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.db-nums span{display:block;font-size:12.5px;color:var(--muted)}
+.db-nums b{font:700 19px/1.2 var(--f-num);color:var(--ink)}
+.db-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font:700 13px var(--f-num)}
+.db-chip.good{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.db-chip.bad{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
+.db-chip .ic{width:14px;height:14px}
+.db-m{min-width:92px}
+.db-m b{font:700 14px var(--f-num);color:var(--ink)}
+.db-m i{display:block;height:5px;border-radius:99px;background:var(--recess);overflow:hidden;margin-top:3px}
+.db-m u{display:block;height:100%;border-radius:99px;background:var(--green);text-decoration:none}
+.db-m.mid u{background:var(--primary)}
+.db-m.low u{background:var(--amber)}
+.db-m.na b{color:var(--muted);font-weight:500}
+.db-ov{display:inline-block;min-width:48px;text-align:center;padding:3px 10px;border-radius:99px;font:700 13px var(--f-num);background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.db-ov.mid{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+.db-ov.low{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+.db-kan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.db-col{background:var(--recess);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.db-ch{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.db-ch b{font:700 15px var(--f-num);color:var(--ink2)}
+.db-q{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--panel);box-shadow:var(--sh-card);border:1px solid transparent;min-width:0}
+.db-q:hover{border-color:var(--primary)}
+.db-q:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.db-q strong{overflow-wrap:anywhere}
+.db-q.late{border-inline-start:3px solid var(--amber)}
+.db-qf{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:4px}
+.db-qf b{font:700 15px var(--f-num);color:var(--ink)}
+.db-qf em{font-style:normal;font-size:12px;color:var(--muted);text-align:end}
+.db-empty{margin:4px 2px}
+.db-rt td{vertical-align:top}
+@media (max-width:900px){.db-kan{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){
+  .db-kan{grid-template-columns:1fr}
+  .db-hero .da-t b{font-size:26px}
+  .db-nums b{font-size:16px}
+}

@@ -72,7 +72,7 @@ function vHome(){
   </div>
   <div class="card sec"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h3 style="margin:0">${L('ההצעות האחרונות','Latest quotes')}</h3><button class="btn pri" data-act="newq">${L('הצעה חדשה','New quote')}</button></div>
    <div class="scroll"><table class="tbl"><thead><tr><th>${L('שם','Name')}</th><th>${L('לקוח','Client')}</th><th>${L('תאריכי טיול','Trip dates')}</th><th>${L('אחראי תיק','File owner')}</th><th>${L('סטטוס','Status')}</th><th></th><th></th></tr></thead><tbody>${latest}</tbody></table></div></div>
-  <div class="card" style="max-width:560px"><h3>${L('אנשי מכירות','Sales team')}</h3><table class="tbl"><thead><tr><th>${L('מוכר','Agent')}</th><th class="n">${L('תיקים','Files')}</th><th class="n">${L('סגירות','Closing rate')}</th></tr></thead><tbody>${ag}</tbody></table><p class="small muted" style="margin:8px 0 0">${L('החץ משווה לשנה שעברה. שנים קודמות פיקטיביות.','Arrow compares with last year. Prior years are fictional.')}</p></div>`;
+  ${typeof dbMgrCards==='function'?'':`<div class="card" style="max-width:560px"><h3>${L('אנשי מכירות','Sales team')}</h3><table class="tbl"><thead><tr><th>${L('מוכר','Agent')}</th><th class="n">${L('תיקים','Files')}</th><th class="n">${L('סגירות','Closing rate')}</th></tr></thead><tbody>${ag}</tbody></table><p class="small muted" style="margin:8px 0 0">${L('החץ משווה לשנה שעברה. שנים קודמות פיקטיביות.','Arrow compares with last year. Prior years are fictional.')}</p></div>`}`;
 }
 
 /* ---------- projects list ---------- */
