@@ -134,15 +134,36 @@ pPlan=function(t){return tbdBar()+(S.tbView==='day'||!TB_VIEWS[S.tbView]?tbdDay(
 TB_VIEWS.day={he:'לפי יום',en:'By day',icon:'calendar',order:1,render:t=>tbdDay(t,TBD_P0)};
 
 /* ----- map ----- */
-function tbdDayCity(t,d,prev){
-  const V=tbdVenues(),cnt={};
-  t.items.filter(i=>i.day===d).forEach(i=>{const n=String(i.name).toLowerCase(),v=V.find(v=>v.city&&v.dest===t.dest&&tbdLike(n,v.name.toLowerCase()));if(v)cnt[v.city]=(cnt[v.city]||0)+1;});
-  const k=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);return k[0]||prev;
+/* keyword to geo city, per destination; first match wins, so list the specific names first (deterministic) */
+const TBD_KW={
+  HolyLand:[[/philippi|tiberias|galilee|capernaum|beatitudes|tabgha|golan|jordan river|yardenit|baptis/,'tiberias'],[/nazareth|cana\b|megiddo|carmel/,'nazareth'],[/bethlehem|shepherd|nativity/,'bethlehem'],[/masada/,'masada'],[/dead sea|qumran/,'deadsea'],
+    [/jerusalem|olives|gethsemane|st\. anne|bethesda|dolorosa|sepulchre|western wall|tower of david|garden tomb|israel museum|scrolls|yad vashem/,'jerusalem'],[/ben gurion|jaffa|tel aviv|caesarea/,'telaviv']],
+  Rome:[[/vatican|sistine|st\. peter/,'vatican'],[/assisi|st\. francis/,'assisi'],[/colosseum|forum|palatine|rome/,'rome']],
+  Greece:[[/corinth/,'corinth'],[/delphi/,'delphi'],[/acropolis|sounion|poseidon|athens|aegean/,'athens']],
+  Ireland:[[/moher/,'moher'],[/muckross|killarney/,'killarney'],[/galway/,'galway'],[/kells|library|guinness|kilmainham|dublin|irish music/,'dublin']],
+  London:[[/oxford|blenheim|christ church/,'oxford'],[/stratford|birthplace/,'stratford'],[/westminster|west end|tower of london|globe|london/,'london']],
+  Niagara:[[/cn tower|toronto|royal ontario|ripley/,'toronto'],[/falls|niagara/,'niagarafalls'],[/buffalo/,'buffalo']],
+  Canyon:[[/sedona|jeep|chapel|tlaquepaque/,'sedona'],[/canyon|helicopter|park entry|railway/,'grandcanyon'],[/phoenix/,'phoenix']],
+  NewEngland:[[/cog|conway|scenic rail/,'northconway'],[/ben & jerry|stowe|maple/,'stowe'],[/freedom trail|boston/,'boston'],[/acadia|cadillac|lobster|bar harbor/,'barharbor'],[/portland/,'portlandme']],
+  Washington:[[/mount vernon/,'mountvernon']],
+  Smokies:[[/ripley|cades cove|gatlinburg|smoky/,'gatlinburg'],[/dollywood|stampede|titanic|pigeon forge/,'pigeonforge'],[/knoxville/,'knoxville']],
+  SanAntonio:[[/johnson|austin/,'austin']]
+};
+const tbdKwCity=(dest,name)=>{const n=String(name).toLowerCase(),k=(TBD_KW[dest]||[]).find(x=>x[0].test(n));return k?k[1]:null;};
+/* ordered distinct cities a day visits: keyword match, then catalog venue match, else the previous city */
+function tbdDayCities(t,d,prev){
+  const V=tbdVenues(),out=[],cnt={};
+  t.items.filter(i=>i.day===d).forEach(i=>{const n=String(i.name).toLowerCase();
+    let c=tbdKwCity(t.dest,i.name);
+    if(!c){const v=V.find(v=>v.city&&v.dest===t.dest&&tbdLike(n,v.name.toLowerCase()));c=v?v.city:null;}
+    if(c){cnt[c]=(cnt[c]||0)+1;if(!out.includes(c))out.push(c);}});
+  const main=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||out.indexOf(a)-out.indexOf(b))[0]||prev;
+  return {cities:out.length?out:[prev],main};
 }
 function tbdRoute(t){
   const full=(typeof DEST_CITIES!=='undefined'&&DEST_CITIES[t.dest])||[],D=t.nights+1,days=[];let prev=full[0]||'';
-  for(let d=1;d<=D;d++){prev=tbdDayCity(t,d,prev);days.push({d,city:prev});}
-  const ok=c=>typeof GEO!=='undefined'&&GEO.cities&&GEO.cities[c],seq=days.map(x=>x.city).filter(ok).filter((c,i,a)=>!i||a[i-1]!==c);
+  for(let d=1;d<=D;d++){const r=tbdDayCities(t,d,prev);prev=r.cities[r.cities.length-1];days.push({d,city:r.main,cities:r.cities});}
+  const ok=c=>typeof GEO!=='undefined'&&GEO.cities&&GEO.cities[c],seq=[].concat(...days.map(x=>x.cities)).filter(ok).filter((c,i,a)=>!i||a[i-1]!==c);
   return {days,stops:seq.length?seq:full.filter(ok),full};
 }
 function tbdMap(t){
@@ -154,7 +175,7 @@ function tbdMap(t){
     let stops=(view==='usa'?['tulsa',...R.stops]:R.stops).filter((x,i,arr)=>!arr.slice(0,i).some(y=>y===x||near(x,y)));
     if(stops.some(s=>GEO.cities[s]&&GEO.cities[s].p[view]))svg=geoMap(view,{stops,hi:R.stops[0],numbered:view!=='usa',ariaLabel:L('מפת המסלול','Route map')});
   }
-  const list=R.days.map(x=>{const its=t.items.filter(i=>i.day===x.d);return `<div class="tbd-md"><b>${L('יום ','Day ')}${x.d}</b>${x.city&&GEO.cities[x.city]?`<span class="small muted">${ic('pin')} ${esc(cn_(x.city))}</span>`:''}<div class="small">${its.map(i=>esc(i.name)).join(' · ')||`<span class="muted">${L('יום חופשי','Free day')}</span>`}</div></div>`;}).join('');
+  const list=R.days.map(x=>{const its=t.items.filter(i=>i.day===x.d);return `<div class="tbd-md"><b>${L('יום ','Day ')}${x.d}</b>${(x.cities||[]).filter(c=>GEO.cities[c]).length?`<span class="small muted">${ic('pin')} ${(x.cities||[]).filter(c=>GEO.cities[c]).map(c=>esc(cn_(c))).join(' › ')}</span>`:''}<div class="small">${its.map(i=>esc(i.name)).join(' · ')||`<span class="muted">${L('יום חופשי','Free day')}</span>`}</div></div>`;}).join('');
   const un=t.items.filter(i=>i.day===0);
   return `<div class="pg tbd-map"><div class="card"><h3>${L('מסלול הטיול','Trip route')} <span class="small muted">· ${dn(t.dest)}</span></h3>${svg?`<div class="tbd-svg">${svg}</div>`:`<p class="muted small tbd-nomap">${ic('mapsq')} ${L('אין מפה ליעד הזה. הנה סדר הימים.','No map for this destination. Here is the day order.')}</p>`}
     ${R.stops.length?`<p class="small muted">${R.stops.map(c=>esc(cn_(c))).join(' › ')}</p>`:''}</div>

@@ -95,7 +95,7 @@ function dbReadyRows(ts,days){
   const dep=dbDepartures(ts,days);
   const rows=dep.map(t=>{const r=dbReadiness(t),dd=Math.round((D(t.dep)-TODAY)/DAY);
     return `<tr class="da-row" data-act="open" data-v="${t.id}" data-pt="ops"><td><strong>${esc(t.name)}</strong><div class="small muted">${esc(t.client)} · ${agn(t.agent)}</div></td>
-     <td>${fmtDate(t.dep)}<div class="small muted">${L(`בעוד ${dd} ימים`,`in ${dd} days`)}</div></td>
+     <td>${fmtDate(t.dep)}<div class="small muted">${L(`בעוד ${dd} ימים`,`in ${dd} ${PLN(dd,'day','days')}`)}</div></td>
      <td>${dbMini(r.tasks)}<div class="small muted">${L(`${r.nOpen} פתוחות`,`${r.nOpen} open`)}</div></td><td>${dbMini(r.pass,r.passNA)}</td><td>${dbMini(r.sups)}</td><td>${dbMini(r.dep)}</td>
      <td class="n"><span class="db-ov ${dbCls(r.overall)}"><bdi>${r.overall}%</bdi></span></td></tr>`;}).join('');
   return {n:dep.length,html:`<div class="scroll"><table class="tbl da-tbl db-rt"><thead><tr><th>${L('טיול','Trip')}</th><th>${L('יציאה','Departs')}</th><th>${L('משימות','Tasks done')}</th><th>${L('דרכונים','Passports')}</th><th>${L('ספקים מאושרים','Suppliers confirmed')}</th><th>${L('מקדמות שנגבו','Deposits collected')}</th><th class="n">${L('מוכנות','Ready')}</th></tr></thead>
@@ -138,7 +138,7 @@ function dbHero(K,ts){
     tile('#FF8F00',3,L('משימות באיחור','Overdue tasks'),K.overN,K.overN?L('דורשות טיפול','need attention'):L('הכול בזמן','all on time'),od?'open':'go',od?od.t.id:'quotes',od?'ops':'')].join('');
   return `<section class="hp db-hero${typeof hpAnim==='function'&&hpAnim()?' anim':''}" aria-label="${L('תמונת מצב','Overview')}">
    <div class="hp-top"><div class="hp-hi"><span class="hp-eye">${day}</span><h1>${L('שלום','Hello')}, ${esc(first)}</h1>
-     <p>${L(`${ts.length} תיקים והצעות שלך`,`${ts.length} of your files and quotes`)}${nx?` · ${L(`היציאה הבאה בעוד ${dd} ימים`,`next departure in ${dd} days`)}: <a href="#" data-act="open" data-v="${nx.id}" data-pt="ops">${esc(nx.name)}</a>`:''}</p></div>
+     <p>${L(`${ts.length} תיקים והצעות שלך`,`${ts.length} of your ${ts.length===1?'file or quote':'files and quotes'}`)}${nx?` · ${L(`היציאה הבאה בעוד ${dd} ימים`,`next departure in ${dd} ${PLN(dd,'day','days')}`)}: <a href="#" data-act="open" data-v="${nx.id}" data-pt="ops">${esc(nx.name)}</a>`:''}</p></div>
     <div class="hp-kpi"><div><span>${L('הכנסות שהוזמנו','Booked revenue')}</span><b>${usd(K.booked)}</b></div><div><span>${L('רווח צפוי','Expected profit')}</span><b>${usd(K.fp)}</b><em>${K.booked?pct(K.margin):''}</em></div><div><span>${L('בהצעות פתוחות','In open quotes')}</span><b>${usd(K.openVal)}</b></div></div></div>
    <div class="hp-bar" role="img" aria-label="${seg.map(x=>x[2]+' '+usd(x[0])).join(', ')}">${seg.map(x=>`<i style="--w:${(x[0]/tot*100).toFixed(2)}%;--c:${x[1]}" title="${x[2]}: ${usd(x[0])}"></i>`).join('')}</div>
    <div class="da-leg">${seg.map(x=>`<span><i style="background:${x[1]}"></i>${x[2]} <b>${x[3]}</b> · ${usd(x[0])}</span>`).join('')}</div>
@@ -155,11 +155,14 @@ function dbPipelineCard(ts){
 }
 function dbWeekCard(ts){
   const list=dbTasks(ts,7),CAP=8,over=list.filter(z=>z.over).length;
-  const rows=list.slice(0,CAP).map(z=>`<div class="da-li"><div><strong>${esc(z.x.t)}</strong><div class="small muted"><a href="#" data-act="open" data-v="${z.t.id}" data-pt="ops">${esc(z.t.name)}</a> · ${z.over?`<span class="db-red">${L('באיחור','Overdue')}</span> · `:''}${fmtDate(z.x.due)}</div></div>
-    <button class="btn sm" data-act="db-done" data-v="${z.t.id}:${z.x.id}" aria-label="${L('סמן כבוצע','Mark done')}: ${esc(z.x.t)}">${ic('check')} ${L('בוצע','Done')}</button></div>`).join('');
+  const row=z=>`<div class="da-li"><div><strong>${esc(z.x.t)}</strong><div class="small muted"><a href="#" data-act="open" data-v="${z.t.id}" data-pt="ops">${esc(z.t.name)}</a> · ${z.over?`<span class="db-red">${L('באיחור','Overdue')}</span> · `:''}${fmtDate(z.x.due)}</div></div>
+    <button class="btn sm" data-act="db-done" data-v="${z.t.id}:${z.x.id}" aria-label="${L('סמן כבוצע','Mark done')}: ${esc(z.x.t)}">${ic('check')} ${L('בוצע','Done')}</button></div>`;
+  const rows=list.slice(0,CAP).map(row).join('');
+  const soon=list.length?[]:dbTasks(ts,3650).slice(0,5);
   return `<div class="card da-card db-card"><div class="da-h"><h3>${L('השבוע שלי','My week')}</h3><span class="da-sum">${list.length}</span></div>
    <p class="small muted da-note">${L(`משימות לשבוע הקרוב, כולל ${over} באיחור.`,`Tasks due in the next 7 days, including ${over} overdue.`)}</p>
    ${rows||`<p class="muted">${L('אין משימות פתוחות לשבוע הקרוב.','No open tasks this week.')}</p>`}
+   ${soon.length?`<h4 class="db-sub">${L('בקרוב','Coming up')}</h4>${soon.map(row).join('')}`:''}
    ${list.length>CAP?`<div class="da-more"><span class="muted small">${L(`ועוד ${list.length-CAP}`,`and ${list.length-CAP} more`)}</span><button class="btn sm" data-act="go" data-v="quotes">${L('לכל התיקים','All files')}</button></div>`:''}</div>`;
 }
 function dbNumbersCard(K){
@@ -181,10 +184,10 @@ function dbFormsCard(ts){
 
 function dbAgent(){
   const ts=visibleTrips();if(!ts.length)return noTrip();
-  const K=dbAgentKpis(S.role,ts),r=dbReadyRows(ts,60);
+  const K=dbAgentKpis(S.role,ts),r=dbReadyRows(ts,36500);
   return `${dbHero(K,ts)}
   ${dbPipelineCard(ts)}
-  <div class="card da-card db-card"><div class="da-h"><h3>${L('היציאות שלי: מוכנות','My departures: readiness')}</h3><span class="da-sum">${r.n}</span></div>${r.html}</div>
+  <div class="card da-card db-card"><div class="da-h"><h3>${L('היציאות הבאות שלי','My next departures')}</h3><span class="da-sum">${r.n}</span></div>${r.html}</div>
   <div class="two db-two">${dbWeekCard(ts)}${dbNumbersCard(K)}</div>
   ${dbFormsCard(ts)}`;
 }
@@ -218,6 +221,13 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
     ['tasks','pass','sups','dep','overall'].forEach(k=>{if(!isFinite(r[k])||r[k]<0||r[k]>100)out.push(`readiness ${t.id}.${k}=${r[k]}`);});});
   {const t=TRIPS.find(x=>x.stage==='Operations');if(t){const keep=t.tasks;t.tasks=keep.concat(Array.from({length:40},(_,i)=>({id:101+i,t:'Extra task '+i,who:t.agent,due:t.dep,done:i%2===0})));
     const r=dbReadiness(t);if(!isFinite(r.tasks)||r.tasks<0||r.tasks>100)out.push('readiness with many tasks');t.tasks=keep;}}
+  /* agent home lists all upcoming departures and falls back to upcoming tasks */
+  AGENTS.forEach(a=>{S.role=a;S.lang='en';const ts=visibleTrips(),want=ts.filter(t=>t.stage!=='Quote'&&t.dep>=iso(TODAY)).length,r=dbReadyRows(ts,36500);
+    if(r.n!==want)out.push(`agent ${a} next departures ${r.n} vs ${want}`);
+    const wk=dbWeekCard(ts),none=dbTasks(ts,7).length===0,later=dbTasks(ts,3650).length;
+    if(none&&later&&!wk.includes('Coming up'))out.push(`agent ${a} week card lacks Coming up`);
+    if(!none&&wk.includes('Coming up'))out.push(`agent ${a} Coming up with due tasks`);});
+  S.role=role0;S.lang=lang0;
   /* task done mutation */
   {const z=dbTasks(TRIPS,400)[0];if(z){if(!dbTaskDone(z.t.id,z.x.id)||!z.x.done)out.push('dbTaskDone failed');z.x.done=false;}}
   /* every dashboard renders in both languages for manager, accountant and every agent */

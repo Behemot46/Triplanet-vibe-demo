@@ -108,7 +108,7 @@ function opSendForms(t){
   if(!t||!t.trav)return 0;let n=0;
   t.trav.forEach(x=>{if(!x.form)return;OP_FORMS.forEach(f=>{if(x.form[f[0]]==='not sent'){x.form[f[0]]='sent';n++;}});});
   try{navigator.clipboard.writeText(opFormLink(t,'registration'));}catch(e){}
-  try{toast(n?L(`נשלחו ${n} טפסים. הקישור הועתק (הדגמה).`,`${n} forms sent. The link was copied (demo).`):L('אין טפסים שטרם נשלחו.','No forms are waiting to be sent.'));}catch(e){}
+  try{toast(n?L(`נשלחו ${n} טפסים. הקישור הועתק (הדגמה).`,`${n} ${PLN(n,'form','forms')} sent. The link was copied (demo).`):L('אין טפסים שטרם נשלחו.','No forms are waiting to be sent.'));}catch(e){}
   return n;
 }
 function opAddCol(t,label){
@@ -204,23 +204,23 @@ function opManifestTab(t){
   if(t.stage==='Quote')return gate(t,L('רשימת הנוסעים','The master list'));
   const intl=DESTS[t.dest].intl,cols=opCols(t),tr=t.trav||[];
   const warn=tr.filter(x=>opPassWarn(t,x)).length,miss=tr.filter(x=>x.pass==='Missing').length;
-  const fdone=tr.reduce((a,x)=>a+OP_FORMS.filter(f=>x.form&&x.form.reg!==undefined&&x.form[f[0]]==='done').length,0),fall=tr.length*3;
+  const alld=tr.filter(x=>x.form&&OP_FORMS.every(f=>x.form[f[0]]==='done')).length,sentp=tr.reduce((a,x)=>a+OP_FORMS.filter(f=>x.form&&x.form[f[0]]==='sent').length,0);
   const unsent=tr.reduce((a,x)=>a+OP_FORMS.filter(f=>x.form&&x.form[f[0]]==='not sent').length,0);
   const rs=opRoomSummary(t),imp=S.opImp===t.id?opImportPreview(t):null;
   const body=tr.map((x,i)=>`<tr><td class="n">${x.room}</td><td><bdi>${esc(x.n)}</bdi></td><td>${esc(x.g)}</td><td>${opRoomL(x.roomType)}</td><td>${x.dob?fmtDate(x.dob):''}</td>
-    <td>${x.pass==='Missing'?pillF(L('חסר','Missing'),'amber'):`<bdi>${esc(x.passNo||'')}</bdi>`}</td>
+    <td>${x.pass==='Missing'?pillF(L('חסר','Missing'),'amber'):`<bdi dir="ltr">${esc(x.passNo||'')}</bdi>`}</td>
     <td>${x.pass==='Missing'||!x.passExp?'':opPassWarn(t,x)?pillF(fmtDate(x.passExp)+' · '+L('פחות מ-6 חודשים אחרי החזרה','under 6 months after return'),'amber'):fmtDate(x.passExp)}</td>
     <td>${dietn(x.diet)}</td><td>${x.emerg?`<bdi>${esc(x.emerg.name)}</bdi> <span class="muted"><bdi>${esc(x.emerg.phone)}</bdi></span>`:''}</td><td>${opDots(x)}</td>
     ${cols.map(c=>`<td><input class="op-cell" data-ch="op-cell" data-i="${i}" data-k="${c.k}" value="${esc((x.x&&x.x[c.k])||'')}" aria-label="${esc(c.label)}"></td>`).join('')}</tr>`).join('');
   return master(t)+`<div class="stats op-stats"><div class="stat"><div class="l">${L('נוסעים','Travelers')}</div><div class="v">${tr.length}</div><div class="s">${rs.rooms} ${L('חדרים','rooms')}</div></div>
     <div class="stat"><div class="l">${intl?L('דרכונים חסרים','Passports missing'):L('מסמכים חסרים','Documents missing')}</div><div class="v ${miss?'neg':''}">${miss}</div><div class="s">${L('מתוך','of')} ${tr.length}</div></div>
     <div class="stat"><div class="l">${L('תוקף דרכון קצר','Short passport validity')}</div><div class="v ${warn?'neg':''}">${warn}</div><div class="s">${L('פחות מ-6 חודשים אחרי החזרה','under 6 months after return')}</div></div>
-    <div class="stat"><div class="l">${L('טפסים שהושלמו','Forms completed')}</div><div class="v">${fall?Math.round(fdone/fall*100):0}%</div><div class="s">${unsent?L(`${unsent} טרם נשלחו`,`${unsent} not sent yet`):L('הכול נשלח','All sent')}</div></div></div>
+    <div class="stat"><div class="l">${L('נוסעים שהשלימו את כל הטפסים','Travelers with all forms done')}</div><div class="v">${alld} ${L('מתוך','of')} ${tr.length}</div><div class="s">${L(`${sentp} טפסים נשלחו וטרם הושלמו`,`${sentp} ${PLN(sentp,'form','forms')} sent, not done`)} · ${unsent?L(`${unsent} טרם נשלחו`,`${unsent} not sent yet`):L('הכול נשלח','all sent')}</div></div></div></div>
   <div class="card"><div class="op-bar"><div><h3 style="margin:0">${L('רשימת נוסעים ראשית','Master list')}</h3><p class="small muted" style="margin:2px 0 0">${L('טפסים: רישום, רפואה ותזונה, כתב ויתור.','Forms: registration, medical and dietary, waiver.')}</p></div>
     <div class="row op-btns"><button class="btn sm" data-act="op-send">${ic('mail')} ${L('שליחת טפסים','Send forms')}${unsent?` (${unsent})`:''}</button><button class="btn sm" data-act="op-csv">${ic('export')} ${L('ייצוא CSV','Export CSV')}</button><button class="btn sm" data-act="op-imp">${ic('down')} ${L('ייבוא','Import')}</button></div></div>
     <div class="op-legend small muted"><span><i class="op-dot done"></i>${L('הושלם','Done')}</span><span><i class="op-dot sent"></i>${L('נשלח','Sent')}</span><span><i class="op-dot not-sent"></i>${L('לא נשלח','Not sent')}</span><span>${L('קישור לטפסים','Forms link')}: <code>${esc(opFormLink(t,'registration'))}</code></span></div>
     ${imp?`<div class="op-imp"><strong>${L('תצוגה מקדימה של הייבוא: 5 שורות','Import preview: 5 rows')}</strong><p class="small muted" style="margin:2px 0 8px">${L('הקובץ מעדכן נוסעים קיימים בלבד. מספר הנוסעים והחדרים לא ישתנה.','The file updates existing travelers only. The traveler and room counts will not change.')}</p>
-      <div class="scroll"><table class="tbl"><thead><tr><th>${L('נוסע','Traveler')}</th><th>${L('שדה','Field')}</th><th>${L('לפני','Before')}</th><th>${L('אחרי','After')}</th></tr></thead><tbody>${imp.map(r=>r.ch.map((c,j)=>`<tr>${j?'':`<td rowspan="${r.ch.length}"><bdi>${esc(r.name)}</bdi></td>`}<td>${{pass:L('דרכון','Passport'),passNo:L('מספר דרכון','Passport no'),passExp:L('תוקף דרכון','Passport expiry'),emergPhone:L('טלפון חירום','Emergency phone')}[c.f]}</td><td>${c.f==='passExp'&&c.from?fmtDate(c.from):esc(c.from)||'–'}</td><td>${c.f==='passExp'?fmtDate(c.to):esc(c.to)}</td></tr>`).join('')).join('')}</tbody></table></div>
+      <div class="scroll"><table class="tbl"><thead><tr><th>${L('נוסע','Traveler')}</th><th>${L('שדה','Field')}</th><th>${L('לפני','Before')}</th><th>${L('אחרי','After')}</th></tr></thead><tbody>${imp.map(r=>r.ch.map((c,j)=>`<tr>${j?'':`<td rowspan="${r.ch.length}"><bdi>${esc(r.name)}</bdi></td>`}<td>${{pass:L('דרכון','Passport'),passNo:L('מספר דרכון','Passport no'),passExp:L('תוקף דרכון','Passport expiry'),emergPhone:L('טלפון חירום','Emergency phone')}[c.f]}</td><td>${c.f==='passExp'&&c.from?fmtDate(c.from):c.from?`<bdi dir="ltr">${esc(c.from)}</bdi>`:'–'}</td><td>${c.f==='passExp'?fmtDate(c.to):`<bdi dir="ltr">${esc(c.to)}</bdi>`}</td></tr>`).join('')).join('')}</tbody></table></div>
       <div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="op-impok">${L('החלת העדכונים','Apply updates')}</button><button class="btn sm" data-act="op-impno">${L('ביטול','Cancel')}</button></div></div>`:''}
     <div class="op-addcol"><input id="op-newcol" class="op-in" data-ch="op-newcol" value="${esc(S.opNewCol||'')}" placeholder="${L('שם עמודה חדשה','New column name')}" maxlength="28" aria-label="${L('שם עמודה חדשה','New column name')}"><button class="btn sm" data-act="op-addcol">${L('הוספת עמודה','Add column')}</button>
       ${cols.map(c=>`<span class="op-colchip">${esc(c.label)}<button data-act="op-delcol" data-v="${c.k}" aria-label="${L('הסרת עמודה','Remove column')}">${ic('close')}</button></span>`).join('')}</div>
@@ -236,11 +236,11 @@ function opBlocksCard(){
   const tot=r2(rows.reduce((a,r)=>a+(r.b.exposure||0),0)),open=rows.reduce((a,r)=>a+r.b.open,0);
   const tr=rows.map(({t,b})=>{
     const h=typeof CATALOG!=='undefined'&&CATALOG.hotels.find(x=>x.name===b.hotel),dd=Math.round((D(b.cutoff)-TODAY)/DAY);
-    const when=dd>0?L(`בעוד ${dd} ימים`,`In ${dd} days`):dd===0?L('היום','Today'):L(`לפני ${-dd} ימים`,`${-dd} days ago`);
+    const when=dd>0?L(`בעוד ${dd} ימים`,`In ${dd} ${PLN(dd,'day','days')}`):dd===0?L('היום','Today'):L(`לפני ${-dd} ימים`,`${-dd} ${PLN(-dd,'day','days')} ago`);
     return `<tr><td><span class="op-hot">${h?brandBadge(h.family):''}<bdi>${esc(b.hotel)}</bdi></span></td><td><button class="op-lnk" data-act="open" data-v="${t.id}" data-pt="manifest"><bdi>${esc(t.name)}</bdi></button></td>
       <td>${fmtDate(t.dep)} – ${fmtDate(addDays(t.dep,t.nights))}</td><td class="n">${b.held}</td><td class="n">${b.picked}</td><td class="n">${b.open}</td><td>${fmtDate(b.cutoff)}<div class="small muted">${when}</div></td>
       <td>${b.open>0?`<strong>${L('לשחרר עד','Release by')} ${fmtDate(b.cutoff)}</strong>`:pillF(L('כל החדרים נוצלו','All rooms picked up'),'green')}</td><td class="n">${b.open>0&&b.exposure>0?usd(b.exposure):'–'}</td></tr>`;}).join('');
-  return `<div class="card op-blocks"><div class="op-bar"><div><h3 style="margin:0">${L('בלוקים של חדרים לפי טיול','Room blocks by trip')}</h3><p class="small muted" style="margin:2px 0 0">${L(`${rows.length} טיולים בתפעול, ${open} חדרים עדיין בבלוק שלא נוצלו.`,`${rows.length} trips in operation, ${open} rooms still open in the blocks.`)}</p></div>
+  return `<div class="card op-blocks"><div class="op-bar"><div><h3 style="margin:0">${L('מועדי שחרור חדרים לפי טיול','Release deadlines by trip')}</h3><p class="small muted" style="margin:2px 0 0">${L(`${rows.length} טיולים בתפעול, ${open} חדרים עדיין בבלוק שלא נוצלו.`,`${rows.length} ${PLN(rows.length,'trip','trips')} in operation, ${open} ${PLN(open,'room','rooms')} still open in the blocks.`)}</p></div>
     ${tot>0?`<div class="op-tot"><span class="small muted">${L('שווי חדרים פתוחים אחרי מועד השחרור','Value of open rooms after the release date')}</span><strong>${usd(tot)}</strong></div>`:''}</div>
     <div class="scroll"><table class="tbl op-btbl"><thead><tr><th>${L('מלון','Hotel')}</th><th>${L('טיול','Trip')}</th><th>${L('תאריכים','Dates')}</th><th class="n">${L('בבלוק','Held')}</th><th class="n">${L('נוצלו','Picked up')}</th><th class="n">${L('פתוחים','Open')}</th><th>${L('מועד שחרור','Release date')}</th><th>${L('פעולה','Action')}</th><th class="n">${L('שווי פתוח','Open value')}</th></tr></thead><tbody>${tr}</tbody></table></div></div>`;
 }
@@ -363,7 +363,7 @@ TESTS.push({name:'ops tasks, master list, blocks',run:h=>{
   for(const lang of ['en','he']){S.lang=lang;
     for(const role of ['manager','accountant','Priya','Dana']){S.role=role;
       const html=opBlocksCard()+(typeof vHotelsList==='function'?vHotelsList():'');h.chk(html,`ops blocks ${lang} ${role}`);if(lang==='en')h.scan(html,'ops blocks');
-      if(role==='manager'||role==='accountant'){if(!/Room blocks by trip|בלוקים של חדרים לפי טיול/.test(html)||html.indexOf('op-blocks')>html.indexOf('al-card'))out.push('blocks card not on top '+role);}
+      if(role==='manager'||role==='accountant'){if(!/Release deadlines by trip|מועדי שחרור חדרים לפי טיול/.test(html)||html.indexOf('op-blocks')>html.indexOf('al-card'))out.push('blocks card not on top '+role);}
       /* real brand rows carry neutral wording only */
       (opBlocksCard().match(/<tr>[\s\S]*?<\/tr>/g)||[]).forEach(row=>{const tx=row.replace(/<[^>]*>/g,' ');if([...brandNames].some(n=>tx.includes(n))&&/gap|overbill|dispute|late|slow|poor|risk|overdue|expir|פער|מחלוק|איחור|סיכון/i.test(tx))out.push('negative wording next to a brand: '+tx.slice(0,80));});
       visibleTrips().forEach(t=>{S.tripId=t.id;S.tab='trip';

@@ -152,7 +152,7 @@ function daDetail(key){
   const a=daArNext30();
   return {title:L('לגבייה ב-30 הימים הקרובים','To collect in the next 30 days'),sum:usd(a.total),page:'finance',
     body:tbl([[L('קבוצת חיוב','Billing group')],[L('טיול','Trip')],[L('סוג','Type')],[L('מועד','Due')],[L('סכום','Amount'),'n'],['']],
-      a.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.row.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.kind)}</td><td>${fmtDate(x.due)}<div class="small muted">${x.days===0?L('היום','Today'):L(`בעוד ${x.days} ימים`,`in ${x.days} days`)}</div></td>${daNum(usd(x.amt))}<td>${daOpen(x.t,'income')}</td></tr>`).join(''),daMore(a.n-CAP,'finance',L('לכל הכספים','Open Finance')))};
+      a.items.slice(0,CAP).map(x=>`<tr ${daRowAttr(x.t,'income')}><td><strong>${esc(x.row.name)}</strong></td><td>${esc(x.t.name)}</td><td>${daKind(x.kind)}</td><td>${fmtDate(x.due)}<div class="small muted">${x.days===0?L('היום','Today'):L(`בעוד ${x.days} ימים`,`in ${x.days} ${PLN(x.days,'day','days')}`)}</div></td>${daNum(usd(x.amt))}<td>${daOpen(x.t,'income')}</td></tr>`).join(''),daMore(a.n-CAP,'finance',L('לכל הכספים','Open Finance')))};
 }
 
 /* receivables by client: overdue in three buckets (portfolio().aging rule) plus what falls due in 30 days */
@@ -172,14 +172,14 @@ function daHero(P,ar,od,bills,G,cm){
   const seg=[[P.col,'#5BE49B',L('התקבל','Collected')],[od.total,'#FFAB00',L('באיחור','Overdue')],[ar.total,'#68CDF9',L('לגבייה ב-30 יום','Due in 30 days')],[rest,'#C684FF',L('מאוחר יותר','Later')]];
   const nx=daArNext30().items[0];
   const tile=(k,cls,lab,val,sub,c,i)=>`<button class="hp-st da-t${S.daDet===k?' on':''}" data-act="${k==='gaps'?'go':'da-det'}" data-v="${k==='gaps'?'gaps':k}" style="--c:${c};--d:${i*70}ms" aria-pressed="${S.daDet===k}"><span class="hp-k"><i></i>${lab}</span><b>${val}</b><small>${sub}</small></button>`;
-  const tiles=[tile('ar30','',L('לגבייה ב-30 יום','Cash to collect, 30 days'),usd(ar.total),L(`${ar.n} תשלומים צפויים`,`${ar.n} installments due`),'#68CDF9',0),
-    tile('overdue','',L('חובות לקוחות באיחור','Overdue receivables'),usd(od.total),L(`${od.n} קבוצות חיוב`,`${od.n} billing groups`),'#FFAB00',1),
-    tile('bills','',L('חשבוניות ספק לאישור','Supplier bills to approve'),usd(bills.total),L(`${bills.n} חשבוניות מותאמות`,`${bills.n} matched bills`),'#C684FF',2),
+  const tiles=[tile('ar30','',L('לגבייה ב-30 יום','Cash to collect, 30 days'),usd(ar.total),L(`${ar.n} תשלומים צפויים`,`${ar.n} ${PLN(ar.n,'installment','installments')} due`),'#68CDF9',0),
+    tile('overdue','',L('חובות לקוחות באיחור','Overdue receivables'),usd(od.total),L(`${od.n} קבוצות חיוב`,`${od.n} ${PLN(od.n,'billing group','billing groups')}`),'#FFAB00',1),
+    tile('bills','',L('חשבוניות ספק לאישור','Supplier bills to approve'),usd(bills.total),L(`${bills.n} חשבוניות מותאמות`,`${bills.n} matched ${PLN(bills.n,'bill','bills')}`),'#C684FF',2),
     tile('gaps','',L('פערים פתוחים מול ספקים','Open supplier gaps'),usd(r2(G.open+G.disp)),L(`${G.openN+G.dispN} פערים`,`${G.openN+G.dispN} ${(G.openN+G.dispN)===1?'gap':'gaps'}`),'#FFC145',3),
-    tile('comm','',L('עמלות לגבייה','Commission receivable'),usd(cm.total),L(`${cm.n} שורות`,`${cm.n} lines`),'#5BE49B',4)].join('');
+    tile('comm','',L('עמלות לגבייה','Commission receivable'),usd(cm.total),L(`${cm.n} שורות`,`${cm.n} ${PLN(cm.n,'line','lines')}`),'#5BE49B',4)].join('');
   return `<section class="hp da-hero${typeof hpAnim==='function'&&hpAnim()?' anim':''}" aria-label="${L('תמונת מצב כספית','Finance overview')}">
    <div class="hp-top"><div class="hp-hi"><span class="hp-eye">${day}</span><h1>${L('שלום','Hello')}, ${esc(first)}</h1>
-     <p>${L(`${P.rows.length} תיקים בחיוב`,`${P.rows.length} files in billing`)} · ${L(`${P.pax} נוסעים`,`${P.pax} travelers`)}${nx?` · ${L('התשלום הבא מלקוח','next client payment')}: <a href="#" data-act="open" data-v="${nx.t.id}" data-pt="income">${esc(nx.row.name)}</a> ${L(nx.days===0?'היום':`בעוד ${nx.days} ימים`,nx.days===0?'today':`in ${nx.days} days`)}`:''}</p></div>
+     <p>${L(`${P.rows.length} תיקים בחיוב`,`${P.rows.length} ${PLN(P.rows.length,'file','files')} in billing`)} · ${L(`${P.pax} נוסעים`,`${P.pax} ${PLN(P.pax,'traveler','travelers')}`)}${nx?` · ${L('התשלום הבא מלקוח','next client payment')}: <a href="#" data-act="open" data-v="${nx.t.id}" data-pt="income">${esc(nx.row.name)}</a> ${L(nx.days===0?'היום':`בעוד ${nx.days} ימים`,nx.days===0?'today':`in ${nx.days} ${PLN(nx.days,'day','days')}`)}`:''}</p></div>
     <div class="hp-kpi"><div><span>${L('הכנסות שהוזמנו','Booked revenue')}</span><b>${usd(P.rev)}</b></div><div><span>${L('התקבל','Collected')}</span><b>${usd(P.col)}</b><em>${P.rev?pct(P.col/P.rev):''}</em></div><div><span>${L('יתרה לגבייה','Outstanding')}</span><b>${usd(P.outstanding)}</b></div></div></div>
    <div class="hp-bar" role="img" aria-label="${seg.map(x=>x[2]+' '+usd(x[0])).join(', ')}">${seg.map(x=>`<i style="--w:${(x[0]/tot*100).toFixed(2)}%;--c:${x[1]}" title="${x[2]}: ${usd(x[0])}"></i>`).join('')}</div>
    <div class="da-leg">${seg.map(x=>`<span><i style="background:${x[1]}"></i>${x[2]} <b>${usd(x[0])}</b></span>`).join('')}</div>
@@ -226,7 +226,7 @@ function daSyncCard(){
   const a=S.acct,on=typeof ACCT!=='undefined'&&a&&a.phase==='synced'&&a.sys,ok=typeof can!=='function'||can('fin.sync');
   if(on){const s=acStats(),k=a.sys,log=(a.log||[]).slice(0,3);
     return `<div class="card da-card"><div class="da-h"><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>${PILOT()}</div>
-     <div class="row da-sync">${acBadge(k)}<div><strong>${an(k)}</strong><div class="small muted">${L(`${s.bills} חשבוניות סונכרנו, ${s.matched} תואמות`,`${s.bills} bills synced, ${s.matched} matched`)}</div></div></div>
+     <div class="row da-sync">${acBadge(k)}<div><strong>${an(k)}</strong><div class="small muted">${L(`${s.bills} חשבוניות סונכרנו, ${s.matched} תואמות`,`${s.bills} ${PLN(s.bills,'bill','bills')} synced, ${s.matched} matched`)}</div></div></div>
      ${log.map(e=>`<div class="da-li"><div><strong>${esc(e.t)}</strong><div class="small muted">${esc(e.no||'')}</div></div><span class="da-amt">${usd(e.amt)}</span></div>`).join('')}
      ${ok?`<div class="da-more"><span></span><button class="btn sm" data-act="go" data-v="books">${L('ליומן הסנכרון','Open sync log')}</button></div>`:''}</div>`;}
   return `<div class="card da-card"><div class="da-h"><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>${PILOT()}</div>

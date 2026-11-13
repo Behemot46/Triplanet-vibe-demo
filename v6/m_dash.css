@@ -51,3 +51,4 @@
   .db-hero .da-t b{font-size:26px}
   .db-nums b{font-size:16px}
 }
+.db-sub{margin:16px 0 4px;font:600 13px var(--f-ui);color:var(--muted);text-transform:none}

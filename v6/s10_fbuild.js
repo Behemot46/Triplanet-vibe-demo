@@ -130,7 +130,7 @@ function fbCols(fid){
 }
 function fbAnswers(t,x,i,fid){
   const dash='-';
-  if(fid==='reg')return [x.dob?fmtDate(x.dob):dash,x.passNo?x.passNo+' · '+fmtDate(x.passExp):L('חסר','Not provided'),x.emerg?x.emerg.name+' · '+x.emerg.phone:dash];
+  if(fid==='reg')return [x.dob?fmtDate(x.dob):dash,x.passNo?'<bdi dir="ltr">'+esc(x.passNo)+'</bdi> · '+fmtDate(x.passExp):L('חסר','Not provided'),x.emerg?x.emerg.name+' · '+x.emerg.phone:dash];
   if(fid==='med')return [fbPick(FB_DIET,x.diet),i%11===0?L('הליכון או מקל','Walking aid'):L('ללא מגבלה','No limits'),x.diet==='Nut allergy'?L('נושא/ת מזרק אפינפרין','Carries an epinephrine pen'):x.diet==='Diabetic'?L('נוטל/ת אינסולין','Takes insulin'):dash];
   if(fid==='waiver')return [x.n,fmtDate(addDays(iso(TODAY),-(2+i%20))),L('אושרו','Accepted')];
   const mate=(t.trav||[]).find(y=>y!==x&&y.room===x.room);

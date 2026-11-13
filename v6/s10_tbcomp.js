@@ -71,14 +71,14 @@ function tbcCancel(c){
   if(!c||!c.length)return '-';
   const free=c.filter(x=>x[1]===0).sort((a,b)=>b[0]-a[0])[0],rest=c.filter(x=>x[1]>0).sort((a,b)=>b[0]-a[0]);
   const parts=[];
-  if(free)parts.push(L(`ללא עלות עד ${free[0]} ימים`,`Free to ${free[0]} days out`));
-  rest.forEach(x=>parts.push(L(`${x[1]}% מ-${x[0]} ימים`,`${x[1]}% from ${x[0]} d`)));
-  return parts.join(', ');
+  if(free)parts.push(L(`חינם ≥${free[0]} י׳`,`Free ≥${free[0]} d`));
+  rest.forEach(x=>parts.push(`${x[1]}% ≥${x[0]} ${L('י׳','d')}`));
+  return parts.map(x=>`<bdi class="tbc-cx">${x}</bdi>`).join(' · ');
 }
 const tbcPref=p=>pillF(({High:L('גבוהה','High'),Medium:L('בינונית','Medium'),Low:L('נמוכה','Low')})[p]||'-',p==='High'?'green':p==='Medium'?'blue':'amber');
 function tbcSupCell(t,l,s){
   const sup=s||supByName(l.sup);
-  return sup&&sup.real?brandBadge(sup.family||sup.brand):`<strong>${esc(s?s.name:l.sup)}</strong>`;
+  return sup&&sup.real?`<span class="tbc-rb">${brandBadge(sup.family||sup.brand)}<strong><bdi>${esc(sup.name)}</bdi></strong></span>`:`<strong>${esc(s?s.name:l.sup)}</strong>`;
 }
 function tbcVariant(l){
   const s=supByName(l.sup),vs=(s&&s.variants)||[];if(!vs.length)return '-';
@@ -100,7 +100,7 @@ function tbcAltPanel(t,l){
     const act=cur?(l.alt0&&canSwap?`<button class="btn sm" data-act="tbc-undo" data-l="${l.id}">${ic('restart')} ${L('ביטול החלפה','Undo swap')}</button>`:''):
       canSwap?`<button class="btn sm pri" data-act="tbc-swap" data-l="${l.id}" data-s="${esc(a.sup.id)}">${orig?L('חזרה למקור','Swap back'):L('החלפה','Swap')}</button>`:'';
     return `<tr class="${cur?'tbc-cur':''}"><td>${tbcSupCell(t,l,a.sup)}${cur?' '+pillF(L('נוכחי','Current'),'info'):''}${orig?' '+pillF(L('מקורי','Original'),'info'):''}<div class="small muted">${esc(a.sup.city||'')}</div></td>
-      <td class="n">${real||a.rating==null?'-':ic('star')+' '+a.rating.toFixed(1)}</td><td>${tbcPref(a.pref)}</td><td class="small">${tbcCancel(a.cancel)}</td><td class="n">${a.comm||0}%</td>
+      <td class="n">${real||a.rating==null?'-':ic('star')+' '+a.rating.toFixed(1)}</td><td>${tbcPref(a.pref)}</td><td class="small tbc-cancel">${tbcCancel(a.cancel)}</td><td class="n">${a.comm||0}%</td>
       <td class="n">${money(a.cost,a.cur)}</td><td class="n ${a.delta<0?'tbc-dn':a.delta>0?'tbc-up':''}">${cur?'-':tbcSg(a.delta)}</td><td class="n ${pi>0?'tbc-dn':pi<0?'tbc-up':''}">${cur?'-':tbcSg(pi)}</td><td class="n">${act}</td></tr>`;}).join('');
   return `<div class="tbc-panel"><div class="row" style="justify-content:space-between"><strong>${L('ספקים חלופיים','Alternative suppliers')}: ${esc(l.name)}</strong><button class="btn sm" data-act="tbc-alt" data-v="${l.id}" aria-label="${L('סגירה','Close')}">${ic('x')}</button></div>
     <p class="small muted" style="margin:6px 0 8px">${hint}</p>
@@ -172,7 +172,7 @@ function tbcNote(x){return S.lang==='he'&&x.noteHe?x.noteHe:x.note;}
 function tbcLineCell(t,x){
   if(!x)return `<span class="muted">${L('לא קיימת','not present')}</span>`;
   const s=supByName(x.sup);
-  return `${s&&s.real?brandBadge(s.family||s.brand):`<strong>${esc(x.sup)}</strong>`}<div class="small muted">${x.qty} x ${money(x.cost,x.cur)} · ${L('עמלה','comm.')} ${x.comm}%${x.ov!==''?' · '+L('מרקאפ','markup')+' '+x.ov+'%':''}</div>`;
+  return `${s&&s.real?`<span class="tbc-rb">${brandBadge(s.family||s.brand)}<strong><bdi>${esc(s.name)}</bdi></strong></span>`:`<strong>${esc(x.sup)}</strong>`}<div class="small muted">${x.qty} x ${money(x.cost,x.cur)} · ${L('עמלה','comm.')} ${x.comm}%${x.ov!==''?' · '+L('מרקאפ','markup')+' '+x.ov+'%':''}</div>`;
 }
 function tbcOtherLabel(o){
   const f=v=>v==null||v===''?'-':typeof v==='object'?(v.m==='$'?usd(+v.v):(+v.v)+'%')+(v.on?' ('+v.on+')':''):v+'%';

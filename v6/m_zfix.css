@@ -1,0 +1,26 @@
+/* v8 QA fixes that cut across modules. Loads last among m_*.css. Tokens only; logical properties only. */
+
+/* landing page phone frame: the same dark frame in day and night mode */
+.pr-dev{border-color:#1C252E;background:#1C252E}
+.pr-bezel{background:#1C252E}
+.pr-bezel span{background:#637381}
+
+/* room for the floating Maya button below the last row */
+.content{padding-bottom:96px}
+
+/* scroll cue for wide tables: edge shadows that show only where more content is hidden (CSS only, RTL safe) */
+.scroll{
+  background:
+    linear-gradient(to right,var(--panel) 30%,transparent) left center/40px 100% no-repeat local,
+    linear-gradient(to left,var(--panel) 30%,transparent) right center/40px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%,var(--scrollsh,rgba(15,30,60,.22)),transparent) left center/14px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%,var(--scrollsh,rgba(15,30,60,.22)),transparent) right center/14px 100% no-repeat scroll;
+}
+:root[data-theme="dark"] .scroll{--scrollsh:rgba(0,0,0,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scroll{--scrollsh:rgba(0,0,0,.6)}}
+
+/* hero bands (agent and accountant home): labels readable on the dark-blue gradient in both modes */
+.db-hero .hp-k,.da-hero .hp-k{color:var(--hero-ink)}
+.db-hero .hp-st small,.da-hero .hp-st small,.db-hero .hp-kpi span,.da-hero .hp-kpi span,.db-hero .hp-hi p,.da-hero .hp-hi p,.db-hero .da-leg,.da-hero .da-leg{color:color-mix(in srgb,var(--hero-ink) 88%,transparent)}
+.db-hero .hp-kpi span,.da-hero .hp-kpi span{font-weight:700}
+.db-hero .hp-k,.da-hero .hp-k{font-weight:700}

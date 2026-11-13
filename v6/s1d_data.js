@@ -6,6 +6,8 @@
    Real brands (real:true): no rating, no replyHrs, pref High/Medium, docs null, contact "Group sales desk", showPerf:false.
    Terms: depPct = % deposit, depDays = days after booking the deposit is due, balDays = days before arrival the balance is due.
    Cancellation: [[daysBefore, penaltyPct], ...] descending days. */
+/* English singular/plural helper: PLN(n,'invoice','invoices') */
+const PLN=(n,one,many)=>n===1?one:many;
 const SD_h=s=>{let h=2166136261;s=String(s);for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
 const SD_slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const SD_dom=s=>SD_slug(s).replace(/-/g,'').slice(0,22);

@@ -35,3 +35,8 @@
 .pr-fx>div{background:var(--recess);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
 .pr-fx strong{font:700 22px var(--f-num)}
 @media (max-width:560px){.pr-cols{grid-template-columns:1fr}.pr-dev{border-width:6px;border-radius:26px}}
+
+/* lead: readable hero text on any photo */
+.pr-hero{position:relative;isolation:isolate}
+.pr-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(1,41,114,.15) 0%,rgba(1,41,114,.55) 45%,rgba(1,20,60,.88) 100%)}
+.pr-hero h2,.pr-hero .pr-meta,.pr-hero .pr-agy,.pr-hero .pr-from{text-shadow:0 1px 3px rgba(0,0,0,.45)}

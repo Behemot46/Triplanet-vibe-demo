@@ -77,3 +77,9 @@
   .sp-seg button{padding:7px 9px;font-size:12.5px}
   .sp-kpi{flex:1 1 140px}
 }
+.sp-ell{display:inline-block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+.sp-kv dd{min-width:0}
+.sp-docs{display:inline-flex;flex-wrap:wrap;gap:4px}
+.sp-tbl .al-nm{min-width:170px}
+.sp-tbl th,.sp-tbl td{padding-inline:10px}
+.sp-tbl td:nth-child(2){min-width:96px}

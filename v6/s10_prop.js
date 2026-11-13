@@ -70,7 +70,7 @@ function prBar(t){
 }
 function prTable(t){
   const rows=prRows(t),ss=rows[0].ss,seg=['Faith','Senior','Alumni'].includes(t.seg);
-  const body=rows.map(r=>`<tr class="${r.you?'pr-you':''}"><td>${r.you?`<strong>${L('ההצעה שלכם','Your quote')}</strong> <span class="small muted">(${paxL(r.n)})</span>`:`<strong>${r.n}+</strong> ${L('נוסעים','travelers')}`}</td><td class="n">${r.foc||'-'}</td><td class="n"><strong>${usd(r.pp,2)}</strong></td><td class="n">${r.ss==null?'<span class="muted">n/a</span>':usd(r.ss,2)}</td><td class="n">${usd(r.tot)}</td></tr>`).join('');
+  const body=rows.map(r=>`<tr class="${r.you?'pr-you':''}"><td>${r.you?`<strong>${L('ההצעה שלכם','Your quote')}</strong> <span class="small muted">(${paxL(r.n)})</span>`:`<strong><bdi>${r.n}+</bdi></strong> ${L('נוסעים','travelers')}`}</td><td class="n">${r.foc||'-'}</td><td class="n"><strong>${usd(r.pp,2)}</strong></td><td class="n">${r.ss==null?'<span class="muted">n/a</span>':usd(r.ss,2)}</td><td class="n">${usd(r.tot)}</td></tr>`).join('');
   return `<div class="card pr-agt"><h3>${L('טבלת סוכנים: מחיר משוער לנוסע לפי גודל קבוצה','Agents table: indicative price per traveler by group size')}</h3>
   <div class="scroll"><table class="tbl"><thead><tr><th>${L('גודל קבוצה','Group size')}</th><th class="n">${L('מקומות חינם (FOC)','FOC places')}</th><th class="n">${L('מחיר לנוסע','Price per traveler')}</th><th class="n">${L('תוספת חדר יחיד','Single supplement')}</th><th class="n">${L('סך הקבוצה','Group total')}</th></tr></thead><tbody>${body}</tbody></table></div>
   <p class="small muted" style="margin-top:10px">${L('כל שורה מחושבת מחדש: עותק של הטיול עם מספר הנוסעים בשורה, כמויות מחדש לפי אותם כללים של מחולל השורות (חדרים לפי תפוסה, שירותים לנוסע, מקומות חינם לכל 20), ואז מחיר הלקוח חלקי מספר הנוסעים.','Each row re-prices a copy of this trip at that group size: quantities are regenerated with the same rules as the line generator (rooms by occupancy, per-person services, one comp per 20), then client price divided by travelers.')}</p>
@@ -91,7 +91,7 @@ function prLanding(t){
   else btn=`<button class="pr-cta" data-act="pr-accept">${ic('card')} ${L('אשרו ושלמו מקדמה','Accept and pay deposit')} ${usd(dep)}</button>`;
   return `<div class="pr-wrap"><div class="pr-dev"><div class="pr-bezel"><span></span></div><div class="pr-land">
   <div class="pr-hero" style="${phBg(hero,'background:linear-gradient(135deg,var(--hero1),var(--hero2))')}"><div class="pr-agy">${esc(AGENCY)}</div><h2>${esc(t.name)}</h2><div class="pr-meta">${fmtDate(t.dep)} - ${fmtDate(endOf(t))} · ${L(`${t.nights+1} ימים`,`${t.nights+1} days`)} · ${dn(t.dest)}</div>
-    <div class="pr-from"><span>${L('מחיר החל מ','Price from')}</span> <strong>${usd(c.rev/t.pax,2)}</strong> <span>${L('לנוסע','per traveler')}</span></div></div>
+    <div class="pr-from"><span>${L('מחיר החל מ','Price from')}</span> <strong>${usd(Math.ceil(c.rev/t.pax))}</strong> <span>${L('לנוסע','per traveler')}</span></div></div>
   <div class="pr-sec"><h3>${L('מסלול','Itinerary')}</h3>${dc}</div>
   <div class="pr-sec pr-cols"><div><h3>${L('כלול במחיר','Included')}</h3><ul class="pr-list ok">${incl}</ul></div><div><h3>${L('לא כלול','Not included')}</h3><ul class="pr-list no">${not}</ul></div></div>
   <div class="pr-sec"><h3>${L('לוח תשלומים','Payment schedule')}</h3><table class="pr-pay"><tr><td>${L(`מקדמה ${t.pct}%, עד`,`Deposit ${t.pct}%, due`)} ${fmtDate(t.depDue)}</td><td>${usd(dep,2)}</td></tr><tr><td>${L('יתרה, עד','Balance, due')} ${fmtDate(t.balDue)}</td><td>${usd(r2(c.rev-dep),2)}</td></tr></table>

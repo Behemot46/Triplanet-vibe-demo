@@ -32,7 +32,7 @@ const spDestL=k=>k==='ALL'?L('כל היעדים','All destinations'):dn(k);
 const spCatIc=s=>s.sub==='air'?'plane':({Lodging:'bed',Transport:'bus',Guide:'tour',Activities:'ticket',Meals:'meal',Insurance:'shield'}[s.cat]||'idcard');
 const spDays=iso0=>Math.round((D(iso0)-TODAY)/DAY);
 const spPh=p=>`<bdi dir="ltr">${esc(p)}</bdi>`;
-const spMail=m=>`<bdi dir="ltr">${esc(m)}</bdi>`;
+const spMail=m=>`<bdi dir="ltr" class="sp-ell" title="${esc(m)}">${esc(m)}</bdi>`;
 const spEditBtn=(sup,act,id,disWhy)=>`<button class="btn" data-act="${act}" ${id?`data-v="${esc(id)}"`:''} ${disWhy?`disabled title="${esc(disWhy)}"`:''}>${ic('pen')} ${L('עריכה','Edit')}</button>`;
 const spNoForm=()=>typeof formOpen!=='function'?L('עורך הטפסים אינו זמין בגרסה הזו','The form editor is not available in this build'):'';
 
@@ -49,9 +49,9 @@ function spDocs(s){
   if(s.real||!s.docs)return pillF(L('בתיק','On file'),'');
   const d=s.docs,parts=[];let warn=false,any=false;
   if(d.w9===false){parts.push(pillF(L('חסר W-9','W-9 missing'),'amber'));warn=true;}else if(d.w9===true)any=true;
-  if(d.coi){const n=spDays(d.coi);any=true;if(n<0){parts.push(pillF(L('COI פג תוקף','COI expired'),'red'));warn=true;}else if(n<60){parts.push(pillF(L(`COI פג בעוד ${n} ימים`,`COI expiring in ${n} days`),'amber'));warn=true;}}
+  if(d.coi){const n=spDays(d.coi);any=true;if(n<0){parts.push(pillF(L('COI פג תוקף','COI expired'),'red'));warn=true;}else if(n<60){parts.push(pillF(L(`COI עוד ${n} י׳`,`COI ${n} d`),'amber'));warn=true;}}
   if(!parts.length)parts.push(any?pillF(L('תקין','Complete'),'green'):'<span class="muted">–</span>');
-  return parts.join(' ');
+  return `<span class="sp-docs">${parts.join('')}</span>`;
 }
 const spThumb=s=>s.real?`<span class="al-thumb al-brand" style="--tc:${esc(alBrand(s.family).color)}">${esc(String(alBrand(s.family).label).charAt(0))}</span>`:`<span class="al-thumb">${ic(spCatIc(s))}</span>`;
 const spRating=s=>s.real?(s.stars?alStars(s.stars):'<span class="muted">–</span>'):`<span class="sp-rt">${ic('star')}${s.rating.toFixed(1)}</span>`;
@@ -114,13 +114,13 @@ function spAccuracy(name){
 function spPerfCard(s){
   if(s.real||s.showPerf===false)return '';
   const a=spAccuracy(s.name),pct=a.inv?Math.round((1-a.n/a.inv)*100):null;
-  return `<div class="card sp-c"><h3>${L('ביצועים','Performance')}</h3><dl class="sp-kv"><dt>${L('דיוק חשבוניות','Invoice accuracy')}</dt><dd>${pct==null?L('אין חשבוניות עדיין','No invoices yet'):`<b>${pct}%</b> <span class="muted">${L(`${a.n} פערים מתוך ${a.inv} חשבוניות, ${usd(a.amt)}`,`${a.n} gaps in ${a.inv} invoices, ${usd(a.amt)}`)}</span>`}</dd>
+  return `<div class="card sp-c"><h3>${L('ביצועים','Performance')}</h3><dl class="sp-kv"><dt>${L('דיוק חשבוניות','Invoice accuracy')}</dt><dd>${pct==null?L('אין חשבוניות עדיין','No invoices yet'):`<b>${pct}%</b> <span class="muted">${L(`${a.n} פערים מתוך ${a.inv} חשבוניות, ${usd(a.amt)}`,`${a.n} ${PLN(a.n,'gap','gaps')} in ${a.inv} ${PLN(a.inv,'invoice','invoices')}, ${usd(a.amt)}`)}</span>`}</dd>
     <dt>${L('זמן מענה','Reply time')}</dt><dd><b>${s.replyHrs}</b> ${L('שעות','hours')}</dd></dl></div>`;
 }
 function spDocsCard(s){
   if(s.real||!s.docs)return `<div class="card sp-c"><h3>${L('מסמכים','Documents')}</h3><p>${pillF(L('בתיק','On file'),'')} <span class="muted">${L('W-9, אישור ביטוח וחוזה שמורים בתיק הספק.','W-9, insurance certificate and contract are kept on file.')}</span></p></div>`;
   const d=s.docs,row=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`;
-  const coi=d.coi?(()=>{const n=spDays(d.coi);return `${fmtDate(d.coi)} ${n<0?pillF(L('פג תוקף','Expired'),'red'):n<60?pillF(L(`עוד ${n} ימים`,`${n} days left`),'amber'):pillF(L('בתוקף','Valid'),'green')}`;})():'<span class="muted">–</span>';
+  const coi=d.coi?(()=>{const n=spDays(d.coi);return `${fmtDate(d.coi)} ${n<0?pillF(L('פג תוקף','Expired'),'red'):n<60?pillF(L(`עוד ${n} ימים`,`${n} ${PLN(n,'day','days')} left`),'amber'):pillF(L('בתוקף','Valid'),'green')}`;})():'<span class="muted">–</span>';
   return `<div class="card sp-c"><h3>${L('מסמכים','Documents')}</h3><dl class="sp-kv">${d.w9==null?'':row('W-9',d.w9?pillF(L('התקבל','Received'),'green'):pillF(L('חסר','Missing'),'amber'))}${row(L('אישור ביטוח (COI)','Insurance certificate (COI)'),coi)}${row(L('חוזה בתוקף עד','Contract valid to'),fmtDate(d.contractTo))}</dl></div>`;
 }
 function spRatesHtml(s){
@@ -235,7 +235,7 @@ function spmTab(t){
   spInit(t);
   const c=calc(t),cnt={contact:0,pending:0,approved:0,compare:0};t.sups.forEach(s=>{cnt[spFlow(s)]++;});
   const un=spUnassigned(t),perm=spCan('ops.suppliers'),n=t.sups.length,ok=t.sups.filter(s=>spFromSt(s.st)==='approved').length;
-  const sum=`<div class="sp-sum">${SP_FLOWS.map(f=>`<span class="sp-chip">${pillF(spFlowL(f),SP_FC[f])}<b>${cnt[f]}</b></span>`).join('')}<span class="muted small">${L(`${ok} מתוך ${n} ספקים אושרו`,`${ok} of ${n} suppliers approved`)}</span></div>`;
+  const sum=`<div class="sp-sum">${SP_FLOWS.map(f=>`<span class="sp-chip">${pillF(spFlowL(f),SP_FC[f])}<b>${cnt[f]}</b></span>`).join('')}<span class="muted small">${L(`${ok} מתוך ${n} ספקים אושרו`,`${ok} of ${n} ${PLN(n,'supplier','suppliers')} approved`)}</span></div>`;
   const unHtml=un.length?`<div class="card sp-un"><h3>${L('רכיבים בלי ספק ברשימה','Unassigned components')}</h3><p class="muted small">${L('שורות בהצעה שהספק שלהן עדיין לא ברשימת הספקים של הטיול.','Quote lines whose supplier is not yet on this trip\'s supplier list.')}</p><div class="scroll"><table class="tbl"><thead><tr><th>${L('רכיב','Component')}</th><th>${L('ספק','Supplier')}</th><th class="al-ctl"></th></tr></thead><tbody>${un.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.sup)}</td><td class="al-ctl"><button class="btn sm" data-act="sp-assign" data-v="${l.id}" ${perm?'':'disabled'}>${L('הוספה לרשימה','Add to list')}</button></td></tr>`).join('')}</tbody></table></div></div>`:'';
   const rows=t.sups.map((s,i)=>{
     const l=spLine(t,s),X=l&&c.lines.find(x=>x.l===l),sp=supByName(s.n),f=spFlow(s);
@@ -312,7 +312,7 @@ document.addEventListener('click',e=>{
   else if(a==='sp-new'){if(typeof formOpen==='function')formOpen('supplier',null);}
   else if(a==='sp-edit'){const s=SUP_BY[S.supId];if(s&&typeof formOpen==='function'&&spCan('sup.edit'))formOpen('supplier',s);}
   else if(a==='sp-set'&&t){const p=v.split('|');if(spCan('ops.suppliers')&&spSetFlow(t,+p[0],p[1]))render();}
-  else if(a==='sp-req'&&t){const n=spRequest(t,+v);render();toast(L(`נשלחו בקשות הצעת מחיר ל-${n} חלופות. מענה עד ${fmtDate(addDays(iso(TODAY),3))}.`,`Quotes requested from ${n} alternatives. Reply by ${fmtDate(addDays(iso(TODAY),3))}.`));}
+  else if(a==='sp-req'&&t){const n=spRequest(t,+v);render();toast(L(`נשלחו בקשות הצעת מחיר ל-${n} חלופות. מענה עד ${fmtDate(addDays(iso(TODAY),3))}.`,`Quotes requested from ${n} ${PLN(n,'alternative','alternatives')}. Reply by ${fmtDate(addDays(iso(TODAY),3))}.`));}
   else if(a==='sp-choose'&&t){const p=v.split('|'),r=spChoose(t,+p[0],p[1]);render();toast(r.ok?L(`הספק הוחלף. שינוי בעלות: ${r.delta<0?'−':'+'}${usd(Math.abs(r.delta||0))}`,`Supplier switched. Cost change: ${r.delta<0?'−':'+'}${usd(Math.abs(r.delta||0))}`):r.reason);}
   else if(a==='sp-assign'&&t){spAssign(t,v);render();}
   else if(a==='sp-cli-close')spCliClose();
