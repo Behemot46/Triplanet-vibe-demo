@@ -10,7 +10,7 @@ import base64, os, sys
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(HERE, 'out')
-PICKS = {'Ella': 11, 'Priya': 23, 'Dana': 11, 'Marcus': 23, 'Grace': 23, 'Luis': 11, 'Tom': 11}
+PICKS = {'Ella': 11, 'Priya': 23, 'Dana': 11, 'Marcus': 23, 'Grace': 23, 'Luis': 11, 'Tom': 11, 'Maya': 11}
 CROP = (48, 0, 464, 416)   # head and shoulders, square
 os.makedirs(OUT, exist_ok=True)
 if len(sys.argv) > 1:

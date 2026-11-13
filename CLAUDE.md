@@ -60,6 +60,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/s4_views.js` - home, quotes, trip tabs
 - `v6/s5_fin.js` - trip invoice check, gap cards, dispute email, Invoice check page, finance dashboard
 - `v6/s6_rest.js` - templates, hotels, suppliers, activities, users, import, Maya questions (QS), event wiring (no boot lines any more)
+- `v6/s6b_dnd.js` - trip plan drag and drop (since 13 Nov 2026): one pointer-based system for mouse, touch and pen (native HTML5 drag and drop does not work on tablets). Sites and template cards drag onto any day, or between sites to set the order; a line shows the slot; a closed day opens after a 550 ms hover (not while edge-scrolling); gaps between days snap to the nearest day; Esc cancels; every drop saves, opens the target day, flashes what moved and says so in a toast. Touch: drag the grip or the template photo, or long-press 300 ms. `dndMoveItem`/`dndAddTpl` are covered by check6.
 - `v6/s7_leak.js` - leak model (`leakModel`, `leakRows`), Profit leaks screen, leak bridge SVG, heatmap, count-up
 - `v6/s7b_product.js` - product fidelity from dev.triplanet.io screenshots (Nov 2026):
   - nav "Projects" and "Clients";
@@ -78,6 +79,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
 - `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens; Pilot = working in the demo, offered to pilot customers; Roadmap = not available.
 - `v6/s9c_live.js` - Maya live mode (see Hard constraints): settings card, `liveSnapshot()`, `liveSystem()`, streaming `liveAsk()`, scripted fallback. `check6.js` checks the snapshot (no NaN, no real brand in a gap, leak total ties).
+- `v6/s9d_maya.js` - Maya always at hand (since 13 Nov 2026): her AI-generated face (`AVATARS.Maya`) with an "AI" badge, one proactive tip per page computed from the data on screen (scripted logic, never labeled live), a one-tap fix for an overloaded trip-plan day (nearest day that fits, arrival and departure days last), "/" or Ctrl/Cmd+K to open her, and page-aware suggested questions. Tips are off in meeting mode, the tour, the attract screen and while her panel is open. check6 covers the tips in both languages and every plan fix.
 - `v6/s9_meet.js` - meeting mode:
   - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;

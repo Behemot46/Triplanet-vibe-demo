@@ -5,7 +5,7 @@ const els={};
 const mk=id=>els[id]||(els[id]={id,innerHTML:'',value:'',style:{},setAttribute(){},textContent:'',classList:{add(){},remove(){}},addEventListener(){},focus(){}});
 const ctx={document:{getElementById:mk,addEventListener(){},querySelector(){return null;},querySelectorAll(){return []}},window:{scrollY:0,scrollTo(){},matchMedia:()=>({matches:false})},navigator:{},Intl,console,setTimeout:()=>0,clearTimeout(){}};
 ctx.window.window=ctx.window;vm.createContext(ctx);
-vm.runInContext(js+`;globalThis.__t={PH_:typeof PHOTOS!=='undefined'?PHOTOS:null,PHC_:typeof PHOTO_CREDITS!=='undefined'?PHOTO_CREDITS:[],liveSnapshot,liveSystem,MEET,meetSetCut,leakModel_:leakModel,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
+vm.runInContext(js+`;globalThis.__t={PH_:typeof PHOTOS!=='undefined'?PHOTOS:null,PHC_:typeof PHOTO_CREDITS!=='undefined'?PHOTO_CREDITS:[],liveSnapshot,liveSystem,mayaTip,mayaPlanFix,dndMoveItem,dndAddTpl,MEET,meetSetCut,leakModel_:leakModel,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
 const X=ctx.__t,{S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,QS,PTABS,vTrip,NAV,NAV2,trHtml,HE_RE,trChunk}=X;
 let bad=0;const fail=m=>{bad++;console.log('FAIL',m);};
 const chk=(h0,l)=>{const h=String(h0).replace(/data:[a-z/+]+;base64,[A-Za-z0-9+\/=]+/g,'');if(/NaN|undefined|Infinity|\[object|null</.test(h))fail(l+' bad token: '+(h.match(/.{40}(NaN|undefined|Infinity|\[object|null<).{20}/)||[''])[0]);};
@@ -91,6 +91,18 @@ X.resetDemo();
 if(X.PH_){const n=Object.values(X.PH_).reduce((q,o)=>q+Object.keys(o).length,0);if(n!==X.PHC_.length)fail('photos without credits '+n+' vs '+X.PHC_.length);
   X.PHC_.forEach(c=>{if(!/^(public domain|pd|cc0|cc[- ]by)/i.test(c.license)||/\bNC\b|\bND\b/i.test(c.license))fail('photo license '+c.id+' '+c.license);if(!c.source_url||!c.author)fail('photo credit incomplete '+c.id);});
   console.log('PHOTOS',JSON.stringify(Object.fromEntries(Object.entries(X.PH_).map(([k,o])=>[k,Object.keys(o).length]))));}
+/* Maya tips: every page in both languages; English tips carry no Hebrew; the plan fix really fixes the day */
+for(const lang of ['en','he']){S.lang=lang;X.resetDemo();let n=0;
+  for(const v of ['home','gaps','leaks','finance','quotes','studio','books']){S.tab=v;const tp=X.mayaTip();if(tp){n++;if(lang==='en'&&/[\u0590-\u05FF]/.test(tp.txt+tp.lab))fail('maya tip hebrew '+v);if(/NaN|undefined/.test(tp.txt))fail('maya tip text '+v);}}
+  S.tab='trip';S.ptab='plan';let fixed=0;for(const t of TRIPS){S.tripId=t.id;const f=X.mayaPlanFix(t);if(!f)continue;const tp=X.mayaTip();if(!tp||tp.act!=='mayafix')fail('maya plan tip '+t.id);
+    const before=JSON.stringify(t.items),rev=calc(t).rev;X.dndMoveItem(t,f.it.id,f.to,null);const h=t.items.filter(i=>i.day===f.to).reduce((a,i)=>a+i.hrs,0),hf=t.items.filter(i=>i.day===f.from).reduce((a,i)=>a+i.hrs,0);
+    if(h>9||hf>=f.fromH||calc(t).rev!==rev||t.items.length!==JSON.parse(before).length)fail('maya plan fix '+t.id);fixed++;}
+  if(lang==='en')console.log('MAYA tips',n,'plan fixes',fixed);}
+X.resetDemo();
+/* drag and drop model: move keeps every item once, reorder lands before the target, template adds its sites */
+{const t=TRIPS.find(x=>x.id==='hl'),ids=t.items.map(i=>i.id).sort().join(),a=t.items.filter(i=>i.day===2);X.dndMoveItem(t,a[a.length-1].id,2,a[0].id);
+  const b=t.items.filter(i=>i.day===2);if(b[0].id!==a[a.length-1].id||t.items.map(i=>i.id).sort().join()!==ids)fail('dnd reorder');
+  const n0=t.items.length,k=X.dndAddTpl(t,0,3,null);if(t.items.length!==n0+k||!k)fail('dnd template');X.resetDemo();}
 for(const lang of ['en','he']){S.lang=lang;S.tab='credits';const h=VIEWS.credits();chk(h,'credits');if(lang==='en')scan(h.replace(/<bdi class="cr-au">[^<]*<\/bdi>/g,''),'credits');/* author names stay as the author gave them (licence attribution) */}
 for(const lang of ['en','he']){S.lang=lang;S.tab='status';const h=VIEWS.status();chk(h,'status');if(lang==='en')scan(h,'status');}
 S.lang='en';

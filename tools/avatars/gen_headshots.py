@@ -23,8 +23,10 @@ PEOPLE = {
   'Grace':  "a 35 year old Nigerian American woman, natural curly black hair, coral blouse",
   'Luis':   "a 42 year old Hispanic American man, short wavy dark hair, trimmed beard, navy sweater over a collared shirt",
   'Tom':    "a 29 year old white American man, short light brown hair, round thin-frame glasses, grey crewneck sweater",
+  'Maya':   "a 30 year old woman with olive skin, dark wavy shoulder-length hair, small stud earrings, brand blue blouse",
 }
 SEEDS = [11, 23, 47]
+EXTRA_SEEDS = {'Maya': [5, 71, 88]}   # Maya, the AI assistant, gets more candidates
 
 def main():
     out = sys.argv[1]; names = sys.argv[2:] or list(PEOPLE)
@@ -33,10 +35,10 @@ def main():
     pipe = StableDiffusionPipeline.from_pretrained('SG161222/Realistic_Vision_V5.1_noVAE', vae=vae, torch_dtype=torch.float32,
                                                    safety_checker=None, requires_safety_checker=False)
     pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config)
-    pipe.load_lora_weights('latent-consistency/lcm-lora-sdv1-5'); pipe.fuse_lora()
+    pipe.load_lora_weights('latent-consistency/lcm-lora-sdv1-5', weight_name='pytorch_lora_weights.safetensors'); pipe.fuse_lora()
     pipe.set_progress_bar_config(disable=True)
     for n in names:
-        for s in SEEDS:
+        for s in SEEDS + EXTRA_SEEDS.get(n, []):
             f = os.path.join(out, f'{n}_{s}.png')
             if os.path.exists(f): continue
             t = time.time()

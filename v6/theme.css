@@ -514,3 +514,54 @@ select:hover{border-color:var(--ink)}
   .hp-kp{flex-direction:column;gap:10px;padding:14px}.hp-badge{width:38px;height:38px;border-radius:12px}.hp-badge .ic{width:21px;height:21px}.hp-kp b{font-size:30px}.hp-vs{flex-direction:column;align-items:flex-start;gap:4px}
   .hp-lg .muted{margin-inline-start:0;flex-basis:100%}
 }
+/* ---------- trip plan drag and drop ---------- */
+.site{cursor:grab;border-radius:12px;transition:background .2s,box-shadow .2s;padding-inline:6px;margin-inline:-6px}
+.site:hover{background:color-mix(in srgb,var(--primary) 4%,transparent)}
+.grip{display:grid;place-items:center;width:28px;height:36px;margin-inline-end:-6px;border-radius:8px;color:var(--dis);touch-action:none;cursor:grab;flex:none}
+.grip .ic{width:18px;height:18px}
+.site:hover .grip{color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,transparent)}
+.tpl[data-tpl]{cursor:grab}.tpl[data-tpl] .im{touch-action:none}
+body.dnd,body.dnd *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.dnd-src{opacity:.38;filter:grayscale(.4)}
+.acc.over{outline:2px dashed var(--primary);outline-offset:2px;background:color-mix(in srgb,var(--primary) 5%,var(--panel))}
+.dnd-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:8px;max-width:300px;padding:10px 14px;border-radius:12px;
+  background:var(--panel);color:var(--ink);font:600 14px var(--f-ui);box-shadow:0 18px 40px -8px rgba(1,41,114,.35),0 0 0 1px color-mix(in srgb,var(--primary) 35%,transparent);rotate:-2deg}
+.dnd-ghost span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dnd-ghost .ic{color:var(--primary);flex:none}
+.dnd-ghost em{font-style:normal;font:700 12px var(--f-num);background:var(--primary);color:#fff;border-radius:99px;padding:1px 7px}
+.dnd-line{position:fixed;z-index:9998;height:3px;border-radius:3px;background:var(--primary);pointer-events:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 20%,transparent);display:none}
+.dnd-line::before{content:"";position:absolute;left:-4px;top:-3px;width:9px;height:9px;border-radius:50%;background:var(--primary)}
+.site.just{animation:dndJust 1.4s ease}
+@keyframes dndJust{0%{background:color-mix(in srgb,#5DFCE0 45%,transparent)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.site.just{animation:none}.dnd-ghost{rotate:none}}
+/* ---------- Maya: face, floating button, tips ---------- */
+.chenav.ph{position:relative;padding:0;overflow:visible;background:none!important}
+.chenav.ph img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 2px var(--panel)}
+.chenav.ph.big::before{content:"";position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 200deg,#5DFCE0,#078DEE,#68CDF9,#5DFCE0);z-index:-1}
+.chenav .ai{position:absolute;inset-inline-end:-6px;bottom:-3px;font:800 8.5px/1 var(--f-num);letter-spacing:.04em;font-style:normal;color:#012972;background:#5DFCE0;border-radius:6px;padding:2px 4px;box-shadow:0 0 0 2px var(--panel)}
+.chenfab{gap:10px;padding:7px 18px 7px 8px!important;background:linear-gradient(135deg,#012972,#0351AB)!important;color:#fff!important;box-shadow:0 14px 30px -10px rgba(1,41,114,.6)!important;transition:transform .2s}
+[dir=rtl] .chenfab{padding:7px 8px 7px 18px!important}
+.chenfab:hover{transform:translateY(-2px)}
+.chenfab .chenav.ph img{box-shadow:0 0 0 2px #0351AB}
+.chenfab .chenav .ai{box-shadow:0 0 0 2px #0351AB}
+.chenfab span:not(.chenav){display:inline-flex;align-items:center;gap:8px;font:600 14px var(--f-ui)}
+.chenfab kbd{font:700 11px var(--f-num);padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#DCEBFA}
+.chenfab::after{content:"";position:absolute;inset-inline-start:36px;top:8px;width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 2px #0351AB;animation:mayaOn 2.4s ease-in-out infinite}
+@keyframes mayaOn{0%,100%{box-shadow:0 0 0 2px #0351AB,0 0 0 2px rgba(34,197,94,.5)}50%{box-shadow:0 0 0 2px #0351AB,0 0 0 7px rgba(34,197,94,0)}}
+.chen .ch .chenav.ph{width:38px!important;height:38px!important}
+.maya-nudge{position:fixed;z-index:44;inset-inline-end:max(18px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100vw - 32px));
+  background:var(--panel);color:var(--ink);border-radius:18px;padding:14px 14px 12px;box-shadow:0 24px 48px -12px rgba(1,41,114,.35),0 0 0 1px color-mix(in srgb,var(--primary) 18%,transparent);animation:mayaIn .45s cubic-bezier(.2,.8,.2,1) both}
+.maya-nudge::after{content:"";position:absolute;bottom:-7px;inset-inline-end:34px;width:14px;height:14px;background:var(--panel);rotate:45deg;box-shadow:3px 3px 6px -2px rgba(1,41,114,.12)}
+.maya-nudge .mn-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.maya-nudge .mn-h strong{display:block;font-size:14px}
+.maya-nudge .mn-h small{display:block;font-size:11.5px;color:var(--muted)}
+.maya-nudge p{margin:0 0 12px;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+.maya-nudge .mn-a{display:flex;gap:8px}
+.maya-nudge .mn-x{all:unset;cursor:pointer;position:absolute;top:10px;inset-inline-end:10px;width:26px;height:26px;display:grid;place-items:center;border-radius:8px;color:var(--muted)}
+.maya-nudge .mn-x:hover{background:var(--recess)}
+.maya-nudge .mn-x .ic{width:16px;height:16px}
+@keyframes mayaIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.meet-on .maya-nudge{display:none}
+@media (max-width:640px){.chenfab span:not(.chenav){display:none}.maya-nudge{bottom:calc(76px + env(safe-area-inset-bottom,0px))}.chenfab::after{inset-inline-start:30px;top:6px}.chenfab{padding:7px!important}}
+@media (prefers-reduced-motion:reduce){.maya-nudge{animation:none}.chenfab::after{animation:none}}
+@media print{.maya-nudge{display:none!important}}

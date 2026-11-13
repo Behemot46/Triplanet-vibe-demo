@@ -31,7 +31,7 @@ const NAV=[['home',['דף הבית','Home'],ic('home')],['quotes',['הצעות �
 const NAV2=[['gaps',['בקרת חשבוניות','Invoice check'],ic('gaps')],['finance',['כספים','Finance'],ic('finance')],['ai',['מאיה, העוזרת החכמה','Maya, AI assistant'],ic('ai')]];
 const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g fill="#b22234">${[0,2,4,6,8,10,12].map(i=>`<rect y="${i*20/13}" width="30" height="${20/13}"/>`).join('')}</g><rect width="13" height="${20*7/13}" fill="#3c3b6e"/></svg>`,
   he:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#d6dbe3" stroke-width=".6"/><rect y="2.2" width="30" height="2.6" fill="#0038b8"/><rect y="15.2" width="30" height="2.6" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="1"><path d="M15 6.3l3.2 5.5h-6.4z"/><path d="M15 13.7l3.2-5.5h-6.4z"/></g></svg>`};
-const chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}px">${L('מ','M')}</span>`;
+let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}px">${L('מ','M')}</span>`;
 function render(){
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
@@ -69,7 +69,7 @@ function render(){
 
 /* ---------- Maya drawer ---------- */
 function chatLog(){return S.chat.map(x=>`<div class="msg ${x.r}">${x.r==='a'?`<div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>`:''}${esc(x.t)}${x.btn?`<div style="margin-top:8px"><button class="btn sm pri" data-act="${x.btn.act}" data-v="${x.btn.v||''}">${x.btn.label}</button></div>`:''}</div>`).join('');}
-function chenSuggest(){
+var chenSuggest=function(){
   const t=T();let ids;
   if(S.tab==='trip'&&t&&S.ptab==='tfin')ids=[1,8,5,2];
   else if(S.tab==='gaps')ids=[2,3,4,6];
@@ -77,7 +77,7 @@ function chenSuggest(){
   else if(S.tab==='quotes'||S.tab==='trip')ids=[15,16,17,24];
   else ids=[1,11,19,24];
   return ids.map(i=>QS[i-1]);
-}
+};
 function chenPanel(){
   return `<aside class="chen" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm" data-act="chen" aria-label="${L('סגור','Close')}">${ic('x')}</button></div>
    <div class="cb">${S.chat.length?chatLog():`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. אפשר לשאול אותי על פערי חשבוניות, רווחיות, תשלומים, משימות או לבקש טיוטה לטיול.','Hi, I am Maya. Ask me about invoice gaps, margins, payments or tasks, or ask me to draft a trip.')}</div>`}</div>
