@@ -96,8 +96,10 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - Studio plans use the same `genLines` + `calc` as quotes, so "Create the quote" yields an ordinary quote. Studio plans are multi-base: hotels define bases, each attraction belongs to its nearest base (within 170 km), and nights split by attractions. Drive time from Tulsa is straight-line km x 1.12 at 100 km/h plus 1 h; coach transfers and day trips use km x 1.35 at 80 km/h.
 - The demo's "today" is still fixed at 20 Oct 2026 (owner decision pending; moving it re-baselines every dated figure).
 - Print: window.print is wrapped in try/catch.
+- Honesty labels revised 13 Nov 2026 (owner decision): a read-only walkthrough of dev.triplanet.io (report dated Sep 2026, not verified with the product team) found no active Finance stage, invoices, payments, trip P&L, integrations or multi-currency. So Income/invoices/vouchers moved Live -> Pilot, Trip P&L and Currencies/locked rate were added as Pilot, and the Projects and Catalog rows no longer claim finance or commissions. Flip a row back only when the product team confirms it is live.
 
 ## Open items (owner)
+- Confirm with the product team, before IITA (31 Jan 2027), what is live today in finance (Finance stage, invoices, payments, trip P&L) and adjust `FEAT` in `v6/s9b_status.js`.
 - Payment and email domains are placeholders (`.example`).
 - Gap frequencies (about 20% of invoices with a gap) are estimates, not benchmarks.
 - Live accounting connections (Intuit, Xero, Priority, Hashavshevet) are product work; the demo is simulated and badged Pilot. Verify Hashavshevet and Priority object names with an accountant before showing to Israeli buyers.

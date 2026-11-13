@@ -2,18 +2,21 @@
    One table drives the "What's live" screen, the badge on each page header and the 10-minute
    meeting beat. The owner confirms the statuses before each show (see CLAUDE.md). */
 const FEAT=[
-  // Live: in the product today (app.triplanet.io screens)
-  ['projects','live','folder',['פרויקטים ושלבים','Projects and stages'],['הצעה, תפעול וכספים באותו תיק.','Quotation, operation and finance in one file.'],'quotes'],
+  // Live: in the product today. Revised 13 Nov 2026 (owner decision) after a read-only walkthrough of dev.triplanet.io
+  // (Sep 2026 report): the Finance stage, invoices, payments, trip P&L, integrations and multi-currency are not active there.
+  ['projects','live','folder',['פרויקטים ושלבים','Projects and stages'],['הצעה ותפעול באותו תיק: מסלול, ספקים, רשימת נוסעים ומשימות.','Quotation and operation in one file: itinerary, suppliers, passenger list and tasks.'],'quotes'],
   ['quote','live','quotes',['הצעות מחיר עם מרקאפ','Quotes with markup'],['מרקאפ לפי סוג שירות, הצעה ממותגת ללקוח.','Markup by service type, a branded client quote.'],null],
-  ['catalog','live','hotels',['מלונות, פעילויות וספקים','Hotels, activities and suppliers'],['קטלוג אחד עם עלויות, עמלות וקיבולת.','One catalog with costs, commissions and capacity.'],'hotels'],
+  ['catalog','live','hotels',['מלונות, פעילויות וספקים','Hotels, activities and suppliers'],['קטלוג אחד, עם מחירון לפי קטגוריית שירות.','One catalog, with a price list by service category.'],'hotels'],
   ['clients','live','clients',['לקוחות','Clients'],['כל קבוצה וכל תיק במקום אחד.','Every group and file in one place.'],'clients'],
-  ['income','live','receipt',['הכנסות, חשבוניות ושוברים','Income, invoices and vouchers'],['חשבוניות עסקה, חשבוניות מס ושוברים לספקים.','Deal invoices, tax invoices and supplier vouchers.'],null],
   ['lang','live','widget',['עברית ואנגלית','Hebrew and English'],['ממשק מלא בשתי השפות, כולל ימין לשמאל.','The full interface in both languages, right to left included.'],null],
   // Pilot: working, offered to pilot customers
   ['gaps','pilot','gaps',['בקרת חשבוניות ספקים','Supplier invoice check'],['כל שורה בחשבונית מול מה שתומחר, ודרישת זיכוי בלחיצה.','Every bill line against what was quoted, and a dispute in one click.'],'gaps'],
   ['books','pilot','sync',['חיבור להנהלת חשבונות','Accounting sync'],['פריוריטי, חשבשבת, <bdi>QuickBooks</bdi> ו-<bdi>Xero</bdi>.','QuickBooks, Xero, Priority and Hashavshevet.'],'books'],
   ['leaks','pilot','leaks',['דליפות רווח','Profit leaks'],['לפי טיול, סוכן, סוג קבוצה וספק.','By trip, agent, group type and supplier.'],'leaks'],
   ['ai','pilot','ai',['מאיה עונה מהנתונים שלכם','Maya answers from your data'],['שאלה מוקלדת נענית בזמן אמת על ידי Claude. כפתורי השאלות המוכנות בתסריט.','Typed questions are answered live by Claude. The ready-made question buttons are scripted.'],'ai'],
+  ['income','pilot','receipt',['הכנסות, חשבוניות ושוברים','Income, invoices and vouchers'],['חשבוניות עסקה, חשבוניות מס ושוברים לספקים, בשלב הכספים של התיק.','Deal invoices, tax invoices and supplier vouchers, in the file\'s finance stage.'],null],
+  ['pnl','pilot','chart2',['רווח והפסד לטיול','Trip P&L'],['רווח מתוכנן מול צפוי לכל טיול ולכל העונה.','Planned against expected profit for every trip and for the season.'],'finance'],
+  ['fx','pilot','cash',['מטבעות ושער נעול','Currencies and a locked rate'],['עלויות ב-EUR, GBP או CAD, עם שער נעול לכל טיול.','Costs in EUR, GBP or CAD, with a locked rate per trip.'],null],
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
   // Roadmap: planned, not available yet
   
@@ -34,7 +37,7 @@ function vStatus(){
 VIEWS.status=vStatus;
 NAV2.push(['status',['מה זמין היום','What\'s live'],ic('checklist')]);
 /* a status badge on every page header that shows a Pilot or Roadmap feature */
-['gaps','books','leaks','studio','ai'].forEach(v=>{const f0=VIEWS[v];if(!f0)return;VIEWS[v]=function(){const h=f0.apply(this,arguments),f=featOf(v);
+['gaps','books','leaks','studio','ai','finance'].forEach(v=>{const f0=VIEWS[v];if(!f0)return;VIEWS[v]=function(){const h=f0.apply(this,arguments),f=featOf(v);
   if(!f||h.indexOf('<div class="ph">')!==0)return h;const tag=stPill(f[1]);
   const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
   return hd+h.slice(e);};});
