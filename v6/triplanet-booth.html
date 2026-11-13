@@ -9418,7 +9418,10 @@ function specKey(){
   if(S.tab==='suppliers'&&S.supId)return 'drawer:supplier';
   if(S.tab==='clients'&&S.cliId)return 'drawer:client';
   if(S.tab==='home')return 'home:'+(isMgr()?'manager':isAcct()?'accountant':'agent');
-  if(S.tab==='trip')return 'trip:'+S.ptab;
+  if(S.tab==='trip'){const pt=S.ptab==='ops'?'odash':S.ptab;
+    /* sub-views have their own entries: plan by day/components/map, proposal pdf/table/landing */
+    const sub=pt==='plan'?(S.tbView||'day'):pt==='quote'?({table:'table',landing:'landing'}[S.prFmt]||'pdf'):'';
+    return sub&&SPEC['trip:'+pt+':'+sub]?'trip:'+pt+':'+sub:'trip:'+pt;}
   if(S.tab==='forms')return 'page:forms';
   if(S.tab==='uikit')return 'page:uikit';
   return S.tab;
