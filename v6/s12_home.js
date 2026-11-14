@@ -23,7 +23,7 @@ function hcPage(o){
     return `<${tag} class="hc-kpi ${k.cls||''}" style="--d:${60+i*70}ms"${at}><span>${k.lab}</span><b>${k.val}</b>${k.sub?`<small>${k.sub}</small>`:''}</${tag}>`;};
   return `<section class="hc-hero hc-page ${o.cls||''}${an?' anim':''}" aria-label="${esc(o.aria||o.title||'')}">
    <svg class="hc-bg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="hc-arc a1" d="M120 300 C 380 120, 700 90, 980 190"/><path class="hc-arc a2" d="M520 300 C 700 180, 930 140, 1190 90"/><circle class="hc-pin" cx="980" cy="190" r="4"/><circle class="hc-pin" cx="1190" cy="90" r="4"/></svg>
-   <div class="hc-ph"><div class="hc-hi">${o.eyebrow?`<span class="hc-eye">${o.eyebrow}</span>`:''}<h1>${o.title}</h1>${o.brief?`<p>${o.brief}</p>`:''}</div>
+   <div class="hc-phd"><div class="hc-hi">${o.eyebrow?`<span class="hc-eye">${o.eyebrow}</span>`:''}<h1>${o.title}</h1>${o.brief?`<p>${o.brief}</p>`:''}</div>
     ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
    ${o.kpis&&o.kpis.length?`<div class="hc-kpis k${o.kpis.length}">${o.kpis.map(kp).join('')}</div>`:''}${o.extra||''}</section>`;
 }

@@ -84,15 +84,29 @@ function vQuotes(){
   const list=base.filter(t=>inTab(t,S.qtab)).sort((a,b)=>D(a.dep)-D(b.dep));
   const per=S.rpp||list.length||1,pages=Math.max(1,Math.ceil(list.length/per));if(S.page>=pages)S.page=pages-1;
   const shown=S.rpp?list.slice(S.page*per,S.page*per+per):list;
-  const rows=shown.map(t=>`<tr><td class="no">#${t.no}</td><td>${qchip(t)}</td><td><strong>${esc(t.name)}</strong><div class="small muted">${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td>
-    <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm" data-act="dup" data-v="${t.id}">${L('שכפל','Duplicate')}</button></div></td></tr>`).join('');
-  const tabs=[['quotes',L('הצעות','Quotes')],['files',L('תיקים','Files')],['archive',L('ארכיון','Archive')],['all',L('הכל','All')]].map(x=>`<button class="${S.qtab===x[0]?'on':''}" data-act="qtab" data-v="${x[0]}">${x[1]}<span class="cnt">${base.filter(t=>inTab(t,x[0])).length}</span></button>`).join('');
+  const rows=shown.map(t=>`<tr><td>${qchip(t)}</td><td class="pq-nm"><strong>${esc(t.name)}</strong><div class="small muted">#${t.no} · ${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td><td class="n">${usd(calc(t).rev)}</td>
+    <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm pq-dup" data-act="dup" data-v="${t.id}" aria-label="${L('שכפל','Duplicate')}" title="${L('שכפל','Duplicate')}">${ic('copy')}</button></div></td></tr>`).join('');
+  const cards=shown.map(t=>`<div class="pq-card"><div class="pq-top"><span class="pq-no">#${t.no}</span>${qchip(t)}<span class="pq-val">${usd(calc(t).rev)}</span></div>
+    <strong class="pq-name">${esc(t.name)}</strong><div class="small muted">${dn(t.dest)} · ${esc(t.client)}</div><div class="pq-dt small">${range(t)} · ${nightsL(t.nights)}</div>
+    <div class="pq-bot"><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}<span class="small">${agn(t.agent)}</span></span><span class="row" style="flex-wrap:nowrap"><button class="btn sm pri" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm" data-act="dup" data-v="${t.id}">${L('שכפל','Duplicate')}</button></span></div></div>`).join('');
+  const sum=k=>r2(base.filter(t=>inTab(t,k)).reduce((a,t)=>a+calc(t).rev,0)),cnt=k=>base.filter(t=>inTab(t,k)).length;
+  const oq=all.filter(isOpenQ),oqv=r2(oq.reduce((a,t)=>a+calc(t).rev,0)),appr=oq.filter(t=>t.qst==='Approval').length;
+  const nOp=all.filter(t=>t.stage==='Operations').length,nFin=all.filter(t=>t.stage==='Finance').length;
+  const tile=(k,lab,sub)=>({lab,val:String(cnt(k)),sub,cls:S.qtab===k?'on':'',act:'qtab',v:k});
+  const lostN=base.filter(t=>t.stage==='Quote'&&t.qst==='Lost').length,closedN=base.filter(t=>t.stage==='Closed').length;
+  const kpis=[tile('quotes',L('הצעות','Quotes'),usd(sum('quotes'))+' '+L('פתוחות','open')),tile('files',L('תיקים','Files'),usd(sum('files'))+' '+L('בתפעול ובסגירה','in operation and close')),
+    tile('archive',L('ארכיון','Archive'),L(`${closedN} נסגרו, ${lostN} אבדו`,`${closedN} closed, ${lostN} lost`)),tile('all',L('הכל','All'),usd(sum('all')))];
   const from=list.length?S.page*per+1:0,to=Math.min(list.length,S.page*per+per);
-  return head(L('פרוייקטים','Projects'),`<button class="btn pri" data-act="newq">+ ${L('תיק חדש','New file')}</button>`)+`<div class="card" id="qlist">
-    <div class="row sec"><input type="text" data-in="q" value="${esc(S.q)}" placeholder="${L('חפש...','Search...')}" aria-label="${L('חיפוש','Search')}" style="flex:1;min-width:200px">
+  const brief=L(`${hlKey(oq.length+' הצעות פתוחות')} בשווי ${hlKey(usd(oqv))}${appr?`, ${hlWarn(appr+' ממתינות לאישור')}`:''}. ${nOp} תיקים בתפעול ו-${nFin} בסגירה כספית.`,
+    `${hlKey(oq.length+' open '+(oq.length===1?'quote':'quotes'))} worth ${hlKey(usd(oqv))}${appr?`, ${hlWarn(appr+' waiting for approval')}`:''}; ${nOp} ${nOp===1?'file':'files'} in operation and ${nFin} in financial close.`);
+  const hero=hcPage({eyebrow:L('מכירות','Sales'),title:L('פרויקטים','Projects'),brief,aria:L('פרויקטים','Projects'),cls:'pq-hero',
+    ctas:[hcCta('mint','quotes',L('הצעה חדשה','New quote'),'data-act="newq"'),hcCta('ghost','magic',L('סטודיו טיולים','Trip studio'),'data-act="go" data-v="studio"')],kpis})
+    .replace(/data-act="qtab" data-v="(\w+)"/g,(m,v)=>m+` aria-pressed="${S.qtab===v}"`);
+  return hero+`<div class="card hc-card pq-list" id="qlist">
+    <div class="row pq-f"><input type="text" data-in="q" value="${esc(S.q)}" placeholder="${L('חפש...','Search...')}" aria-label="${L('חיפוש','Search')}" style="flex:1;min-width:200px">
     <select data-ch="qseg" aria-label="${L('סינון לפי סוג קבוצה','Filter by group type')}"><option value="All">${L('כל הסוגים','All group types')}</option>${Object.keys(SEG).map(k=>`<option value="${k}" ${S.qseg===k?'selected':''}>${sn(k)}</option>`).join('')}</select></div>
-    <div class="tabs">${tabs}</div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>${L('סטטוס','Status')}</th><th>${L('שם הפרוייקט','Project name')}</th><th>${L('תאריכי טיול','Trip dates')}</th><th>${L('לקוח','Client')}</th><th>${L('אחראי תיק','File owner')}</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="muted">${L('אין תוצאות.','No results.')}</td></tr>`}</tbody></table></div>
+    <div class="scroll pq-tbl"><table class="tbl"><thead><tr><th>${L('סטטוס','Status')}</th><th>${L('שם הפרוייקט','Project name')}</th><th>${L('תאריכי טיול','Trip dates')}</th><th>${L('לקוח','Client')}</th><th>${L('אחראי תיק','File owner')}</th><th class="n">${L('שווי','Value')}</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="muted">${L('אין תוצאות.','No results.')}</td></tr>`}</tbody></table></div>
+    <div class="pq-cards">${cards||`<p class="muted">${L('אין תוצאות.','No results.')}</p>`}</div>
     <div class="pager"><label class="small muted">${L('שורות בעמוד:','Rows per page:')} <select data-ch="rpp">${[8,16,0].map(n=>`<option value="${n}" ${S.rpp===n?'selected':''}>${n||L('הכל','All')}</option>`).join('')}</select></label>
     <span class="small muted">${from}-${to} ${L('מתוך','of')} ${list.length}</span><button class="btn sm" data-act="pg" data-v="-1" ${S.page===0?'disabled':''} aria-label="${L('הקודם','Previous')}">${ic('chev','flip back')}</button><button class="btn sm" data-act="pg" data-v="1" ${S.page>=pages-1?'disabled':''} aria-label="${L('הבא','Next')}">${ic('chev','flip')}</button></div></div>`;
 }

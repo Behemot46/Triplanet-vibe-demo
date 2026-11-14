@@ -1618,7 +1618,7 @@ button.hc-kpi:hover{background:rgba(255,255,255,.14)}
 
 /* compact page header (hcPage) */
 .hc-page{padding:22px 24px 18px;margin-bottom:20px}
-.hc-ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hc-phd{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .hc-page .hc-hi h1{font-size:28px;margin-bottom:6px}
 .hc-page .hc-hi p{font-size:15px}
 .hc-page .hc-cta{margin-top:0}
@@ -1626,6 +1626,8 @@ button.hc-kpi:hover{background:rgba(255,255,255,.14)}
 .hc-kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .hc-kpis.k2{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (max-width:600px){.hc-page{padding:18px 16px 14px}.hc-page .hc-hi h1{font-size:23px}.hc-kpis.k3{grid-template-columns:1fr 1fr}.hc-page .hc-cta{width:100%}}
+
+@media (max-width:600px){.hc-page .hc-pin{display:none}}
 
 .nx-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:10px 14px;border:1px solid var(--line);border-inline-start:4px solid var(--blue);border-radius:12px;background:var(--panel)}
 .nx-bar.urgent{border-inline-start-color:var(--red)}.nx-bar.info{border-inline-start-color:var(--muted)}.nx-bar.clear{border-inline-start-color:var(--green)}
@@ -2084,6 +2086,103 @@ body.dv-open #app{padding-right:380px}
   .uk-live,.uk-doc{padding-inline:14px}
   .uk-link{flex-wrap:wrap}
 }
+
+/* v8.2 (a): Projects list, project page chrome, Operation and Finance dashboards in the command-center language.
+   Tokens only, logical properties, day and night. */
+
+/* ---- Projects ---- */
+.pq-hero .hc-kpi.on{background:rgba(255,255,255,.2);border-color:var(--mint)}
+.pq-hero .hc-kpi b{font-size:26px}
+.pq-list{padding:16px 20px 12px}
+.pq-f{margin-bottom:12px}
+.pq-list .tbl tbody tr{transition:background .15s}
+.pq-list .tbl tbody tr:hover{background:var(--recess)}
+.pq-list .tbl th.n,.pq-list .tbl td.n{text-align:end;font-family:var(--f-num);font-weight:600;white-space:nowrap}
+.pq-list .tbl td.pq-nm{min-width:210px}
+.pq-list .tbl td{padding-inline:10px}
+.pq-cards{display:none}
+.pq-card{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:4px}
+.pq-top{display:flex;align-items:center;gap:8px}
+.pq-no{font:600 12px var(--f-num);color:var(--muted);background:var(--recess);border-radius:8px;padding:2px 8px}
+.pq-val{margin-inline-start:auto;font:800 16px var(--f-num)}
+.pq-name{font-size:16px;line-height:1.3;margin-top:4px}
+.pq-dt{color:var(--ink2)}
+.pq-bot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line)}
+@media (max-width:700px){
+  .pq-tbl{display:none}
+  .pq-cards{display:flex;flex-direction:column;gap:10px}
+  .pq-list{padding:12px;background:transparent;box-shadow:none;border:0}
+  .pq-f{flex-wrap:wrap}.pq-f input{min-width:0!important;width:100%;flex:1 1 100%!important}
+  .pq-hero .hc-kpis{grid-template-columns:1fr 1fr}
+  .pq-hero .hc-kpi b{font-size:21px}
+}
+
+/* ---- project page header band ---- */
+.pj-head{position:relative;isolation:isolate;gap:12px;margin:0;padding:16px 20px 12px;border-radius:20px 20px 0 0;color:var(--hero-ink);background-color:var(--hero1)}
+.pj-shade{position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:linear-gradient(100deg,color-mix(in srgb,var(--hero1) 92%,transparent) 8%,color-mix(in srgb,var(--hero2) 70%,transparent) 62%,color-mix(in srgb,var(--hero2) 35%,transparent))}
+.pj-head .pj-back{color:var(--hero-ink);background:rgba(255,255,255,.12)}
+.pj-head .pj-back:hover{background:rgba(255,255,255,.22)}
+.pj-head .pj-no{background:rgba(255,255,255,.14);color:var(--hero-ink)}
+.pj-head .pj-name{color:var(--hero-ink);font:800 24px/1.15 var(--f-ui);letter-spacing:-.01em;margin:0 6px 0 0}
+[dir=rtl] .pj-head .pj-name{margin:0 0 0 6px}
+.pj-head .pj-stage{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);margin-inline-start:auto}
+.pj-head .pj-stage button{color:var(--hero-mute)}
+.pj-head .pj-stage button.on{background:var(--mint);color:var(--hero1);box-shadow:none}
+.pj-head .pj-status{background:rgba(255,255,255,.92);color:#1C252E}
+.pj-head .pj-status.q{color:#B76E00}.pj-head .pj-status.s-Finance{color:#6B21C9}.pj-head .pj-status.s-Closed{color:#118D57}
+.pj-head .pj-menu{color:var(--ink)}
+.pj-sub{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px!important;padding:0 20px 16px;border-radius:0 0 20px 20px;background:linear-gradient(100deg,var(--hero1),var(--hero2));box-shadow:0 20px 40px -26px rgba(1,41,114,.55);color:var(--hero-ink)}
+[dir=rtl] .pj-sub{margin:0 0 16px!important}
+.pj-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font:600 13px var(--f-ui);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:var(--hero-ink);white-space:nowrap}
+.pj-chip .ic,.pj-chip svg{width:15px;height:15px;color:var(--mint)}
+.pj-chip .avatar{width:20px;height:20px;font-size:10px;margin:0}
+.pj-chip.pj-ag{padding-inline-start:5px}
+@media (max-width:600px){
+  .pj-head{padding:12px 12px 10px;border-radius:18px 18px 0 0}
+  .pj-head .pj-name{font-size:19px;flex:1 1 60%}
+  .pj-head .pj-stage{margin-inline-start:0;order:5;width:100%}
+  .pj-head .pj-stage button{flex:1;padding:7px 8px}
+  .pj-sub{padding:0 12px 12px;border-radius:0 0 18px 18px;gap:6px}
+  .pj-chip{font-size:12px;padding:4px 9px}
+}
+
+/* ---- Operation dashboard ---- */
+.ogrid.od{gap:14px;margin-bottom:20px}
+.ogrid.od .ocard{border:1px solid var(--line);border-radius:20px;box-shadow:none;min-height:0;padding:16px 18px;gap:2px}
+.ogrid.od .ocard::after{display:none}
+.ogrid.od button.ocard:hover{border-color:var(--occ,var(--primary));transform:translateY(-1px)}
+.ogrid.od .oc-ic{position:static;margin-bottom:8px;width:40px;height:40px;border-radius:12px}
+.ogrid.od .oc-ic .ic{width:22px;height:22px}
+.ogrid.od .oc-v{font:800 28px/1.1 var(--f-num);margin-top:0}
+.ogrid.od .oc-l{font:600 13px var(--f-ui);letter-spacing:.02em}
+.ogrid.od .ocard.dark{border:0;background:linear-gradient(125deg,var(--hero1),var(--hero2) 70%,#0A6BD6);box-shadow:0 18px 36px -22px rgba(1,41,114,.6)}
+.ogrid.od .ocard.dark .oc-v{color:var(--hero-ink)}
+.od-grid{margin-bottom:20px}
+.od-room{display:flex;align-items:center;gap:14px}
+.od-ring{position:relative;display:grid;place-items:center;width:84px;height:84px;flex:none}
+.od-ring .hc-ring{position:absolute;inset:0}
+.od-ring b{font:800 18px var(--f-num)}
+.od-room>div b{font-size:15px}
+@media (max-width:600px){.ogrid.od{grid-template-columns:1fr 1fr;gap:10px}.ogrid.od .ocard{padding:12px}.ogrid.od .oc-v{font-size:22px}}
+
+/* ---- Finance dashboard ---- */
+.fd-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.fd-stats .stat{border:1px solid var(--line);border-radius:20px;box-shadow:none;padding:16px 18px}
+.fd-stats .stat .l{font:600 12px var(--f-ui);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.fd-stats .stat .v{font:800 26px/1.15 var(--f-num);margin:6px 0 2px}
+.fd-stats .stat.pf{background:linear-gradient(125deg,var(--hero1),var(--hero2) 70%,#0A6BD6);border:0;color:var(--hero-ink)}
+.fd-stats .stat.pf .l,.fd-stats .stat.pf .s{color:var(--hero-mute)}
+.fd-stats .stat.pf .v,.fd-stats .stat.pf .v.neg{color:var(--hero-ink)}
+.fd-card .hc-lead{font-size:15px}
+@media (max-width:1100px){.fd-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.fd-stats{gap:10px}.fd-stats .stat{padding:12px}.fd-stats .stat .v{font-size:20px}}
+.pq-list .stq{flex-direction:column;align-items:flex-start;gap:3px}
+.pq-list .tbl td:nth-child(4){min-width:150px;white-space:normal}
+.pq-dup{padding-inline:8px}.pq-dup .ic{width:16px;height:16px}
+.pj-head .pj-stage{background:rgba(1,24,66,.5);backdrop-filter:blur(6px)}
+.pj-head .pj-stage button{color:#DCEBFA}
+@media (max-width:600px){.pq-hero .hc-pin{display:none}}
+@media (max-width:600px){.od-grid .tbl td,.od-grid .tbl th{white-space:nowrap}}
 
 /* v8 QA fixes that cut across modules. Loads last among m_*.css. Tokens only; logical properties only. */
 
@@ -3993,15 +4092,29 @@ function vQuotes(){
   const list=base.filter(t=>inTab(t,S.qtab)).sort((a,b)=>D(a.dep)-D(b.dep));
   const per=S.rpp||list.length||1,pages=Math.max(1,Math.ceil(list.length/per));if(S.page>=pages)S.page=pages-1;
   const shown=S.rpp?list.slice(S.page*per,S.page*per+per):list;
-  const rows=shown.map(t=>`<tr><td class="no">#${t.no}</td><td>${qchip(t)}</td><td><strong>${esc(t.name)}</strong><div class="small muted">${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td>
-    <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm" data-act="dup" data-v="${t.id}">${L('שכפל','Duplicate')}</button></div></td></tr>`).join('');
-  const tabs=[['quotes',L('הצעות','Quotes')],['files',L('תיקים','Files')],['archive',L('ארכיון','Archive')],['all',L('הכל','All')]].map(x=>`<button class="${S.qtab===x[0]?'on':''}" data-act="qtab" data-v="${x[0]}">${x[1]}<span class="cnt">${base.filter(t=>inTab(t,x[0])).length}</span></button>`).join('');
+  const rows=shown.map(t=>`<tr><td>${qchip(t)}</td><td class="pq-nm"><strong>${esc(t.name)}</strong><div class="small muted">#${t.no} · ${dn(t.dest)}</div></td><td>${range(t)}<div class="small muted">${nightsL(t.nights)}</div></td><td>${esc(t.client)}<div class="small muted">${ctn(t.ctype)}</div></td><td><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}${agn(t.agent)}</span></td><td class="n">${usd(calc(t).rev)}</td>
+    <td><div class="row" style="flex-wrap:nowrap"><button class="btn sm" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm pq-dup" data-act="dup" data-v="${t.id}" aria-label="${L('שכפל','Duplicate')}" title="${L('שכפל','Duplicate')}">${ic('copy')}</button></div></td></tr>`).join('');
+  const cards=shown.map(t=>`<div class="pq-card"><div class="pq-top"><span class="pq-no">#${t.no}</span>${qchip(t)}<span class="pq-val">${usd(calc(t).rev)}</span></div>
+    <strong class="pq-name">${esc(t.name)}</strong><div class="small muted">${dn(t.dest)} · ${esc(t.client)}</div><div class="pq-dt small">${range(t)} · ${nightsL(t.nights)}</div>
+    <div class="pq-bot"><span class="row" style="flex-wrap:nowrap">${avatarOf(agn(t.agent),'sm')}<span class="small">${agn(t.agent)}</span></span><span class="row" style="flex-wrap:nowrap"><button class="btn sm pri" data-act="open" data-v="${t.id}">${L('פתח','Open')}</button><button class="btn sm" data-act="dup" data-v="${t.id}">${L('שכפל','Duplicate')}</button></span></div></div>`).join('');
+  const sum=k=>r2(base.filter(t=>inTab(t,k)).reduce((a,t)=>a+calc(t).rev,0)),cnt=k=>base.filter(t=>inTab(t,k)).length;
+  const oq=all.filter(isOpenQ),oqv=r2(oq.reduce((a,t)=>a+calc(t).rev,0)),appr=oq.filter(t=>t.qst==='Approval').length;
+  const nOp=all.filter(t=>t.stage==='Operations').length,nFin=all.filter(t=>t.stage==='Finance').length;
+  const tile=(k,lab,sub)=>({lab,val:String(cnt(k)),sub,cls:S.qtab===k?'on':'',act:'qtab',v:k});
+  const lostN=base.filter(t=>t.stage==='Quote'&&t.qst==='Lost').length,closedN=base.filter(t=>t.stage==='Closed').length;
+  const kpis=[tile('quotes',L('הצעות','Quotes'),usd(sum('quotes'))+' '+L('פתוחות','open')),tile('files',L('תיקים','Files'),usd(sum('files'))+' '+L('בתפעול ובסגירה','in operation and close')),
+    tile('archive',L('ארכיון','Archive'),L(`${closedN} נסגרו, ${lostN} אבדו`,`${closedN} closed, ${lostN} lost`)),tile('all',L('הכל','All'),usd(sum('all')))];
   const from=list.length?S.page*per+1:0,to=Math.min(list.length,S.page*per+per);
-  return head(L('פרוייקטים','Projects'),`<button class="btn pri" data-act="newq">+ ${L('תיק חדש','New file')}</button>`)+`<div class="card" id="qlist">
-    <div class="row sec"><input type="text" data-in="q" value="${esc(S.q)}" placeholder="${L('חפש...','Search...')}" aria-label="${L('חיפוש','Search')}" style="flex:1;min-width:200px">
+  const brief=L(`${hlKey(oq.length+' הצעות פתוחות')} בשווי ${hlKey(usd(oqv))}${appr?`, ${hlWarn(appr+' ממתינות לאישור')}`:''}. ${nOp} תיקים בתפעול ו-${nFin} בסגירה כספית.`,
+    `${hlKey(oq.length+' open '+(oq.length===1?'quote':'quotes'))} worth ${hlKey(usd(oqv))}${appr?`, ${hlWarn(appr+' waiting for approval')}`:''}; ${nOp} ${nOp===1?'file':'files'} in operation and ${nFin} in financial close.`);
+  const hero=hcPage({eyebrow:L('מכירות','Sales'),title:L('פרויקטים','Projects'),brief,aria:L('פרויקטים','Projects'),cls:'pq-hero',
+    ctas:[hcCta('mint','quotes',L('הצעה חדשה','New quote'),'data-act="newq"'),hcCta('ghost','magic',L('סטודיו טיולים','Trip studio'),'data-act="go" data-v="studio"')],kpis})
+    .replace(/data-act="qtab" data-v="(\w+)"/g,(m,v)=>m+` aria-pressed="${S.qtab===v}"`);
+  return hero+`<div class="card hc-card pq-list" id="qlist">
+    <div class="row pq-f"><input type="text" data-in="q" value="${esc(S.q)}" placeholder="${L('חפש...','Search...')}" aria-label="${L('חיפוש','Search')}" style="flex:1;min-width:200px">
     <select data-ch="qseg" aria-label="${L('סינון לפי סוג קבוצה','Filter by group type')}"><option value="All">${L('כל הסוגים','All group types')}</option>${Object.keys(SEG).map(k=>`<option value="${k}" ${S.qseg===k?'selected':''}>${sn(k)}</option>`).join('')}</select></div>
-    <div class="tabs">${tabs}</div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>${L('סטטוס','Status')}</th><th>${L('שם הפרוייקט','Project name')}</th><th>${L('תאריכי טיול','Trip dates')}</th><th>${L('לקוח','Client')}</th><th>${L('אחראי תיק','File owner')}</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="muted">${L('אין תוצאות.','No results.')}</td></tr>`}</tbody></table></div>
+    <div class="scroll pq-tbl"><table class="tbl"><thead><tr><th>${L('סטטוס','Status')}</th><th>${L('שם הפרוייקט','Project name')}</th><th>${L('תאריכי טיול','Trip dates')}</th><th>${L('לקוח','Client')}</th><th>${L('אחראי תיק','File owner')}</th><th class="n">${L('שווי','Value')}</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="muted">${L('אין תוצאות.','No results.')}</td></tr>`}</tbody></table></div>
+    <div class="pq-cards">${cards||`<p class="muted">${L('אין תוצאות.','No results.')}</p>`}</div>
     <div class="pager"><label class="small muted">${L('שורות בעמוד:','Rows per page:')} <select data-ch="rpp">${[8,16,0].map(n=>`<option value="${n}" ${S.rpp===n?'selected':''}>${n||L('הכל','All')}</option>`).join('')}</select></label>
     <span class="small muted">${from}-${to} ${L('מתוך','of')} ${list.length}</span><button class="btn sm" data-act="pg" data-v="-1" ${S.page===0?'disabled':''} aria-label="${L('הקודם','Previous')}">${ic('chev','flip back')}</button><button class="btn sm" data-act="pg" data-v="1" ${S.page>=pages-1?'disabled':''} aria-label="${L('הבא','Next')}">${ic('chev','flip')}</button></div></div>`;
 }
@@ -4903,9 +5016,11 @@ vTrip=function(){
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
   const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
-  return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
+  const bg=phBg(phSrc('dest',t.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))'),ag=agn(t.agent);
+  const chip=(i,x)=>`<span class="pj-chip">${ic(i)}${x}</span>`;
+  return `<div class="pj-head" style="${bg}"><span class="pj-shade" aria-hidden="true"></span><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
-   <div class="pj-sub">${range(t)} · ${L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`)} · ${dn(t.dest)} · <bdi>${esc(t.client)}</bdi> · ${paxL(t.pax)}</div>
+   <div class="pj-sub">${chip('calendar',range(t))}${chip('clock',L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`))}${chip('pin',dn(t.dest))}${chip('clients',`<bdi>${esc(t.client)}</bdi>`)}${chip('users',paxL(t.pax))}<span class="pj-chip pj-ag">${avatarOf(ag,'xs')}${esc(ag)}</span></div>
    <div class="tabs pj-tabs" role="tablist" aria-label="${L('לשוניות הפרויקט','Project tabs')}">${SG[2].map(x=>`<button role="tab" aria-selected="${S.ptab===x[0]}" class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
 };
 /* Operation dashboard, as in the product: days to trip, urgent tasks, suppliers, revenue */
@@ -4914,26 +5029,28 @@ function pOpsDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד התפעול','The operation dashboard'));
   const days=Math.max(0,Math.round((D(t.dep)-TODAY)/DAY)),soon=addDays(iso(TODAY),7);
   const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),odue=t.tasks.filter(x=>!x.done&&x.due<iso(TODAY)).length,open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
-  const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6);
-  return `<div class="ogrid">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
+  const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6),rp=t.room&&t.room.held?Math.round(t.room.used/t.room.held*100):0;
+  return `<div class="ogrid od">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
     ${ocard('red',ic('bell'),urgent.length,L('לביצוע השבוע','Due this week'),'data-act="pt" data-v="optasks"',L(`${odue} באיחור`,`${odue} overdue`))}
     ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="spm"')}
     ${ocard('amber',ic('chart2'),usd(c.rev),L('הכנסה צפויה','Estimated revenue'),'data-act="pt" data-v="fdash"')}</div>
-   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>${t.room?`<div class="card sec"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3><p class="small muted"><bdi>${esc(t.room.hotel)}</bdi>, ${fmtDate(t.dep)}</p><div class="prog"><div style="width:${t.room.held?Math.round(t.room.used/t.room.held*100):0}%"></div></div><p class="small" style="margin-top:8px">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div>`:''}`;
+   <div class="hc-grid od-grid"><div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('המשימות הבאות','Next tasks')}</h3>${odue?`<span class="hc-pill red">${L(`${odue} באיחור`,`${odue} overdue`)}</span>`:urgent.length?`<span class="hc-pill blue">${L(`${urgent.length} השבוע`,`${urgent.length} this week`)}</span>`:`<span class="hc-pill green">${L('הכל בזמן','On track')}</span>`}</div>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div><button class="hc-more" data-act="pt" data-v="optasks">${L('לכל המשימות','All tasks')} ${ic('chev','flip')}</button>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div></div>
+   ${t.room?`<div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3></div><div class="od-room"><span class="od-ring">${hcRing(rp,84,'')}<b>${rp}%</b></span><div><b><bdi>${esc(t.room.hotel)}</bdi></b><div class="small muted">${fmtDate(t.dep)}</div></div></div><p class="small" style="margin:12px 0 0">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div></div>`:''}</div>`;
 }
 /* Finance dashboard: the trip's own leak bridge */
 function pFinDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד הכספים','The finance dashboard'));
   const c=calc(t),g=groupsCalc(t),M=leakModel([t]),open=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);
   const nIn=(t.inbox||[]).length,nChk=L(`${nIn} חשבוניות ספקים עדיין לא נבדקו. הרווח עשוי להשתנות.`,`${nIn} supplier invoice${nIn===1?' is':'s are'} not checked yet. Profit may change.`);
-  return `<div class="stats"><div class="stat"><div class="l">${L('סך הטיול','Trip total')}</div><div class="v">${usd(c.rev)}</div><div class="s">${paxL(t.pax)}</div></div>
+  const oq=open.reduce((a,x)=>a+x.usd,0);
+  const lead=M.leak>0?L(`${hlNeg(usd(M.leak))} מהרווח המתוכנן דלפו בטיול הזה.`,`${hlNeg(usd(M.leak))} of planned profit leaked on this trip.`):nIn?nChk:L(`אין פערים בין החשבוניות להצעה. הרווח הצפוי ${hlPos(usd(c.fcProfit))}.`,`No differences between invoices and the quote. Expected profit is ${hlPos(usd(c.fcProfit))}.`);
+  return `<div class="stats fd-stats"><div class="stat"><div class="l">${L('סך הטיול','Trip total')}</div><div class="v">${usd(c.rev)}</div><div class="s">${paxL(t.pax)}</div></div>
    <div class="stat"><div class="l">${L('רווח מתוכנן','Planned profit')}</div><div class="v">${usd(c.planProfit)}</div><div class="s">${pct(c.planProfit/c.rev)}</div></div>
-   <div class="stat"><div class="l">${L('רווח צפוי','Expected profit')}</div><div class="v ${c.fcProfit<c.planProfit?'neg':''}">${usd(c.fcProfit)}</div><div class="s">${pct(c.fcProfit/c.rev)}</div></div>
+   <div class="stat pf"><div class="l">${L('רווח צפוי','Expected profit')}</div><div class="v ${c.fcProfit<c.planProfit?'neg':''}">${usd(c.fcProfit)}</div><div class="s">${pct(c.fcProfit/c.rev)}</div></div>
    <div class="stat"><div class="l">${L('יתרה לגבייה','Remaining to collect')}</div><div class="v">${usd(g.outstanding)}</div><div class="s">${usd(g.collected)} ${L('התקבלו','received')}</div></div></div>
-   <div class="card"><h3>${M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו בטיול הזה`,`${usd(M.leak)} of planned profit leaked on this trip`):nIn?nChk:L('אין פערים בין החשבוניות להצעה.','No differences between invoices and the quote.')}</h3>${wfSvg(M).startsWith('<p class="muted">')?'':wfSvg(M)}
-    ${nIn&&M.leak>0?`<div class="row" style="margin-top:8px"><span class="muted">${nChk}</span><button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button></div>`:''}
-    ${nIn&&!(M.leak>0)?`<div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button></div>`:''}
-    ${open.length?`<div class="row" style="margin-top:8px"><span class="muted">${L(`${open.length} פערים פתוחים בסך ${usd(open.reduce((a,x)=>a+x.usd,0))}`,`${open.length} open gaps worth ${usd(open.reduce((a,x)=>a+x.usd,0))}`)}</span>${nIn?'':`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button>`}</div>`:''}</div>`;
+   <div class="card hc-card fd-card"><div class="hc-h"><h3>${L('הגנה על הרווח בטיול','Profit protection on this trip')}</h3>${open.length?`<span class="hc-pill red">${L(`${open.length} פערים פתוחים`,`${open.length} open ${open.length===1?'gap':'gaps'}`)}</span>`:nIn?`<span class="hc-pill blue">${L(`${nIn} לבדיקה`,`${nIn} to check`)}</span>`:`<span class="hc-pill green">${L('ללא פערים פתוחים','No open gaps')}</span>`}</div>
+    <p class="hc-lead">${lead}${open.length?' '+L(`${open.length} פערים פתוחים בסך ${hlWarn(usd(oq))}.`,`${open.length} open ${open.length===1?'gap':'gaps'} worth ${hlWarn(usd(oq))}.`):''}</p>${wfSvg(M).startsWith('<p class="muted">')?'':wfSvg(M)}
+    ${nIn||open.length?`<div class="row" style="margin-top:12px;justify-content:flex-end">${nIn?`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button>`:`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button>`}</div>`:''}</div>`;
 }
 /* Income: client documents per billing group, with the product's totals footer */
 function incomeDocs(t){
@@ -11044,7 +11161,7 @@ function hcPage(o){
     return `<${tag} class="hc-kpi ${k.cls||''}" style="--d:${60+i*70}ms"${at}><span>${k.lab}</span><b>${k.val}</b>${k.sub?`<small>${k.sub}</small>`:''}</${tag}>`;};
   return `<section class="hc-hero hc-page ${o.cls||''}${an?' anim':''}" aria-label="${esc(o.aria||o.title||'')}">
    <svg class="hc-bg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="hc-arc a1" d="M120 300 C 380 120, 700 90, 980 190"/><path class="hc-arc a2" d="M520 300 C 700 180, 930 140, 1190 90"/><circle class="hc-pin" cx="980" cy="190" r="4"/><circle class="hc-pin" cx="1190" cy="90" r="4"/></svg>
-   <div class="hc-ph"><div class="hc-hi">${o.eyebrow?`<span class="hc-eye">${o.eyebrow}</span>`:''}<h1>${o.title}</h1>${o.brief?`<p>${o.brief}</p>`:''}</div>
+   <div class="hc-phd"><div class="hc-hi">${o.eyebrow?`<span class="hc-eye">${o.eyebrow}</span>`:''}<h1>${o.title}</h1>${o.brief?`<p>${o.brief}</p>`:''}</div>
     ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
    ${o.kpis&&o.kpis.length?`<div class="hc-kpis k${o.kpis.length}">${o.kpis.map(kp).join('')}</div>`:''}${o.extra||''}</section>`;
 }
