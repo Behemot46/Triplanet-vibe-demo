@@ -18,6 +18,13 @@ const MEET_ALL=[
    tx:()=>[L('שש חשבוניות חדשות, נקראות בשניות','Six new invoices, read in seconds'),L('קבוצת ניו אינגלנד חזרה. טריפלאנט קוראת כל חשבונית ספק ומתאימה כל שורה למה שתומחר.','The New England group is home. Triplanet reads every supplier invoice and matches each line to what was quoted.')]},
   {id:'dispute',sel:'.disp',go:()=>{const t=byId('nen');if(t&&(t.inbox.length||S.reading)){const n=(S.reading&&S.reading.n)||t.inbox.length;S.reading=null;applyInbox(t);S.lastMatch.nen=matchSummary(t,n||6);}openTrip('nen','tfin');S.disp='nen|1';setTimeout(()=>{const e=document.querySelector&&document.querySelector('.disp');if(e&&e.scrollIntoView)e.scrollIntoView({block:'center'});},120);},
    tx:()=>{const t=byId('nen'),g=t?tripGaps(t).filter(x=>x.usd>0&&x.s.k==='gap'):[],a=r2(g.reduce((s,x)=>s+x.usd,0));return [L('לחיצה אחת מנסחת את דרישת הזיכוי','One click drafts the dispute'),L(`${g.length} פערים בסך ${usd(a)} בטיול אחד. המייל לספק כבר כתוב, עם המספרים מהחוזה ומרשימת החדרים.`,`${g.length} gap${(g.length)===1?'':'s'} worth ${usd(a)} on one trip. The email to the supplier is already written, with the numbers from the contract and the rooming list.`)];}},
+  /* v8.4: the supplier's side of the same query (supplier portal, roadmap). 10-minute cut only. */
+  {id:'supplier',sel:'.ps-disp',top:true,go:()=>{const t=byId('nen');if(!t)return;
+     if(t.inbox.length||S.reading){const n=(S.reading&&S.reading.n)||t.inbox.length;S.reading=null;applyInbox(t);S.lastMatch.nen=matchSummary(t,n||6);}
+     const by={};tripGaps(t).filter(x=>x.s.k==='gap'&&x.usd>0&&['','open','disputed'].includes(x.l.inv&&x.l.inv.st||'')).forEach(x=>{by[x.l.sup]=(by[x.l.sup]||0)+x.usd;});
+     const best=Object.keys(by).map(n=>SUPPLIERS.find(s=>s.name===n&&s.fictional===true&&!s.real)).filter(Boolean).sort((a,b)=>by[b.name]-by[a.name])[0];
+     if(best&&typeof pvOpen==='function'&&typeof PORTALS!=='undefined'&&PORTALS.supplier)pvOpen('supplier',best.id,'disp');else openTrip('nen','tfin');},
+   tx:()=>[L('הספק רואה את אותה שאלה (בתכנון)','The supplier sees the same query (roadmap)'),L('בפורטל הספקים ההפרש מגיע כשאלה מסודרת, עם השורה מההצעה ומהחשבונית. לחיצה אחת של הספק מנפיקה זיכוי, והוא חוזר ישר לספרים שלכם.','In the supplier portal the difference arrives as a clear query, with the quoted line next to the billed one. One tap by the supplier issues the credit, and it lands straight back in your books.')]},
   {id:'maya',sel:'.chat',go:()=>{S.tab='ai';S.chat=[];askQ(QS[1]);},
    tx:()=>[L('שואלים את מאיה','Ask Maya'),L(`מאיה עונה מהנתונים של הסוכנות. ${QS.length} שאלות מוכנות על פערים, רווחיות, תשלומים ומשימות.`,`Maya answers from the agency's own data: ${QS.length} ready questions on gaps, margins, payments and tasks.`)]},
   {id:'close',sel:'',close:true,go:()=>{S.tab='leaks';},
@@ -32,7 +39,7 @@ const MEET_ALL=[
    tx:()=>[L('מה זמין היום','What is live today'),L('כל מה שראיתם, ואיפה הוא עומד: במוצר, בפיילוט או בתכנון.','Everything you saw, and where it stands: in the product, in pilot or on the roadmap.')]}
 ];
 /* three cuts of the same story: 60 seconds, 3 minutes, 10 minutes */
-const MEET_CUTS={1:['leaks','inbox','dispute','close'],3:['studio','swap','quote','books','leaks','inbox','dispute','maya','close'],10:['studio','swap','quote','ops','books','leaks','numbers','inbox','dispute','fin','maya','status','close']};
+const MEET_CUTS={1:['leaks','inbox','dispute','close'],3:['studio','swap','quote','books','leaks','inbox','dispute','maya','close'],10:['studio','swap','quote','ops','books','leaks','numbers','inbox','dispute','supplier','fin','maya','status','close']};
 const MEET=[];let MEET_CUT=3;
 function meetSetCut(c){MEET_CUT=MEET_CUTS[c]?+c:3;MEET.splice(0,MEET.length,...MEET_CUTS[MEET_CUT].map(id=>MEET_ALL.find(b=>b.id===id)));}
 meetSetCut(3);

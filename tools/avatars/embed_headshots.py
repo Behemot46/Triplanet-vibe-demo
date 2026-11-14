@@ -10,11 +10,15 @@ import base64, os, sys
 from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(HERE, 'out')
-PICKS = {'Ella': 11, 'Priya': 23, 'Dana': 11, 'Marcus': 23, 'Grace': 23, 'Luis': 11, 'Tom': 11, 'Maya': 11}
+PICKS = {'Ella': 11, 'Priya': 23, 'Dana': 11, 'Marcus': 23, 'Grace': 23, 'Luis': 11, 'Tom': 11, 'Maya': 11,
+         # v8.4 viewpoints (14 Nov 2026): ops coordinator, group leader, traveler, supplier contact, tour director
+         'Kelsey': 11, 'Alan': 11, 'Linda': 11, 'Morgan': 11, 'Wade': 11}
 CROP = (48, 0, 464, 416)   # head and shoulders, square
 os.makedirs(OUT, exist_ok=True)
 if len(sys.argv) > 1:
     for n, s in PICKS.items():
+        if not os.path.exists(os.path.join(sys.argv[1], f'{n}_{s}.png')):
+            continue   # keep the committed crop for people not in this run
         im = Image.open(os.path.join(sys.argv[1], f'{n}_{s}.png')).convert('RGB').crop(CROP).resize((160, 160), Image.LANCZOS)
         im.save(os.path.join(OUT, f'{n}.webp'), 'WEBP', quality=80, method=6)
 av = {}

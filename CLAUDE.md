@@ -5,7 +5,7 @@ A single-file, offline-capable Hebrew/English (RTL/LTR) demo of Triplanet, an AI
 
 The story for a short meeting is easy process plus high value. The Trip studio builds a priced, mapped trip in seconds. Profit leaks and the invoice check show where planned profit went and recover it.
 
-Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Since v7, hotel and venue names are REAL (owner decision, Nov 2026); see the brand rule below.
+Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents, an owner, an accountant and (since v8.4) an operations coordinator. Since v8.4 the demo can also be seen from outside the agency: the group leader, a traveler, a supplier and the tour director, each in their own portal. Since v7, hotel and venue names are REAL (owner decision, Nov 2026); see the brand rule below.
 
 ## Hard constraints
 - Output is ONE self-contained HTML file. No frameworks, no CDN calls. The font (IBM Plex Sans Hebrew) and the map geometry are embedded.
@@ -47,6 +47,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - all 28 Maya routes;
   - the tour and the win/new/draft flows;
   - since v7: leak-bridge identities per scope and per dimension, the studio for all 16 destinations in both languages, gen-quote identities, and the real-brand guard.
+- Browser sweep: `node sweep84.js [quick]` visits every agency page and trip tab per role and every portal tab, EN/HE, day/night, 1440 and 390 px, and reports page errors and horizontal overflow at 390 px (must be 0 and 0).
 - Screenshots: `shot6.js`, `shot7.js` (v6 paths) and `shot8.js [prefix]` (v7: leaks, studio, Hebrew, mobile, meeting mode), run from the repo root. Output goes to `shots/` (git-ignored).
 - Before any publish or handover, run the check and confirm LEFTOVER 0, bad 0, and no page errors.
 
@@ -101,9 +102,17 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
   - `s11_uikit.js` - UI kit page (`VIEWS.uikit`, linked from Settings) with live components, tokens and icons.
   - `s11_spec.js` / `s11_spec_trip.js` - developer notes: the `SPEC` registry (46 screens), the in-app panel (settings menu > Show developer notes, English, per laptop in localStorage `triplanet-devnotes`) and `tools/spec/export_spec.js`, which writes `docs/handoff/screens.md`. Update the registry when a screen changes, then re-export.
 - `s12_home.js` - the owner's Home command center (see Look and feel).
+- v8.4 viewpoints (spec `docs/spec-v8.4-viewpoints.md`, incl. §8 binding amendments). External people are NOT roles: they are portals.
+  - `s13_portal.js` + `m_portal.css` - the portal frame: `S.pv={k,id,tab}` (not saved: a reload returns to the agency), `PORTALS` registry (`pvRegister`), `pvShell`/`pvRender` (agency badge, "You are viewing as" ribbon with person picker, grouped View as and Back to agency, top tabs or a bottom tab bar under 721 px), shared helpers `pvDays`/`pvDayCard` (plan with clock times), `pvHousehold`, `pvFictionalSuppliers`, `pvMoneyNote`, `pvPayLink`. `render()` hands over to `pvRender()` while `S.pv` is set. The "View as" select (`viewAsSelect`, `s3_shell.js`) is grouped: Agency team / Client side / Suppliers and field.
+  - `s13_oc.js` - operations coordinator home (`hcOps`, role `ops`, Kelsey Dawson).
+  - `s13_pl.js` - group leader portal (Rev. Alan Mercer, New Hope Baptist, trip `nas` by default).
+  - `s13_pt.js` - traveler app (Linda Garcia, `nas`); simulated payments move `collected` only.
+  - `s13_ps.js` - supplier portal, fictional suppliers only (Morgan Pratt, Ozark Lakeside Lodge); supplier-side wording: difference, query, credit.
+  - `s13_pg.js` - tour director run sheet (`GUIDES` in `s1e_people.js`: Wade Turner, Cody Harper).
+  - Avatars for the new people: `AV_NAMES` in `s3_shell.js` maps full names to `AVATARS` keys (Kelsey, Alan, Linda, Morgan, Wade).
 - Developer handoff package: `docs/handoff/` (README, screens, data model, business rules, design system). Start there.
 - `v6/s9_meet.js` - meeting mode:
-  - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (13 beats, adds quote to operations, your numbers, trip P&L, what's live);
+  - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (14 beats, adds quote to operations, your numbers, the supplier's side of the query (supplier portal, v8.4), trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;
   - arrow keys, R restart, Esc exit, closing screen with booth lead capture (CSV export from the settings menu);
   - kiosk idle reset: after 4 idle minutes a 15-second warning, then a clean Home. Booth leads are kept.
@@ -111,11 +120,11 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents. Sinc
 - `v6/base.css`, `v6/extra.css`, `v6/v7.css`, `v6/brand-fonts.css`, `v6/theme.css` - styles in load order. `fonts.css` - embedded Hebrew font (IBM Plex Sans Hebrew), the fallback for Hebrew glyphs.
 
 ## v8 hooks and roles
-- Roles: `ROLE_KEYS` = manager (owner), accountant, the 6 agents. Owner and accountant see every file (`seesAll()`). `can(perm)` gates pages through `NAV_PERM` (Users, Accounting sync, Finance and Invoice check) and a few actions.
+- Roles: `ROLE_KEYS` = manager (owner), accountant, the 6 agents, then `ops` (operations coordinator, last on purpose: tests take `ROLE_KEYS[2]` as an agent). Owner, accountant and ops see every file (`seesAll()`). Ops has no `fin.view`: Finance, Invoice check, Profit leaks, Accounting sync and finance-stage trip tabs render `noAccess()`. The agency admin is merged into the owner (owner decision, 14 Nov 2026): the `admin` role stays in the permission matrix with no person. `can(perm)` gates pages through `NAV_PERM` (Users, Accounting sync, Finance and Invoice check) and a few actions.
 - Hooks in `s1_core.js`: `PERSIST` (extra saved datasets with reset), `TESTS` (module self-tests run by check6), `TRIP_TABS`, `TRIP_INIT` (idempotent per-trip initializers, run at boot after brandSwap, after load/reset and on new trips), `TB_VIEWS`. Trip tabs are added with `tabInsert(stage, tab)` and ordered by `TAB_ORDER` (`s7b_product.js`).
 - `calc(t)` supports optional overhead `t.ovh` (added to price) and brokerage `t.brk` (added to price and cost, profit unchanged). Absent = 0.
 - Storage key is v8 (`triplanet-booth-demo-v8`); older saves are ignored.
-- Version name: `DEMO_VERSION` in `s3_shell.js` (now v8.3), shown at the bottom of the gear menu and in the page title (`build.py`). Bump both for every published build. Each version is published as its own Artifact page so versions stay apart.
+- Version name: `DEMO_VERSION` in `s3_shell.js` (now v8.4), shown at the bottom of the gear menu and in the page title (`build.py`). Bump both for every published build. Each version is published as its own Artifact page so versions stay apart.
 - Gear menu: Settings page, day/night, guided tour, language, display size, developer notes, photo credits, Maya live answers, booth video, booth leads export, reset, version. On phones the header no longer scrolls sideways, because that clipped the menu.
 - check6 now takes about 20 s and prints one `TEST <name> ok` line per module.
 
