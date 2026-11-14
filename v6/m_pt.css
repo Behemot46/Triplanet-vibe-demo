@@ -23,7 +23,7 @@
 .pt-phone .hc-steps li{grid-template-columns:12px minmax(0,1fr)}.pt-phone .hc-steps li>.btn{grid-column:2;justify-self:start}
 .pt-phone .hc-steps li span.small{display:block}
 /* chips and person row */
-.pt-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.pt-chips::-webkit-scrollbar{display:none}
+.pt-chips{display:flex;gap:8px;overflow-x:auto;padding:0 2px 2px;scrollbar-width:none}.pt-chips::-webkit-scrollbar{display:none}
 .pt-chips .chip{flex:none}
 .pt-me{display:flex;align-items:center;gap:12px}.pt-me .avatar{width:44px;height:44px;flex:none}
 .pt-me>div{display:flex;flex-direction:column;min-width:0}.pt-me b{font-size:16px}
@@ -75,7 +75,8 @@
 .pt-cls{list-style:none;margin:0;padding:0}
 .pt-cl{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}.pt-cl:first-child{border-top:0}
 .pt-cl>svg{color:var(--primary)}.pt-cl span{display:flex;flex-direction:column;min-width:0;overflow-wrap:anywhere}.pt-cl small{color:var(--muted)}
-.pt-cl a.btn{text-decoration:none}
+.pt-cl a.btn{text-decoration:none;white-space:nowrap}
+.pt-cl{grid-template-columns:22px minmax(0,1fr)}.pt-cl .btn{grid-column:2;justify-self:start}
 /* phones: the column becomes the page */
 @media (max-width:1000px){.pt-wrap{grid-template-columns:minmax(0,460px)}.pt-side{display:none}}
 @media (max-width:520px){.pt-phone{padding:0;border:0;box-shadow:none;background:none;border-radius:0}.pt-notch{display:none}}

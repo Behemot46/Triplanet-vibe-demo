@@ -10,6 +10,7 @@ const PS_QST=['','open','disputed'];
 
 /* ---------- model (pure) ---------- */
 const psSup=()=>{const p=pvPerson();return p?SUPPLIERS.find(s=>s.id===p.id)||null:null;};
+const psPast=t=>endOf(t)<iso(TODAY);
 const psTrips=s=>TRIPS.filter(t=>t.stage!=='Quote'&&t.lines.some(l=>l.sup===s.name));
 /* booking requests: the trip's supplier entries (t.sups) that name this supplier */
 function psRequests(s){const out=[];
@@ -51,10 +52,11 @@ function psSchedule(s){const T=s.terms,tdy=iso(TODAY);
     const total=r2(ls.reduce((a,l)=>a+(l.inv?effAmt(l.inv):planC(l))*lr(l),0));
     const dep=r2(total*T.depPct/100),bal=r2(total-dep),dd=addDays(t.dep,-T.depDays),bd=psPayDate(t,s);
     const inv=ls.filter(l=>l.inv),allPaid=inv.length>0&&inv.length===ls.length&&inv.every(l=>l.inv.paid||l.inv.st==='credited');
-    return {t,total,dep,bal,dd,bd,depPaid:dd<=tdy||allPaid,balPaid:allPaid};});}
+    const q=r2(psQueries(s).filter(x=>x.t===t).reduce((a,x)=>a+x.usd,0));
+    return {t,q,total,dep,bal,dd,bd,depPaid:dd<=tdy||allPaid,balPaid:allPaid};});}
 const psArrivals=(s,days)=>psTrips(s).filter(t=>{const d=pvDaysTo(t);return d>=0&&d<=days;});
 function psModel(s){
-  const reqs=psRequests(s),toConfirm=reqs.filter(r=>r.flow!=='approved'),qs=psQueries(s),invs=psInvoices(s).filter(x=>x.i);
+  const reqs=psRequests(s),toConfirm=reqs.filter(r=>r.flow!=='approved'&&!psPast(r.t)),qs=psQueries(s),invs=psInvoices(s).filter(x=>x.i);
   const total=r2(invs.reduce((a,x)=>a+x.usd,0)),settled=r2(invs.filter(x=>x.st.k==='paid'||x.st.k==='accepted'||x.st.k==='credited').reduce((a,x)=>a+x.usd,0));
   const wait=invs.filter(x=>x.st.k!=='paid'&&x.st.k!=='credited'),waitAmt=r2(wait.reduce((a,x)=>a+x.usd,0));
   return {reqs,toConfirm,qs,qAmt:r2(qs.reduce((a,x)=>a+x.usd,0)),invs,total,settled,pct:total>0?Math.round(settled/total*100):0,wait,waitAmt,arr:psArrivals(s,60)};}
@@ -65,7 +67,7 @@ const psFlowPill=f=>{const x=psFlowL[f]||psFlowL.contact;return pillF(L(x[0],x[1
 const psDates=t=>`${fmtDate(t.dep)} – ${fmtDate(endOf(t))}`;
 const psTripH=t=>`<b class="ps-tn"><bdi>${esc(t.name)}</bdi></b><span class="muted small ps-ts"><bdi>${esc(t.client)}</bdi> · ${psDates(t)} · ${paxL(t.pax)}</span>`;
 const psEmpty=(ic0,txt)=>`<div class="card hc-card ps-empty"><span class="ps-ei">${ic(ic0)}</span><p class="muted">${txt}</p></div>`;
-const psTabBtn=(tab,cls,label)=>hcCta(cls,tab==='req'?'check':tab==='inv'?'receipt':'mail',label,`data-act="ps-tab" data-v="${tab}"`);
+const psTabBtn=(tab,cls,label)=>hcCta(cls,tab==='req'?'check':tab==='inv'?'receipt':tab==='pay'?'wallet':'mail',label,`data-act="ps-tab" data-v="${tab}"`);
 
 /* ---------- tabs ---------- */
 function psHome(s,p){
@@ -74,7 +76,7 @@ function psHome(s,p){
   const brief=(rq?L(`${hlKey(rq)} ${rq===1?'הזמנה':'הזמנות'} ממתינות לאישורך.`,`${hlKey(rq)} ${PLN(rq,'booking','bookings')} to confirm.`):L('כל ההזמנות אושרו.','Every booking is confirmed.'))+' '+
     (q?L(`ל-Redbud ${q===1?'יש שאלה אחת':'יש '+q+' שאלות'} על חשבוניות, בסך ${hlWarn(usd(m.qAmt))}.`,`Redbud has ${hlKey(q)} ${PLN(q,'query','queries')} on invoices, ${hlWarn(usd(m.qAmt))} in total.`):L('אין שאלות פתוחות על חשבוניות.','No open invoice queries.'));
   const hero=pvHero({cls:'ps-hero',name:first,role:esc(s.name),brief,
-    ctas:[psTabBtn('req','mint',L('לאשר הזמנות','Confirm bookings')),psTabBtn('inv','ghost',L('חשבוניות','Invoices'))],
+    ctas:rq?[psTabBtn('req','mint',L('לאשר הזמנות','Confirm bookings')),psTabBtn('inv','ghost',L('חשבוניות','Invoices'))]:q?[psTabBtn('disp','mint',L('שאילתות','Queries')),psTabBtn('inv','ghost',L('חשבוניות','Invoices'))]:[psTabBtn('inv','mint',L('חשבוניות','Invoices')),psTabBtn('pay','ghost',L('תשלומים','Payments'))],
     gauge:{pct:m.pct,label:L('מהסכום שהוגש שולם או אושר','of invoiced amount paid or approved'),lines:[{cls:'ok',icon:'check',lab:L('שולם או אושר','Paid or approved'),val:usd(m.settled)},{cls:'op',icon:'hourglass',lab:L('ממתין לתשלום','Awaiting payment'),val:usd(m.waitAmt)}]},
     kpis:[{lab:L('הזמנות לאישור','Bookings to confirm'),val:rq,cls:rq?'warn':'',sub:L(`מתוך ${m.reqs.length} בקשות`,`of ${m.reqs.length} ${PLN(m.reqs.length,'request','requests')}`),act:'ps-tab',v:'req'},
       {lab:L('הגעות ב-60 הימים הקרובים','Arrivals in 60 days'),val:m.arr.length,sub:nx?`${esc(nx.name)} · ${hcIn(pvDaysTo(nx))}`:L('אין הגעות קרובות','Nothing scheduled'),act:'ps-tab',v:'list'},
@@ -100,13 +102,15 @@ function psReqCard(r,s){const {t,i,l,flow}=r,e=r.e;
   return `<div class="card hc-card ps-req" data-trip="${t.id}">
    <div class="ps-rh"><div class="ps-lm">${psTripH(t)}</div>${psFlowPill(flow)}</div>
    <div class="ps-chips">${l?`<span class="ps-chip">${ic('tag')} <bdi>${esc(l.name)}</bdi></span><span class="ps-chip">${ic('users2')} ${units}</span><span class="ps-chip">${ic('wallet')} ${money(planC(l),l.cur)}</span>`:''}</div>
-   <div class="ps-acts">${flow!=='approved'?`<button class="btn pri sm" data-act="ps-set" data-v="${t.id}|${i}|approved">${ic('check')} ${L('אישור','Confirm')}</button>`:`<span class="pos small">${ic('done')} ${L('אישרתם את ההזמנה. Redbud רואה זאת בלשונית הספקים של הטיול.','You confirmed this booking. Redbud sees it in the trip\'s Suppliers tab.')}</span>`}
-    ${flow!=='contact'?`<button class="btn sm" data-act="ps-set" data-v="${t.id}|${i}|contact">${ic('x')} ${L('דחייה','Decline')}</button>`:''}</div></div>`;}
+   ${psPast(t)?`<div class="ps-acts"><span class="muted small">${ic('done')} ${L('השהייה הסתיימה. אין פעולות נוספות.','This stay is complete. No further action.')}</span></div>`
+   :`<div class="ps-acts">${flow!=='approved'?`<button class="btn pri sm" data-act="ps-set" data-v="${t.id}|${i}|approved">${ic('check')} ${L('אישור','Confirm')}</button>${flow!=='contact'?`<button class="btn sm" data-act="ps-set" data-v="${t.id}|${i}|contact">${ic('x')} ${L('דחייה','Decline')}</button>`:''}`
+    :`<span class="pos small">${ic('done')} ${L('אישרתם את ההזמנה. Redbud רואה זאת בלשונית הספקים של הטיול.','You confirmed this booking. Redbud sees it in the trip\'s Suppliers tab.')}</span>`}</div>`}</div>`;}
 function psReq(s){const m=psModel(s);
   if(!m.reqs.length)return psEmpty('inbox',L('אין בקשות הזמנה כרגע.','No booking requests right now.'));
-  const todo=m.toConfirm.length;
+  const todo=m.toConfirm.length,cur=m.reqs.filter(r=>!psPast(r.t)),old=m.reqs.filter(r=>psPast(r.t));
   return `<div class="hc-grid"><div class="hc-c12"><div class="ps-head"><h2>${L('בקשות הזמנה','Booking requests')}</h2><span class="muted small">${todo?L(`${todo} ממתינות לאישור`,`${todo} to confirm`):L('הכל אושר','All confirmed')}</span></div></div>
-   ${m.reqs.map(r=>`<div class="hc-c6">${psReqCard(r,s)}</div>`).join('')}</div>`;}
+   ${cur.map(r=>`<div class="hc-c6">${psReqCard(r,s)}</div>`).join('')}
+   ${old.length?`<div class="hc-c12"><div class="ps-head"><h2>${L('שהיות שהסתיימו','Completed stays')}</h2></div></div>${old.map(r=>`<div class="hc-c6">${psReqCard(r,s)}</div>`).join('')}`:''}</div>`;}
 
 /* rooming list: rooms from the trip's travelers; other services: head count, dietary counts and service times */
 function psRooms(t){const by={};(t.trav||[]).forEach(x=>{const r=by[x.room]||(by[x.room]={room:x.room,type:x.roomType||'',names:[],diet:[]});r.names.push(x.n);if(x.diet&&x.diet!=='None')r.diet.push(x.diet);});
@@ -156,7 +160,7 @@ function psDisp(s){const qs=psQueries(s),done=psCredited(s);
   const open=qs.length?`<div class="hc-grid"><div class="hc-c12"><div class="ps-head"><h2>${L('שאילתות מ-Redbud','Queries from Redbud')}</h2><span class="muted small">${L(`${qs.length} פתוחות · ${usd(r2(qs.reduce((a,x)=>a+x.usd,0)))} הפרש`,`${qs.length} open · ${usd(r2(qs.reduce((a,x)=>a+x.usd,0)))} difference`)}</span></div></div>${qs.map(x=>`<div class="hc-c6">${psQCard(x)}</div>`).join('')}</div>`
     :`<div class="card hc-card ps-empty ps-disp"><span class="ps-ei">${ic('done')}</span><p>${done.length?L('כל השאילתות נענו. הזיכויים נרשמו אצל Redbud.','Every query is answered. The credits are recorded at Redbud.'):L('אין שאילתות פתוחות מ-Redbud.','No open queries from Redbud.')}</p></div>`;
   const cr=done.length?`<div class="card hc-card ps-cr"><div class="hc-h"><h3>${L('זיכויים שהונפקו','Credits issued')}</h3><span class="hc-pill green">${usd(r2(done.reduce((a,x)=>a+x.usd,0)))}</span></div>
-   <ul class="ps-lst">${done.map(x=>`<li><div class="ps-lm"><b><bdi>${esc(x.l.name)}</bdi></b><span class="muted small"><bdi>${esc(x.t.name)}</bdi> · <bdi>${esc(x.l.inv.no)}</bdi></span></div><div class="ps-la"><b class="pos">${usd(x.usd,2)}</b></div></li>`).join('')}</ul></div>`:'';
+   <ul class="ps-lst">${done.map(x=>`<li><div class="ps-lm"><b><bdi>${esc(x.l.name)}</bdi></b><span class="muted small"><bdi>${esc(x.t.name)}</bdi> · <bdi>${esc(x.l.inv.no)}</bdi></span></div><div class="ps-la"><b class="pos">${usd(x.usd)}</b></div></li>`).join('')}</ul></div>`:'';
   return open+cr;}
 
 function psPay(s){const sc=psSchedule(s),T=s.terms,tdy=iso(TODAY);
@@ -169,9 +173,9 @@ function psPay(s){const sc=psSchedule(s),T=s.terms,tdy=iso(TODAY);
   return `<div class="hc-grid"><div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('לוח תשלומים','Payment schedule')}</h3><span class="muted small">${L(`מקדמה ${T.depPct}% · יתרה ${T.balDays} ימים אחרי הטיול`,`${T.depPct}% deposit · balance ${T.balDays} days after the trip`)}</span></div>
     <div class="ps-ilist">${sc.map(x=>`<div class="ps-sch"><div class="ps-lm">${psTripH(x.t)}</div>
      <div class="ps-pr"><span>${L('מקדמה','Deposit')} <b class="n">${usd(x.dep)}</b></span><span class="muted small">${fmtDate(x.dd)}</span>${state(x.depPaid,x.dd)}</div>
-     <div class="ps-pr"><span>${L('יתרה','Balance')} <b class="n">${usd(x.bal)}</b></span><span class="muted small">${fmtDate(x.bd)}</span>${state(x.balPaid,x.bd)}</div></div>`).join('')}</div></div></div>
+     <div class="ps-pr"><span>${L('יתרה','Balance')} <b class="n">${usd(x.bal)}</b></span><span class="muted small">${fmtDate(x.bd)}</span>${state(x.balPaid,x.bd)}</div>${x.q>0?`<p class="small muted ps-qn">${L(`כולל ${usd(x.q)} בשאילתה`,`incl. ${usd(x.q)} under query`)}</p>`:''}</div>`).join('')}</div></div></div>
    <div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('היסטוריית העברות','Remittance history')}</h3></div>
-    ${hist.length?`<ul class="ps-lst">${hist.slice(0,8).map(h=>`<li><div class="ps-lm"><b><bdi>${esc(h.l.name)}</bdi></b><span class="muted small"><bdi>${esc(h.t.name)}</bdi> · ${fmtDate(h.d)}</span></div><div class="ps-la"><b class="n ${h.k==='credit'?'':'pos'}">${usd(h.a,2)}</b><span class="muted small">${h.k==='credit'?L('זיכוי','Credit'):L('שולם','Paid')}</span></div></li>`).join('')}</ul>`
+    ${hist.length?`<ul class="ps-lst">${hist.slice(0,8).map(h=>`<li><div class="ps-lm"><b><bdi>${esc(h.l.name)}</bdi></b><span class="muted small"><bdi>${esc(h.t.name)}</bdi> · ${fmtDate(h.d)}</span></div><div class="ps-la"><b class="n ${h.k==='credit'?'':'pos'}">${usd(h.a)}</b><span class="muted small">${h.k==='credit'?L('זיכוי','Credit'):L('שולם','Paid')}</span></div></li>`).join('')}</ul>`
      :`<p class="muted">${L('עוד לא התקבלו העברות.','No remittances yet.')}</p>`}
     <p class="small muted ps-sim">${pvMoneyNote()}</p></div></div></div>`;}
 
@@ -189,7 +193,7 @@ document.addEventListener('click',e=>{
   const a=b.dataset.act,v=b.dataset.v||'',p=v.split('|'),t=TRIPS.find(x=>x.id===p[0]);
   if(a==='ps-tab'){pvTab(v);try{window.scrollTo(0,0);}catch(err){}render();}
   else if(a==='ps-set'&&t){if(psSetFlow(t,+p[1],p[2])){toast(p[2]==='approved'?L('ההזמנה אושרה. Redbud רואה זאת בלשונית הספקים של הטיול.','Booking confirmed. Redbud sees it in the trip\'s Suppliers tab.'):L('ההזמנה נדחתה. Redbud תקבל הודעה.','Booking declined. Redbud is notified.'));render();}}
-  else if(a==='ps-credit'&&t){const l=t.lines.find(x=>String(x.id)===p[1]),n=psCredit(t,l);if(n>0){toast(L(`זיכוי על ${usd(n,2)} הונפק ונרשם אצל Redbud.`,`Credit for ${usd(n,2)} issued and recorded at Redbud.`));render();}}
+  else if(a==='ps-credit'&&t){const l=t.lines.find(x=>String(x.id)===p[1]),n=psCredit(t,l);if(n>0){toast(L(`זיכוי על ${usd(n)} הונפק ונרשם אצל Redbud.`,`Credit for ${usd(n)} issued and recorded at Redbud.`));render();}}
   else if(a==='ps-reply'&&t){const l=t.lines.find(x=>String(x.id)===p[1]);if(psReply(l)){toast(L('המסמכים נשלחו ל-Redbud.','Documents sent to Redbud.'));render();}}
   else if(a==='ps-all'){PS_UI.all[v]=!PS_UI.all[v];render();}
   else if(a==='ps-print'){try{window.print();}catch(err){}}

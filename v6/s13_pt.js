@@ -23,7 +23,7 @@ function ptWho(p){const id=p?p.id:'',[tid,ix]=String(id).split('|');
   const t=TRIPS.find(z=>z.id===tid&&z.trav&&z.trav.length)||ptTrip();if(!t)return null;
   const i=t.trav[+ix]?+ix:0;return {t,i,x:t.trav[i]};}
 const ptStat=(t,x,i,k)=>k==='room'?(PT_ROOM[ptKey(t,i)]||((x.form&&x.form.reg)==='not sent'?'not sent':'sent')):((x.form&&x.form[k])||'not sent');
-const ptTodo=(t,x,i)=>PT_REAL.filter(k=>ptStat(t,x,i,k)!=='done');
+const ptTodo=(t,x,i)=>PT_FORMS.filter(k=>ptStat(t,x,i,k)!=='done');
 const ptIntl=t=>!!(typeof DESTS!=='undefined'&&DESTS[t.dest]&&DESTS[t.dest].intl);
 const ptRoomies=(t,x)=>t.trav.filter(y=>y!==x&&y.room===x.room);
 const PT_RT={Single:['יחיד','Single'],Twin:['שתי מיטות','Twin'],Double:['זוגי','Double'],Triple:['משולש','Triple'],Quad:['מרובע','Quad']};
@@ -33,7 +33,7 @@ const PT_FI={reg:'idcard',med:'shield',waiver:'document',room:'bed'};
 const PT_FD={reg:['שם, תאריך לידה, דרכון ואיש קשר לשעת חירום.','Name, date of birth, passport and emergency contact.'],med:['תזונה, אלרגיות וצרכי ניידות.','Diet, allergies and mobility needs.'],waiver:['תנאים, חתימה מוקלדת ותאריך.','Terms, typed signature and date.'],room:['סוג מיטה, שותף לחדר ובקשות לחדר שקט.','Bed type, roommate and quiet-room requests.']};
 /* readiness: forms done, household paid, passport received (international trips only), as equal parts */
 function ptReady(t,x,i){const hh=pvHousehold(t,i),parts=[];
-  parts.push(PT_REAL.filter(k=>ptStat(t,x,i,k)==='done').length/PT_REAL.length);
+  parts.push(PT_FORMS.filter(k=>ptStat(t,x,i,k)==='done').length/PT_FORMS.length);
   parts.push(hh&&hh.row.open<=0?1:0);
   if(ptIntl(t))parts.push(x.pass==='Missing'?0:1);
   return Math.round(parts.reduce((a,b)=>a+b,0)/parts.length*100);}
@@ -114,7 +114,7 @@ function ptHome(t,x,i){
   const roomSub=ro.length?L('עם ','with ')+ro.map(y=>String(y.n).split(' ')[0]).join(', '):L('חדר ','Room ')+esc(x.room);
   const hero=pvHero({cls:'pt-hero',greet:L('שלום','Hello'),role:L('אפליקציית הנוסע','Traveler app'),brief,ctas:ctas.slice(0,2),aria:L('הנסיעה שלי','My trip'),
     gauge:{pct,label:L('מוכנים לנסיעה','ready to travel'),lines:[
-      {cls:todo.length?'op':'ok',icon:todo.length?'hourglass':'check',lab:L('טפסים','Forms'),val:`${PT_REAL.length-todo.length}/${PT_REAL.length}`},
+      {cls:todo.length?'op':'ok',icon:todo.length?'hourglass':'check',lab:L('טפסים','Forms'),val:`${PT_FORMS.length-todo.length}/${PT_FORMS.length}`},
       {cls:open>0?'op':'ok',icon:open>0?'hourglass':'check',lab:L('תשלום','Payment'),val:open>0?usd(open):L('שולם','Paid')},
       ...(intl?[{cls:x.pass==='Missing'?'op':'ok',icon:x.pass==='Missing'?'hourglass':'check',lab:L('דרכון','Passport'),val:x.pass==='Missing'?L('חסר','Missing'):L('התקבל','Received')}]:[])]},
     kpis:[{lab:L('ימים ליציאה','Days to go'),val:Math.max(0,days),sub:fmtDate(t.dep)},
@@ -126,7 +126,6 @@ function ptHome(t,x,i){
   if(open>0)steps.push({sev:'urgent',t:L(`לשלם ${usd(open)} (${ptNext(t,hh.gi).k==='dep'?'מקדמה':'יתרה'})`,`Pay ${usd(open)} (${ptNext(t,hh.gi).k==='dep'?'deposit':'balance'})`),s:ptDueL(ptNext(t,hh.gi).due),b:L('תשלום','Pay'),a:'pay'});
   todo.forEach(k=>steps.push({sev:'todo',t:L(`למלא: ${PT_FN[k][0]}`,`Fill in: ${PT_FN[k][1]}`),s:ptStat(t,x,i,k)==='sent'?L('הסוכנות שלחה לך את הטופס','Your agent sent you this form'):L('עוד לא נשלח, אפשר למלא כבר עכשיו','Not sent yet, you can fill it in now'),b:L('מילוי','Fill'),a:'forms',f:k}));
   if(intl&&x.pass==='Missing')steps.push({sev:'todo',t:L('להעביר עותק דרכון לסוכן','Send your passport copy to your agent'),s:L('נדרש לנסיעה בינלאומית','Needed for international travel'),b:L('עזרה','Help'),a:'help'});
-  if(ptStat(t,x,i,'room')!=='done')steps.push({sev:'todo',t:L('לאשר העדפות חדר','Confirm your rooming preference'),s:L('סוג מיטה ושותף לחדר','Bed type and roommate'),b:L('מילוי','Fill'),a:'forms',f:'room'});
   const stepsCard=`<div class="card hc-card"><div class="hc-h"><h3>${L('מה נשאר לי','What is left for me')}</h3>${steps.length?`<span class="hc-pill blue">${steps.length}</span>`:`<span class="hc-pill green">${L('הכל מוכן','All set')}</span>`}</div>
     ${steps.length?`<ol class="hc-steps">${steps.map(s=>`<li class="${s.sev}"><span class="hc-dot"></span><div><b>${s.t}</b><span class="muted small">${s.s}</span></div><button class="btn sm${s.sev==='urgent'?' pri':''}" data-act="pt-go" data-v="${s.a}"${s.f?` data-f="${s.f}"`:''}>${s.b}</button></li>`).join('')}</ol>`
       :`<p class="muted">${L('כל הטפסים הוגשו והתשלום סגור. נתראה ביציאה.','Every form is in and your payment is complete. See you at departure.')}</p>`}</div>`;
@@ -193,13 +192,13 @@ function ptPlanView(t,x,i){
 function ptHelp(t,x,i){
   const g=typeof guideOfTrip==='function'?guideOfTrip(t.id):null,ag=STAFF.find(s=>s.key===t.agent);
   const warn=x.pass!=='Missing'&&typeof opPassWarn==='function'&&opPassWarn(t,x);
-  const call=(ico,lab,sub,tel)=>`<li class="pt-cl">${ic(ico)}<span><b>${lab}</b><small>${sub}</small></span>${tel?`<a class="btn sm pri" href="tel:${esc(tel.replace(/[^0-9+]/g,''))}">${ic('travel')} ${L('התקשרות','Call')}</a>`:''}</li>`;
+  const call=(ico,lab,sub,tel,mail)=>`<li class="pt-cl">${ic(ico)}<span><b>${lab}</b><small>${sub}</small></span>${tel?`<a class="btn sm pri" href="tel:${esc(tel.replace(/[^0-9+]/g,''))}">${L('התקשרות','Call')} <bdi>${esc(tel)}</bdi></a>`:''}${mail?`<a class="btn sm" href="mailto:${esc(mail)}">${ic('mail')} ${L('אימייל','Email')}</a>`:''}</li>`;
   const pass=x.pass==='Missing'?pillF(L('עוד לא התקבל','Not received yet'),'amber'):`<bdi>${esc(x.passNo||'')}</bdi> · ${warn?pillF(L('בתוקף פחות מ-6 חודשים אחרי החזרה','Under 6 months valid after return'),'amber'):L('בתוקף עד ','Valid to ')+fmtDate(x.passExp)}`;
   return `<div class="pt-stack">${ptMe(t,x,i)}
    <div class="card hc-card"><div class="hc-h"><h3>${L('מי עוזר לי','Who can help')}</h3></div><ul class="pt-cls">
-     ${call('travel',`${AGENCY} · ${L('24/7','24/7')}`,L('קו חירום כל היום','Emergency line, any hour'),'918-555-0100')}
+     ${call('shield',`${AGENCY} · ${L('24/7','24/7')}`,L('קו חירום כל היום','Emergency line, any hour'),'918-555-0100')}
      ${g?call('users',esc(L(g.he,g.en)),esc(L(g.role.he,g.role.en))+' · <bdi>'+esc(g.phone)+'</bdi>',g.phone):''}
-     ${ag?call('mail',esc(L(typeof AGN!=='undefined'&&AGN[ag.key]||ag.he,ag.en)),L('הסוכן/ת שלי','My agent')+' · <bdi>'+esc(ag.email)+'</bdi>',ag.phone):''}</ul></div>
+     ${ag?call('mail',esc(L(typeof AGN!=='undefined'&&AGN[ag.key]||ag.he,ag.en)),L('הסוכן/ת שלי','My agent')+' · <bdi>'+esc(ag.email)+'</bdi>',ag.phone,ag.email):''}</ul></div>
    <div class="card hc-card"><div class="hc-h"><h3>${L('הפרטים שלי','My details')}</h3></div><ul class="pt-kv">
      <li>${ic('danger')}<span><b>${L('איש קשר לחירום','Emergency contact')}</b>${x.emerg?`<bdi>${esc(x.emerg.name)}</bdi> · <bdi>${esc(x.emerg.phone)}</bdi>`:L('לא הוזן','Not provided')}</span></li>
      <li>${ic('dining')}<span><b>${L('תזונה','Diet')}</b>${esc(dietn(x.diet||'None'))}</span></li>
@@ -325,6 +324,12 @@ TESTS.push({name:'pt traveler app',run:h=>{const out=[];
   const wa=ptAnswers(t,lin,'waiver');wa.agree=true;wa.sig=x.n;err=ptSubmit(t,lin,'waiver');if(Object.keys(err).length||x.form.waiver!=='done')out.push('waiver submit failed '+JSON.stringify(err));
   x.form.med='sent';err=ptSubmit(t,lin,'med');if(Object.keys(err).length||x.form.med!=='done')out.push('med submit '+JSON.stringify(err));
   const ra=ptAnswers(t,lin,'room');ra.roomType=ra.roomType||'Twin';err=ptSubmit(t,lin,'room');if(Object.keys(err).length||PT_ROOM[ptKey(t,lin)]!=='done')out.push('room submit '+JSON.stringify(err));
+  {pvOpen('traveler',PORTALS.traveler.def,'home');S.lang='en';render();const hh=h.els.app.innerHTML,n=ptTodo(t,x,lin).length,tot=PT_FORMS.length;
+    if(!hh.includes(`<bdi>`)&&0)out.push('');
+    if(!hh.includes(`>${tot-n}/${tot}<`))out.push('gauge forms count');
+    const m=hh.match(/Forms to fill<\/span><b>(\d+)</);if(!m||+m[1]!==n)out.push('forms tile '+(m&&m[1])+' vs '+n);
+    const left=(hh.match(/Fill in: /g)||[]).length;if(left!==n)out.push('what is left '+left+' vs '+n);
+    pvOpen('traveler',PORTALS.traveler.def,'forms');render();if(!render||!h.els.app.innerHTML.includes(`>${tot-n}/${tot}<`))out.push('forms tab count');}
   const ready=ptReady(t,x,lin);if(ready<0||ready>100)out.push('readiness '+ready);
   /* trip chips and person list */
   if(ptPeople().length!==t.trav.length)out.push('people count');
