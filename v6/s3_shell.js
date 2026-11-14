@@ -59,7 +59,7 @@ const NEWP=()=>pillF(L('חדש','New'),'green');
    Portal options carry the value pv:<k> and open that portal with its default person (s13_portal.js). */
 function viewAsSelect(id){
   const pv=S.pv&&S.pv.k,sel=v=>(pv?('pv:'+pv)===v:S.role===v)?'selected':'';
-  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''});
+  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(S.pv&&S.pv.k===k&&typeof pvPerson==='function'&&pvPerson())||P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''};
     return `<option value="pv:${k}" ${sel('pv:'+k)}>${esc(d.name)} (${L(P.role[0],P.role[1])})</option>`;};
   return `<select id="${id}" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
    <optgroup label="${L('צוות הסוכנות','Agency team')}">

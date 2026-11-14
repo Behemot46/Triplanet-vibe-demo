@@ -1857,7 +1857,9 @@ button.pj-status{border:0;cursor:pointer}
 .pv-rib .pv-rt{display:inline-flex;align-items:center;gap:6px}
 .pv-rib .pv-rt b{color:var(--mint)}
 .pv-rib .pv-rt .ic,.pv-rib .pv-rt svg{color:var(--mint)}
-.pv-rib select{max-width:240px;background:rgba(255,255,255,.1);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 8px;font:inherit;font-size:13px}
+.pv-pk,.pv-sw{display:inline-flex;align-items:center;gap:6px}
+.pv-lb{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.75}
+.pv-rib select{max-width:290px;background:rgba(255,255,255,.1);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 8px;font:inherit;font-size:13px}
 .pv-rib select option,.pv-rib select optgroup{color:var(--ink);background:var(--panel)}
 .pv-rib .pv-sel{display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto}
 .pv-rib .pv-back{padding:6px 12px;font-size:13px}
@@ -1893,6 +1895,7 @@ button.pj-status{border:0;cursor:pointer}
   .pv-rib select{width:100%;max-width:100%}
   .pv-rib .pv-back{grid-column:2;grid-row:1;padding:5px 10px}
   .pv-rib .pv-back span{display:none}
+  .pv-lb{display:none}
   .pv-hastabs .pv-main{padding:14px 12px 92px}
   .pv-main{padding:14px 12px 24px}
   .pv-tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;margin:0;max-width:none;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);border-bottom:0;justify-content:space-around;box-shadow:0 -6px 18px -12px rgba(0,0,0,.3)}
@@ -4558,7 +4561,7 @@ const NEWP=()=>pillF(L('חדש','New'),'green');
    Portal options carry the value pv:<k> and open that portal with its default person (s13_portal.js). */
 function viewAsSelect(id){
   const pv=S.pv&&S.pv.k,sel=v=>(pv?('pv:'+pv)===v:S.role===v)?'selected':'';
-  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''});
+  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(S.pv&&S.pv.k===k&&typeof pvPerson==='function'&&pvPerson())||P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''};
     return `<option value="pv:${k}" ${sel('pv:'+k)}>${esc(d.name)} (${L(P.role[0],P.role[1])})</option>`;};
   return `<select id="${id}" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
    <optgroup label="${L('צוות הסוכנות','Agency team')}">
@@ -12429,8 +12432,8 @@ function pvShell(){
     <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
     ${p?avatarOf(p.name):''}</header>
    <div class="pv-rib" role="note"><span class="pv-rt">${ic('show')} ${L('צפייה בתור','You are viewing as')} <b><bdi>${esc(p?p.name:'')}</bdi></b> · ${L(P.role[0],P.role[1])}</span>
-    <span class="pv-sel">${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
-    <span class="pv-sw">${viewAsSelect('pvrole')}</span></span>
+    <span class="pv-sel">${people.length>1?`<label class="pv-pk"><span class="pv-lb">${L('אדם','Person')}</span><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
+    <label class="pv-sw"><span class="pv-lb">${L('תצוגה','View as')}</span>${viewAsSelect('pvrole')}</label></span>
     <button class="hc-btn mint pv-back" data-act="pv-exit" aria-label="${L('חזרה לסוכנות','Back to agency')}">${ic('left','flip')} <span>${L('חזרה לסוכנות','Back to agency')}</span></button></div>
    ${tabs.length>1?`<nav class="pv-tabs" aria-label="${L('מסכים','Screens')}">${tabs.map(x=>`<button class="pv-tb${x[0]===tab?' on':''}" data-act="pv-tab" data-v="${x[0]}" ${x[0]===tab?'aria-current="page"':''}>${ic(x[3])}<span>${L(x[1],x[2])}</span></button>`).join('')}</nav>`:''}
    <main class="pv-main" id="view">${body}</main>
