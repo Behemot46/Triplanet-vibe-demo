@@ -31,7 +31,7 @@
 .pv-tm{display:flex;flex-direction:column;font-family:var(--f-num);line-height:1.2}
 .pv-tm b{font-size:14px}.pv-tm small{color:var(--muted);font-size:12px}
 .pv-dot{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--recess);color:var(--primary)}
-.pv-st.k-travel .pv-dot{color:var(--blue)}.pv-st.k-meal .pv-dot{color:var(--orange)}.pv-st.k-free .pv-dot{color:var(--green)}
+.pv-st.k-travel .pv-dot{color:var(--blue)}.pv-st.k-stay .pv-dot{color:var(--purple)}.pv-st.k-meal .pv-dot{color:var(--orange)}.pv-st.k-free .pv-dot{color:var(--green)}
 .pv-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
 .pv-tx small{color:var(--muted)}
 .pv-st.done .pv-tx b{text-decoration:line-through;color:var(--muted)}

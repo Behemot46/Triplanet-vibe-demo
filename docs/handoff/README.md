@@ -68,6 +68,9 @@ All in `v6/`; build order is in `build.py: JS_ORDER`. One HTML file, no framewor
 | `s1c_catalog.js` | Real hotels (65), venues (82), airlines, brands, 5 extra destinations |
 | `s1d_data.js` | 344 suppliers, rate cards, alternatives (`altsFor`, `altCost`) |
 | `s1e_people.js` | Clients (24), staff, roles, 40 permissions, `can()`, traveler extras, `blockOf` |
+| `s13_portal.js` | v8.4 portal frame for external viewpoints: `S.pv`, `PORTALS`/`pvRegister`, `pvShell`, shared plan helpers (`pvDays`, `pvDayCard`), entry links from agency screens |
+| `s13_oc.js` | Operations coordinator home (`hcOps`, role `ops`) |
+| `s13_pl.js`, `s13_pt.js`, `s13_ps.js`, `s13_pg.js` | Group leader portal, traveler app, supplier portal (fictional suppliers only), tour director run sheet |
 | `s1b_labels.js` | Labels, gap explanations, alerts |
 | `s2_i18n.js` | Hebrew-to-English translator (`DICT`, `trHtml`) |
 | `s3_shell.js` | State, save and load, navigation, shell, Maya drawer, guided tour |
@@ -128,7 +131,7 @@ How strings and events work: every visible string is `L(he, en)`; data goes thro
 From `CLAUDE.md` and the code. These are decisions for the owner, not for you, but they affect what you may copy.
 
 1. **Agent annual targets** (`s1e_people.js: STAFF_TARGET`, 260,000 to 380,000 USD): approved by the owner on 14 Nov 2026.
-2. **FEAT statuses** (`s9b_status.js`): 8 Live, 12 Pilot, 4 Roadmap. Finance stage, invoices, payments, trip P&L, integrations and multi-currency were moved to Pilot on 13 Nov 2026 after a read-only walkthrough of dev.triplanet.io (Sep 2026 report, not verified with the product team). **The product team must confirm what is live in finance before IITA (31 Jan 2027).**
+2. **FEAT statuses** (`s9b_status.js`): 8 Live, 13 Pilot, 7 Roadmap (v8.4 added the operations coordinator view as Pilot and the group leader portal, traveler app and supplier portal as Roadmap; the run sheet is the existing "Guide mobile app" Roadmap row). Finance stage, invoices, payments, trip P&L, integrations and multi-currency were moved to Pilot on 13 Nov 2026 after a read-only walkthrough of dev.triplanet.io (Sep 2026 report, not verified with the product team). **The product team must confirm what is live in finance before IITA (31 Jan 2027).**
 3. **Fictional supplier names** (`SUP_FICT`, 156 generated names across hotels, coaches, shuttles, guides, meals, air and insurance desks). The owner reviews the list before a show. Print it with `node check6.js | grep "^SUPPLIERS"`.
 4. **Sample waiver wording** (`s10_fbuild.js: FB_TERMS`) is marked "SAMPLE WORDING ONLY". Counsel must write the real text.
 5. **Hebrew data translation scope.** English and Hebrew UI strings are complete. In Hebrew mode, generic data strings (line names such as "Twin rooms, 9 nights", service variants, room types, plan items and well-known sites) are translated by `s11_trdata.js` (`heData`, about 360 phrases and 26 patterns). Company, hotel, venue, client and traveler names stay as written. Client-facing documents (the PDF proposal, payment requests, supplier emails) stay in English on purpose, because they go to US clients and suppliers.
@@ -140,6 +143,7 @@ From `CLAUDE.md` and the code. These are decisions for the owner, not for you, b
 11. **Prior-year statistics** on Home (won and canceled projects, year-on-year chips) are fictional.
 12. **Permissions**: 13 of the 40 are enforced (`ST_ENFORCED` in `s10_settings.js`, pinned to the code by a test: `users.manage, fin.sync, fin.view, prop.approve, fin.issueDocs, settings.edit, settings.stages, price.edit, forms.build, sup.edit, sup.swap, ops.suppliers, cli.edit`); the other 27 show in the matrix only. The earlier mismatch between the "8 enforced" list and the code was fixed in a9fdf77 (`business-rules.md` §25, §32.1). Decide the production enforcement list; the matrix defaults are a proposal. CLAUDE.md still says "8 enforced" for `s10_settings.js`.
 13. **Real-brand wording** and `brandSwap` are demo rules; they do not apply to customer data.
+14. **Portals (v8.4)** are previews: portal access, invitations and authentication are not designed yet. The owner decides whether any portal row moves from Roadmap to Pilot. See `spec-v8.4-viewpoints.md` and `data-model.md` §28.
 
 Code inconsistencies found while writing these documents are in `business-rules.md` §32. Fixed in a9fdf77 (permissions list and the two unchecked permissions, credit not marking paid, swap permission by screen, receipt label, free "locked" rate, no stage moves after win) and marked so there. Still open: partial credits, `byType` vs overhead and brokerage, `Trip.ctype` and the join by client name, `qdays` as a counter, `themeGet()` and `prefers-color-scheme`.
 

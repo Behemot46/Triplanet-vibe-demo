@@ -20,8 +20,8 @@ const pvTab=k=>{if(S.pv&&pvP()&&pvP().tabs.some(x=>x[0]===k))S.pv.tab=k;};
 /* clock time from minutes since midnight: 2:30 PM in English, 14:30 in Hebrew */
 const pvClock=m=>{m=Math.round(m/5)*5;const h=Math.floor(m/60)%24,mm=String(m%60).padStart(2,'0');
   return S.lang==='en'?`${(h%12)||12}:${mm} ${h<12?'AM':'PM'}`:`${String(h).padStart(2,'0')}:${mm}`;};
-const pvKind=n=>/coach|depart|return|transfer|drive|flight|airport|check-in|check-out|train|ferry/i.test(n)?'travel':/breakfast|lunch|dinner|meal|buffet|supper/i.test(n)?'meal':/free|leisure/i.test(n)?'free':'visit';
-const PV_KIC={travel:'bus',meal:'dining',free:'free',visit:'pin'};
+const pvKind=n=>/check-?in|check-?out/i.test(n)?'stay':/coach|depart|return|transfer|drive|flight|airport|train|ferry/i.test(n)?'travel':/breakfast|lunch|dinner|meal|buffet|supper/i.test(n)?'meal':/free|leisure/i.test(n)?'free':'visit';
+const PV_KIC={travel:'bus',stay:'bed',meal:'dining',free:'free',visit:'pin'};
 /* the trip day by day with clock times: day 1 starts at the 07:00 departure, other days at 08:00; 15 minutes between stops */
 function pvDays(t){
   if(!t)return [];const n=(t.nights||0)+1,out=[];
@@ -37,7 +37,7 @@ function pvDayCard(t,d,o){o=o||{};
   return `<div class="card hc-card pv-day${o.hl?' pv-today':''}" data-day="${d.i}">
    <div class="hc-h"><h3>${L('יום','Day')} ${d.i} <span class="muted small">· ${dt}</span></h3>${d.hotel?`<span class="muted small pv-hot">${ic('bed')} <bdi>${esc(d.hotel)}</bdi></span>`:''}</div>
    ${d.items.length?`<ol class="pv-tl">${d.items.map(x=>{const dn=o.done&&o.done.has(x.id);
-     return `<li class="pv-st k-${x.kind}${dn?' done':''}"><span class="pv-tm"><b>${pvClock(x.start)}</b><small>${pvClock(x.end)}</small></span>
+     return `<li class="pv-st k-${x.kind}${dn?' done':''}"><span class="pv-tm"><b>${pvClock(x.start)}</b><small>– ${pvClock(x.end)}</small></span>
       <span class="pv-dot">${ic(PV_KIC[x.kind])}</span><span class="pv-tx"><b>${esc(x.name)}</b>${o.extra?o.extra(x):''}</span>
       ${o.tick?`<button class="btn sm${dn?' pri':''} pv-tick" data-act="${o.tick}" data-v="${t.id}|${d.i}|${x.id}" aria-pressed="${!!dn}">${ic(dn?'done':'check')} ${dn?L('בוצע','Done'):L('סמן','Mark done')}</button>`:''}</li>`;}).join('')}</ol>`
      :`<p class="muted small">${L('יום חופשי, בלי תוכנית קבוצתית.','A free day with no group program.')}</p>`}</div>`;
