@@ -68,7 +68,7 @@ document.addEventListener('click',e=>{
 /* "/" or Ctrl/Cmd+K opens Maya with the cursor in her box */
 document.addEventListener('keydown',e=>{
   const typing=e.target&&e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]');
-  if(((e.key==='/'&&!typing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'))&&!(S.meet>=0)&&!document.getElementById('attract')){
+  if(((e.key==='/'&&!typing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'))&&!(S.meet>=0)&&!S.pv&&!document.getElementById('attract')){
     e.preventDefault();if(S.tab==='ai'){const i=document.querySelector('[data-form="ask"] input');if(i)i.focus();return;}
     S.chen=true;mayaHide();render();const i=document.querySelector('.chen [data-form="ask"] input');if(i)i.focus();}
 });

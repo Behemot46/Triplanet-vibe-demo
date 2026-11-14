@@ -1,0 +1,78 @@
+/* ---------- v8.4 tour director run sheet (s13_pg.js): phone first, high contrast, big tap targets ---------- */
+.pg-run{display:flex;flex-direction:column;gap:14px;font-size:16px;color:var(--ink)}
+.pg-run>*{margin:0!important}
+.pg-run label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px;color:var(--ink2)}
+.pg-run select,.pg-run textarea{font:400 16px var(--f-ui);padding:12px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);min-height:48px;box-sizing:border-box;width:100%}
+.pg-run select{appearance:none;-webkit-appearance:none;border:2px solid var(--line2);padding-inline-end:40px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 22px) 52%,calc(100% - 16px) 52%;background-size:6px 6px;background-repeat:no-repeat}
+.pg-run select:dir(rtl),[dir=rtl] .pg-run select{background-position:22px 52%,16px 52%}
+.pg-run textarea{resize:vertical;min-height:96px}
+/* trip and day chips */
+.pg-sel{display:flex;flex-direction:column;gap:8px}
+.pg-chips{display:flex;gap:8px;overflow-x:auto;padding-block-end:4px;scrollbar-width:thin}
+.pg-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-height:52px;padding:8px 16px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font:inherit;cursor:pointer;text-align:start}
+.pg-chip b{font-size:15px;font-weight:700;white-space:nowrap}
+.pg-chip small{font-size:12.5px;color:var(--muted)}
+.pg-chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pg-chip.on small{color:var(--bg);opacity:.8}
+.pg-d{min-width:64px;align-items:center}
+.pg-one{margin:0}
+/* hero: compact on phones */
+.pg-hero .hc-gauge{transform-origin:center}
+.pg-run .pg-kflag b{color:var(--mint)}
+.pg-mp{display:flex;align-items:center;gap:4px;color:var(--ink2);font-size:13.5px}
+.pg-ct{display:block;color:var(--ink2);font-size:13.5px;line-height:1.5}
+.pg-tel{color:var(--primary);font-weight:700;text-decoration:underline;text-underline-offset:2px;padding-block:6px;display:inline-block}
+[data-theme="dark"] .pg-tel{color:var(--primary-light)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pg-tel{color:var(--primary-light)}}
+.pg-run .pv-tick{min-height:48px;min-width:120px;font-size:15px;justify-content:center}
+.pg-run .pv-st{padding-block:12px}
+.pg-run .pv-tm b{font-size:16px}
+.pg-run .pv-tx b{font-size:16px;line-height:1.3}
+/* manifest */
+.pg-pl{list-style:none;margin:0;padding:0}
+.pg-px{display:grid;grid-template-columns:52px 1fr;gap:6px 12px;align-items:start;padding:12px 0;border-top:1px dashed var(--line2)}
+.pg-px:first-child{border-top:0}
+.pg-px.on{background:var(--recess);margin-inline:-12px;padding-inline:12px;border-radius:10px}
+.pg-px .pg-call{grid-column:2}
+.pg-hb{inline-size:52px;block-size:52px;border-radius:12px;border:2px solid var(--line2);background:var(--panel);color:var(--muted);display:grid;place-items:center;font-size:24px;cursor:pointer;padding:0}
+.pg-hb.on{background:var(--green);border-color:var(--green);color:#fff}
+.pg-pi{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pg-pi>b{font-size:17px}
+.pg-fl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pg-call{min-height:48px;justify-content:flex-start;gap:10px;font-size:15px;text-align:start;width:100%;box-sizing:border-box}
+.pg-call span{display:flex;flex-direction:column;line-height:1.25}
+.pg-call small{color:var(--muted);font-family:var(--f-num);font-size:13.5px}
+.pg-hcn{font-size:18px}
+.pg-hcn b{font:700 38px/1 var(--f-num);color:var(--ink)}
+.pg-bar{block-size:10px;border-radius:99px;background:var(--recess);overflow:hidden;margin-block:8px}
+.pg-bar i{display:block;block-size:100%;background:var(--green);border-radius:99px;transition:inline-size .25s}
+.pg-filt .pg-f{min-width:120px}
+/* vouchers */
+.pg-vs{font-weight:600;margin:6px 0}
+.pg-vn{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;background:var(--recess);margin-block:8px}
+.pg-vn b{font:700 26px/1.1 var(--f-num);letter-spacing:.02em;color:var(--ink)}
+/* notes */
+.pg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-block-end:10px}
+.pg-add{margin-block-start:12px;width:100%;min-height:52px;justify-content:center;font-size:16px}
+.pg-nf .hc-btn.mint{color:var(--primary-darker)}
+.pg-nl{list-style:none;margin:0;padding:0}
+.pg-nt{padding:12px 0;border-top:1px dashed var(--line2)}
+.pg-nt:first-child{border-top:0}
+.pg-nt p{margin:6px 0 0;font-size:16px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.pg-nh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pg-del{margin-inline-start:auto;inline-size:44px;block-size:44px}
+@media (max-width:720px){
+  .pg-hero .hc-gauge{transform:scale(.8);margin-block:-14px}
+  .pg-row{grid-template-columns:1fr}
+  .pg-run .pv-st{grid-template-columns:60px 26px 1fr}
+  .pg-run .pv-st .pv-tick{width:100%}
+}
+
+.pg-wait .pill{white-space:normal}
+/* desktop: the manifest uses the full width as a card grid */
+@media (min-width:721px){
+  .pg-pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .pg-px{border:1px solid var(--line2);border-radius:12px;padding:12px;grid-template-columns:52px 1fr}
+  .pg-px:first-child{border-top:1px solid var(--line2)}
+  .pg-px.on{margin-inline:0}
+}

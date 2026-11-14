@@ -3,31 +3,32 @@
 const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab:'all',q:'',qseg:'All',sub:'bank',openDay:1,openT:{},tplQ:'',tplDest:'All',
   fSeg:'All',fStage:'All',fAgent:'All',thresh:12,shock:0,chat:[],docGroup:0,docMode:'pay',msgSup:0,ran:false,imported:false,priceExtra:[],
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
-  page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
+  page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0,pv:null});
 const S=S0();
 const VER=8,KEY='triplanet-booth-demo-v8';
 /* the demo's version name, shown in the settings menu and the page title (build.py) */
-const DEMO_VERSION='v8.3',DEMO_BUILT='2026-11-14';
+const DEMO_VERSION='v8.4',DEMO_BUILT='2026-11-14';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
 function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
 function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
 function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);PERSIST.forEach(p=>{try{p.reset();}catch(e){}});try{localStorage.removeItem(KEY);}catch(e){}}
 const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
-/* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
-const ROLE_KEYS=['manager','accountant',...AGENTS];
+/* roles: owner (key manager), accountant, operations coordinator (v8.4) and the agents. Owner, accountant and ops see every file.
+   External viewpoints (group leader, traveler, supplier, tour director) are NOT roles: they are portals (S.pv, s13_portal.js). */
+const ROLE_KEYS=['manager','accountant',...AGENTS,'ops'];
 const canApprove=()=>typeof can==='function'?can('prop.approve'):isMgr();
 const canIssueDocs=()=>typeof can==='function'?can('fin.issueDocs'):(isMgr()||isAcct());
-const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
-const seesAll=()=>isMgr()||isAcct();
-AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
+const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role),isOps=()=>S.role==='ops';
+const seesAll=()=>isMgr()||isAcct()||isOps();
+AGN.accountant='נורה קים';AGE.accountant='Nora Kim';AGN.ops='קלסי דוסון';AGE.ops='Kelsey Dawson';
 const userName=()=>isMgr()?MGR():agn(S.role);
 const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
 const canSee=t=>seesAll()||t.agent===S.role;
 /* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
 /* Hebrew for generic data strings (s11_trdata.js); identity when absent or in English */
 const heDataIf=h=>S.lang==='he'&&typeof heData==='function'?heData(h):h;
-const NAV_PERM={users:'users.manage',books:'fin.sync'};
+const NAV_PERM={users:'users.manage',books:'fin.sync',finance:'fin.view',gaps:'fin.view',leaks:'fin.view'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -47,9 +48,29 @@ const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אי�
 const head=(title,right)=>`<div class="ph"><h1>${title}</h1><div class="row">${right||''}</div></div>`;
 /* staff portraits (v6/s0_avatars.js, generated): looked up by agent key or by the full name in either language */
 const avKey=n=>{n=String(n).trim();if(typeof AVATARS==='undefined')return null;if(AVATARS[n])return n;
-  for(const a of AGENTS)if(n===AGN[a]||n===AGE[a])return a;if(n==='אלה ברוקס'||n==='Ella Brooks')return 'Ella';return null;};
+  for(const a of AGENTS)if(n===AGN[a]||n===AGE[a])return a;if(n==='אלה ברוקס'||n==='Ella Brooks')return 'Ella';
+  const k2=AV_NAMES[n];return k2&&AVATARS[k2]?k2:null;};
+/* v8.4: the new viewpoints' people (AI-generated headshots of people who do not exist) */
+const AV_NAMES={'Kelsey Dawson':'Kelsey','קלסי דוסון':'Kelsey','Rev. Alan Mercer':'Alan','Alan Mercer':'Alan','Linda Garcia':'Linda','Morgan Pratt':'Morgan','Wade Turner':'Wade','וייד טרנר':'Wade'};
 const avatarOf=(n,cls)=>{const k=avKey(n);return k?`<img class="avatar avimg${cls?' '+cls:''}" src="${AVATARS[k]}" alt="" width="40" height="40">`:`<span class="avatar${cls?' '+cls:''}">${esc(trHe(String(n)).trim().charAt(0))}</span>`;};
 const NEWP=()=>pillF(L('חדש','New'),'green');
+
+/* v8.4: one grouped "View as" switcher: agency team, client side, suppliers and field.
+   Portal options carry the value pv:<k> and open that portal with its default person (s13_portal.js). */
+function viewAsSelect(id){
+  const pv=S.pv&&S.pv.k,sel=v=>(pv?('pv:'+pv)===v:S.role===v)?'selected':'';
+  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(S.pv&&S.pv.k===k&&typeof pvPerson==='function'&&pvPerson())||P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''};
+    return `<option value="pv:${k}" ${sel('pv:'+k)}>${esc(d.name)} (${L(P.role[0],P.role[1])})</option>`;};
+  return `<select id="${id}" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
+   <optgroup label="${L('צוות הסוכנות','Agency team')}">
+    <option value="manager" ${sel('manager')}>${MGR()} (${L('מנהלת','owner')})</option>
+    <option value="accountant" ${sel('accountant')}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
+    <option value="ops" ${sel('ops')}>${agn('ops')} (${L('תפעול','operations')})</option>
+    ${AGENTS.map(a=>`<option value="${a}" ${sel(a)}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}</optgroup>
+   ${typeof PORTALS!=='undefined'?`<optgroup label="${L('צד הלקוח','Client side')}">${po('leader')}${po('traveler')}</optgroup>
+   <optgroup label="${L('ספקים ושטח','Suppliers and field')}">${po('supplier')}${po('guide')}</optgroup>`:''}
+  </select>`;
+}
 
 /* ---------- shell ---------- */
 /* v8.1: the sidebar is grouped by job. Items not listed in a section go to the last one. */
@@ -67,6 +88,7 @@ const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="tru
   he:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#d6dbe3" stroke-width=".6"/><rect y="2.2" width="30" height="2.6" fill="#0038b8"/><rect y="15.2" width="30" height="2.6" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="1"><path d="M15 6.3l3.2 5.5h-6.4z"/><path d="M15 13.7l3.2-5.5h-6.4z"/></g></svg>`};
 let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}px">${L('מ','M')}</span>`;
 function render(){
+  if(S.pv&&typeof pvRender==='function'&&typeof PORTALS!=='undefined'&&PORTALS[S.pv.k]){pvRender();return;}
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
   const user=userName();
@@ -82,17 +104,13 @@ function render(){
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
   app.innerHTML=heDataIf(trHtml(`<div class="app${S.drawer?' drawer':''}">
-   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${navSections(navOk,nb)}</aside>
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div><div class="side-va"><label for="role-m">${L('צפייה בתור','View as')}</label>${viewAsSelect('role-m')}</div>${navSections(navOk,nb)}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
      <span class="grow"></span>
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
-     <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
-       <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
-       <option value="accountant" ${isAcct()?'selected':''}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
-       ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
-     </select>
+     ${viewAsSelect('role')}
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
      <button class="iconb themeb" data-act="theme" aria-label="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}" title="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}">${ic(themeGet()==='dark'?'sun':'moon')}</button>
      <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
@@ -153,7 +171,7 @@ function tourPanel(){
    <div class="tbar"><div style="width:${(S.tour+1)/TOUR.length*100}%"></div></div><h3>${ti}</h3><p>${tx}</p>
    <div class="row" style="justify-content:space-between"><button class="btn" data-act="tourprev" ${S.tour===0?'disabled':''}>${L('הקודם','Back')}</button><button class="btn pri" data-act="${last?'tourend':'tournext'}">${last?L('סיום','Finish'):L('הבא','Next')}</button></div></div>`;
 }
-function tourGo(i){S.tour=i;S.menu=false;S.chen=false;TOUR[i].go();window.scrollTo(0,0);render();}
+function tourGo(i){S.tour=i;S.menu=false;S.chen=false;S.pv=null;TOUR[i].go();window.scrollTo(0,0);render();}
 function tourAfter(){
   if(S.tour<0)return;
   const el=document.querySelector&&document.querySelector(TOUR[S.tour].sel);

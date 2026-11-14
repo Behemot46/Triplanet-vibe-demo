@@ -24,6 +24,12 @@ PEOPLE = {
   'Luis':   "a 42 year old Hispanic American man, short wavy dark hair, trimmed beard, navy sweater over a collared shirt",
   'Tom':    "a 29 year old white American man, short light brown hair, round thin-frame glasses, grey crewneck sweater",
   'Maya':   "a 30 year old woman with olive skin, dark wavy shoulder-length hair, small stud earrings, brand blue blouse",
+  # v8.4 viewpoints (fictional people): ops coordinator, group leader, traveler, supplier contact, tour director
+  'Kelsey': "a 34 year old white American woman, light brown hair in a low ponytail, olive green cardigan over a white top",
+  'Alan':   "a 58 year old white American man, short grey hair, clean shaven, dark suit jacket, white shirt, no tie",
+  'Linda':  "a 48 year old Hispanic American woman, shoulder-length dark brown hair, soft teal sweater",
+  'Morgan': "a 41 year old white American woman, short dark blonde pixie haircut, black blazer over a cream top",
+  'Wade':   "a 52 year old white American man, salt-and-pepper short hair, light tan, navy polo shirt",
 }
 SEEDS = [11, 23, 47]
 EXTRA_SEEDS = {'Maya': [5, 71, 88]}   # Maya, the AI assistant, gets more candidates

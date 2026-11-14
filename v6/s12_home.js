@@ -52,7 +52,7 @@ function hcModel(){
 
 /* one hero for every role: brief, two buttons, a gauge and four KPI tiles */
 function hcShell(o){
-  const an=hpAnim(),first=String(userName()).split(' ')[0];
+  const an=o.anim!=null?o.anim:hpAnim(),first=o.name!=null?String(o.name):String(userName()).split(' ')[0];
   const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
   const kp=(k,i)=>{const tag=k.act?'button':'div',at=k.act?` data-act="${k.act}" data-v="${k.v}"${k.pt?` data-pt="${k.pt}"`:''}${k.on!=null?` aria-pressed="${!!k.on}"`:''}`:'';
     const val=k.money?`<b data-count="${Math.round(k.val)}">${usd(k.val)}</b>`:k.text?`<b class="hc-nn"><bdi>${esc(k.text)}</bdi></b>`:`<b>${k.val}</b>`;
@@ -66,7 +66,7 @@ function hcShell(o){
     <circle class="hc-pin" cx="860" cy="250" r="5"/><circle class="hc-pin" cx="1150" cy="120" r="5"/><circle class="hc-pin" cx="1110" cy="300" r="5"/><circle class="hc-pin p0" cx="80" cy="360" r="5"/>
    </svg>
    <div class="hc-hl">
-    <div class="hc-hi"><span class="hc-eye">${day}${o.role?` · ${o.role}`:''}</span><h1>${L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${o.brief}</p>
+    <div class="hc-hi"><span class="hc-eye">${day}${o.role?` · ${o.role}`:''}</span><h1>${o.greet||L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${o.brief}</p>
      ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
     <div class="hc-gauge" role="img" aria-label="${g.pct}% ${esc(g.label)}">${hcRing(g.pct,148,'big')}<div class="hc-gv"><b>${g.pct}%</b><span>${g.label}</span></div>
      <div class="hc-gl">${g.lines.map(x=>`<span class="${x.cls}">${ic(x.icon)} ${x.lab} <b>${x.val}</b></span>`).join('')}</div></div>

@@ -68,17 +68,17 @@ Production: `tenant` row with `name, country, reporting_cur, timezone, locale_de
 |---|---|---|---|---|---|
 | `key` | string | Identity and the value of `S.role` when "viewing as" this person. `manager`, `accountant`, an agent first name, or `Ops desk` | `Priya` | set `genStaff`; read everywhere as `S.role`, `Trip.agent` | D |
 | `en`, `he` | string | Display name in each language | `Priya Shah` / `פריה שאה` | `genStaff`; `s1_core.js: agn` | D |
-| `role` | enum(owner\|accountant\|agent\|ops) | Role. `ops` is the shared Ops desk, not a login | `agent` | `genStaff`; `s1e_people.js: roleOf` | R |
+| `role` | enum(owner\|accountant\|agent\|ops) | Role. Since v8.4 `ops` is the operations coordinator (Kelsey Dawson, key `ops`); the `Ops desk` row stays as the team queue that tasks are assigned to | `agent` | `genStaff`; `s1e_people.js: roleOf` | R |
 | `email` | string | Work email, domain is a placeholder | `priya.shah@redbudtours.example` | `genStaff`; form `user` in `s10_forms.js` | D |
 | `phone` | string | | `918-555-0110` | same | D |
 | `target` | number \| null | Annual revenue target in USD. Agents only. Illustrative; the owner confirms | `380000` | `s1e_people.js: STAFF_TARGET`; read by `s10_dash.js: dbTeam` | D |
 | `active` | bool | Inactive staff stay on past trips | `true` | form `user`; test `people persist` | R |
 
-Staff list (default): `manager` (Ella Brooks, owner), `accountant` (Nora Kim), six agents (Priya Shah 380,000; Dana Whitfield 300,000; Marcus Reed 360,000; Grace Okafor 340,000; Luis Ortega 280,000; Tom Becker 260,000), `Ops desk`.
+Staff list (default): `manager` (Ella Brooks, owner), `accountant` (Nora Kim), six agents (Priya Shah 380,000; Dana Whitfield 300,000; Marcus Reed 360,000; Grace Okafor 340,000; Luis Ortega 280,000; Tom Becker 260,000), `ops` (Kelsey Dawson, operations coordinator, v8.4), `Ops desk` (team queue).
 
 Two staff lookups exist in parallel and must not be confused: `AGENTS`, `AGE`, `AGN` in `s1_core.js` (name tables used by labels) and `STAFF`, `STAFF_BY` in `s1e_people.js` (editable records). `Trip.agent` stores the agent **key**. Production: one `user` + `membership`, and `Trip.owner_user_id`.
 
-Roles the demo can "view as" (`s3_shell.js: ROLE_KEYS`): `manager`, `accountant`, and the six agents. `seesAll()` is true for owner and accountant; agents see only trips where `Trip.agent === S.role` (`s3_shell.js: canSee`, `visibleTrips`).
+Roles the demo can "view as" (`s3_shell.js: ROLE_KEYS`): `manager`, `accountant`, the six agents and `ops` (last). `seesAll()` is true for owner, accountant and ops; ops has no `fin.view`, so finance pages and finance-stage trip tabs render `noAccess()`. External people (group leader, traveler, supplier, tour director) are not roles: see §28; agents see only trips where `Trip.agent === S.role` (`s3_shell.js: canSee`, `visibleTrips`).
 
 ## 4. Role and Permission
 
@@ -635,6 +635,25 @@ erDiagram
 ```
 
 Derived or non-stored entities in the diagram (marked "derives"): `INCOME_DOC`, `VOUCHER`, `ALTERNATIVE`, `RATE_CARD_ROW`, `GAP`, `FORM_RESPONSE`, `ROOM_BLOCK` details. Production decides which of them become tables (the backend plan stores gaps, client invoices and vouchers).
+
+## 28. Portals and external people (v8.4)
+
+External viewpoints are portals, not agency roles (`s13_portal.js`). Production: each is a separate login or an invitation link scoped to its own records (proposed API `GET /v1/portal/{token}/me`).
+
+| Item | Shape | Meaning | Where | Origin |
+|---|---|---|---|---|
+| `S.pv` | `{k:'leader'\|'traveler'\|'supplier'\|'guide', id, tab}` \| null | The portal being viewed; null = agency. Not saved: a reload returns to the agency | `s13_portal.js: pvOpen, pvExit` | UI |
+| Group leader | `Client.contact` + trips where `Trip.client === Client.name` | id = client id | `s13_pl.js` | R |
+| Traveler | `Trip.trav[i]` + household `Trip.groups` | id = `tripId\|index` | `s13_pt.js` | R |
+| Supplier | `SUPPLIERS[]` with `fictional:true` on at least one trip line | id = supplier id. Real suppliers are never shown in the portal (real-brand rule) | `s13_ps.js`, `pvFictionalSuppliers` | R |
+| `GUIDES[]` | `{id, en, he, role{en,he}, phone, email, trips[]}` | Tour director / driver-guide and the trips they run (Wade Turner: nas, bra, nia, dc1; Cody Harper: gre, hl2) | `s1e_people.js`; `guideOfTrip(id)` | D |
+| Portal messages | `PERSIST pv-msgs`: `{tripId: [{from, at, text}]}` | Leader ↔ agent thread, seeded per trip | `s13_pl.js` | D |
+| Run-sheet ticks | `PERSIST pv-run`: `{'tripId\|day': [itemId]}` | Stops marked done by the tour director | `s13_pg.js` | R |
+| Run-sheet notes | `PERSIST pv-notes`: `{tripId: [{id, kind, day, txt, d}]}` | Incidents, changes, guest requests | `s13_pg.js` | R |
+| Rooming preference status | `PERSIST pt-room`: `{'tripId\|index': 'done'}` | The 4th traveler form (no field on the traveler record) | `s13_pt.js` | R |
+| `Line.inv.reply` | bool, optional | The supplier replied to a query with documents | `s13_ps.js` | R |
+
+Portal actions write to the same records the agency reads: a traveler payment sets `Group.depPaid`/`balPaid` (collected moves, revenue and profit do not); a supplier confirmation sets the `Trip.sups[]` entry as `spSetFlow` does; a supplier credit uses the same formula as the agency's credit; the leader's Accept calls `prAccept` (Sent → Negotiating). Clock times in the plan (`pvDays`) are derived: day 1 starts at 07:00, other days at 08:00, 15 minutes between stops (demo constants).
 
 ## 27. Demo-only vs real, in one list
 

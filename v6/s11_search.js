@@ -106,7 +106,7 @@ document.addEventListener('click',e=>{
 },true);
 document.addEventListener('input',e=>{const el=e.target;if(!S.gs||!el||el.id!=='gs-in')return;S.gs.q=el.value;S.gs.sel=0;gsRedraw(false);});
 document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&String(e.key).toLowerCase()==='f'){e.preventDefault();if(!S.gs&&!(S.meet>=0)&&!document.getElementById('attract'))gsOpen();return;}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&String(e.key).toLowerCase()==='f'){e.preventDefault();if(!S.gs&&!(S.meet>=0)&&!S.pv&&!document.getElementById('attract'))gsOpen();return;}
   if(!S.gs)return;
   if(e.key==='Escape'){e.preventDefault();e.stopPropagation();gsClose(true);}
   else if(e.key==='ArrowDown'){e.preventDefault();gsMove(1);}
