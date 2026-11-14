@@ -1366,6 +1366,222 @@ body.dnd,body.dnd *{cursor:grabbing!important;user-select:none!important;-webkit
 }
 @media print{.fm-root{display:none!important}}
 
+/* v8.2 Home: the agency command center (s12_home.js). Theme tokens only, logical properties, day and night. */
+.hc{display:flex;flex-direction:column;gap:20px}
+.hc .avatar.xs{width:20px;height:20px;font-size:10px;margin-inline-end:4px;vertical-align:middle}
+
+/* hero */
+.hc-hero.ptiles,.hc-hero{display:block;grid-template-columns:none;gap:0;margin:0;box-shadow:0 24px 48px -24px rgba(1,41,114,.55)}
+.hc-hero{position:relative;overflow:hidden;border-radius:24px;padding:28px 28px 22px;color:var(--hero-ink);
+  background:linear-gradient(125deg,var(--hero1) 0%,var(--hero2) 62%,#0A6BD6 100%);box-shadow:0 24px 48px -24px rgba(1,41,114,.55);isolation:isolate}
+.hc-bg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.hc-arc{fill:none;stroke:var(--mint);stroke-width:1.6;stroke-dasharray:5 9;opacity:.38}
+.hc-hero.anim .hc-arc{animation:hcDash 14s linear infinite}
+.hc-arc.a2{opacity:.26}.hc-arc.a3{opacity:.2}
+.hc-pin{fill:var(--mint);opacity:.75}
+.hc-pin.p0{fill:#fff;opacity:.9}
+.hc-hero.anim .hc-pin{animation:hcPulse 2.6s ease-in-out infinite}
+@keyframes hcDash{to{stroke-dashoffset:-280}}
+@keyframes hcPulse{0%,100%{opacity:.35}50%{opacity:.95}}
+.hc-hl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center}
+.hc-eye{display:inline-block;font:600 12px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-bottom:10px}
+.hc-hi h1{margin:0 0 10px;font:800 36px/1.1 var(--f-ui);color:var(--hero-ink);letter-spacing:-.01em}
+.hc-hi p{margin:0;max-width:62ch;font-size:16px;line-height:1.55;color:var(--hero-mute)}
+.hc-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.hc-btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:11px 16px;font:700 14px var(--f-ui);cursor:pointer;border:1px solid transparent}
+.hc-btn .ic,.hc-btn svg{width:18px;height:18px}
+.hc-btn.mint{background:var(--mint);color:var(--hero1);box-shadow:0 8px 20px -8px rgba(93,252,224,.6)}
+.hc-btn.mint:hover{filter:brightness(1.05)}
+.hc-btn.ghost{background:rgba(255,255,255,.08);color:var(--hero-ink);border-color:rgba(255,255,255,.28)}
+.hc-btn.ghost:hover{background:rgba(255,255,255,.16)}
+.hc-btn:focus-visible,.hc-kpi:focus-visible,.hc-dep:focus-visible,.hc-stage:focus-visible,.hc-mini:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+
+/* gauge */
+.hc-gauge{position:relative;display:grid;justify-items:center;gap:10px;min-width:200px}
+.hc-ring .tr{fill:none;stroke:rgba(145,158,171,.22);stroke-width:8}
+.hc-ring .br{fill:none;stroke:var(--primary);stroke-width:8;stroke-linecap:round}
+.hc-ring.big .tr{stroke:rgba(255,255,255,.14);stroke-width:12}
+.hc-ring.big .br{stroke:var(--mint);stroke-width:12;filter:drop-shadow(0 0 6px rgba(93,252,224,.5))}
+.hc-hero.anim .hc-ring.big .br{animation:hcDraw 1.4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hcDraw{from{stroke-dasharray:0 999}}
+.hc-gv{position:absolute;top:0;inset-inline:0;height:148px;display:grid;place-content:center;text-align:center}
+.hc-gv b{font:800 34px/1 var(--f-num);color:var(--hero-ink)}
+.hc-gv span{font-size:11px;color:var(--hero-mute);max-width:96px;margin:4px auto 0;line-height:1.25}
+.hc-gl{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--hero-mute);white-space:nowrap}
+.hc-gl span{display:flex;align-items:center;gap:6px}
+.hc-gl svg{width:14px;height:14px}
+.hc-gl b{color:var(--hero-ink);font-family:var(--f-num)}
+.hc-gl .ok svg{color:var(--mint)}
+
+/* KPI glass tiles */
+.hc-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px}
+.hc-kpi{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:16px;text-align:start;color:var(--hero-ink);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(6px);font:inherit}
+button.hc-kpi{cursor:pointer}
+button.hc-kpi:hover{background:rgba(255,255,255,.14)}
+.hc-kpi span{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--hero-mute)}
+.hc-kpi b{font:800 28px/1.1 var(--f-num)}
+.hc-kpi small{font-size:12.5px;color:var(--hero-mute)}
+.hc-kpi.pf small{color:var(--mint)}
+.hc-kpi b.hc-nn{font:700 17px/1.25 var(--f-ui);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* grid and cards */
+.hc-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;align-items:start}
+.hc-c7{grid-column:span 7;display:flex;flex-direction:column;gap:20px}
+.hc-c5{grid-column:span 5;display:flex;flex-direction:column;gap:20px}
+.hc-c12{grid-column:1/-1}
+.hc-card{border-radius:20px;padding:20px;margin:0}
+.hc-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.hc-h h3{margin:0;font-size:18px}
+.hc-pill{font:700 12px var(--f-ui);padding:4px 10px;border-radius:999px}
+.hc-pill.red{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red)}
+.hc-pill.green{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+.hc-more{margin-top:12px;background:none;border:0;padding:4px 0;color:var(--primary);font:600 13.5px var(--f-ui);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.hc-more svg{width:16px;height:16px}
+
+/* today */
+.hc-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.hc-steps li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line)}
+.hc-steps li:last-child{border-bottom:0}
+.hc-steps b{display:block;font-size:14.5px;line-height:1.35;font-weight:600;color:var(--ink)}
+.hc-dot{width:10px;height:10px;border-radius:50%;background:var(--blue)}
+.hc-steps li.urgent .hc-dot{background:var(--red);box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 18%,transparent)}
+.hc-steps li.todo .hc-dot{background:var(--amber)}
+.hc-trip{background:none;border:0;padding:2px 0 0;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer;text-align:start;display:inline-flex;align-items:center;gap:2px;flex-wrap:wrap}
+.hc-trip:hover{color:var(--primary)}
+
+/* departures rail */
+.hc-rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin:0 -4px;padding-inline:4px}
+.hc-dep{scroll-snap-align:start;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--panel);padding:0;text-align:start;cursor:pointer;font:inherit;color:var(--ink);transition:transform .15s ease,box-shadow .15s ease}
+.hc-dep:hover{transform:translateY(-2px);box-shadow:var(--sh-card)}
+.hc-ph{position:relative;height:120px;display:block}
+.hc-when{position:absolute;top:10px;inset-inline-start:10px;font:700 12px var(--f-ui);padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#1C252E}
+.hc-when.soon{background:var(--mint);color:var(--hero1)}
+.hc-rd{position:absolute;bottom:-20px;inset-inline-end:12px;width:44px;height:44px;border-radius:50%;background:var(--panel);display:grid;place-items:center;box-shadow:var(--sh-card)}
+.hc-rd .hc-ring{position:absolute;inset:0}
+.hc-rd b{font:800 11px var(--f-num);color:var(--ink)}
+.hc-stq{position:absolute;bottom:10px;inset-inline-end:10px;font:700 11px var(--f-ui);padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.5);color:#fff}
+.hc-dt{display:flex;flex-direction:column;gap:3px;padding:14px 14px 14px}
+.hc-dt b{font-size:14.5px;line-height:1.3;padding-inline-end:44px}
+.hc-dt span{font-size:12.5px;color:var(--muted)}
+.hc-who{display:flex;align-items:center}
+
+/* profit protection */
+.hc-lead{margin:0 0 14px;color:var(--ink2);font-size:14px;line-height:1.5}
+.hc-br{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:10px;align-items:center;margin:8px 0}
+.hc-br .l{font-size:13px;color:var(--ink2)}
+.hc-br .t{height:12px;border-radius:999px;background:var(--recess);overflow:hidden}
+.hc-br .t i{display:block;height:100%;border-radius:999px;background:var(--primary)}
+.hc .anim .hc-br .t i,.hc.anim .hc-br .t i{animation:hcGrow .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hcGrow{from{width:0}}
+.hc-br.loss .t i{background:var(--red)}
+.hc-br.exp .t i{background:var(--green)}
+.hc-br b{font:700 15px var(--f-num);white-space:nowrap}
+.hc-br.loss b{color:var(--red)}
+.hc-br small{grid-column:2/-1;margin-top:-4px;font-size:11.5px;color:var(--muted)}
+.hc-split{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.hc-mini{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--recess);text-align:start;cursor:pointer;font:inherit;color:var(--ink)}
+.hc-mini span{font-size:12px;font-weight:600;color:var(--muted)}
+.hc-mini b{font:800 19px var(--f-num)}
+.hc-mini small{font-size:11.5px;color:var(--muted);line-height:1.3}
+.hc-mini.ok b{color:var(--green)}
+.hc-mini.op b{color:var(--primary)}
+.hc-mini.rk b{color:var(--amber)}
+.hc-mini:hover{border-color:var(--primary)}
+
+/* pipeline */
+.hc-flow{display:flex;gap:4px;height:14px;margin:4px 0 16px}
+.hc-flow i{border-radius:999px;min-width:10px}
+.hc .anim .hc-flow i,.hc.anim .hc-flow i{animation:hcGrowF .9s ease both}
+@keyframes hcGrowF{from{transform:scaleX(0)}}
+.hc-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.hc-stage{position:relative;display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--panel);text-align:start;cursor:pointer;font:inherit;color:var(--ink)}
+.hc-stage:hover{border-color:var(--c)}
+.hc-stage .k{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.hc-stage .k i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.hc-stage b{font:800 26px/1.1 var(--f-num)}
+.hc-stage small{font-size:12px;color:var(--muted);font-family:var(--f-num)}
+.hc-stage .ar{position:absolute;top:50%;inset-inline-end:-13px;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);z-index:1}
+.hc-stage .ar svg{width:16px;height:16px}
+
+/* cash */
+.hc-cs{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.hc-cs b{font:700 15px var(--f-num);color:var(--ink)}
+.hc-cs .in b{color:var(--green)}
+.hc-cs .out b{color:var(--amber)}
+.hc-cs .net.neg b{color:var(--red)}
+.hc-bars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:center}
+.hc-mo{display:grid;grid-template-rows:64px 64px auto;justify-items:center;gap:0}
+.hc-mo .up,.hc-mo .dn{display:flex;width:100%;justify-content:center}
+.hc-mo .up{align-items:flex-end;border-bottom:1px solid var(--line)}
+.hc-mo .dn{align-items:flex-start}
+.hc-mo i{display:block;width:60%;max-width:26px;border-radius:6px}
+.hc-mo .up i{background:linear-gradient(180deg,var(--green),color-mix(in srgb,var(--green) 55%,transparent));border-radius:6px 6px 2px 2px}
+.hc-mo .dn i{background:linear-gradient(0deg,var(--amber),color-mix(in srgb,var(--amber) 50%,transparent));border-radius:2px 2px 6px 6px}
+.hc-mo em{font-style:normal;font-size:11.5px;color:var(--muted);margin-top:6px}
+
+/* team */
+.hc-team .hc-ag{display:grid;grid-template-columns:auto minmax(0,1fr) 64px 64px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line)}
+.hc-team .hc-ag:last-child{border-bottom:0}
+.hc-av{position:relative;width:52px;height:52px;display:grid;place-items:center}
+.hc-av .avatar{width:40px;height:40px;margin:0}
+.hc-av .hc-ring{position:absolute;inset:0}
+.hc-av .hc-ring .tr,.hc-av .hc-ring .br{stroke-width:4}
+.hc-an b{display:block;font-size:14px}
+.hc-an span{font-size:12px;color:var(--muted);font-family:var(--f-num)}
+.hc-am{text-align:end}
+.hc-am b{display:block;font:700 15px var(--f-num)}
+.hc-am span{font-size:11px;color:var(--muted)}
+
+/* trip studio */
+.hc-studio{position:relative;overflow:hidden;padding:0;background:linear-gradient(140deg,var(--hero1),var(--hero2));color:var(--hero-ink);border:0}
+.hc-ims{display:grid;grid-template-columns:repeat(3,1fr);height:110px}
+.hc-ims span{display:block}
+.hc-st{padding:18px 20px 20px}
+.hc-eye2{display:inline-flex;align-items:center;gap:8px;font:700 12px var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--mint)}
+.hc-st h3{margin:8px 0 6px;font-size:20px;color:var(--hero-ink)}
+.hc-st p{margin:0 0 14px;color:var(--hero-mute);font-size:14px;line-height:1.5}
+
+/* entrance */
+.hc.anim .hc-kpi,.hc.anim .hc-steps li,.hc.anim .hc-dep,.hc.anim .hc-stage,.hc.anim .hc-ag{animation:hcUp .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+.hc.anim .hc-mo i{animation:hcBar .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+@keyframes hcUp{from{opacity:0;transform:translateY(10px)}}
+@keyframes hcBar{from{height:0}}
+@media (prefers-reduced-motion:reduce){.hc *,.hc-hero *{animation:none!important;transition:none!important}}
+
+/* night mode */
+[data-theme="dark"] .hc-when{background:rgba(22,28,36,.9);color:#fff}
+[data-theme="dark"] .hc-when.soon{background:var(--mint);color:var(--hero1)}
+[data-theme="dark"] .hc-studio{background:linear-gradient(140deg,#071A3D,var(--hero1))}
+
+/* tablet and phone */
+@media (max-width:1100px){.hc-c7,.hc-c5{grid-column:1/-1}.hc-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){
+  .hc{gap:14px}.hc-grid{gap:14px}.hc-c7,.hc-c5{gap:14px}
+  .hc-hero{padding:20px 16px 16px;border-radius:20px}
+  .hc-hl{grid-template-columns:1fr;gap:16px}
+  .hc-hi h1{font-size:27px}
+  .hc-hi p{font-size:14.5px}
+  .hc-gauge{grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;min-width:0}
+  .hc-gauge .hc-ring.big{width:112px;height:112px}
+  .hc-gv{height:112px;width:112px;inset-inline:auto;inset-inline-start:0}
+  .hc-gv b{font-size:26px}.hc-gv span{font-size:10px;max-width:78px}
+  .hc-kpis{gap:8px;margin-top:16px}
+  .hc-kpi{padding:12px}.hc-kpi b{font-size:21px}.hc-kpi span{font-size:10.5px}.hc-kpi small{font-size:11.5px}
+  .hc-cta .hc-btn{flex:1;justify-content:center}
+  .hc-card{padding:16px;border-radius:18px}
+  .hc-rail{grid-auto-columns:78%}
+  .hc-br{grid-template-columns:96px minmax(0,1fr) auto}
+  .hc-split{grid-template-columns:1fr 1fr}.hc-split .rk{grid-column:1/-1}
+  .hc-stages{grid-template-columns:1fr 1fr}.hc-stage .ar{display:none}
+  .hc-team .hc-ag{grid-template-columns:auto minmax(0,1fr) 56px}.hc-team .hc-ag .hc-am:last-child{display:none}
+  .hc-steps li{grid-template-columns:12px minmax(0,1fr)}.hc-steps li>.btn{grid-column:2;justify-self:start}
+}
+
+.hc-btn{white-space:nowrap}
+.hc-studio .pill{background:rgba(93,252,224,.16);color:var(--mint)}
+@media (max-width:600px){.hc-btn{padding:11px 12px;font-size:13.5px}}
+
 .nx-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:10px 14px;border:1px solid var(--line);border-inline-start:4px solid var(--blue);border-radius:12px;background:var(--panel)}
 .nx-bar.urgent{border-inline-start-color:var(--red)}.nx-bar.info{border-inline-start-color:var(--muted)}.nx-bar.clear{border-inline-start-color:var(--green)}
 .nx-ic{display:inline-flex;width:22px;height:22px;flex:none;color:var(--blue)}.nx-bar.urgent .nx-ic{color:var(--red)}.nx-bar.info .nx-ic{color:var(--muted)}.nx-bar.clear .nx-ic{color:var(--green)}
@@ -5429,7 +5645,7 @@ function mayaTip(){
   if(S.tab==='books'&&QS[27])return {k:'books',txt:L('רוצים לדעת מה יובא ממערכת הנהלת החשבונות?','Want to know what we imported from your accounting system?'),act:'ask',v:28,lab:L('הצג','Show me')};
   return null;
 }
-const mayaQuiet=()=>!document.querySelector||S.chen||S.gs||S.form||S.tab==='ai'||(S.tour!=null&&S.tour>=0)||S.meet>=0||document.getElementById('attract')||document.body.classList.contains('dnd');
+const mayaQuiet=()=>!document.querySelector||S.chen||S.gs||S.form||(S.tab==='home'&&isMgr())||S.tab==='ai'||(S.tour!=null&&S.tour>=0)||S.meet>=0||document.getElementById('attract')||document.body.classList.contains('dnd');
 function mayaHide(){clearTimeout(MAYA.hide);if(MAYA.el){MAYA.el.remove();MAYA.el=null;}MAYA.cur=null;}
 function mayaShow(tip){
   mayaHide();if(mayaQuiet())return;MAYA.cur=tip;MAYA.shown[tip.k]=1;
@@ -8647,7 +8863,7 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
   /* every dashboard renders in both languages for manager, accountant and every agent */
   for(const lang of ['en','he']){S.lang=lang;
     ['manager','accountant',...AGENTS].forEach(role=>{S.role=role;const html=VIEWS.home();h.chk(html,`db ${role} ${lang}`);if(lang==='en')h.scan(html,`db ${role}`);
-      if(role==='manager'){if(!html.includes('ptiles'))out.push('manager home lost ptiles');if(!html.includes('db-card'))out.push('manager home lacks db cards');}
+      if(role==='manager'){if(!html.includes('ptiles'))out.push('manager home lost ptiles');if(!html.includes('db-card')&&!html.includes('hc-today'))out.push('manager home lacks its cards');}
       else if(role==='accountant'){if(!html.includes('da-hero')||html.includes('db-hero'))out.push('accountant home changed');}
       else if(!html.includes('db-hero')||!(html.includes('db-kan')||html.includes('data-v="studio"')))out.push('agent home lacks dashboard '+role);});}
   S.role=role0;S.lang=lang0;
@@ -10755,6 +10971,181 @@ TESTS.push({name:'dt trip developer notes',run:h=>{
   ['odash','optasks','spm','manifest','people','fdash','income','tfin','vouch'].forEach(k=>{const e=SPEC['trip:'+k];if(e&&!(e.states&&str(e.states.gated)))out.push(k+' states.gated');});
   const r=SPEC['trip:ops'];if(!r||r.redirect!=='odash'||Object.keys(r).length!==1||!SPEC['trip:odash'])out.push('ops redirect');
   return out;}});
+
+/* ---------- v8.2 Home: the agency command center (owner / manager) ----------
+   One screen that tells the whole story in the order an owner thinks:
+   1. Hero: how the season stands, how much planned profit is kept, and the one money action (recover open gaps).
+   2. Today: the next steps across all files (nextSteps), urgent first, one button each.
+   3. Departures: the next trips as photo cards with a readiness ring.
+   4. Profit protection: planned -> lost -> expected, recovered vs still open, money at risk.
+   5. Pipeline: Quotation -> Operation -> Finance -> Closed, counts and value, each drills to Projects.
+   6. Cash: money in and out over the next six months.
+   7. Team: booked vs target and margin per agent.
+   8. Trip studio: build a priced, mapped trip in seconds.
+   Every figure comes from the existing finance functions (portfolio, gapStats, leakModel, groupsCalc, dbTeam,
+   dbReadiness, nextSteps). The hero keeps class `ptiles` for the guided tour. */
+
+const HC_STAGES=[['Quote','quotes',['הצעת מחיר','Quotation'],'var(--blue)'],['Operations','files',['תפעול','Operation'],'var(--amber)'],
+  ['Finance','files',['כספים','Finance'],'var(--purple)'],['Closed','archive',['נסגרו','Closed'],'var(--green)']];
+const hcDays=d=>Math.round((D(d)-TODAY)/DAY);
+const hcIn=n=>n<=0?L('היום','today'):n===1?L('מחר','tomorrow'):L(`בעוד ${n} ימים`,`in ${n} days`);
+const hcRing=(p,sz,cls)=>{const r=(sz-8)/2,c=2*Math.PI*r,v=Math.max(0,Math.min(100,p));
+  return `<svg class="hc-ring ${cls||''}" viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" aria-hidden="true"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="tr"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" class="br" stroke-dasharray="${(c*v/100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${sz/2} ${sz/2})"/></svg>`;};
+
+/* pure calculations, used by the view and the tests */
+function hcModel(){
+  const ts=visibleTrips(),P=portfolio(ts),G=gapStats(ts),M=leakModel(ts);
+  const steps=typeof nxAgentSteps==='function'?nxAgentSteps(ts,6):[];
+  const allSteps=typeof nextSteps==='function'?ts.reduce((a,t)=>a.concat(nextSteps(t)),[]):[];
+  const urgent=allSteps.filter(s=>s.sev==='urgent').length;
+  const stage=HC_STAGES.map(([st,tab,lab,col])=>{const xs=ts.filter(t=>st==='Quote'?isOpenQ(t):t.stage===st);
+    return {st,tab,lab,col,n:xs.length,val:r2(xs.reduce((a,t)=>a+calc(t).rev,0))};});
+  const dep=ts.filter(t=>t.dep>=iso(TODAY)&&!(t.stage==='Quote'&&t.qst==='Lost')).sort((a,b)=>a.dep<b.dep?-1:a.dep>b.dep?1:0).slice(0,8);
+  const kept=P.pp>0?Math.round(P.fp/P.pp*1000)/10:100;
+  const months=MONTHS.slice(0,6).map(k=>({k,in:r2((P.cash[k]||{}).in||0),out:r2((P.cash[k]||{}).out||0)}));
+  const team=typeof dbTeam==='function'?dbTeam().rows:[];
+  return {ts,P,G,M,steps,urgent,stage,dep,kept,months,team};
+}
+
+function hcHero(m){
+  const {P,M}=m,first=String(userName()).split(' ')[0],an=hpAnim();
+  const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
+  const nx=m.dep[0],margin=P.rev?P.fp/P.rev:0;
+  const brief=L(`העונה נסגרו ${usd(P.rev)} ב-${m.ts.filter(t=>t.stage!=='Quote').length} תיקים, ברווח צפוי של ${pct(margin)}. עוד ${usd(M.rec)} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${m.urgent} דברים דחופים מחכים לך היום`:''}.`,
+    `This season you booked ${usd(P.rev)} across ${m.ts.filter(t=>t.stage!=='Quote').length} files at ${pct(margin)} expected margin. ${usd(M.rec)} is still recoverable from supplier invoices${m.urgent?`, and ${m.urgent} urgent ${m.urgent===1?'item needs':'items need'} you today`:''}.`);
+  const kpi=(lab,val,sub,cls,d)=>`<div class="hc-kpi ${cls||''}" style="--d:${d}ms"><span>${lab}</span><b data-count="${Math.round(val)}">${usd(val)}</b><small>${sub}</small></div>`;
+  return `<section class="ptiles hc-hero${an?' anim':''}" aria-label="${L('תמונת מצב','Overview')}">
+   <svg class="hc-bg" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><radialGradient id="hcg1" cx="85%" cy="10%" r="60%"><stop offset="0" stop-color="#5DFCE0" stop-opacity=".22"/><stop offset="1" stop-color="#5DFCE0" stop-opacity="0"/></radialGradient></defs>
+    <rect width="1200" height="420" fill="url(#hcg1)"/>
+    <path class="hc-arc a1" d="M80 360 C 330 120, 620 110, 860 250"/><path class="hc-arc a2" d="M300 400 C 520 230, 840 170, 1150 120"/><path class="hc-arc a3" d="M640 420 C 760 300, 930 270, 1110 300"/>
+    <circle class="hc-pin" cx="860" cy="250" r="5"/><circle class="hc-pin" cx="1150" cy="120" r="5"/><circle class="hc-pin" cx="1110" cy="300" r="5"/><circle class="hc-pin p0" cx="80" cy="360" r="5"/>
+   </svg>
+   <div class="hc-hl">
+    <div class="hc-hi"><span class="hc-eye">${day}</span><h1>${L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${brief}</p>
+     <div class="hc-cta"><button class="hc-btn mint" data-act="go" data-v="gaps">${ic('cash')} ${L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`)}</button><button class="hc-btn ghost" data-act="go" data-v="studio">${ic('magic')} ${L('לבנות טיול','Build a trip')}</button></div></div>
+    <div class="hc-gauge" role="img" aria-label="${L(`${m.kept}% מהרווח המתוכנן נשמר`,`${m.kept}% of planned profit kept`)}">${hcRing(m.kept,148,'big')}<div class="hc-gv"><b>${m.kept}%</b><span>${L('מהרווח המתוכנן נשמר','of planned profit kept')}</span></div>
+     <div class="hc-gl"><span class="ok">${ic('check')} ${L('הוחזרו','Recovered')} <b>${usd(M.got)}</b></span><span class="op">${ic('hourglass')} ${L('פתוח','Still open')} <b>${usd(M.rec)}</b></span></div></div>
+   </div>
+   <div class="hc-kpis">
+    ${kpi(L('הכנסות שנסגרו','Booked revenue'),P.rev,L(`${P.pax} נוסעים`,`${P.pax} travelers`),'',60)}
+    ${kpi(L('רווח צפוי','Expected profit'),P.fp,L(`${pct(margin)} מרווח · ${usd(r2(P.pp-P.fp))} מתחת לתכנון`,`${pct(margin)} margin · ${usd(r2(P.pp-P.fp))} below plan`),'pf',140)}
+    ${kpi(L('בהצעות פתוחות','Open quotes'),P.pipeline,L(`${P.pipelineN} הצעות`,`${P.pipelineN} ${P.pipelineN===1?'quote':'quotes'}`),'',220)}
+    ${nx?`<button class="hc-kpi hc-next" style="--d:300ms" data-act="open" data-v="${nx.id}" data-pt="${nx.stage==='Quote'?'general':'odash'}"><span>${L('היציאה הבאה','Next departure')}</span><b class="hc-nn"><bdi>${esc(nx.name)}</bdi></b><small>${hcIn(hcDays(nx.dep))} · ${fmtDate(nx.dep)}</small></button>`:''}
+   </div></section>`;
+}
+
+function hcToday(m){
+  const r=m.steps;
+  const btn=(x,i)=>`<button class="btn sm${i?'':' pri'}" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button>`;
+  return `<div class="card hc-card hc-today"><div class="hc-h"><h3>${L('היום','Today')}</h3>${m.urgent?`<span class="hc-pill red">${L(`${m.urgent} דחופים`,`${m.urgent} urgent`)}</span>`:`<span class="hc-pill green">${L('הכל בשליטה','All clear')}</span>`}</div>
+   ${r.length?`<ol class="hc-steps">${r.map((x,i)=>`<li class="${x.s.sev}" style="--d:${i*60}ms"><span class="hc-dot"></span><div><b>${L(x.s.he,x.s.en)}</b><button class="hc-trip" data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.a==='advance'?'fdash':x.s.act.v}"><bdi>${esc(x.t.name)}</bdi> · ${avatarOf(agn(x.t.agent),'xs')}${esc(String(agn(x.t.agent)).split(' ')[0])}</button></div>${btn(x,i)}</li>`).join('')}</ol>`
+     :`<p class="muted">${L('אין צעדים פתוחים. כל התיקים מעודכנים.','No open steps. Every file is up to date.')}</p>`}
+   <button class="hc-more" data-act="go" data-v="quotes">${L('לכל הפרויקטים','All projects')} ${ic('chev','flip')}</button></div>`;
+}
+
+function hcDepartures(m){
+  if(!m.dep.length)return '';
+  const card=(t,i)=>{const dd=hcDays(t.dep),rd=t.stage==='Operations'&&typeof dbReadiness==='function'?dbReadiness(t).overall:null;
+    const bg=phBg(phSrc('dest',t.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))');
+    const pt=t.stage==='Quote'?'general':'odash';
+    return `<button class="hc-dep" style="--d:${i*70}ms" data-act="open" data-v="${t.id}" data-pt="${pt}">
+     <span class="hc-ph" style="${bg}"><span class="hc-when ${dd<=30?'soon':''}">${hcIn(dd)}</span>${rd!=null?`<span class="hc-rd" title="${L('מוכנות','Readiness')}">${hcRing(rd,44,'sm')}<b>${rd}%</b></span>`:`<span class="hc-stq">${t.stage==='Quote'?L('הצעה','Quote'):stn(t.stage)}</span>`}</span>
+     <span class="hc-dt"><b><bdi>${esc(t.name)}</bdi></b><span>${fmtDate(t.dep)} · ${dn(t.dest)}</span><span class="hc-who">${avatarOf(agn(t.agent),'xs')}${esc(String(agn(t.agent)).split(' ')[0])} · ${paxL(t.pax)}</span></span></button>`;};
+  return `<div class="card hc-card hc-deps"><div class="hc-h"><h3>${L('היציאות הקרובות','Coming up')}</h3><span class="muted small">${L('הטבעת מראה כמה התיק מוכן: משימות, דרכונים, ספקים ומקדמות','The ring shows how ready a file is: tasks, passports, suppliers and deposits')}</span></div>
+   <div class="hc-rail" role="list">${m.dep.map(card).join('')}</div></div>`;
+}
+
+function hcProfit(m){
+  const {P,M}=m,max=Math.max(P.pp,1),w=v=>Math.max(1.5,v/max*100).toFixed(2)+'%',lost=r2(P.pp-P.fp);
+  const row=(lab,v,cls,sub)=>`<div class="hc-br ${cls}"><span class="l">${lab}</span><span class="t"><i style="width:${w(Math.abs(v))}"></i></span><b>${cls==='loss'?'−':''}${usd(Math.abs(v))}</b>${sub?`<small>${sub}</small>`:''}</div>`;
+  return `<div class="card hc-card hc-profit"><div class="hc-h"><h3>${L('הגנה על הרווח','Profit protection')} ${NEWP()}</h3></div>
+   <p class="hc-lead">${L(`מתוך ${usd(P.pp)} רווח מתוכנן, ${usd(lost)} נעלמו בפערי חשבוניות ושער. טריפלאנט כבר החזירה ${usd(M.got)}.`,`Of ${usd(P.pp)} planned profit, ${usd(lost)} slipped through invoice gaps and exchange rates. Triplanet has already recovered ${usd(M.got)}.`)}</p>
+   ${row(L('רווח מתוכנן','Planned profit'),P.pp,'plan')}
+   ${row(L('דלף','Leaked'),lost,'loss',L('פערי ספקים ושער','supplier gaps and FX'))}
+   ${row(L('רווח צפוי','Expected profit'),P.fp,'exp')}
+   <div class="hc-split"><button class="hc-mini ok" data-act="go" data-v="gaps"><span>${L('הוחזרו','Recovered')}</span><b>${usd(M.got)}</b><small>${L(`${M.gotN} זיכויים`,`${M.gotN} credits`)}</small></button>
+    <button class="hc-mini op" data-act="go" data-v="gaps"><span>${L('עוד פתוח','Still open')}</span><b>${usd(M.rec)}</b><small>${L(`${M.recN} פערים`,`${M.recN} ${M.recN===1?'gap':'gaps'}`)}</small></button>
+    <button class="hc-mini rk" data-act="go" data-v="leaks"><span>${L('בסיכון','At risk')}</span><b>${usd(r2(M.late+M.release))}</b><small>${L('תשלומים באיחור וחדרים לשחרור','late payments, unreleased rooms')}</small></button></div>
+   <button class="hc-more" data-act="go" data-v="leaks">${L('לדליפות הרווח','Open profit leaks')} ${ic('chev','flip')}</button></div>`;
+}
+
+function hcPipeline(m){
+  const tot=Math.max(1,m.stage.reduce((a,s)=>a+s.val,0));
+  return `<div class="card hc-card hc-pipe"><div class="hc-h"><h3>${L('מהצעה לסגירה','From quote to close')}</h3><span class="muted small">${L(`${m.ts.length} פרויקטים`,`${m.ts.length} projects`)}</span></div>
+   <div class="hc-flow" role="img" aria-label="${m.stage.map(s=>L(s.lab[0],s.lab[1])+' '+s.n).join(', ')}">${m.stage.map(s=>`<i style="flex:${Math.max(.06,s.val/tot).toFixed(3)};background:${s.col}"></i>`).join('')}</div>
+   <div class="hc-stages">${m.stage.map((s,i)=>`<button class="hc-stage" style="--c:${s.col};--d:${i*70}ms" data-act="hc-q" data-v="${s.tab}"><span class="k"><i></i>${L(s.lab[0],s.lab[1])}</span><b>${s.n}</b><small>${usd(s.val)}</small>${i<m.stage.length-1?`<span class="ar" aria-hidden="true">${ic('chev','flip')}</span>`:''}</button>`).join('')}</div></div>`;
+}
+
+function hcCash(m){
+  const mx=Math.max(1,...m.months.map(x=>Math.max(x.in,x.out))),H=64;
+  const inT=r2(m.months.reduce((a,x)=>a+x.in,0)),outT=r2(m.months.reduce((a,x)=>a+x.out,0));
+  const cols=m.months.map((x,i)=>`<div class="hc-mo" title="${monthLabel(x.k)}: +${usd(x.in)} / −${usd(x.out)}"><span class="up"><i style="height:${(x.in/mx*H).toFixed(1)}px;--d:${i*50}ms"></i></span><span class="dn"><i style="height:${(x.out/mx*H).toFixed(1)}px;--d:${i*50+30}ms"></i></span><em>${monthLabel(x.k)}</em></div>`).join('');
+  return `<div class="card hc-card hc-cash"><div class="hc-h"><h3>${L('תזרים ל-6 חודשים','Cash, next 6 months')}</h3></div>
+   <div class="hc-cs"><span class="in">${L('נכנס','In')} <b>${usd(inT)}</b></span><span class="out">${L('יוצא','Out')} <b>${usd(outT)}</b></span><span class="net ${inT-outT<0?'neg':''}">${L('נטו','Net')} <b>${inT-outT<0?'−':''}${usd(Math.abs(r2(inT-outT)))}</b></span></div>
+   <div class="hc-bars">${cols}</div>
+   <button class="hc-more" data-act="go" data-v="finance">${L('לכספים','Open finance')} ${ic('chev','flip')}</button></div>`;
+}
+
+function hcTeam(m){
+  if(!m.team.length)return '';
+  const rows=m.team.slice().sort((a,b)=>b.att-a.att).map((r,i)=>{const att=Math.round(r.att*100);
+    return `<div class="hc-ag" style="--d:${i*50}ms"><span class="hc-av">${avatarOf(agn(r.agent))}${hcRing(Math.min(100,att),52,'av')}</span><div class="hc-an"><b>${esc(agn(r.agent))}</b><span>${usd(r.booked)} ${L('מתוך','of')} ${usd(r.target)}</span></div><div class="hc-am"><b>${att}%</b><span>${L('מהיעד','of target')}</span></div><div class="hc-am"><b>${pct(r.margin)}</b><span>${L('מרווח','margin')}</span></div></div>`;}).join('');
+  return `<div class="card hc-card hc-team"><div class="hc-h"><h3>${L('הצוות מול היעד','Team vs target')}</h3><span class="muted small">${L('יעדים להמחשה','Illustrative targets')}</span></div>${rows}</div>`;
+}
+
+function hcStudio(){
+  const ks=['NewEngland','HolyLand','Canyon'];
+  return `<div class="card hc-card hc-studio"><div class="hc-ims">${ks.map((k,i)=>`<span style="${phBg(phSrc('dest',k),'background:linear-gradient(135deg,var(--hero1),var(--hero2))')};--i:${i}"></span>`).join('')}</div>
+   <div class="hc-st"><span class="hc-eye2">${L('סטודיו לטיולים','Trip studio')} ${NEWP()}</span><h3>${L('טיול מתומחר, עם מפה, תוך שניות','A priced, mapped trip in seconds')}</h3><p>${L('בוחרים יעד, גודל קבוצה ותאריך. טריפלאנט בונה מסלול, מלונות ומחיר לנוסע, ואפשר להפוך אותו להצעה בלחיצה.','Pick a destination, a group size and a date. Triplanet builds the route, the hotels and the price per traveler, and one click turns it into a quote.')}</p>
+   <button class="hc-btn mint" data-act="go" data-v="studio">${ic('magic')} ${L('לפתוח את הסטודיו','Open the studio')}</button></div></div>`;
+}
+
+function hcHome(){
+  const m=hcModel();if(!m.ts.length)return noTrip();
+  return `<div class="hc${hpAnim()?' anim':''}">${hcHero(m)}
+   <div class="hc-grid">
+    <div class="hc-c7">${hcToday(m)}</div><div class="hc-c5">${hcProfit(m)}</div>
+    <div class="hc-c12">${hcDepartures(m)}</div>
+    <div class="hc-c7">${hcPipeline(m)}${hcTeam(m)}</div><div class="hc-c5">${hcCash(m)}${hcStudio()}</div>
+   </div></div>`;
+}
+
+/* the owner gets the command center; accountant and agents keep their own homes */
+{const h1=VIEWS.home;VIEWS.home=function(){return isMgr()?hcHome():h1.apply(this,arguments);};}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="hc-q"]');if(!b)return;
+  S.tab='quotes';S.qtab=b.dataset.v||'all';S.page=0;render();window.scrollTo(0,0);});
+
+TESTS.push({name:'hc home command center',run:h=>{const out=[];const r0=S.role,l0=S.lang;
+  S.role='manager';const m=hcModel();
+  if(Math.abs(m.stage.reduce((a,s)=>a+s.n,0)-m.ts.filter(t=>!(t.stage==='Quote'&&!isOpenQ(t))).length)>0)out.push('stage counts do not cover the files');
+  const P=portfolio(m.ts);if(Math.abs(m.stage.filter(s=>s.st!=='Quote').reduce((a,s)=>a+s.val,0)-P.rev)>0.05)out.push('stage values do not tie to booked revenue');
+  if(Math.abs(m.stage[0].val-P.pipeline)>0.05)out.push('quotation value does not tie to the pipeline');
+  if(!(m.kept>0&&m.kept<=100))out.push('kept % out of range '+m.kept);
+  const M=leakModel(m.ts);if(Math.abs((P.pp-P.fp)-M.leak)>0.05)out.push('leak does not tie to planned minus expected');
+  if(m.dep.some((t,i)=>i&&t.dep<m.dep[i-1].dep))out.push('departures not sorted');
+  for(const lang of ['en','he']){S.lang=lang;const hh=VIEWS.home();h.chk(hh,'hc '+lang);if(lang==='en')h.scan(hh,'hc');
+    if(!hh.includes('ptiles'))out.push('hero lost ptiles (tour target)');if(!hh.includes('hc-today'))out.push('no today card');}
+  S.role='accountant';if(VIEWS.home().includes('hc-hero'))out.push('accountant got the owner home');
+  S.role='Priya';if(VIEWS.home().includes('hc-hero'))out.push('agent got the owner home');
+  S.role=r0;S.lang=l0;return out;}});
+
+/* developer notes for the redesigned owner home (replaces the entry in s11_spec.js) */
+SPEC['home:manager']={title:'Home, owner (command center)',
+  purpose:'Tell the owner in one screen how the season stands, what needs them today, and where profit is leaking or can be recovered.',
+  roles:{view:['manager'],act:['manager']},perms:['proj.viewAll','fin.view'],
+  data:['Trip.stage','Trip.qst','Trip.dep','Trip.dest','Trip.agent','Trip.pax','Line.cost','Invoice.amt','Gap.kind','Group.depPaid','Group.balPaid','Task.done','Staff.target'],
+  actions:[{label:'Recover $X',does:'Opens Invoice check with the open gaps',rule:'Amount = leakModel().rec (open supplier gaps, USD)'},
+    {label:'Build a trip',does:'Opens the Trip studio',rule:'Always available'},
+    {label:'Today: step button',does:'Opens the trip tab the step names, or advances the stage',rule:'Top 6 of nxAgentSteps(visibleTrips()), urgent first, then by departure'},
+    {label:'Departure card',does:'Opens the trip (dashboard, or general for quotes)',rule:'Next 8 departures from today, Lost quotes excluded'},
+    {label:'Stage card',does:'Opens Projects on the matching tab',rule:'Quotation→quotes, Operation and Finance→files, Closed→archive'},
+    {label:'Recovered / Still open / At risk',does:'Open Invoice check or Profit leaks',rule:'From leakModel(): got, rec, late+release'}],
+  rules:['kept % = expected profit / planned profit = P.fp / P.pp','Leaked = P.pp − P.fp = leakModel().leak','Quotation value = Σ calc(t).rev of open quotes = portfolio().pipeline','Σ Operation + Finance + Closed values = portfolio().rev','Readiness ring = dbReadiness(t).overall (tasks, passports, suppliers, deposits)','Cash = portfolio().cash for the next 6 months (in = client payments due, out = supplier payments due)','Team attainment = booked / Staff.target'],
+  states:{empty:'No files: the "No trips here" card.',loading:'Not applicable (local data).',error:'Missing photos fall back to the brand gradient.'},
+  status:'pilot',api:['GET /v1/t/{tenantId}/dashboard/owner (proposed)','GET /v1/t/{tenantId}/reports/trip-pnl','GET /v1/t/{tenantId}/trips?from=today&limit=8 (proposed)'],
+  tests:['TEST hc home command center','TEST db manager and agent dashboards'],
+  code:['v6/s12_home.js: hcHome, hcModel, hcHero, hcToday, hcProfit, hcDepartures, hcPipeline, hcCash, hcTeam, hcStudio','v6/m_home.css']};
 
 /* ---------- meeting mode: the 3-minute booth story (v7) ----------
    Presenter drives with the arrow keys (or the buttons). Easy process first (studio),

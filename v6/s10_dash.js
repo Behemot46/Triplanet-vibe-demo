@@ -234,7 +234,7 @@ TESTS.push({name:'db manager and agent dashboards',run:h=>{const out=[];
   /* every dashboard renders in both languages for manager, accountant and every agent */
   for(const lang of ['en','he']){S.lang=lang;
     ['manager','accountant',...AGENTS].forEach(role=>{S.role=role;const html=VIEWS.home();h.chk(html,`db ${role} ${lang}`);if(lang==='en')h.scan(html,`db ${role}`);
-      if(role==='manager'){if(!html.includes('ptiles'))out.push('manager home lost ptiles');if(!html.includes('db-card'))out.push('manager home lacks db cards');}
+      if(role==='manager'){if(!html.includes('ptiles'))out.push('manager home lost ptiles');if(!html.includes('db-card')&&!html.includes('hc-today'))out.push('manager home lacks its cards');}
       else if(role==='accountant'){if(!html.includes('da-hero')||html.includes('db-hero'))out.push('accountant home changed');}
       else if(!html.includes('db-hero')||!(html.includes('db-kan')||html.includes('data-v="studio"')))out.push('agent home lacks dashboard '+role);});}
   S.role=role0;S.lang=lang0;

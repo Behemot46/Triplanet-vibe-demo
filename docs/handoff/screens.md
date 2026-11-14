@@ -20,7 +20,7 @@ Status of the documented screens: 22 Live, 23 Pilot, 0 Roadmap (as in `FEAT`, `v
 ## Contents
 
 - Role homes
-  - [Home, owner and manager](#home-manager) (`home:manager`)
+  - [Home, owner (command center)](#home-manager) (`home:manager`)
   - [Home, accountant](#home-accountant) (`home:accountant`)
   - [Home, sales agent](#home-agent) (`home:agent`)
 - Pages
@@ -76,48 +76,51 @@ Status of the documented screens: 22 Live, 23 Pilot, 0 Roadmap (as in `FEAT`, `v
 
 <a id="home-manager"></a>
 
-### Home, owner and manager
+### Home, owner (command center)
 
 `home:manager` · Status: Pilot
 
-Season overview: booked revenue, expected profit, open quotes, what needs attention, approvals, team and departure readiness.
+Tell the owner in one screen how the season stands, what needs them today, and where profit is leaking or can be recovered.
 
-**Roles.** View: manager. Act: manager. Permissions: `proj.viewAll`, `prop.approve`.
+**Roles.** View: manager. Act: manager. Permissions: `proj.viewAll`, `fin.view`.
 
-**Data.** `Trip.stage`, `Trip.qst`, `Trip.qdays`, `Trip.dep`, `Trip.agent`, `Trip.pax`, `Gap.st`, `Staff.target`
+**Data.** `Trip.stage`, `Trip.qst`, `Trip.dep`, `Trip.dest`, `Trip.agent`, `Trip.pax`, `Line.cost`, `Invoice.amt`, `Gap.kind`, `Group.depPaid`, `Group.balPaid`, `Task.done`, `Staff.target`
 
 | Control | Does | Guard |
 |---|---|---|
-| New quote | Creates a Branson senior quote (44 travelers, 3 nights) for Priya and opens its General details tab. | blankQuote() then openTrip(); agent defaults to Priya when the viewer sees all files |
-| Stage card, Latest quotes row | Opens the Projects list or the trip. | No guard; the manager sees every trip |
-| Approve (Approvals waiting) | Opens the Quote approval tab of a quote in Approval status. | Only quotes with qst = Approval are listed |
-| Alert Open or View | Jumps to the trip tab or page the alert is about. | Alerts come from alertsFor(trips, S.thresh), the first 6 that are not FYI-only |
-| Departure readiness row | Opens the trip; four bars show tasks, passports, suppliers and deposits. | Non-Quote trips departing in the next 30 days |
+| Recover $X | Opens Invoice check with the open gaps | Amount = leakModel().rec (open supplier gaps, USD) |
+| Build a trip | Opens the Trip studio | Always available |
+| Today: step button | Opens the trip tab the step names, or advances the stage | Top 6 of nxAgentSteps(visibleTrips()), urgent first, then by departure |
+| Departure card | Opens the trip (dashboard, or general for quotes) | Next 8 departures from today, Lost quotes excluded |
+| Stage card | Opens Projects on the matching tab | Quotation→quotes, Operation and Finance→files, Closed→archive |
+| Recovered / Still open / At risk | Open Invoice check or Profit leaks | From leakModel(): got, rec, late+release |
 
 **Rules**
-- `booked revenue = sum calc(t).rev over trips with stage != Quote  (portfolio().rev)`
-- `expected profit = rev - fc + comm  (portfolio().fp)`
-- `open quotes value = sum calc(t).rev over stage = Quote  (portfolio().pipeline)`
-- `closed this year = count of non-Quote trips; canceled = 3 (fixed demo figure); prior years are fictional`
-- `readiness % = tasks done, passports received (international only), suppliers Confirmed, deposits collected by amount; empty denominator counts as 100`
+- `kept % = expected profit / planned profit = P.fp / P.pp`
+- `Leaked = P.pp − P.fp = leakModel().leak`
+- `Quotation value = Σ calc(t).rev of open quotes = portfolio().pipeline`
+- `Σ Operation + Finance + Closed values = portfolio().rev`
+- `Readiness ring = dbReadiness(t).overall (tasks, passports, suppliers, deposits)`
+- `Cash = portfolio().cash for the next 6 months (in = client payments due, out = supplier payments due)`
+- `Team attainment = booked / Staff.target`
 
 **States**
-- empty: noTrip(): "No trips here" card when the viewer has no visible trips
-- loading: Demo data is in memory and renders at once. In the product show skeleton cards while the request runs.
-- error: Not modelled in the demo. In the product show an inline retry banner and keep the last good data.
+- empty: No files: the "No trips here" card.
+- loading: Not applicable (local data).
+- error: Missing photos fall back to the brand gradient.
 
 **Suggested API**
-- `GET /v1/t/{tenantId}/reports/finance-dashboard`
-- `GET /v1/t/{tenantId}/trips?stage=&agent=`
-- `GET /v1/t/{tenantId}/quote-versions?status=approval (proposed)`
+- `GET /v1/t/{tenantId}/dashboard/owner (proposed)`
+- `GET /v1/t/{tenantId}/reports/trip-pnl`
+- `GET /v1/t/{tenantId}/trips?from=today&limit=8 (proposed)`
 
 **Tests**
+- `TEST hc home command center`
 - `TEST db manager and agent dashboards`
-- `check6.js: every view renders for each role in EN and HE`
 
 **Code**
-- `v6/s4_views.js: vHome, hpHero, hpStats`
-- `v6/s10_dash.js: dbMgrCards, dbApprovalsCard, dbTeamCard, dbReadiness`
+- `v6/s12_home.js: hcHome, hcModel, hcHero, hcToday, hcProfit, hcDepartures, hcPipeline, hcCash, hcTeam, hcStudio`
+- `v6/m_home.css`
 
 <a id="home-accountant"></a>
 
