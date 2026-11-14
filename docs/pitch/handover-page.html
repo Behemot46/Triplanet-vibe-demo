@@ -1,0 +1,187 @@
+<title>Triplanet Handover Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a working document. A slim blue header, three link cards, then numbered reading order and reference sections in one readable column with a side index on wide screens. */
+:root{
+  --bg:#f6f8fb; --panel:#ffffff; --ink:#172234; --ink2:#46536b; --muted:#6b7890; --line:#dfe6f0; --recess:#eff4fa;
+  --primary:#078DEE; --primary-ink:#0351AB; --night1:#012972; --night2:#0351AB; --mint:#5DFCE0; --warn:#946600; --warn-bg:#fbf1dc;
+  --f-display:"Barlow","Arial Narrow",Arial,sans-serif; --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1423; --panel:#131e32; --ink:#e7eef9; --ink2:#b9c6da; --muted:#8e9bb3; --line:#26344d; --recess:#18243b;
+  --primary:#3aa8f5; --primary-ink:#7cc6fb; --warn:#f2c463; --warn-bg:#3a2e12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1423; --panel:#131e32; --ink:#e7eef9; --ink2:#b9c6da; --muted:#8e9bb3; --line:#26344d; --recess:#18243b;
+  --primary:#3aa8f5; --primary-ink:#7cc6fb; --warn:#f2c463; --warn-bg:#3a2e12; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:var(--primary-ink)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:26px;font-weight:700;margin-bottom:12px}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+code,.path{font-family:var(--f-mono);font-size:.88em;background:var(--recess);border:1px solid var(--line);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+header.top{background:linear-gradient(135deg,var(--night1),var(--night2));color:#eaf3ff;padding-block:40px 34px}
+header.top .wrap{display:grid;gap:12px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mint)}
+header.top h1{font-size:clamp(32px,5vw,48px);color:#fff}
+header.top p{color:#d3e4ff;max-width:68ch;font-size:17px}
+.by{font-size:14px;color:#bcd3f5}
+.links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:-22px;position:relative}
+.lk{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px;text-decoration:none;color:var(--ink);box-shadow:0 10px 24px -18px rgba(1,41,114,.5);min-width:0}
+.lk b{font-size:15.5px}
+.lk span{font-size:13.5px;color:var(--muted)}
+.lk em{font-style:normal;font-size:12.5px;color:var(--primary-ink);overflow-wrap:anywhere}
+.layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:40px;padding-block:36px 56px}
+nav.idx{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:grid;gap:4px;font-size:14px}
+nav.idx b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+nav.idx a{color:var(--ink2);text-decoration:none;padding:3px 0}
+nav.idx a:hover{color:var(--primary-ink)}
+main{display:grid;gap:40px;min-width:0}
+section{display:grid;gap:12px;min-width:0}
+section p,section li{max-width:72ch;color:var(--ink2)}
+section p b,section li b{color:var(--ink)}
+ul,ol{margin:0;padding-inline-start:22px;display:grid;gap:6px}
+.read{list-style:none;padding:0;counter-reset:r;gap:10px}
+.read li{counter-increment:r;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;max-width:none}
+.read li::before{content:counter(r);font-family:var(--f-display);font-weight:700;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:var(--recess);color:var(--primary-ink)}
+.read li div{display:grid;gap:2px;min-width:0}
+.cmd{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;max-width:72ch}
+.cmd code{flex:1;min-width:0;background:none;border:0;padding:0;font-size:14px}
+.cmd button{font:600 13px/1 var(--f-body);padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:var(--recess);color:var(--ink2);cursor:pointer;white-space:nowrap}
+.note{background:var(--warn-bg);border-radius:10px;padding:12px 14px;color:var(--ink);max-width:72ch;font-size:15px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.box p,.box li{font-size:15px}
+footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr;gap:0}nav.idx{display:none}.links{grid-template-columns:1fr;margin-top:16px}.two{grid-template-columns:1fr}}
+</style>
+
+<header class="top">
+ <div class="wrap">
+  <span class="eyebrow">Triplanet demo v8.4 · handover</span>
+  <h1>Start here</h1>
+  <p>A clickable demo of Triplanet for US group tour operators (3 to 20 agents). It doubles as a specification: every screen has developer notes, the data model and business rules are written down, and the money rules run as automated checks. This page says what is in the package, how to open it and what to read first.</p>
+  <p class="by">Prepared by Gabi, consultant to Samuel · 14 Nov 2026</p>
+ </div>
+</header>
+
+<div class="wrap">
+ <div class="links">
+  <a class="lk" href="https://triplanet-viewpoints-demo.vercel.app" target="_blank" rel="noopener"><b>The demo website</b><span>Public, opens in any browser</span><em>triplanet-viewpoints-demo.vercel.app</em></a>
+  <a class="lk" href="https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka" target="_blank" rel="noopener"><b>Ideas backlog</b><span>Rate and prioritize 24 proposed items</span><em>Hebrew and English</em></a>
+  <a class="lk" href="https://github.com/Behemot46/Triplanet-vibe-demo" target="_blank" rel="noopener"><b>The repository</b><span>Code, docs, checks. Code &gt; Download ZIP</span><em>github.com/Behemot46/Triplanet-vibe-demo</em></a>
+ </div>
+
+ <div class="layout">
+  <nav class="idx" aria-label="On this page"><b>On this page</b>
+   <a href="#what">What this is</a><a href="#open">Open it</a><a href="#read">Read in this order</a><a href="#build">Build and check</a><a href="#inside">What is in v8.4</a><a href="#excluded">Not included</a><a href="#licenses">Licenses</a><a href="#open-decisions">Open decisions</a>
+  </nav>
+  <main>
+   <section id="what">
+    <h2>What this is</h2>
+    <p>The demo was built for trade-show meetings with group tour operators. The story for a short meeting is an easy process plus visible money: the Trip studio builds a priced, mapped trip in seconds, and the invoice check and profit leaks show where planned profit went and how to recover it.</p>
+    <p class="note"><b>It is not production code.</b> One offline HTML file, no backend, no logins, simulated payments and accounting sync, and a fictional agency (Redbud Group Tours, Tulsa).</p>
+   </section>
+
+   <section id="open">
+    <h2>Open it</h2>
+    <ul>
+     <li><b>On the web:</b> <a href="https://triplanet-viewpoints-demo.vercel.app" target="_blank" rel="noopener">triplanet-viewpoints-demo.vercel.app</a>. Public, no account needed. It redeploys automatically from the repository's main branch. A copy on claude.ai (<a href="https://claude.ai/artifact/77KubhecPayYdD4gcVSQCi" target="_blank" rel="noopener">link</a>, private until shared) also has the spoken morning brief.</li>
+     <li><b>Offline:</b> open <span class="path">v6/triplanet-booth.html</span> from the repository in Chrome or Edge. No install and no internet needed.</li>
+     <li><b>Switch person with "View as"</b> (top bar; in the ☰ menu on phones):
+      <ul>
+       <li><b>Agency team:</b> owner, accountant, operations coordinator, 6 agents.</li>
+       <li><b>Client side:</b> group leader, traveler.</li>
+       <li><b>Suppliers and field:</b> supplier, tour director.</li>
+      </ul></li>
+     <li><b>The gear menu</b> has the guided tour, meeting mode (1, 3 or 10 minutes), Hebrew and English, day and night, and <b>developer notes</b>, which show the specification of the screen you are on.</li>
+    </ul>
+   </section>
+
+   <section id="read">
+    <h2>Read in this order</h2>
+    <ol class="read">
+     <li><div><span class="path">docs/handoff/README.md</span><p>Module map, what is simulated and what is real, open decisions, a suggested build order.</p></div></li>
+     <li><div><span class="path">docs/handoff/screens.md</span><p>All 69 screens: purpose, roles, data, actions and rules, states, and a proposed API.</p></div></li>
+     <li><div><span class="path">docs/handoff/data-model.md</span><p>Every entity and field, marked real or demo-only. Section 28 covers the v8.4 portals.</p></div></li>
+     <li><div><span class="path">docs/handoff/business-rules.md</span><p>Finance identities, the invoice-gap model, permissions, and known inconsistencies.</p></div></li>
+     <li><div><span class="path">docs/handoff/design-system.md</span><p>Tokens, type and icons, light and dark, taken from the live Triplanet interface.</p></div></li>
+     <li><div><span class="path">docs/spec-v8.4-viewpoints.md</span><p>The decisions behind the latest version; earlier versions are in <span class="path">docs/spec-v8*.md</span>.</p></div></li>
+     <li><div><span class="path">CLAUDE.md</span><p>The project's working rules: constraints, file map, decisions already made.</p></div></li>
+    </ol>
+   </section>
+
+   <section id="build">
+    <h2>Build and check</h2>
+    <div class="cmd"><code id="c1">python3 build.py</code><button data-c="c1">Copy</button></div>
+    <p>Builds <span class="path">v6/triplanet-booth.html</span> from the modules in <span class="path">v6/</span>.</p>
+    <div class="cmd"><code id="c2">node check6.js</code><button data-c="c2">Copy</button></div>
+    <p>About 25 seconds. A clean run shows <code>LEFTOVER 0</code>, <code>bad 0</code>, every <code>TEST … ok</code>, and the unchanged line <code>P rev 950103.7 pp 142334.7 fp 138322.99</code>.</p>
+    <div class="cmd"><code id="c3">node sweep84.js</code><button data-c="c3">Copy</button></div>
+    <p>Opens every page and portal tab in English and Hebrew, day and night, at desktop and phone width (Playwright). It must report 0 page errors and 0 overflow.</p>
+   </section>
+
+   <section id="inside">
+    <h2>What is in v8.4</h2>
+    <div class="two">
+     <div class="box"><h3>Agency</h3><ul>
+      <li>Owner command center, accountant money desk, operations readiness board, agent homes.</li>
+      <li>Quotes, Trip studio, itinerary with drag and drop, pricing, proposals in three formats, versions, supplier alternatives.</li>
+      <li>Operations tasks, master list and traveler forms.</li>
+      <li>Finance stage, invoice check and dispute, profit leaks, simulated accounting sync.</li>
+      <li>Maya, the assistant: scripted answers, with typed questions optionally answered live by Claude.</li></ul></div>
+     <div class="box"><h3>Portals (previews)</h3><ul>
+      <li>Group leader: proposal, payments by household, forms, messages.</li>
+      <li>Traveler app: pay, forms, plan, help.</li>
+      <li>Supplier: bookings, rooming lists, invoices and queries (fictional suppliers only).</li>
+      <li>Tour director run sheet: stops, manifest with flags, vouchers, notes.</li>
+      <li>Spoken morning brief on the owner's home (published page, Chrome or the Claude app).</li></ul></div>
+    </div>
+   </section>
+
+   <section id="excluded">
+    <h2>Not included, on purpose</h2>
+    <ul>
+     <li><b>The Maya live API key.</b> It lives only in the booth laptop's browser and must never go into the repository or the file.</li>
+     <li><b>Booth leads.</b> They are stored only on the booth laptop and contain visitors' personal data.</li>
+    </ul>
+   </section>
+
+   <section id="licenses">
+    <h2>Licenses and attribution to keep</h2>
+    <ul>
+     <li>Solar icons: CC BY 4.0 (480 Design).</li>
+     <li>Fonts: IBM Plex Sans Hebrew, Public Sans and Barlow, all SIL Open Font License 1.1.</li>
+     <li>Photos: open licenses, credited on the demo's Photo credits screen.</li>
+     <li>Staff and portal photos are AI-generated faces of people who do not exist.</li>
+     <li>Real hotel and venue names appear only as neutral badges, with no logos, and never next to negative wording.</li>
+    </ul>
+   </section>
+
+   <section id="open-decisions">
+    <h2>Open decisions</h2>
+    <ul>
+     <li>Which features are live in the product today. The "In the product" column in the backlog and the demo's "What's live" screen are a reading from September 2026, not verified with the team.</li>
+     <li>Review of the fictional supplier names (<span class="path">SUP_FICT</span>).</li>
+     <li>Counsel's wording for the sample waiver.</li>
+     <li>The demo's fixed "today", which stays 20 Oct 2026.</li>
+     <li>Placeholder domains: payments and email use <span class="path">.example</span>.</li>
+    </ul>
+   </section>
+  </main>
+ </div>
+</div>
+
+<footer><div class="wrap">Source: <span class="path">HANDOVER.md</span> in the repository, merged to main on 14 Nov 2026.</div></footer>
+
+<script>
+document.addEventListener('click',async e=>{const b=e.target.closest('button[data-c]');if(!b)return;const el=document.getElementById(b.dataset.c);
+  try{await navigator.clipboard.writeText(el.textContent);b.textContent='Copied';}catch(err){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';}
+  setTimeout(()=>{b.textContent='Copy';},1600);});
+</script>

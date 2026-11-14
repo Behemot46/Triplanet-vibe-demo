@@ -2,13 +2,16 @@
 
 Start here. This page tells the team what is in the package, how to open it, and what to read first.
 
+Prepared by Gabi, consultant to Samuel, 14 Nov 2026. Also published as a page: https://claude.ai/artifact/4HzoztxGfo2R4U6Qnqe7F6 (private until shared).
+
 ## 1. What this is
 A clickable demo of Triplanet for US group tour operators (3 to 20 agents), built for trade-show booths (NTA 2026; next IITA, 31 Jan 2027, and ABA, 6 Feb 2027). It doubles as a specification: every screen has developer notes, the data model and business rules are written down, and the money rules run as automated checks.
 
 It is **not production code**: one offline HTML file, no backend, no logins, simulated payments and accounting sync, fictional agency data.
 
 ## 2. Open it
-- **Demo (published):** https://claude.ai/artifact/77KubhecPayYdD4gcVSQCi. Private until the owner shares it.
+- **Demo website:** https://triplanet-viewpoints-demo.vercel.app. Public, no account needed; it redeploys automatically from `main` (Vercel project `triplanet-viewpoints-demo`).
+- **Demo on claude.ai:** https://claude.ai/artifact/77KubhecPayYdD4gcVSQCi. Private until the owner shares it; the only copy with the spoken morning brief.
 - **Demo (offline):** open `v6/triplanet-booth.html` in Chrome or Edge. No install, no internet needed.
 - **Ideas backlog for the team (rate and prioritize, Hebrew and English):** https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka. Its source is `docs/pitch/ideas-backlog.html`.
 - Use **View as** (top bar; in the ☰ menu on phones) to switch person:
