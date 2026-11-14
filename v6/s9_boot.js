@@ -16,4 +16,5 @@ if(typeof blankQuote==='function'){const b0=blankQuote;blankQuote=function(){con
 Object.keys(NAV_PERM).forEach(k=>{const v0=VIEWS[k];if(v0)VIEWS[k]=function(){return typeof can==='function'&&!can(NAV_PERM[k])?noAccess():v0.apply(this,arguments);};});
 runTripInit();
 load();
+if(typeof applyDeepLink==='function')applyDeepLink();
 render();
