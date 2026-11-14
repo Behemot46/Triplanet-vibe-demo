@@ -116,7 +116,7 @@ var chenSuggest=function(){
   return ids.map(i=>QS[i-1]);
 };
 function chenPanel(){
-  return `<aside class="chen" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm" data-act="chen" aria-label="${L('סגור','Close')}">${ic('x')}</button></div>
+  return `<div class="chen-scrim" data-act="chen" aria-hidden="true"></div><aside class="chen" role="dialog" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm chen-x" data-act="chen" aria-label="${L('סגירת השיחה','Close the chat')}">${ic('x')}<span>${L('סגירה','Close')}</span></button></div>
    <div class="cb">${S.chat.length?chatLog():`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. אפשר לשאול אותי על פערי חשבוניות, רווחיות, תשלומים, משימות או לבקש טיוטה לטיול.','Hi, I am Maya. Ask me about invoice gaps, margins, payments or tasks, or ask me to draft a trip.')}</div>`}</div>
    <div class="cs">${chenSuggest().map(q=>`<button class="btn sm" data-act="ask" data-v="${q.id}">${esc(L(q.he,q.en))}</button>`).join('')}</div>
    <form class="row cf" data-form="ask"><input type="text" name="q" placeholder="${L('שאלו את מאיה...','Ask Maya...')}" aria-label="${L('שאלה','Question')}"><button class="btn pri" type="submit">${L('שלח','Send')}</button></form></aside>`;

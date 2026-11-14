@@ -127,7 +127,7 @@ How strings and events work: every visible string is `L(he, en)`; data goes thro
 
 From `CLAUDE.md` and the code. These are decisions for the owner, not for you, but they affect what you may copy.
 
-1. **Agent annual targets** (`s1e_people.js: STAFF_TARGET`, 260,000 to 380,000 USD) are illustrative; the owner confirms before any show.
+1. **Agent annual targets** (`s1e_people.js: STAFF_TARGET`, 260,000 to 380,000 USD): approved by the owner on 14 Nov 2026.
 2. **FEAT statuses** (`s9b_status.js`): 8 Live, 12 Pilot, 4 Roadmap. Finance stage, invoices, payments, trip P&L, integrations and multi-currency were moved to Pilot on 13 Nov 2026 after a read-only walkthrough of dev.triplanet.io (Sep 2026 report, not verified with the product team). **The product team must confirm what is live in finance before IITA (31 Jan 2027).**
 3. **Fictional supplier names** (`SUP_FICT`, 156 generated names across hotels, coaches, shuttles, guides, meals, air and insurance desks). The owner reviews the list before a show. Print it with `node check6.js | grep "^SUPPLIERS"`.
 4. **Sample waiver wording** (`s10_fbuild.js: FB_TERMS`) is marked "SAMPLE WORDING ONLY". Counsel must write the real text.

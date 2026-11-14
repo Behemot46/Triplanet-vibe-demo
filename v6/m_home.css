@@ -228,3 +228,33 @@ button.hc-kpi:hover{background:rgba(255,255,255,.14)}
 .hc-kpi.warn b{color:#FFD666}
 .hc-pill.blue{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
 @media (max-width:600px){.hc .da-tbl td,.hc .da-tbl th{white-space:nowrap}}
+
+/* Maya panel: always above the header (whose layer was raised for the gear menu), easy to leave */
+.chen{z-index:90!important}
+.chen-scrim{position:fixed;inset:0;z-index:89;background:rgba(15,27,42,.32);backdrop-filter:blur(1px)}
+.chen .chen-x{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;font-weight:700}
+.chen .chen-x svg{width:18px;height:18px}
+@media (max-width:600px){.chen{top:0!important;bottom:0!important;inset-inline:0!important;width:100%!important;border-radius:0!important}
+  .chen .ch{padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px}}
+
+/* color emphasis inside text (hlNeg / hlPos / hlWarn / hlKey) */
+.hl{font-weight:700}
+.hl.neg{color:var(--red)}
+.hl.pos{color:var(--green)}
+.hl.warn{color:var(--amber)}
+.hl.key{color:var(--ink)}
+.hc-hero .hl.neg{color:#FFB4A9}
+.hc-hero .hl.pos{color:var(--mint)}
+.hc-hero .hl.warn{color:#FFD666}
+.hc-hero .hl.key{color:var(--hero-ink)}
+
+/* compact page header (hcPage) */
+.hc-page{padding:22px 24px 18px;margin-bottom:20px}
+.hc-ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hc-page .hc-hi h1{font-size:28px;margin-bottom:6px}
+.hc-page .hc-hi p{font-size:15px}
+.hc-page .hc-cta{margin-top:0}
+.hc-page .hc-kpis{margin-top:18px}
+.hc-kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hc-kpis.k2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:600px){.hc-page{padding:18px 16px 14px}.hc-page .hc-hi h1{font-size:23px}.hc-kpis.k3{grid-template-columns:1fr 1fr}.hc-page .hc-cta{width:100%}}

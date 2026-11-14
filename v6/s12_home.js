@@ -11,6 +11,23 @@
    Every figure comes from the existing finance functions (portfolio, gapStats, leakModel, groupsCalc, dbTeam,
    dbReadiness, nextSteps). The hero keeps class `ptiles` for the guided tour. */
 
+/* ---------- kit shared by every redesigned screen ----------
+   Color emphasis inside running text (owner decision, 14 Nov 2026): red for a negative outcome (money lost,
+   late, overdue, urgent), green for a positive one (recovered, collected, on target), amber for money still open.
+   Only the key figure of a sentence, at most two or three per sentence; table cells keep their own coloring. */
+const hlNeg=x=>`<b class="hl neg">${x}</b>`,hlPos=x=>`<b class="hl pos">${x}</b>`,hlWarn=x=>`<b class="hl warn">${x}</b>`,hlKey=x=>`<b class="hl key">${x}</b>`;
+/* compact page header in the command-center language: eyebrow, title, one-line brief, buttons, up to 4 KPI tiles */
+function hcPage(o){
+  const an=hpAnim?(HP_PREV!==S.tab+'|'+S.role+'|'+S.lang):false;
+  const kp=(k,i)=>{const tag=k.act?'button':'div',at=k.act?` data-act="${k.act}" data-v="${k.v||''}"${k.pt?` data-pt="${k.pt}"`:''}`:'';
+    return `<${tag} class="hc-kpi ${k.cls||''}" style="--d:${60+i*70}ms"${at}><span>${k.lab}</span><b>${k.val}</b>${k.sub?`<small>${k.sub}</small>`:''}</${tag}>`;};
+  return `<section class="hc-hero hc-page ${o.cls||''}${an?' anim':''}" aria-label="${esc(o.aria||o.title||'')}">
+   <svg class="hc-bg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="hc-arc a1" d="M120 300 C 380 120, 700 90, 980 190"/><path class="hc-arc a2" d="M520 300 C 700 180, 930 140, 1190 90"/><circle class="hc-pin" cx="980" cy="190" r="4"/><circle class="hc-pin" cx="1190" cy="90" r="4"/></svg>
+   <div class="hc-ph"><div class="hc-hi">${o.eyebrow?`<span class="hc-eye">${o.eyebrow}</span>`:''}<h1>${o.title}</h1>${o.brief?`<p>${o.brief}</p>`:''}</div>
+    ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
+   ${o.kpis&&o.kpis.length?`<div class="hc-kpis k${o.kpis.length}">${o.kpis.map(kp).join('')}</div>`:''}${o.extra||''}</section>`;
+}
+
 const HC_STAGES=[['Quote','quotes',['הצעת מחיר','Quotation'],'var(--blue)'],['Operations','files',['תפעול','Operation'],'var(--amber)'],
   ['Finance','files',['כספים','Finance'],'var(--purple)'],['Closed','archive',['נסגרו','Closed'],'var(--green)']];
 const hcDays=d=>Math.round((D(d)-TODAY)/DAY);
@@ -61,8 +78,8 @@ const hcCta=(cls,icon,label,attrs)=>`<button class="hc-btn ${cls}" ${attrs}>${ic
 function hcHero(m){
   const {P,M}=m,nx=m.dep[0],margin=P.rev?P.fp/P.rev:0,files=m.ts.filter(t=>t.stage!=='Quote').length;
   return hcShell({cls:'ptiles',
-    brief:L(`העונה נסגרו ${usd(P.rev)} ב-${files} תיקים, ברווח צפוי של ${pct(margin)}. עוד ${usd(M.rec)} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${m.urgent} דברים דחופים מחכים לך היום`:''}.`,
-      `This season you booked ${usd(P.rev)} across ${files} files at ${pct(margin)} expected margin. ${usd(M.rec)} is still recoverable from supplier invoices${m.urgent?`, and ${m.urgent} urgent ${m.urgent===1?'item needs':'items need'} you today`:''}.`),
+    brief:L(`העונה נסגרו ${hlKey(usd(P.rev))} ב-${files} תיקים, ברווח צפוי של ${hlPos(pct(margin))}. עוד ${hlWarn(usd(M.rec))} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${hlNeg(m.urgent+' דברים דחופים')} מחכים לך היום`:''}.`,
+      `This season you booked ${hlKey(usd(P.rev))} across ${files} files at ${hlPos(pct(margin))} expected margin. ${hlWarn(usd(M.rec))} is still recoverable from supplier invoices${m.urgent?`, and ${hlNeg(m.urgent+' urgent '+(m.urgent===1?'item':'items'))} ${m.urgent===1?'needs':'need'} you today`:''}.`),
     ctas:[hcCta('mint','cash',L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`),'data-act="go" data-v="gaps"'),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'data-act="go" data-v="studio"')],
     gauge:{pct:m.kept,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(M.got)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(M.rec)}]},
     kpis:[{lab:L('הכנסות שנסגרו','Booked revenue'),val:P.rev,money:1,sub:L(`${P.pax} נוסעים`,`${P.pax} travelers`)},
@@ -96,7 +113,7 @@ function hcProfit(m){
   const {P,M}=m,max=Math.max(P.pp,1),w=v=>Math.max(1.5,v/max*100).toFixed(2)+'%',lost=r2(P.pp-P.fp);
   const row=(lab,v,cls,sub)=>`<div class="hc-br ${cls}"><span class="l">${lab}</span><span class="t"><i style="width:${w(Math.abs(v))}"></i></span><b>${cls==='loss'?'−':''}${usd(Math.abs(v))}</b>${sub?`<small>${sub}</small>`:''}</div>`;
   return `<div class="card hc-card hc-profit"><div class="hc-h"><h3>${L('הגנה על הרווח','Profit protection')} ${NEWP()}</h3></div>
-   <p class="hc-lead">${L(`מתוך ${usd(P.pp)} רווח מתוכנן, ${usd(lost)} נעלמו בפערי חשבוניות ושער. טריפלאנט כבר החזירה ${usd(M.got)}.`,`Of ${usd(P.pp)} planned profit, ${usd(lost)} slipped through invoice gaps and exchange rates. Triplanet has already recovered ${usd(M.got)}.`)}</p>
+   <p class="hc-lead">${L(`מתוך ${hlKey(usd(P.pp))} רווח מתוכנן, ${hlNeg(usd(lost))} נעלמו בפערי חשבוניות ושער. טריפלאנט כבר החזירה ${hlPos(usd(M.got))}.`,`Of ${hlKey(usd(P.pp))} planned profit, ${hlNeg(usd(lost))} slipped through invoice gaps and exchange rates. Triplanet has already recovered ${hlPos(usd(M.got))}.`)}</p>
    ${row(L('רווח מתוכנן','Planned profit'),P.pp,'plan')}
    ${row(L('דלף','Leaked'),lost,'loss',L('פערי ספקים ושער','supplier gaps and FX'))}
    ${row(L('רווח צפוי','Expected profit'),P.fp,'exp')}
@@ -127,7 +144,7 @@ function hcTeam(m){
   if(!m.team.length)return '';
   const rows=m.team.slice().sort((a,b)=>b.att-a.att).map((r,i)=>{const att=Math.round(r.att*100);
     return `<div class="hc-ag" style="--d:${i*50}ms"><span class="hc-av">${avatarOf(agn(r.agent))}${hcRing(Math.min(100,att),52,'av')}</span><div class="hc-an"><b>${esc(agn(r.agent))}</b><span>${usd(r.booked)} ${L('מתוך','of')} ${usd(r.target)}</span></div><div class="hc-am"><b>${att}%</b><span>${L('מהיעד','of target')}</span></div><div class="hc-am"><b>${pct(r.margin)}</b><span>${L('מרווח','margin')}</span></div></div>`;}).join('');
-  return `<div class="card hc-card hc-team"><div class="hc-h"><h3>${L('הצוות מול היעד','Team vs target')}</h3><span class="muted small">${L('יעדים להמחשה','Illustrative targets')}</span></div>${rows}</div>`;
+  return `<div class="card hc-card hc-team"><div class="hc-h"><h3>${L('הצוות מול היעד','Team vs target')}</h3><span class="muted small">${L('יעדים שנתיים','Annual targets')}</span></div>${rows}</div>`;
 }
 
 function hcStudio(){
@@ -153,8 +170,8 @@ function hcAcct(){
   const P=portfolio(ts),G=gapStats(ts),M=leakModel(ts),ar=daArNext30(),od=daOverdue(),bills=daBillsToApprove(),cm=daCommReceivable(),docs=daDocsToIssue();
   const col=P.rev>0?Math.round(P.col/P.rev*1000)/10:100,dt=daDetail(S.daDet);
   const hero=hcShell({cls:'da-hero hc-acct',role:L('הנהלת חשבונות','Accounting'),aria:L('תמונת מצב כספית','Finance overview'),
-    brief:L(`${usd(ar.total)} צפויים להיכנס מלקוחות ב-30 הימים הקרובים ו-${usd(od.total)} באיחור. ${bills.n} חשבוניות ספקים תואמות להצעה ומחכות לאישור שלך${docs.n?`, ו-${docs.n} מסמכים מחכים להפקה`:''}.`,
-      `${usd(ar.total)} is due from clients in the next 30 days and ${usd(od.total)} is overdue. ${bills.n} supplier ${bills.n===1?'bill matches its quote and waits':'bills match their quotes and wait'} for your approval${docs.n?`, and ${docs.n} ${docs.n===1?'document is':'documents are'} ready to issue`:''}.`),
+    brief:L(`${hlPos(usd(ar.total))} צפויים להיכנס מלקוחות ב-30 הימים הקרובים ו-${hlNeg(usd(od.total))} באיחור. ${bills.n} חשבוניות ספקים תואמות להצעה ומחכות לאישור שלך${docs.n?`, ו-${docs.n} מסמכים מחכים להפקה`:''}.`,
+      `${hlPos(usd(ar.total))} is due from clients in the next 30 days and ${hlNeg(usd(od.total))} is overdue. ${bills.n} supplier ${bills.n===1?'bill matches its quote and waits':'bills match their quotes and wait'} for your approval${docs.n?`, and ${docs.n} ${docs.n===1?'document is':'documents are'} ready to issue`:''}.`),
     ctas:[hcCta('mint','check',L(`לאישור ${bills.n} חשבוניות`,`Approve ${bills.n} ${bills.n===1?'bill':'bills'}`),'data-act="da-det" data-v="bills"'),hcCta('ghost','bell',L('חובות באיחור','Overdue payments'),'data-act="da-det" data-v="overdue"')],
     gauge:{pct:col,label:L('מההכנסות כבר נגבו','of booked revenue collected'),lines:[{cls:'ok',icon:'check',lab:L('נגבה','Collected'),val:usd(P.col)},{cls:'op',icon:'hourglass',lab:L('יתרה','Outstanding'),val:usd(P.outstanding)}]},
     kpis:[{lab:L('לגבייה ב-30 יום','Due in 30 days'),val:ar.total,money:1,sub:L(`${ar.n} תשלומים`,`${ar.n} ${ar.n===1?'installment':'installments'}`),act:'da-det',v:'ar30',on:S.daDet==='ar30'},
