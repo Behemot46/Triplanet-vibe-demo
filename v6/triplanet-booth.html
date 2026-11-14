@@ -1717,6 +1717,8 @@ button.pj-status{border:0;cursor:pointer}
 .pg-run>*{margin:0!important}
 .pg-run label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px;color:var(--ink2)}
 .pg-run select,.pg-run textarea{font:400 16px var(--f-ui);padding:12px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);min-height:48px;box-sizing:border-box;width:100%}
+.pg-run select{appearance:none;-webkit-appearance:none;border:2px solid var(--line2);padding-inline-end:40px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 22px) 52%,calc(100% - 16px) 52%;background-size:6px 6px;background-repeat:no-repeat}
+.pg-run select:dir(rtl),[dir=rtl] .pg-run select{background-position:22px 52%,16px 52%}
 .pg-run textarea{resize:vertical;min-height:96px}
 /* trip and day chips */
 .pg-sel{display:flex;flex-direction:column;gap:8px}
@@ -1778,6 +1780,15 @@ button.pj-status{border:0;cursor:pointer}
   .pg-row{grid-template-columns:1fr}
   .pg-run .pv-st{grid-template-columns:60px 26px 1fr}
   .pg-run .pv-st .pv-tick{width:100%}
+}
+
+.pg-wait .pill{white-space:normal}
+/* desktop: the manifest uses the full width as a card grid */
+@media (min-width:721px){
+  .pg-pl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .pg-px{border:1px solid var(--line2);border-radius:12px;padding:12px;grid-template-columns:52px 1fr}
+  .pg-px:first-child{border-top:1px solid var(--line2)}
+  .pg-px.on{margin-inline:0}
 }
 
 /* v8.4 group leader portal (s13_pl.js): tokens only, logical properties, phone first */
@@ -13738,7 +13749,7 @@ function pgDay(g,p){
   const done=d.items.filter(x=>run.has(x.id)).length,pctDone=d.items.length?Math.round(done/d.items.length*100):0;
   const fl=(t.trav||[]).filter(pgHasFlag).length,pax=(t.trav||[]).length||t.pax||0;
   const first=d.items[0],last=d.i===ds.length;
-  const brief=L(`יום ${hlKey(d.i)} מתוך ${ds.length} ב-<bdi>${esc(t.name)}</bdi>: ${hlKey(d.items.length)} עצירות, ${hlPos(done)} בוצעו. ${fl?`${hlWarn(fl)} נוסעים עם סימון תזונה או רפואי.`:'אין סימונים לנוסעים.'}`,
+  const brief=L(`יום ${hlKey(d.i)} מתוך ${ds.length} ב-<bdi>${esc(t.name)}</bdi>: ${hlKey(d.items.length)} עצירות, ${hlPos(done)} בוצעו. ${fl?`${hlWarn(fl)} נוסעים עם התראת תזונה או רפואה.`:'אין התראות לנוסעים.'}`,
     `Day ${hlKey(d.i)} of ${ds.length} on <bdi>${esc(t.name)}</bdi>: ${hlKey(d.items.length)} ${d.items.length===1?'stop':'stops'}, ${hlPos(done)} done. ${fl?`${hlWarn(fl)} ${fl===1?'traveler has':'travelers have'} a dietary or medical flag.`:'No traveler flags.'}`);
   const hero=pvHero({cls:'pg-hero',role:L(P_ROLE()[0],P_ROLE()[1]),brief,
     ctas:[hcCta('mint','users2',L('ספירת נוסעים','Count heads'),'data-act="pv-tab" data-v="pax"'),hcCta('ghost','pen',L('הערה חדשה','Add a note'),'data-act="pv-tab" data-v="notes"')],
@@ -13746,7 +13757,7 @@ function pgDay(g,p){
     kpis:[{lab:L('נוסעים','Passengers'),val:pax,sub:t.client?esc(t.client):''},
       {lab:L('איסוף ראשון','First pickup'),text:first?pvClock(first.start):'-',sub:d.i===1?L('משרד Redbud Group Tours, טולסה','Redbud Group Tours office, Tulsa'):L('מהמלון','From the hotel')},
       {lab:L('מלון הלילה','Hotel tonight'),text:d.hotel||(last?L('יום חזרה','Return day'):'-'),sub:d.hotel?L('לינה לפי התוכנית','Per the plan'):''},
-      {lab:L('סימונים','Flags'),val:fl,cls:fl?'pg-kflag':'',act:'pv-tab',v:'pax',sub:L('תזונה או רפואי','Dietary or medical')}]});
+      {lab:L('התראות','Alerts'),val:fl,cls:fl?'pg-kflag':'',act:'pv-tab',v:'pax',sub:L('תזונה או רפואי','Dietary or medical')}]});
   const card=pvDayCard(t,d,{done:run,tick:'pg-tick',extra:x=>(d.i===1&&first&&x.id===first.id&&x.kind==='travel'?`<small class="pg-mp">${ic('pin')} ${L('נקודת מפגש: משרד Redbud Group Tours, טולסה','Meeting point: Redbud Group Tours office, Tulsa')}</small>`:'')+pgContact(t,x)});
   return `${pgChips(g,sel,true)}${hero}<div class="pg-card">${card}</div>`;
 }
@@ -13763,14 +13774,14 @@ function pgPax(g,p){
     const diet=f.diet?pillF(`${L('תזונה','Diet')}: ${esc(x.diet)}`,'blue'):'';
     const pp=intl?(x.pass==='Missing'?pillF(L('דרכון חסר','Passport missing'),'red'):`${opPassWarn(t,x)?pillF(L('תוקף דרכון קצר','Short passport validity'),'amber'):pillF(L('דרכון התקבל','Passport on file'),'green')}${x.passNo?` <span class="muted small" dir="ltr">${esc(x.passNo)}</span>`:''}`):'';
     const em=x.emerg&&x.emerg.phone?`<a class="btn sm pg-call" href="${pgTel(x.emerg.phone)}" aria-label="${L('חיוג לאיש קשר לחירום','Call emergency contact')} ${esc(x.emerg.name)}">${ic('shield')} <span><b><bdi>${esc(x.emerg.name)}</bdi></b><small dir="ltr">${esc(x.emerg.phone)}</small></span></a>`:'';
-    return `<li class="pg-px${hit?' on':''}${pgHasFlag(x)?' flag':''}"><button class="pg-hb${hit?' on':''}" data-act="pg-head" data-v="${t.id}|${o.i}" aria-pressed="${hit}" aria-label="${L('על האוטובוס','On board')}: ${esc(x.n)}">${ic('check')}</button>
+    return `<li class="pg-px${hit?' on':''}${pgHasFlag(x)?' pg-flagged':''}"><button class="pg-hb${hit?' on':''}" data-act="pg-head" data-v="${t.id}|${o.i}" aria-pressed="${hit}" aria-label="${L('על האוטובוס','On board')}: ${esc(x.n)}">${ic('check')}</button>
       <div class="pg-pi"><b><bdi>${esc(x.n)}</bdi></b><span class="muted small">${L('חדר','Room')} <bdi>${esc(x.room)}</bdi>${x.roomType?` · ${esc(x.roomType)}`:''}</span>
        ${diet||med||pp?`<span class="pg-fl">${diet}${med}${pp}</span>`:''}</div>${em}</li>`;};
   const bar=`<div class="card hc-card pg-hcbar"><div class="hc-h"><h3>${L('ספירת נוסעים','Head count')}</h3><button class="btn sm" data-act="pg-head-reset" data-v="${t.id}">${ic('restart')} ${L('איפוס','Reset')}</button></div>
     <div class="pg-hcn"><b>${on}</b> <span>${L('מתוך','of')} ${n} ${L('על האוטובוס','on board')}</span></div><div class="pg-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${on}"><i style="inline-size:${n?Math.round(on/n*100):0}%"></i></div>
     <p class="muted small">${L('הספירה נשמרת במכשיר הזה בלבד.','The count stays on this device only.')}</p></div>`;
-  return `${pgChips(g,sel,false)}${bar}<div class="pg-chips pg-filt" role="group" aria-label="${L('סינון','Filter')}">${chip('all',L('הכל','All'),n)}${chip('flags',L('רק עם סימונים','Flags only'),nf)}</div>
-   <div class="card hc-card pg-man">${rows.length?`<ul class="pg-pl">${rows.map(row).join('')}</ul>`:`<p class="muted">${L('אין נוסעים עם סימונים.','No travelers with flags.')}</p>`}</div>`;
+  return `${pgChips(g,sel,false)}${bar}<div class="pg-chips pg-filt" role="group" aria-label="${L('סינון','Filter')}">${chip('all',L('הכל','All'),n)}${chip('flags',L('רק התראות','Flags only'),nf)}</div>
+   <div class="card hc-card pg-man">${rows.length?`<ul class="pg-pl">${rows.map(row).join('')}</ul>`:`<p class="muted">${L('אין נוסעים עם התראות.','No travelers with flags.')}</p>`}</div>`;
 }
 
 /* ---------- vouchers ---------- */
@@ -13784,10 +13795,15 @@ function pgVouch(g,p){
      <p class="pg-vs">${esc(l.name)}<span class="muted small"> · ${esc(l.type)} · ${pax} ${L('נוסעים','travelers')}</span></p>
      <div class="pg-vn"><span class="muted small">${L('מספר שובר','Voucher number')}</span><b dir="ltr">${pgVouchNo(t,l)}</b></div>
      ${c?`<p class="small pg-ct"><bdi>${esc(c.name)}</bdi> <a class="pg-tel" href="${pgTel(c.phone)}"><bdi dir="ltr">${esc(c.phone)}</bdi></a></p>`:`<p class="small muted">${L('להציג את המספר בקבלה.','Show this number at the desk.')}</p>`}</div>`;};
+  const wait=o=>{const l=o.l,real=pgIsReal(l.sup);
+    return `<div class="card hc-card pg-vo pg-wait"><div class="hc-h"><h3><bdi>${esc(l.sup)}</bdi></h3>${pillF(real?L('סטטוס: נשלחה בקשה','Status: requested'):L('ממתין לאישור הספק','Awaiting supplier confirmation'),'')}</div>
+     <p class="pg-vs">${esc(l.name)}<span class="muted small"> · ${esc(l.type)} · ${pax} ${L('נוסעים','travelers')}</span></p>
+     <p class="small muted">${L('המספר יופיע כאן כשהשובר יונפק.','The number will show here once the voucher is issued.')}</p></div>`;};
+  const pend=all.filter(o=>spFlow(o.s)!=='approved');
   return `${pgChips(g,sel,false)}
    <div class="card hc-card"><div class="hc-h"><h3>${L('שוברים','Vouchers')}</h3><span class="muted small">${ok.length} ${L('מוכנים','ready')}${rest?` · ${rest} ${L('עדיין בלי שובר','with no voucher yet')}`:''}</span></div>
-    <p class="muted small">${L('שובר מופיע כשהספק מאושר. מספר השובר: RB-מספר הטיול-מספר הרכיב.','A voucher appears once the supplier is approved. Voucher number: RB-trip number-component number.')}</p></div>
-   ${ok.length?ok.map(card).join(''):`<div class="card hc-card"><p class="muted">${L('עדיין אין שוברים לטיול הזה.','No vouchers for this trip yet.')}</p></div>`}`;
+    <p class="muted small">${L('שובר מופיע כשהספק מאושר. מספרי השוברים בנויים כך: <bdi dir="ltr">RB-[טיול]-[פריט]</bdi>.','A voucher appears once the supplier is approved. Voucher numbers follow <bdi dir="ltr">RB-[trip]-[item]</bdi>.')}</p></div>
+   ${ok.length?ok.map(card).join(''):`<div class="card hc-card"><p class="muted">${L('עדיין אין שוברים לטיול הזה.','No vouchers for this trip yet.')}</p></div>`}${pend.map(wait).join('')}`;
 }
 
 /* ---------- notes ---------- */
