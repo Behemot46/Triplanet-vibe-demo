@@ -198,12 +198,13 @@ function fmRootHtml(){
   const sub=f.isNew?'':fmName(f.draft);
   return `<div class="fm-root" data-fm-root="${f.id}"><div class="fm-scrim" data-act="fm-scrim"></div>
    <form class="fm-modal${f.fresh?' fm-fresh':''}" id="fm-form" role="dialog" aria-modal="true" aria-labelledby="fm-title" novalidate>
-    <header class="fm-hd"><div><h2 id="fm-title">${esc(ttl)}</h2>${sub?`<div class="small muted"><bdi>${esc(sub)}</bdi></div>`:''}</div>
-      <button type="button" class="fm-x fm-close" data-act="fm-cancel" aria-label="${L('סגירה','Close')}">${ic('x')}</button></header>
+    <header class="fm-hd"><div class="fm-hdt"><span class="fm-eye">${esc(fmLb(sc.title))}</span><h2 id="fm-title">${esc(ttl)}</h2>${sub?`<div class="fm-sub"><bdi>${esc(sub)}</bdi></div>`:''}</div>
+      <div class="fm-hda"><button type="submit" class="fm-save">${ic('check')} ${f.isNew?L('הוספה','Add'):L('שמירה','Save')}</button>
+      <button type="button" class="fm-x fm-close" data-act="fm-cancel" aria-label="${L('סגירה','Close')}">${ic('x')}</button></div></header>
     <div class="fm-body">${formRender(sc,f.draft,{errors:errs})}</div>
     <footer class="fm-ft"><span class="fm-sum small" role="status">${n?`${ic('danger')} ${L(`${n} שדות דורשים תיקון`,`${n} ${n===1?'field needs':'fields need'} attention`)}`:''}</span>
       <button type="button" class="btn" data-act="fm-cancel">${L('ביטול','Cancel')}</button>
-      <button type="submit" class="btn pri">${f.isNew?L('הוספה','Add'):L('שמירה','Save')}</button></footer></form></div>`;
+</footer></form></div>`;
 }
 function fmRedraw(focusId){
   if(!S.form)return;

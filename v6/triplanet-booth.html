@@ -2184,6 +2184,93 @@ body.dv-open #app{padding-right:380px}
 @media (max-width:600px){.pq-hero .hc-pin{display:none}}
 @media (max-width:600px){.od-grid .tbl td,.od-grid .tbl th{white-space:nowrap}}
 
+/* v8.2 letter e: Settings, Form builder, UI kit, form drawer in the command-center language. Tokens only, logical properties. */
+
+/* segmented sub-tabs (Settings sections, Form builder tabs) */
+.st-seg{display:flex;gap:4px;padding:4px;margin:0 0 20px;border-radius:14px;background:var(--recess);border:1px solid var(--line);width:fit-content;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.st-seg::-webkit-scrollbar{display:none}
+.st-seg button{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:600 14px var(--f-ui);cursor:pointer;white-space:nowrap}
+.st-seg button svg{width:18px;height:18px}
+.st-seg button:hover{color:var(--ink)}
+.st-seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--sh-card)}
+.st-seg button:focus-visible{outline:3px solid var(--primary);outline-offset:1px}
+@media (max-width:600px){.st-seg{width:100%}.st-seg button{flex:1 0 auto;padding:0 12px}}
+
+/* Settings */
+.st-page .st-ro{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:16px;border:1px solid color-mix(in srgb,var(--amber) 40%,var(--line));background:color-mix(in srgb,var(--amber) 10%,var(--panel))}
+.st-page .st-ro .ic{flex:none;color:var(--amber)}
+.st-page .st-card{margin:0}
+.st-page .st-h{margin-bottom:12px}
+.st-sample .st-prev{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;background:none}
+.st-sample .st-prev>b:first-child{display:none}
+.st-sample .st-prev>span{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--recess);color:var(--muted);font-size:13.5px}
+.st-sample .st-prev>span b{color:var(--ink);font-family:var(--f-num)}
+.st-page .st-stage{border-radius:16px;border:1px solid var(--line)}
+.st-page .st-tbl .st-grp th{border-radius:0;letter-spacing:.04em;text-transform:uppercase;font-size:11.5px}
+.st-page .st-scroll{border-radius:12px}
+.st-page .st-link{border-radius:20px}
+@media (max-width:600px){
+  .st-page .st-tbl tr{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;background:var(--panel)}
+  .st-page .st-tbl tr.st-grp{border:0;padding:0;background:none;margin:12px 0 4px}
+  .st-page .st-tbl tr.st-grp th{border-radius:10px}
+  .st-page .st-tbl{border-collapse:separate}
+}
+
+/* Form builder */
+.fb-page .fb-grid .hc-card{padding:16px}
+.fb-page .fb-list.hc-card{padding:12px}
+.fb-page .fb-top{margin-bottom:16px}
+.fb-page .fb-note{display:flex;align-items:center;gap:12px;padding:14px 20px;border:1px solid color-mix(in srgb,var(--amber) 40%,var(--line));background:color-mix(in srgb,var(--amber) 10%,var(--panel))}
+.fb-page .fb-rh{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.fb-page .fb-cards{gap:16px;margin-bottom:16px}
+.fb-page .fb-sc{padding:16px;gap:12px}
+.fb-ring{display:flex;align-items:center;gap:14px}
+.fb-rg{position:relative;flex:none;width:64px;height:64px;display:grid;place-items:center}
+.fb-rg .hc-ring{position:absolute;inset:0}
+.fb-rg b{font:800 14px var(--f-num);color:var(--ink)}
+.fb-rg .hc-ring.ok .br{stroke:var(--green)}
+.fb-st{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fb-st b{font:700 15px/1.25 var(--f-ui);color:var(--ink)}
+.fb-page .fb-bar i{background:var(--primary)}
+.fb-page .fb-sc.on{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 30%,transparent)}
+.fb-page .fb-sh{margin-bottom:6px}
+/* phone preview framed like the proposal landing-page phone */
+.fb-pwrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.fb-page .fb-phone{width:min(100%,400px);border:10px solid var(--ink);border-radius:34px;box-shadow:var(--sh-card)}
+.fb-page .fb-notch{display:flex;justify-content:center;align-items:center;height:auto;padding:6px 0;background:var(--ink)}
+.fb-notch span{width:56px;height:5px;border-radius:9px;background:var(--muted)}
+.fb-page .fb-screen{max-height:680px}
+.fb-pcap{margin:0;text-align:center}
+.fb-page .fb-pvwrap{padding:24px 12px}
+@media (max-width:600px){.fb-ring{gap:10px}.fb-rg,.fb-rg .hc-ring{width:52px;height:52px}.fb-rg b{font-size:12px}}
+
+/* UI kit */
+.uk-live .hc-hero,.uk-live .hc-page{margin:0}
+.uk-live .hc-hero{box-shadow:none}
+.uk-darkrow{padding:16px;border-radius:16px;background:linear-gradient(125deg,var(--hero1),var(--hero2))}
+.uk-kband{padding:16px}
+.uk-kband .hc-kpis{margin-top:0}
+.uk-hl{margin:0;font-size:15px;line-height:1.6}
+.uk-live .hc-rail{grid-auto-columns:minmax(230px,290px)}
+.uk-live .hc-steps{min-width:0}
+
+/* Form drawer header in the command-center language */
+.fm-hd{align-items:center;padding:18px 24px;border-bottom:0;color:var(--hero-ink);background:linear-gradient(125deg,var(--hero1) 0%,var(--hero2) 70%,#0A6BD6 100%)}
+.fm-hdt{min-width:0;flex:1}
+.fm-eye{display:block;font:600 12px/1 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-bottom:8px}
+.fm-hd h2{color:var(--hero-ink);font:700 21px/28px var(--f-ui)}
+.fm-sub{font-size:13px;color:var(--hero-mute);margin-top:2px}
+.fm-hda{display:flex;align-items:center;gap:8px;flex:none}
+.fm-save{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 18px;border:0;border-radius:12px;background:var(--mint);color:var(--hero1);font:700 14px var(--f-ui);cursor:pointer;box-shadow:0 8px 20px -8px rgba(93,252,224,.6)}
+.fm-save:hover{filter:brightness(1.05)}
+.fm-save:focus-visible,.fm-hd .fm-x:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.fm-hd .fm-x{color:var(--hero-ink);background:rgba(255,255,255,.12)}
+.fm-hd .fm-x:hover{background:rgba(255,255,255,.22);color:#fff}
+.fm-hd .fm-x svg,.fm-save svg{width:18px;height:18px}
+.fm-ft{justify-content:space-between}
+@media (max-width:600px){.fm-hd{padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px}.fm-hd h2{font-size:18px;line-height:24px}.fm-save{padding:0 14px}}
+
+
 /* v8 QA fixes that cut across modules. Loads last among m_*.css. Tokens only; logical properties only. */
 
 /* landing page phone frame: the same dark frame in day and night mode */
@@ -6057,12 +6144,13 @@ function fmRootHtml(){
   const sub=f.isNew?'':fmName(f.draft);
   return `<div class="fm-root" data-fm-root="${f.id}"><div class="fm-scrim" data-act="fm-scrim"></div>
    <form class="fm-modal${f.fresh?' fm-fresh':''}" id="fm-form" role="dialog" aria-modal="true" aria-labelledby="fm-title" novalidate>
-    <header class="fm-hd"><div><h2 id="fm-title">${esc(ttl)}</h2>${sub?`<div class="small muted"><bdi>${esc(sub)}</bdi></div>`:''}</div>
-      <button type="button" class="fm-x fm-close" data-act="fm-cancel" aria-label="${L('סגירה','Close')}">${ic('x')}</button></header>
+    <header class="fm-hd"><div class="fm-hdt"><span class="fm-eye">${esc(fmLb(sc.title))}</span><h2 id="fm-title">${esc(ttl)}</h2>${sub?`<div class="fm-sub"><bdi>${esc(sub)}</bdi></div>`:''}</div>
+      <div class="fm-hda"><button type="submit" class="fm-save">${ic('check')} ${f.isNew?L('הוספה','Add'):L('שמירה','Save')}</button>
+      <button type="button" class="fm-x fm-close" data-act="fm-cancel" aria-label="${L('סגירה','Close')}">${ic('x')}</button></div></header>
     <div class="fm-body">${formRender(sc,f.draft,{errors:errs})}</div>
     <footer class="fm-ft"><span class="fm-sum small" role="status">${n?`${ic('danger')} ${L(`${n} שדות דורשים תיקון`,`${n} ${n===1?'field needs':'fields need'} attention`)}`:''}</span>
       <button type="button" class="btn" data-act="fm-cancel">${L('ביטול','Cancel')}</button>
-      <button type="submit" class="btn pri">${f.isNew?L('הוספה','Add'):L('שמירה','Save')}</button></footer></form></div>`;
+</footer></form></div>`;
 }
 function fmRedraw(focusId){
   if(!S.form)return;
@@ -6500,7 +6588,7 @@ const fbStPill=s=>pillF(s==='done'?L('הושלם','Done'):s==='sent'?L('נשלח
 function fbList(){
   const grp=(kind,title)=>`<div class="fb-gt">${title}</div>`+FB_TRAV.concat(FB_ENTS).filter(id=>fbForm(id).kind===kind).map(id=>{const f=fbForm(id);
     return `<button class="fb-li${S.fbSel===id?' on':''}" data-act="fb-sel" data-v="${id}"><span class="fb-lt"><b>${esc(fbLb(f.title))}</b><span class="small muted">${f.fields.length} ${L('שדות','fields')} · v${f.version}</span></span>${fbDirty(f)?`<span class="fb-dot" title="${L('שינויים שלא פורסמו','Unpublished changes')}"></span>`:''}</button>`;}).join('');
-  return `<nav class="fb-list card" aria-label="${L('רשימת טפסים','Forms')}">${grp('trav',L('טפסי נוסעים','Traveler forms'))}${grp('ent',L('שדות מותאמים לפי ישות','Custom fields by record'))}</nav>`;
+  return `<nav class="fb-list card hc-card" aria-label="${L('רשימת טפסים','Forms')}">${grp('trav',L('טפסי נוסעים','Traveler forms'))}${grp('ent',L('שדות מותאמים לפי ישות','Custom fields by record'))}</nav>`;
 }
 function fbCanvas(f,can_){
   if(!f.fields.length)return `<div class="fb-empty"><b>${L('אין שדות עדיין','No fields yet')}</b><div class="small muted">${L('הוסיפו שדה מהרשימה למטה.','Add a field from the palette below.')}</div></div>`;
@@ -6513,7 +6601,7 @@ function fbCanvas(f,can_){
 }
 function fbProps(f,can_){
   const x=f.fields[S.fbField];
-  if(!x)return `<aside class="fb-props card"><h3>${L('מאפייני שדה','Field properties')}</h3><p class="muted small">${L('בחרו שדה בקנבס כדי לערוך את התוויות, החובה והתנאים שלו.','Select a field on the canvas to edit its labels, required state and conditions.')}</p></aside>`;
+  if(!x)return `<aside class="fb-props card hc-card"><h3>${L('מאפייני שדה','Field properties')}</h3><p class="muted small">${L('בחרו שדה בקנבס כדי לערוך את התוויות, החובה והתנאים שלו.','Select a field on the canvas to edit its labels, required state and conditions.')}</p></aside>`;
   const d=can_?'':' disabled',i=S.fbField,inp=(k,lab,val,ta)=>`<label class="fb-pl"><span>${lab}</span>${ta?`<textarea class="fm-in fb-pi" rows="3" data-fbi="${k}"${d}>${esc(val)}</textarea>`:`<input class="fm-in fb-pi" type="text" data-fbi="${k}" value="${esc(val)}"${d}>`}</label>`;
   const others=f.fields.filter((y,j)=>j!==i&&y.type!=='section'&&y.type!=='repeater'),sk=x.showIf&&x.showIf.k,src=others.find(y=>y.k===sk);
   let val='';
@@ -6521,7 +6609,7 @@ function fbProps(f,can_){
     if(src&&src.type==='toggle')val=`<select class="fm-in fb-pi" data-fbc="showV"${d}><option value="true"${eq===true?' selected':''}>${L('כן','Yes')}</option><option value="false"${eq===true?'':' selected'}>${L('לא','No')}</option></select>`;
     else if(src&&(src.type==='select'||src.type==='multi')&&src.options)val=`<select class="fm-in fb-pi" data-fbc="showV"${d}>${src.options.map(o=>`<option value="${esc(o.v)}"${String(eq)===String(o.v)?' selected':''}>${esc(fbLb(o))}</option>`).join('')}</select>`;
     else val=`<input class="fm-in fb-pi" type="text" data-fbi="showV" value="${esc(eq==null?'':eq)}"${d}>`;}
-  return `<aside class="fb-props card"><h3>${L('מאפייני שדה','Field properties')}</h3><div class="small muted fb-pt">${esc(fbTypeLb(x.type))}</div>
+  return `<aside class="fb-props card hc-card"><h3>${L('מאפייני שדה','Field properties')}</h3><div class="small muted fb-pt">${esc(fbTypeLb(x.type))}</div>
     ${inp('label.en',L('תווית (אנגלית)','Label (English)'),x.label.en)}${inp('label.he',L('תווית (עברית)','Label (Hebrew)'),x.label.he)}
     ${x.type==='section'?'':`<label class="fb-pc"><input type="checkbox" data-fbc="req"${x.req?' checked':''}${d}><span>${x.type==='toggle'?L('חובה לאשר','Must be ticked'):L('שדה חובה','Required')}</span></label>
     ${inp('help.en',L('טקסט עזרה (אנגלית)','Help text (English)'),x.help?x.help.en:'')}${inp('help.he',L('טקסט עזרה (עברית)','Help text (Hebrew)'),x.help?x.help.he:'')}`}
@@ -6535,41 +6623,56 @@ function fbPreview(f,phone){
   const body=f.fields.length?formRender(sc,{},{ns:'fbp',ro:true,phone}):`<div class="fb-empty small muted">${L('אין שדות להצגה.','No fields to show.')}</div>`;
   const hd=f.kind==='ent'?`${esc(fbLb(f.ent))} - ${L('שדות מותאמים','Custom fields')}`:esc(fbLb(f.title));
   const inner=`<div class="fb-pvh"><b>Redbud Group Tours</b><span class="small muted">${hd}</span></div>${f.kind==='trav'?`<p class="small muted fb-pvd">${esc(fbLb(f.desc))}</p>`:''}${f.fields.length&&f.terms?`${terms}`:''}${body}${f.kind==='trav'?`<button class="btn pri fb-pvs" disabled>${L('שליחה','Submit')}</button>`:''}`;
-  return phone?`<div class="fb-phone" aria-label="${L('תצוגת טלפון','Phone preview')}"><div class="fb-notch"></div><div class="fb-screen">${inner}</div></div>`:`<div class="fb-desk">${inner}</div>`;
+  return phone?`<div class="fb-pwrap"><div class="fb-phone" aria-label="${L('תצוגת טלפון','Phone preview')}"><div class="fb-notch"><span></span></div><div class="fb-screen">${inner}</div></div><p class="small muted fb-pcap">${L('כך הנוסע רואה את הטופס בטלפון.','This is how a traveler sees the form on a phone.')}</p></div>`:`<div class="fb-desk">${inner}</div>`;
 }
 function fbBuild(){
   const f=fbForm(S.fbSel)||fbForm('reg'),can_=fbCan(),pv=S.fbPrev;
   const modes=[['',L('עריכה','Edit'),'pen'],['desk',L('מחשב','Desktop'),'widget'],['phone',L('טלפון','Phone'),'show']];
   const pal=can_?`<div class="fb-pal"><span class="small muted">${L('הוספת שדה','Add field')}</span>${fbPalette().map(k=>`<button class="chip" data-act="fb-add" data-v="${k}">${esc(fbTypeLb(k))}</button>`).join('')}</div>`:'';
-  const mid=pv?`<div class="fb-mid card fb-pvwrap">${fbPreview(f,pv==='phone')}</div>`
-    :`<div class="fb-mid card"><div class="fb-mh"><div><h3>${esc(fbLb(f.title))}</h3><div class="small muted">${esc(fbLb(f.desc))}</div></div>${f.kind==='ent'?`<span class="small muted">${L('מופיע בטופס ה','Shown on the ')}${esc(fbLb(f.ent))}${L(' תחת "שדות מותאמים"',' form under "Custom fields"')}</span>`:''}</div>
+  const mid=pv?`<div class="fb-mid card hc-card fb-pvwrap">${fbPreview(f,pv==='phone')}</div>`
+    :`<div class="fb-mid card hc-card"><div class="fb-mh"><div><h3>${esc(fbLb(f.title))}</h3><div class="small muted">${esc(fbLb(f.desc))}</div></div>${f.kind==='ent'?`<span class="small muted">${L('מופיע בטופס ה','Shown on the ')}${esc(fbLb(f.ent))}${L(' תחת "שדות מותאמים"',' form under "Custom fields"')}</span>`:''}</div>
       ${f.terms?`<div class="fb-fixed"><span class="small muted">${L('נוסח התנאים קבוע בהדגמה','Terms text is fixed in this demo')}</span>${fbTermsHtml()}</div>`:''}
       <div class="fb-cv">${fbCanvas(f,can_)}</div>${pal}</div>`;
   return `<div class="fb-top"><div class="seg fb-modes" role="group" aria-label="${L('מצב תצוגה','View mode')}">${modes.map(m=>`<button class="chip${pv===m[0]?' on':''}" data-act="fb-prev" data-v="${m[0]}">${ic(m[2])} ${m[1]}</button>`).join('')}</div>
     <div class="fb-pub"><span class="pill ${fbDirty(f)?'amber':'green'}">v${f.version} · ${fbDirty(f)?L('שינויים שלא פורסמו','Unpublished changes'):L('פורסם','Published')}</span>${can_?`<button class="btn pri" data-act="fb-pub"${fbDirty(f)?'':' disabled'}>${ic('check')} ${L('פרסום','Publish')}</button>`:''}</div></div>
    <div class="fb-grid">${fbList()}${mid}${pv?'':fbProps(f,can_)}</div>`;
 }
+/* travelers across the Operation-stage trips: finished every form / not yet sent any form */
+function fbSummary(){
+  const ts=visibleTrips().filter(t=>t.stage==='Operations');let n=0,all=0,none=0;
+  ts.forEach(t=>(t.trav||[]).forEach(x=>{n++;const st=FB_TRAV.map(id=>fbSt(x,id));if(st.every(v=>v==='done'))all++;if(st.every(v=>v==='not sent'))none++;}));
+  return {n,all,none,trips:ts.length};
+}
 function fbResp(){
   const ts=visibleTrips().filter(t=>t.stage==='Operations');
-  if(!ts.length)return `<div class="card"><p class="muted">${L('אין טיולים בשלב התפעול.','No trips in the Operation stage.')}</p></div>`;
+  if(!ts.length)return `<div class="card hc-card"><p class="muted">${L('אין טיולים בשלב התפעול. כשהצעה מאושרת והופכת לתפעול, כאן אפשר לשלוח לנוסעים טפסים ולעקוב אחרי התשובות.','No trips in the Operation stage. Once a quote is accepted and moves to Operation, you can send forms to its travelers and follow the answers here.')}</p></div>`;
   const t=ts.find(x=>x.id===S.fbTrip)||ts[0],fid=FB_TRAV.includes(S.fbRf)?S.fbRf:'reg',can_=fbCan();
   const cols=fbCols(fid),tr=t.trav||[],lim=tr.slice(0,40);
-  return `<div class="card fb-rh"><label class="fb-pl"><span>${L('טיול','Trip')}</span><select class="fm-in fb-pi" data-fbc="trip" aria-label="${L('בחירת טיול','Choose trip')}">${ts.map(x=>`<option value="${x.id}"${x.id===t.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+  return `<div class="card hc-card fb-rh"><label class="fb-pl"><span>${L('טיול','Trip')}</span><select class="fm-in fb-pi" data-fbc="trip" aria-label="${L('בחירת טיול','Choose trip')}">${ts.map(x=>`<option value="${x.id}"${x.id===t.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
     <span class="small muted">${tr.length} ${L('נוסעים','travelers')} · ${fmtDate(t.dep)}</span></div>
-   <div class="fb-cards">${FB_TRAV.map(id=>{const c=fbCounts(t,id),f=fbForm(id);
-     return `<button class="fb-sc card${fid===id?' on':''}" data-act="fb-rf" data-v="${id}"><b>${esc(fbLb(f.title))}</b><span class="fb-n"><span><em>${c.done}</em> ${L('הושלמו','done')}</span><span><em>${c.sent}</em> ${L('נשלחו','sent')}</span><span><em>${c['not sent']}</em> ${L('לא נשלחו','not sent')}</span></span><span class="fb-bar"><i style="width:${tr.length?Math.round(c.done/tr.length*100):0}%"></i></span></button>`;}).join('')}</div>
-   <div class="card"><div class="fb-sh"><h3>${esc(fbLb(fbForm(fid).title))}</h3>${can_?`<button class="btn pri" data-act="fb-send" data-v="${fid}"${fbCounts(t,fid)['not sent']?'':' disabled'}>${ic('mail')} ${L('שליחה לנוסעים ('+fbCounts(t,fid)['not sent']+')','Send to travelers ('+fbCounts(t,fid)['not sent']+')')}</button>`:''}</div>
+   <div class="fb-cards">${FB_TRAV.map(id=>{const c=fbCounts(t,id),f=fbForm(id),p=tr.length?Math.round(c.done/tr.length*100):0;
+     return `<button class="fb-sc card hc-card${fid===id?' on':''}" data-act="fb-rf" data-v="${id}" aria-pressed="${fid===id}"><span class="fb-ring"><span class="fb-rg">${hcRing(p,64,p>=100?'ok':'')}<b>${p}%</b></span><span class="fb-st"><b>${esc(fbLb(f.title))}</b><span class="small muted">${c.done}/${tr.length} ${L('הושלמו','done')}</span></span></span><span class="fb-n"><span><em>${c.done}</em> ${L('הושלמו','done')}</span><span><em>${c.sent}</em> ${L('נשלחו','sent')}</span><span><em>${c['not sent']}</em> ${L('לא נשלחו','not sent')}</span></span><span class="fb-bar"><i style="width:${p}%"></i></span></button>`;}).join('')}</div>
+   <div class="card hc-card"><div class="fb-sh hc-h"><h3>${esc(fbLb(fbForm(fid).title))}</h3>${can_?`<button class="btn pri" data-act="fb-send" data-v="${fid}"${fbCounts(t,fid)['not sent']?'':' disabled'}>${ic('mail')} ${L('שליחה לנוסעים ('+fbCounts(t,fid)['not sent']+')','Send to travelers ('+fbCounts(t,fid)['not sent']+')')}</button>`:''}</div>
     <div class="small muted fb-lk">${ic('link')} <bdi>${esc(fbLink(t,fid))}</bdi></div>
     <div class="scroll"><table class="fb-tb"><thead><tr><th>${L('נוסע','Traveler')}</th><th>${L('סטטוס','Status')}</th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${lim.map((x,i)=>{const s=fbSt(x,fid),a=s==='done'?fbAnswers(t,x,i,fid):null;
-      return `<tr><td><b>${esc(x.n)}</b></td><td>${fbStPill(s)}</td>${cols.map((c,j)=>`<td>${a?`<bdi>${esc(a[j])}</bdi>`:'<span class="muted">-</span>'}</td>`).join('')}</tr>`;}).join('')}</tbody></table></div>
+      return `<tr><td><b>${esc(x.n)}</b></td><td>${fbStPill(s)}</td>${cols.map((c,j)=>`<td>${a?`<bdi>${/^<bdi dir="ltr">/.test(a[j])?a[j]:esc(a[j])}</bdi>`:'<span class="muted">-</span>'}</td>`).join('')}</tr>`;}).join('')}</tbody></table></div>
     ${tr.length>lim.length?`<p class="small muted">${L(`מוצגים ${lim.length} מתוך ${tr.length}`,`Showing the first ${lim.length} of ${tr.length}`)}</p>`:''}</div>`;
 }
 VIEWS.forms=function(){
-  const can_=fbCan(),tab=S.fbTab==='resp'?'resp':'build';
-  return head(L('בונה הטפסים','Form builder'),(typeof VIEWS.settings==='function'?`<button class="btn" data-act="go" data-v="settings">${ic('left','flip')} ${L('חזרה להגדרות','Back to settings')}</button>`:''))
-   +(can_?'':`<div class="card fb-note">${ic('lock')} <span>${L('התפקיד שלך יכול לצפות בטפסים אך לא לערוך אותם. מנהלת הסוכנות יכולה להפעיל את ההרשאה "בניית טפסים" בהגדרות.','Your role can view forms but not edit them. The agency owner can turn on the "Build traveler forms" permission in Settings.')}</span></div>`)
-   +`<div class="tabs fb-tabs" role="tablist"><button class="${tab==='build'?'on':''}" role="tab" aria-selected="${tab==='build'}" data-act="fb-tab" data-v="build">${L('בונה','Builder')}</button><button class="${tab==='resp'?'on':''}" role="tab" aria-selected="${tab==='resp'}" data-act="fb-tab" data-v="resp">${L('תשובות נוסעים','Traveler responses')}</button></div>`
-   +(tab==='build'?fbBuild():fbResp());
+  const can_=fbCan(),tab=S.fbTab==='resp'?'resp':'build',sm=fbSummary();
+  const nf=FB_TRAV.length+FB_ENTS.length,dirty=Object.keys(FB.forms).filter(k=>fbDirty(FB.forms[k])).length;
+  const brief=sm.n?L(`${hlPos(sm.all+' מתוך '+sm.n)} נוסעים סיימו את כל הטפסים, ל-${hlNeg(sm.none)} עוד לא נשלח אף טופס.`,
+      `${hlPos(sm.all+' of '+sm.n)} travelers finished every form; ${hlNeg(sm.none)} ${sm.none===1?'has':'have'} not been sent a form.`)
+    :L(`${hlKey(nf+' טפסים')} מוכנים לעריכה${dirty?`, ${hlWarn(dirty+' עם שינויים שלא פורסמו')}`:''}.`,`${hlKey(nf+' forms')} ready to edit${dirty?`, ${hlWarn(dirty+' with unpublished changes')}`:''}.`);
+  const ctas=[tab==='build'?hcCta('mint','play',L('תצוגת טלפון','Phone preview'),'data-act="fb-prev" data-v="phone"'):hcCta('mint','pen',L('לבונה','Open the builder'),'data-act="fb-tab" data-v="build"'),
+    typeof VIEWS.settings==='function'?hcCta('ghost','left',L('חזרה להגדרות','Back to settings'),'data-act="go" data-v="settings"'):''].filter(Boolean);
+  return `<div class="hc fb-page">`+hcPage({eyebrow:L('ניהול','Admin'),title:L('בונה הטפסים','Form builder'),brief,ctas,aria:L('בונה הטפסים','Form builder'),
+     kpis:[{lab:L('טפסי נוסעים','Traveler forms'),val:FB_TRAV.length,sub:L('רישום, רפואי, ויתור, חדרים','Registration, medical, waiver, rooms')},
+       {lab:L('סיימו הכל','Finished all'),val:sm.all,cls:'pf',sub:L(`מתוך ${sm.n} נוסעים`,`of ${sm.n} travelers`)},
+       {lab:L('טרם נשלח להם','Not yet sent'),val:sm.none,cls:sm.none?'warn':'',sub:L(`ב-${sm.trips} טיולים בתפעול`,`across ${sm.trips} trips in Operation`)}]})
+   +(can_?'':`<div class="card hc-card fb-note">${ic('lock')} <span>${L('התפקיד שלך יכול לצפות בטפסים אך לא לערוך אותם. מנהלת הסוכנות יכולה להפעיל את ההרשאה "בניית טפסים" בהגדרות.','Your role can view forms but not edit them. The agency owner can turn on the "Build traveler forms" permission in Settings.')}</span></div>`)
+   +`<div class="st-seg fb-tabs" role="tablist"><button class="${tab==='build'?'on':''}" role="tab" aria-selected="${tab==='build'}" data-act="fb-tab" data-v="build">${ic('pen')} ${L('בונה','Builder')}</button><button class="${tab==='resp'?'on':''}" role="tab" aria-selected="${tab==='resp'}" data-act="fb-tab" data-v="resp">${ic('checklist')} ${L('תשובות נוסעים','Traveler responses')}</button></div>`
+   +(tab==='build'?fbBuild():fbResp())+`</div>`;
 };
 
 /* ---------- events ---------- */
@@ -8328,8 +8431,8 @@ function stOrg(ro){
   const o=ST_ORG,d=stDis(ro),sel=(id,k,opts)=>`<select id="${id}" data-ch="st-org" data-k="${k}"${d}>${opts.map(x=>`<option value="${esc(x[0])}"${String(o[k])===String(x[0])?' selected':''}>${x[1]}</option>`).join('')}</select>`;
   const f=(lab,inner,hint)=>`<label class="st-f"><span>${lab}</span>${inner}${hint?`<small class="muted">${hint}</small>`:''}</label>`;
   const inp=(id,k,type,extra)=>`<input id="${id}" type="${type}" value="${esc(o[k])}" data-ch="st-org" data-st-in="st-org" data-k="${k}"${extra||''}${d}>`;
-  return `<div class="card st-card"><div class="st-h"><h3>${L('פרטי הסוכנות','Agency details')}</h3>${pillF(L('תצוגה מקדימה בלבד','Preview only'),'info')}</div>
-  <p class="muted st-note">${L('הפורמטים כאן מוצגים בשורת הדוגמה למטה. הדמו לא משנה את שאר התאריכים והסכומים במערכת.','The formats below show in the sample line. In this demo they do not reformat the rest of the app.')}</p>
+  return `<div class="hc-grid"><div class="hc-c7"><div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('פרטי הסוכנות','Agency details')}</h3>${pillF(L('תצוגה מקדימה בלבד','Preview only'),'info')}</div>
+  <p class="muted st-note">${L('הפורמטים כאן מוצגים בכרטיס הדוגמה. הדמו לא משנה את שאר התאריכים והסכומים במערכת.','The formats below show in the sample card. In this demo they do not reformat the rest of the app.')}</p>
   <div class="st-grid">
    ${f(L('שם הסוכנות','Agency name'),inp('st-name','name','text',' maxlength="60"'))}
    ${f(L('אות הלוגו','Logo initial'),`<span class="st-logo-row"><span class="st-logo" aria-hidden="true">${esc(o.logo)}</span>${inp('st-logo','logo','text',' maxlength="2" size="3"')}</span>`)}
@@ -8339,8 +8442,9 @@ function stOrg(ro){
    ${f(L('אזור זמן','Time zone'),sel('st-tz','tz',ST_TZ.map(z=>[z[0],L(z[2],z[1])+' · '+z[0]])))}
    ${f(L('מס מכירה על עמלות שירות (%)','Sales tax on service fees (%)'),inp('st-tax','tax','number',' min="0" max="30" step="0.1"'))}
    ${f(L('מספר מזהה לצרכי מס','Tax ID'),inp('st-taxid','taxId','text',' maxlength="24"'))}
-  </div>
-  <div class="st-prev" id="st-prev" aria-live="polite"><b>${L('דוגמה','Sample')}</b>${stPreviewLine()}</div></div>`;
+  </div></div></div>
+  <div class="hc-c5"><div class="card hc-card st-card st-sample"><div class="st-h hc-h"><h3>${L('דוגמה','Sample')}</h3><span class="muted small">${L('מתעדכנת תוך כדי הקלדה','Updates as you type')}</span></div>
+   <div class="st-prev" id="st-prev" aria-live="polite"><b>${L('דוגמה','Sample')}</b>${stPreviewLine()}</div></div></div></div>`;
 }
 function stRoles(ro){
   const d=stDis(ro),n=stPermChanges();
@@ -8351,9 +8455,9 @@ function stRoles(ro){
       return `<tr><td class="st-pn">${L(p.he,p.en)}${typeof devOn==='function'&&devOn()?`<small class="muted"><bdi>${p.k}</bdi></small>`:''}</td><td class="st-tagc">${enf?pillF(L('נאכף','Enforced'),'ok'):''}</td>`+
         ST_ROLES.map(r=>{const on=stPermOf(r,p.k),lock=r==='owner',ch=!lock&&on!==!!p[r];
           return `<td class="st-c" data-r="${esc(L(ROLES[r].he,ROLES[r].en))}"><label class="st-sw${ch?' chg':''}"${lock?` title="${L('תמיד פעיל עבור הבעלים','Always on for the owner')}"`:''}><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
-  return `<div class="card st-card"><div class="st-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
+  return `<div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
   <p class="muted st-note">${L('שורות שמסומנות ״נאכף״ פועלות בדמו. השאר מציגות את המדיניות המוצעת. עמודת הבעלים נעולה.','Rows marked Enforced are applied in this demo. The others show the proposed policy. The owner column is locked.')}</p>
-  <div class="scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  <div class="scroll st-scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function stStages(ro){
   const d=stDis(ro||!stCanStages());
@@ -8363,27 +8467,33 @@ function stStages(ro){
      <select data-ch="st-col" data-s="${s.k}" data-i="${it.id}" aria-label="${L('צבע','Color')}"${d}>${ST_COLORS.map(c=>`<option value="${c}"${it.c===c?' selected':''}>${L(ST_CN[c][0],ST_CN[c][1])}</option>`).join('')}</select>
      <span class="st-ar"><button class="iconb" data-act="st-mv" data-s="${s.k}" data-i="${it.id}" data-v="-1" aria-label="${L('למעלה','Move up')}"${i===0?' disabled':d}>${ic('arrup')}</button><button class="iconb" data-act="st-mv" data-s="${s.k}" data-i="${it.id}" data-v="1" aria-label="${L('למטה','Move down')}"${i===s.items.length-1?' disabled':d}>${ic('arrdown')}</button><button class="iconb" data-act="st-del" data-s="${s.k}" data-i="${it.id}" aria-label="${L('מחיקה','Delete')}"${s.items.length<=1?' disabled':d}>${ic('x')}</button></span></li>`).join('')}</ul>
    <button class="btn sm" data-act="st-add" data-s="${s.k}"${d}>${ic('userplus')} ${L('הוספת סטטוס','Add status')}</button></div>`).join('');
-  return `<div class="card st-card"><div class="st-h"><h3>${L('שלבים וסטטוסים','Stages and statuses')}</h3>${pillF(L('תצוגה מקדימה','Preview'),'info')}</div>
+  return `<div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('שלבים וסטטוסים','Stages and statuses')}</h3>${pillF(L('תצוגה מקדימה','Preview'),'info')}</div>
   <p class="muted st-note">${L('העריכה כאן היא תצוגה מקדימה: היא לא משנה את נתוני הטיולים. סטטוסים חדשים יופיעו בהמשך ברשימת הסטטוס של הפרויקט.','Editing here is a preview: it does not change trip data. New statuses will later appear in the project status list.')}</p>
   <div class="st-stages">${cols}</div></div>`;
 }
 function stForms(){
   const has=typeof VIEWS.forms==='function';
-  return `<div class="card st-card st-link"><span class="st-ico">${ic('document')}</span><div><h3>${L('בונה הטפסים','Form builder')}</h3>
+  return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('document')}</span><div><h3>${L('בונה הטפסים','Form builder')}</h3>
    <p class="muted">${has?L('בנו טפסי הרשמה, בריאות והסכמה לנוסעים ושלחו אותם עם ההצעה.','Build registration, medical and waiver forms for travelers and send them with the proposal.'):L('בונה הטפסים יגיע בגרסה הזו, בקרוב.','The form builder is coming in this build.')}</p></div>
    ${has?`<button class="btn pri" data-act="go" data-v="forms">${L('פתיחת הטפסים','Open forms')}</button>`:pillF(L('בקרוב','Coming soon'),'')}</div>`;
 }
 function stInteg(){
   const ok=typeof can!=='function'||can('fin.sync');
-  return `<div class="card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
+  return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
    <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (פיילוט).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (Pilot).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
    ${ok?`<button class="btn pri" data-act="go" data-v="books">${L('פתיחת הסנכרון','Open accounting sync')}</button>`:pillF(L('אין הרשאה','No access'),'warn')}</div>`;
 }
 function vSettings(){
   const ro=!stCanEdit();if(!ST_TABS.some(t=>t[0]===S.stSub))S.stSub='org';
   const body=S.stSub==='roles'?stRoles(ro):S.stSub==='stages'?stStages(ro):S.stSub==='forms'?stForms():S.stSub==='integ'?stInteg():stOrg(ro);
-  return head(L('הגדרות','Settings'))+(ro?`<div class="card st-ro">${ic('lock')}<span>${L('המסך הזה במצב קריאה בלבד. רק בעלים או מנהל עם הרשאת עריכת הגדרות יכולים לשנות.','This page is read-only. Only an owner or admin with the Edit agency settings permission can change it.')}</span></div>`:'')+
-   `<div class="tabs">${ST_TABS.map(t=>`<button class="${S.stSub===t[0]?'on':''}" data-act="st-sub" data-v="${t[0]}">${L(t[1][0],t[1][1])}</button>`).join('')}</div>${body}`;
+  const n=ST_ENFORCED.length,ch=stPermChanges();
+  const brief=L(`ארגון, תפקידים ושלבים. ${hlKey(n+' הרשאות')} נאכפות בדמו הזה${ch?`, עם ${hlWarn(ch+' שינויים')} מברירת המחדל`:''}.`,
+    `Organization, roles and stages. ${hlKey(n+' permissions')} are enforced in this demo${ch?`, with ${hlWarn(ch+(ch===1?' change':' changes'))} from the defaults`:''}.`);
+  const ctas=[typeof VIEWS.forms==='function'?hcCta('ghost','document',L('בונה הטפסים','Form builder'),'data-act="go" data-v="forms"'):'',
+    (typeof can!=='function'||can('fin.sync'))?hcCta('ghost','sync',L('סנכרון הנהלת חשבונות','Accounting sync'),'data-act="go" data-v="books"'):''].filter(Boolean);
+  return `<div class="hc st-page">`+hcPage({eyebrow:L('ניהול','Admin'),title:L('הגדרות','Settings'),brief,ctas,aria:L('הגדרות','Settings')})+
+   (ro?`<div class="card hc-card st-ro">${ic('lock')}<span>${L('המסך הזה במצב קריאה בלבד. רק בעלים או מנהל עם הרשאת עריכת הגדרות יכולים לשנות.','This page is read-only. Only an owner or admin with the Edit agency settings permission can change it.')}</span></div>`:'')+
+   `<div class="st-seg" role="tablist" aria-label="${L('מדורי הגדרות','Settings sections')}">${ST_TABS.map(t=>`<button role="tab" aria-selected="${S.stSub===t[0]}" class="${S.stSub===t[0]?'on':''}" data-act="st-sub" data-v="${t[0]}">${L(t[1][0],t[1][1])}</button>`).join('')}</div>${body}</div>`;
 }
 VIEWS.settings=vSettings;
 NAV.push(['settings',['הגדרות','Settings'],ic('settings')]);
@@ -9950,6 +10060,45 @@ function ukEx(name,when,live,code,dos,donts,wide){
 }
 const ukSec=(id,title,sub,body)=>`<section class="uk-sec" id="uk-${id}"><h2>${title}</h2><p class="muted uk-sub">${sub}</p>${body}</section>`;
 
+/* ---- 0. command-center kit (v8.2): the language every page header and card follows ---- */
+function ukKit(){
+  const e=[],has=typeof hcPage==='function';
+  if(!has)return '';
+  const t0=(typeof TRIPS!=='undefined'&&(TRIPS.find(t=>t.stage==='Operations')||TRIPS[0]))||null;
+  e.push(ukEx(L('כותרת עמוד: hcPage','Page header: hcPage'),L('פותחת כל מסך ראשי: שורת על (שם הקבוצה בסרגל), כותרת, משפט אחד שאומר מה חשוב עכשיו, עד שני כפתורים ועד ארבעה אריחי נתון.','Opens every top-level page: eyebrow (the sidebar section), title, one sentence on what matters now, up to two buttons and up to four KPI tiles.'),
+   hcPage({eyebrow:L('דוגמה','Example'),title:L('שם העמוד','Page name'),brief:L(`משפט אחד: ${hlKey('$12,400')} פתוחים, ${hlNeg('3 דחופים')}.`,`One sentence: ${hlKey('$12,400')} open, ${hlNeg('3 urgent')}.`),
+    ctas:[hcCta('mint','check',L('פעולה ראשית','Primary action'),''),hcCta('ghost','left',L('משנית','Secondary'),'')],
+    kpis:[{lab:L('פתוח','Open'),val:usd(12400),sub:L('3 תיקים','3 files')},{lab:L('נשמר','Kept'),val:'94%',cls:'pf',sub:L('מהתכנון','of plan')},{lab:L('דחוף','Urgent'),val:'3',cls:'warn',sub:L('היום','today')}]}),
+   "hcPage({eyebrow, title, brief, ctas:[hcCta('mint','icon',label,'data-act=\"x\"')], kpis:[{lab,val,sub,cls:'pf|warn',act,v}]})",
+   L('כפתור מנטה אחד בלבד, והמשפט מחושב מהנתונים.','One mint button only, and the sentence is computed from data.'),L('לא להשאיר את הכותרת הישנה head() לצד הפס.','Do not keep the old head() beside the band.'),true));
+  e.push(ukEx(L('פס גיבור: hcShell','Hero band: hcShell'),L('פס הפתיחה של דף הבית: משפט, שני כפתורים, מד טבעת ועד ארבעה אריחים.','The Home opener: brief, two buttons, a ring gauge and up to four tiles.'),
+   hcShell({brief:L(`נשמרו ${hlPos('94%')} מהרווח המתוכנן.`,`${hlPos('94%')} of planned profit is kept.`),ctas:[hcCta('mint','cash',L('להחזיר','Recover'),''),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'')],
+    gauge:{pct:94,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(8200)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(4200)}]},
+    kpis:[{lab:L('הכנסות','Revenue'),val:950103,money:1,sub:L('20 תיקים','20 files')},{lab:L('רווח צפוי','Expected profit'),val:138323,money:1,cls:'pf',sub:L('מרווח 14.6%','14.6% margin')}]}),
+   "hcShell({brief, ctas, gauge:{pct,label,lines:[{cls,icon,lab,val}]}, kpis})",L('רק בדף הבית של כל תפקיד.','Only on each role\'s Home.'),L('לא בעמודי משנה: שם משתמשים ב-hcPage.','Not on sub-pages: use hcPage there.'),true));
+  e.push(ukEx(L('כפתורי פעולה: hcCta','Action buttons: hcCta'),L('כפתורים בתוך פס הכותרת: מנטה לפעולה הראשית, שקוף למשנית.','Buttons inside the header band: mint for the primary action, ghost for the secondary.'),
+   `<div class="uk-row uk-darkrow">${hcCta('mint','cash',L('פעולה ראשית','Primary'),'')}${hcCta('ghost','magic',L('משנית','Secondary'),'')}</div>`,
+   "hcCta('mint'|'ghost', 'iconName', label, 'data-act=\"go\" data-v=\"gaps\"')",L('עד שניים בפס, מנטה אחד.','At most two per band, one mint.'),L('לא מחוץ לפס כחול כהה.','Not outside a dark-blue band.')));
+  e.push(ukEx(L('טבעת התקדמות: hcRing','Progress ring: hcRing'),L('אחוז אחד בעיגול. טבעת קטנה על כרטיס, גדולה במד.','One percentage in a circle: small on a card, big in a gauge.'),
+   `<div class="uk-row">${hcRing(28,64,'')}${hcRing(64,64,'')}${hcRing(100,64,'ok')}</div>`,"hcRing(pct, size, cls)   // cls: 'sm' | 'big' | 'ok'",L('המספר כטקסט לידה או בתוכה.','The number as text beside or inside it.'),L('לא למספר שיכול לעלות על 100.','Not for a value that can exceed 100.')));
+  e.push(ukEx(L('כרטיס עם כותרת: .hc-card','Card with header: .hc-card'),L('המכל של כל קבוצת תוכן בגוף העמוד, עם שורת כותרת, גלולת מצב וקישור "עוד".','The container of each content group in the page body, with a header row, a status pill and a "more" link.'),
+   `<div class="card hc-card"><div class="hc-h"><h3>${L('כותרת הכרטיס','Card title')}</h3><span class="hc-pill green">${L('הכל תקין','All clear')}</span></div><p class="muted">${L('גוף הכרטיס.','Card body.')}</p><button class="hc-more">${L('עוד','More')} ${ic('chev','flip')}</button></div>`,
+   '<div class="card hc-card"><div class="hc-h"><h3>…</h3><span class="hc-pill red|green|blue">…</span></div>…<button class="hc-more">…</button></div>',L('בתוך <div class="hc-grid"> עם עמודות hc-c7 / hc-c5 / hc-c12.','Inside <div class="hc-grid"> with hc-c7 / hc-c5 / hc-c12 columns.'),L('לא לקנן כרטיסים.','Do not nest cards.')));
+  e.push(ukEx(L('רשימת צעדים: .hc-steps','Action list: .hc-steps'),L('נקודה לפי דחיפות, משפט מודגש, שורת הקשר וכפתור אחד.','A dot by severity, a bold sentence, a context line and one button.'),
+   `<div class="card hc-card"><ol class="hc-steps"><li class="urgent"><span class="hc-dot"></span><div><b>${L('לאשר את ההצעה','Approve the quote')}</b><span class="small muted">${L('מחכה מאתמול','Waiting since yesterday')}</span></div><button class="btn sm pri">${L('לאשר','Approve')}</button></li><li class="todo"><span class="hc-dot"></span><div><b>${L('לשלוח טפסים','Send the forms')}</b><span class="small muted">${L('12 נוסעים','12 travelers')}</span></div><button class="btn sm">${L('לשלוח','Send')}</button></li></ol></div>`,
+   '<ol class="hc-steps"><li class="urgent|todo"><span class="hc-dot"></span><div><b>…</b><small>…</small></div><button class="btn sm">…</button></li></ol>',L('הכפתור הראשון ראשי.','The first button is primary.'),L('לא יותר משישה צעדים; השאר ב"עוד".','No more than six steps; the rest behind "more".')));
+  if(t0)e.push(ukEx(L('פס תמונות: .hc-rail','Photo rail: .hc-rail'),L('כרטיסי תמונה לגלילה אופקית, עם טבעת מוכנות.','Photo cards in a horizontal scroll, with a readiness ring.'),
+   `<div class="hc-rail"><button class="hc-dep"><span class="hc-ph" style="${phBg(phSrc('dest',t0.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))')}"><span class="hc-when soon">${L('בעוד 12 ימים','in 12 days')}</span><span class="hc-rd">${hcRing(72,44,'sm')}<b>72%</b></span></span><span class="hc-dt"><b><bdi>${esc(t0.name)}</bdi></b><span>${fmtDate(t0.dep)} · ${dn(t0.dest)}</span></span></button></div>`,
+   '<div class="hc-rail"><button class="hc-dep"><span class="hc-ph" style="…"></span><span class="hc-dt"><b>…</b><span>…</span></span></button></div>',L('התמונה מהקטלוג, לא תמונת אנשים.','The picture comes from the catalog, never a photo of people.'),L('לא יותר משמונה כרטיסים.','No more than eight cards.')));
+  e.push(ukEx(L('אריח נתון: .hc-kpi','KPI tile: .hc-kpi'),L('מספר אחד על פס כחול: תווית, ערך ושורת משנה. אריח עם data-act הוא כפתור שמוביל להסבר.','One number on the blue band: label, value, sub-line. A tile with data-act is a button that drills to the explanation.'),
+   `<div class="hc-hero hc-page uk-kband"><div class="hc-kpis k3"><div class="hc-kpi"><span>${L('הכנסות','Revenue')}</span><b>${usd(950103.7)}</b><small>${L('20 תיקים','20 files')}</small></div><div class="hc-kpi pf"><span>${L('רווח צפוי','Expected profit')}</span><b>${usd(138323)}</b><small>${L('מרווח 14.6%','14.6% margin')}</small></div><button class="hc-kpi warn"><span>${L('פתוח','Still open')}</span><b>${usd(4200)}</b><small>${L('לחיצה לפירוט','Tap for detail')}</small></button></div></div>`,
+   "kpis:[{lab, val, sub, cls:'pf|warn', act:'go', v:'gaps'}]   // inside hcPage",L('שניים עד ארבעה אריחים.','Two to four tiles.'),L('לא להוסיף אריח בלי משמעות להחלטה.','No tile that does not inform a decision.')));
+  e.push(ukEx(L('הדגשת צבע בטקסט','Color emphasis in text'),L('מדגישים רק את המספר המרכזי במשפט: אדום לתוצאה שלילית, ירוק לחיובית, כתום למה שעדיין פתוח, מודגש ניטרלי לנתון העיקרי. עד שניים או שלושה במשפט. בפס הכחול הם מתחלפים לגוונים בהירים.','Emphasize only the key figure of a sentence: red for a negative outcome, green for a positive one, amber for what is still open, bold neutral for the main figure. At most two or three per sentence. Inside the dark band they switch to light variants.'),
+   `<p class="uk-hl">${L(`מתוך ${hlKey('$142,335')} רווח מתוכנן, ${hlNeg('$4,012')} נעלמו, ${hlPos('$8,200')} הוחזרו ועוד ${hlWarn('$4,200')} פתוחים.`,`Of ${hlKey('$142,335')} planned profit, ${hlNeg('$4,012')} slipped away, ${hlPos('$8,200')} was recovered and ${hlWarn('$4,200')} is still open.`)}</p>`,
+   "hlNeg(x)  hlPos(x)  hlWarn(x)  hlKey(x)   // `Of ${hlKey(usd(a))} planned, ${hlNeg(usd(b))} lost`",L('אדום: אבד, מאחר, דחוף. ירוק: הוחזר, נגבה, בתכנון. כתום: עדיין פתוח.','Red: lost, late, urgent. Green: recovered, collected, on target. Amber: still open.'),L('לא לצבוע משפט שלם, ולא בתאי טבלה (הם צובעים לעצמם).','Never color a whole sentence or table cells (cells color themselves).'),true));
+  return ukSec('kit',L('שפת מרכז הפיקוד (v8.2)','Command-center kit (v8.2)'),L('הרכיבים שכל מסך ראשי משתמש בהם: פס כותרת, כרטיסים, רשימות צעדים, טבעות והדגשות. דף הבית הוא ההדגמה המלאה.','The components every top-level page uses: header band, cards, action lists, rings and emphasis. Home is the full demonstration.'),`<div class="uk-grid">${e.join('')}</div>`);
+}
+
 /* ---- 1. tokens ---- */
 function ukTokensHtml(){
   const sw=(n,fb)=>{const v=ukTokVal(n)||fb||'';return `<div class="uk-sw"><span class="uk-chip" style="background:var(${n})"></span><div><code>${n}</code><small>${esc(v)}</small></div></div>`;};
@@ -10086,9 +10235,11 @@ function ukPatterns(){
 
 function vUikit(){
   UK_SNIP=[];
-  const secs=[['tokens',L('טוקנים','Tokens')],['nav',L('ניווט','Navigation')],['data',L('נתונים','Data')],['inputs',L('קלטים','Inputs')],['feedback',L('משוב','Feedback')],['icons',L('אייקונים','Icons')],['patterns',L('תבניות','Patterns')]];
-  const body=ukTokensHtml()+ukNav()+ukData()+ukInputs()+ukFeedback()+ukIcons()+ukPatterns();
-  return head(L('ערכת רכיבים למפתחים','UI kit for developers'),`<button class="btn" data-act="go" data-v="settings">${ic('left','flip')} ${L('חזרה להגדרות','Back to settings')}</button><button class="btn" data-act="uk-theme">${ic(themeGet()==='dark'?'sun':'moon')} ${L('יום / לילה','Day / night')}</button>`)+
+  const secs=[['kit',L('שפת הפיקוד','Command kit')],['tokens',L('טוקנים','Tokens')],['nav',L('ניווט','Navigation')],['data',L('נתונים','Data')],['inputs',L('קלטים','Inputs')],['feedback',L('משוב','Feedback')],['icons',L('אייקונים','Icons')],['patterns',L('תבניות','Patterns')]];
+  const body=ukKit()+ukTokensHtml()+ukNav()+ukData()+ukInputs()+ukFeedback()+ukIcons()+ukPatterns();
+  return hcPage({eyebrow:L('ניהול','Admin'),title:L('ערכת רכיבים למפתחים','UI kit for developers'),
+     brief:L(`דוגמאות חיות מאותם עוזרים ומחלקות CSS של המוצר: ${hlKey(secs.length+' מדורים')}, כל רכיב עם קוד להעתקה.`,`Live examples built from the product's own helpers and classes: ${hlKey(secs.length+' sections')}, each component with copyable code.`),
+     ctas:[hcCta('ghost','left',L('חזרה להגדרות','Back to settings'),'data-act="go" data-v="settings"'),hcCta('ghost',themeGet()==='dark'?'sun':'moon',L('יום / לילה','Day / night'),'data-act="uk-theme"')],aria:L('ערכת רכיבים','UI kit')})+
    `<p class="muted uk-intro">${L('דוגמאות חיות, בנויות מאותם עוזרים ומחלקות CSS של המוצר. לכל רכיב: מתי משתמשים, קוד להעתקה, ומה כן ומה לא.','Live examples built from the product\'s own helpers and classes. Each component lists when to use it, copyable code, and do and don\'t notes.')}</p>
    <nav class="uk-jump" aria-label="${L('קפיצה לסעיף','Jump to section')}">${secs.map(s=>`<button class="btn sm" data-act="uk-jump" data-v="${s[0]}">${s[1]}</button>`).join('')}</nav>${body}`;
 }

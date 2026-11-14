@@ -97,8 +97,8 @@ function stOrg(ro){
   const o=ST_ORG,d=stDis(ro),sel=(id,k,opts)=>`<select id="${id}" data-ch="st-org" data-k="${k}"${d}>${opts.map(x=>`<option value="${esc(x[0])}"${String(o[k])===String(x[0])?' selected':''}>${x[1]}</option>`).join('')}</select>`;
   const f=(lab,inner,hint)=>`<label class="st-f"><span>${lab}</span>${inner}${hint?`<small class="muted">${hint}</small>`:''}</label>`;
   const inp=(id,k,type,extra)=>`<input id="${id}" type="${type}" value="${esc(o[k])}" data-ch="st-org" data-st-in="st-org" data-k="${k}"${extra||''}${d}>`;
-  return `<div class="card st-card"><div class="st-h"><h3>${L('פרטי הסוכנות','Agency details')}</h3>${pillF(L('תצוגה מקדימה בלבד','Preview only'),'info')}</div>
-  <p class="muted st-note">${L('הפורמטים כאן מוצגים בשורת הדוגמה למטה. הדמו לא משנה את שאר התאריכים והסכומים במערכת.','The formats below show in the sample line. In this demo they do not reformat the rest of the app.')}</p>
+  return `<div class="hc-grid"><div class="hc-c7"><div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('פרטי הסוכנות','Agency details')}</h3>${pillF(L('תצוגה מקדימה בלבד','Preview only'),'info')}</div>
+  <p class="muted st-note">${L('הפורמטים כאן מוצגים בכרטיס הדוגמה. הדמו לא משנה את שאר התאריכים והסכומים במערכת.','The formats below show in the sample card. In this demo they do not reformat the rest of the app.')}</p>
   <div class="st-grid">
    ${f(L('שם הסוכנות','Agency name'),inp('st-name','name','text',' maxlength="60"'))}
    ${f(L('אות הלוגו','Logo initial'),`<span class="st-logo-row"><span class="st-logo" aria-hidden="true">${esc(o.logo)}</span>${inp('st-logo','logo','text',' maxlength="2" size="3"')}</span>`)}
@@ -108,8 +108,9 @@ function stOrg(ro){
    ${f(L('אזור זמן','Time zone'),sel('st-tz','tz',ST_TZ.map(z=>[z[0],L(z[2],z[1])+' · '+z[0]])))}
    ${f(L('מס מכירה על עמלות שירות (%)','Sales tax on service fees (%)'),inp('st-tax','tax','number',' min="0" max="30" step="0.1"'))}
    ${f(L('מספר מזהה לצרכי מס','Tax ID'),inp('st-taxid','taxId','text',' maxlength="24"'))}
-  </div>
-  <div class="st-prev" id="st-prev" aria-live="polite"><b>${L('דוגמה','Sample')}</b>${stPreviewLine()}</div></div>`;
+  </div></div></div>
+  <div class="hc-c5"><div class="card hc-card st-card st-sample"><div class="st-h hc-h"><h3>${L('דוגמה','Sample')}</h3><span class="muted small">${L('מתעדכנת תוך כדי הקלדה','Updates as you type')}</span></div>
+   <div class="st-prev" id="st-prev" aria-live="polite"><b>${L('דוגמה','Sample')}</b>${stPreviewLine()}</div></div></div></div>`;
 }
 function stRoles(ro){
   const d=stDis(ro),n=stPermChanges();
@@ -120,9 +121,9 @@ function stRoles(ro){
       return `<tr><td class="st-pn">${L(p.he,p.en)}${typeof devOn==='function'&&devOn()?`<small class="muted"><bdi>${p.k}</bdi></small>`:''}</td><td class="st-tagc">${enf?pillF(L('נאכף','Enforced'),'ok'):''}</td>`+
         ST_ROLES.map(r=>{const on=stPermOf(r,p.k),lock=r==='owner',ch=!lock&&on!==!!p[r];
           return `<td class="st-c" data-r="${esc(L(ROLES[r].he,ROLES[r].en))}"><label class="st-sw${ch?' chg':''}"${lock?` title="${L('תמיד פעיל עבור הבעלים','Always on for the owner')}"`:''}><input type="checkbox" class="st-tg" data-ch="st-perm" data-role="${r}" data-k="${p.k}"${on?' checked':''}${lock||ro?' disabled':''} aria-label="${esc(L(p.he,p.en))} · ${L(ROLES[r].he,ROLES[r].en)}"><i></i></label></td>`;}).join('')+`</tr>`;}).join('');}).join('');
-  return `<div class="card st-card"><div class="st-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
+  return `<div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('תפקידים והרשאות','Roles & permissions')}</h3><div class="row"><span class="muted small">${n?L(`${n} שינויים מברירת המחדל`,`${n} change${n===1?'':'s'} from the defaults`):L('ברירות מחדל','Defaults')}</span><button class="btn sm" data-act="st-reset"${d}>${ic('restart')} ${L('איפוס לברירת מחדל','Reset to defaults')}</button></div></div>
   <p class="muted st-note">${L('שורות שמסומנות ״נאכף״ פועלות בדמו. השאר מציגות את המדיניות המוצעת. עמודת הבעלים נעולה.','Rows marked Enforced are applied in this demo. The others show the proposed policy. The owner column is locked.')}</p>
-  <div class="scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  <div class="scroll st-scroll"><table class="tbl st-tbl"><thead><tr><th>${L('הרשאה','Permission')}</th><th>${L('מצב','Status')}</th>${roleH}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function stStages(ro){
   const d=stDis(ro||!stCanStages());
@@ -132,27 +133,33 @@ function stStages(ro){
      <select data-ch="st-col" data-s="${s.k}" data-i="${it.id}" aria-label="${L('צבע','Color')}"${d}>${ST_COLORS.map(c=>`<option value="${c}"${it.c===c?' selected':''}>${L(ST_CN[c][0],ST_CN[c][1])}</option>`).join('')}</select>
      <span class="st-ar"><button class="iconb" data-act="st-mv" data-s="${s.k}" data-i="${it.id}" data-v="-1" aria-label="${L('למעלה','Move up')}"${i===0?' disabled':d}>${ic('arrup')}</button><button class="iconb" data-act="st-mv" data-s="${s.k}" data-i="${it.id}" data-v="1" aria-label="${L('למטה','Move down')}"${i===s.items.length-1?' disabled':d}>${ic('arrdown')}</button><button class="iconb" data-act="st-del" data-s="${s.k}" data-i="${it.id}" aria-label="${L('מחיקה','Delete')}"${s.items.length<=1?' disabled':d}>${ic('x')}</button></span></li>`).join('')}</ul>
    <button class="btn sm" data-act="st-add" data-s="${s.k}"${d}>${ic('userplus')} ${L('הוספת סטטוס','Add status')}</button></div>`).join('');
-  return `<div class="card st-card"><div class="st-h"><h3>${L('שלבים וסטטוסים','Stages and statuses')}</h3>${pillF(L('תצוגה מקדימה','Preview'),'info')}</div>
+  return `<div class="card hc-card st-card"><div class="st-h hc-h"><h3>${L('שלבים וסטטוסים','Stages and statuses')}</h3>${pillF(L('תצוגה מקדימה','Preview'),'info')}</div>
   <p class="muted st-note">${L('העריכה כאן היא תצוגה מקדימה: היא לא משנה את נתוני הטיולים. סטטוסים חדשים יופיעו בהמשך ברשימת הסטטוס של הפרויקט.','Editing here is a preview: it does not change trip data. New statuses will later appear in the project status list.')}</p>
   <div class="st-stages">${cols}</div></div>`;
 }
 function stForms(){
   const has=typeof VIEWS.forms==='function';
-  return `<div class="card st-card st-link"><span class="st-ico">${ic('document')}</span><div><h3>${L('בונה הטפסים','Form builder')}</h3>
+  return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('document')}</span><div><h3>${L('בונה הטפסים','Form builder')}</h3>
    <p class="muted">${has?L('בנו טפסי הרשמה, בריאות והסכמה לנוסעים ושלחו אותם עם ההצעה.','Build registration, medical and waiver forms for travelers and send them with the proposal.'):L('בונה הטפסים יגיע בגרסה הזו, בקרוב.','The form builder is coming in this build.')}</p></div>
    ${has?`<button class="btn pri" data-act="go" data-v="forms">${L('פתיחת הטפסים','Open forms')}</button>`:pillF(L('בקרוב','Coming soon'),'')}</div>`;
 }
 function stInteg(){
   const ok=typeof can!=='function'||can('fin.sync');
-  return `<div class="card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
+  return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
    <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (פיילוט).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (Pilot).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
    ${ok?`<button class="btn pri" data-act="go" data-v="books">${L('פתיחת הסנכרון','Open accounting sync')}</button>`:pillF(L('אין הרשאה','No access'),'warn')}</div>`;
 }
 function vSettings(){
   const ro=!stCanEdit();if(!ST_TABS.some(t=>t[0]===S.stSub))S.stSub='org';
   const body=S.stSub==='roles'?stRoles(ro):S.stSub==='stages'?stStages(ro):S.stSub==='forms'?stForms():S.stSub==='integ'?stInteg():stOrg(ro);
-  return head(L('הגדרות','Settings'))+(ro?`<div class="card st-ro">${ic('lock')}<span>${L('המסך הזה במצב קריאה בלבד. רק בעלים או מנהל עם הרשאת עריכת הגדרות יכולים לשנות.','This page is read-only. Only an owner or admin with the Edit agency settings permission can change it.')}</span></div>`:'')+
-   `<div class="tabs">${ST_TABS.map(t=>`<button class="${S.stSub===t[0]?'on':''}" data-act="st-sub" data-v="${t[0]}">${L(t[1][0],t[1][1])}</button>`).join('')}</div>${body}`;
+  const n=ST_ENFORCED.length,ch=stPermChanges();
+  const brief=L(`ארגון, תפקידים ושלבים. ${hlKey(n+' הרשאות')} נאכפות בדמו הזה${ch?`, עם ${hlWarn(ch+' שינויים')} מברירת המחדל`:''}.`,
+    `Organization, roles and stages. ${hlKey(n+' permissions')} are enforced in this demo${ch?`, with ${hlWarn(ch+(ch===1?' change':' changes'))} from the defaults`:''}.`);
+  const ctas=[typeof VIEWS.forms==='function'?hcCta('ghost','document',L('בונה הטפסים','Form builder'),'data-act="go" data-v="forms"'):'',
+    (typeof can!=='function'||can('fin.sync'))?hcCta('ghost','sync',L('סנכרון הנהלת חשבונות','Accounting sync'),'data-act="go" data-v="books"'):''].filter(Boolean);
+  return `<div class="hc st-page">`+hcPage({eyebrow:L('ניהול','Admin'),title:L('הגדרות','Settings'),brief,ctas,aria:L('הגדרות','Settings')})+
+   (ro?`<div class="card hc-card st-ro">${ic('lock')}<span>${L('המסך הזה במצב קריאה בלבד. רק בעלים או מנהל עם הרשאת עריכת הגדרות יכולים לשנות.','This page is read-only. Only an owner or admin with the Edit agency settings permission can change it.')}</span></div>`:'')+
+   `<div class="st-seg" role="tablist" aria-label="${L('מדורי הגדרות','Settings sections')}">${ST_TABS.map(t=>`<button role="tab" aria-selected="${S.stSub===t[0]}" class="${S.stSub===t[0]?'on':''}" data-act="st-sub" data-v="${t[0]}">${L(t[1][0],t[1][1])}</button>`).join('')}</div>${body}</div>`;
 }
 VIEWS.settings=vSettings;
 NAV.push(['settings',['הגדרות','Settings'],ic('settings')]);

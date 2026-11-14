@@ -31,6 +31,45 @@ function ukEx(name,when,live,code,dos,donts,wide){
 }
 const ukSec=(id,title,sub,body)=>`<section class="uk-sec" id="uk-${id}"><h2>${title}</h2><p class="muted uk-sub">${sub}</p>${body}</section>`;
 
+/* ---- 0. command-center kit (v8.2): the language every page header and card follows ---- */
+function ukKit(){
+  const e=[],has=typeof hcPage==='function';
+  if(!has)return '';
+  const t0=(typeof TRIPS!=='undefined'&&(TRIPS.find(t=>t.stage==='Operations')||TRIPS[0]))||null;
+  e.push(ukEx(L('כותרת עמוד: hcPage','Page header: hcPage'),L('פותחת כל מסך ראשי: שורת על (שם הקבוצה בסרגל), כותרת, משפט אחד שאומר מה חשוב עכשיו, עד שני כפתורים ועד ארבעה אריחי נתון.','Opens every top-level page: eyebrow (the sidebar section), title, one sentence on what matters now, up to two buttons and up to four KPI tiles.'),
+   hcPage({eyebrow:L('דוגמה','Example'),title:L('שם העמוד','Page name'),brief:L(`משפט אחד: ${hlKey('$12,400')} פתוחים, ${hlNeg('3 דחופים')}.`,`One sentence: ${hlKey('$12,400')} open, ${hlNeg('3 urgent')}.`),
+    ctas:[hcCta('mint','check',L('פעולה ראשית','Primary action'),''),hcCta('ghost','left',L('משנית','Secondary'),'')],
+    kpis:[{lab:L('פתוח','Open'),val:usd(12400),sub:L('3 תיקים','3 files')},{lab:L('נשמר','Kept'),val:'94%',cls:'pf',sub:L('מהתכנון','of plan')},{lab:L('דחוף','Urgent'),val:'3',cls:'warn',sub:L('היום','today')}]}),
+   "hcPage({eyebrow, title, brief, ctas:[hcCta('mint','icon',label,'data-act=\"x\"')], kpis:[{lab,val,sub,cls:'pf|warn',act,v}]})",
+   L('כפתור מנטה אחד בלבד, והמשפט מחושב מהנתונים.','One mint button only, and the sentence is computed from data.'),L('לא להשאיר את הכותרת הישנה head() לצד הפס.','Do not keep the old head() beside the band.'),true));
+  e.push(ukEx(L('פס גיבור: hcShell','Hero band: hcShell'),L('פס הפתיחה של דף הבית: משפט, שני כפתורים, מד טבעת ועד ארבעה אריחים.','The Home opener: brief, two buttons, a ring gauge and up to four tiles.'),
+   hcShell({brief:L(`נשמרו ${hlPos('94%')} מהרווח המתוכנן.`,`${hlPos('94%')} of planned profit is kept.`),ctas:[hcCta('mint','cash',L('להחזיר','Recover'),''),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'')],
+    gauge:{pct:94,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(8200)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(4200)}]},
+    kpis:[{lab:L('הכנסות','Revenue'),val:950103,money:1,sub:L('20 תיקים','20 files')},{lab:L('רווח צפוי','Expected profit'),val:138323,money:1,cls:'pf',sub:L('מרווח 14.6%','14.6% margin')}]}),
+   "hcShell({brief, ctas, gauge:{pct,label,lines:[{cls,icon,lab,val}]}, kpis})",L('רק בדף הבית של כל תפקיד.','Only on each role\'s Home.'),L('לא בעמודי משנה: שם משתמשים ב-hcPage.','Not on sub-pages: use hcPage there.'),true));
+  e.push(ukEx(L('כפתורי פעולה: hcCta','Action buttons: hcCta'),L('כפתורים בתוך פס הכותרת: מנטה לפעולה הראשית, שקוף למשנית.','Buttons inside the header band: mint for the primary action, ghost for the secondary.'),
+   `<div class="uk-row uk-darkrow">${hcCta('mint','cash',L('פעולה ראשית','Primary'),'')}${hcCta('ghost','magic',L('משנית','Secondary'),'')}</div>`,
+   "hcCta('mint'|'ghost', 'iconName', label, 'data-act=\"go\" data-v=\"gaps\"')",L('עד שניים בפס, מנטה אחד.','At most two per band, one mint.'),L('לא מחוץ לפס כחול כהה.','Not outside a dark-blue band.')));
+  e.push(ukEx(L('טבעת התקדמות: hcRing','Progress ring: hcRing'),L('אחוז אחד בעיגול. טבעת קטנה על כרטיס, גדולה במד.','One percentage in a circle: small on a card, big in a gauge.'),
+   `<div class="uk-row">${hcRing(28,64,'')}${hcRing(64,64,'')}${hcRing(100,64,'ok')}</div>`,"hcRing(pct, size, cls)   // cls: 'sm' | 'big' | 'ok'",L('המספר כטקסט לידה או בתוכה.','The number as text beside or inside it.'),L('לא למספר שיכול לעלות על 100.','Not for a value that can exceed 100.')));
+  e.push(ukEx(L('כרטיס עם כותרת: .hc-card','Card with header: .hc-card'),L('המכל של כל קבוצת תוכן בגוף העמוד, עם שורת כותרת, גלולת מצב וקישור "עוד".','The container of each content group in the page body, with a header row, a status pill and a "more" link.'),
+   `<div class="card hc-card"><div class="hc-h"><h3>${L('כותרת הכרטיס','Card title')}</h3><span class="hc-pill green">${L('הכל תקין','All clear')}</span></div><p class="muted">${L('גוף הכרטיס.','Card body.')}</p><button class="hc-more">${L('עוד','More')} ${ic('chev','flip')}</button></div>`,
+   '<div class="card hc-card"><div class="hc-h"><h3>…</h3><span class="hc-pill red|green|blue">…</span></div>…<button class="hc-more">…</button></div>',L('בתוך <div class="hc-grid"> עם עמודות hc-c7 / hc-c5 / hc-c12.','Inside <div class="hc-grid"> with hc-c7 / hc-c5 / hc-c12 columns.'),L('לא לקנן כרטיסים.','Do not nest cards.')));
+  e.push(ukEx(L('רשימת צעדים: .hc-steps','Action list: .hc-steps'),L('נקודה לפי דחיפות, משפט מודגש, שורת הקשר וכפתור אחד.','A dot by severity, a bold sentence, a context line and one button.'),
+   `<div class="card hc-card"><ol class="hc-steps"><li class="urgent"><span class="hc-dot"></span><div><b>${L('לאשר את ההצעה','Approve the quote')}</b><span class="small muted">${L('מחכה מאתמול','Waiting since yesterday')}</span></div><button class="btn sm pri">${L('לאשר','Approve')}</button></li><li class="todo"><span class="hc-dot"></span><div><b>${L('לשלוח טפסים','Send the forms')}</b><span class="small muted">${L('12 נוסעים','12 travelers')}</span></div><button class="btn sm">${L('לשלוח','Send')}</button></li></ol></div>`,
+   '<ol class="hc-steps"><li class="urgent|todo"><span class="hc-dot"></span><div><b>…</b><small>…</small></div><button class="btn sm">…</button></li></ol>',L('הכפתור הראשון ראשי.','The first button is primary.'),L('לא יותר משישה צעדים; השאר ב"עוד".','No more than six steps; the rest behind "more".')));
+  if(t0)e.push(ukEx(L('פס תמונות: .hc-rail','Photo rail: .hc-rail'),L('כרטיסי תמונה לגלילה אופקית, עם טבעת מוכנות.','Photo cards in a horizontal scroll, with a readiness ring.'),
+   `<div class="hc-rail"><button class="hc-dep"><span class="hc-ph" style="${phBg(phSrc('dest',t0.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))')}"><span class="hc-when soon">${L('בעוד 12 ימים','in 12 days')}</span><span class="hc-rd">${hcRing(72,44,'sm')}<b>72%</b></span></span><span class="hc-dt"><b><bdi>${esc(t0.name)}</bdi></b><span>${fmtDate(t0.dep)} · ${dn(t0.dest)}</span></span></button></div>`,
+   '<div class="hc-rail"><button class="hc-dep"><span class="hc-ph" style="…"></span><span class="hc-dt"><b>…</b><span>…</span></span></button></div>',L('התמונה מהקטלוג, לא תמונת אנשים.','The picture comes from the catalog, never a photo of people.'),L('לא יותר משמונה כרטיסים.','No more than eight cards.')));
+  e.push(ukEx(L('אריח נתון: .hc-kpi','KPI tile: .hc-kpi'),L('מספר אחד על פס כחול: תווית, ערך ושורת משנה. אריח עם data-act הוא כפתור שמוביל להסבר.','One number on the blue band: label, value, sub-line. A tile with data-act is a button that drills to the explanation.'),
+   `<div class="hc-hero hc-page uk-kband"><div class="hc-kpis k3"><div class="hc-kpi"><span>${L('הכנסות','Revenue')}</span><b>${usd(950103.7)}</b><small>${L('20 תיקים','20 files')}</small></div><div class="hc-kpi pf"><span>${L('רווח צפוי','Expected profit')}</span><b>${usd(138323)}</b><small>${L('מרווח 14.6%','14.6% margin')}</small></div><button class="hc-kpi warn"><span>${L('פתוח','Still open')}</span><b>${usd(4200)}</b><small>${L('לחיצה לפירוט','Tap for detail')}</small></button></div></div>`,
+   "kpis:[{lab, val, sub, cls:'pf|warn', act:'go', v:'gaps'}]   // inside hcPage",L('שניים עד ארבעה אריחים.','Two to four tiles.'),L('לא להוסיף אריח בלי משמעות להחלטה.','No tile that does not inform a decision.')));
+  e.push(ukEx(L('הדגשת צבע בטקסט','Color emphasis in text'),L('מדגישים רק את המספר המרכזי במשפט: אדום לתוצאה שלילית, ירוק לחיובית, כתום למה שעדיין פתוח, מודגש ניטרלי לנתון העיקרי. עד שניים או שלושה במשפט. בפס הכחול הם מתחלפים לגוונים בהירים.','Emphasize only the key figure of a sentence: red for a negative outcome, green for a positive one, amber for what is still open, bold neutral for the main figure. At most two or three per sentence. Inside the dark band they switch to light variants.'),
+   `<p class="uk-hl">${L(`מתוך ${hlKey('$142,335')} רווח מתוכנן, ${hlNeg('$4,012')} נעלמו, ${hlPos('$8,200')} הוחזרו ועוד ${hlWarn('$4,200')} פתוחים.`,`Of ${hlKey('$142,335')} planned profit, ${hlNeg('$4,012')} slipped away, ${hlPos('$8,200')} was recovered and ${hlWarn('$4,200')} is still open.`)}</p>`,
+   "hlNeg(x)  hlPos(x)  hlWarn(x)  hlKey(x)   // `Of ${hlKey(usd(a))} planned, ${hlNeg(usd(b))} lost`",L('אדום: אבד, מאחר, דחוף. ירוק: הוחזר, נגבה, בתכנון. כתום: עדיין פתוח.','Red: lost, late, urgent. Green: recovered, collected, on target. Amber: still open.'),L('לא לצבוע משפט שלם, ולא בתאי טבלה (הם צובעים לעצמם).','Never color a whole sentence or table cells (cells color themselves).'),true));
+  return ukSec('kit',L('שפת מרכז הפיקוד (v8.2)','Command-center kit (v8.2)'),L('הרכיבים שכל מסך ראשי משתמש בהם: פס כותרת, כרטיסים, רשימות צעדים, טבעות והדגשות. דף הבית הוא ההדגמה המלאה.','The components every top-level page uses: header band, cards, action lists, rings and emphasis. Home is the full demonstration.'),`<div class="uk-grid">${e.join('')}</div>`);
+}
+
 /* ---- 1. tokens ---- */
 function ukTokensHtml(){
   const sw=(n,fb)=>{const v=ukTokVal(n)||fb||'';return `<div class="uk-sw"><span class="uk-chip" style="background:var(${n})"></span><div><code>${n}</code><small>${esc(v)}</small></div></div>`;};
@@ -167,9 +206,11 @@ function ukPatterns(){
 
 function vUikit(){
   UK_SNIP=[];
-  const secs=[['tokens',L('טוקנים','Tokens')],['nav',L('ניווט','Navigation')],['data',L('נתונים','Data')],['inputs',L('קלטים','Inputs')],['feedback',L('משוב','Feedback')],['icons',L('אייקונים','Icons')],['patterns',L('תבניות','Patterns')]];
-  const body=ukTokensHtml()+ukNav()+ukData()+ukInputs()+ukFeedback()+ukIcons()+ukPatterns();
-  return head(L('ערכת רכיבים למפתחים','UI kit for developers'),`<button class="btn" data-act="go" data-v="settings">${ic('left','flip')} ${L('חזרה להגדרות','Back to settings')}</button><button class="btn" data-act="uk-theme">${ic(themeGet()==='dark'?'sun':'moon')} ${L('יום / לילה','Day / night')}</button>`)+
+  const secs=[['kit',L('שפת הפיקוד','Command kit')],['tokens',L('טוקנים','Tokens')],['nav',L('ניווט','Navigation')],['data',L('נתונים','Data')],['inputs',L('קלטים','Inputs')],['feedback',L('משוב','Feedback')],['icons',L('אייקונים','Icons')],['patterns',L('תבניות','Patterns')]];
+  const body=ukKit()+ukTokensHtml()+ukNav()+ukData()+ukInputs()+ukFeedback()+ukIcons()+ukPatterns();
+  return hcPage({eyebrow:L('ניהול','Admin'),title:L('ערכת רכיבים למפתחים','UI kit for developers'),
+     brief:L(`דוגמאות חיות מאותם עוזרים ומחלקות CSS של המוצר: ${hlKey(secs.length+' מדורים')}, כל רכיב עם קוד להעתקה.`,`Live examples built from the product's own helpers and classes: ${hlKey(secs.length+' sections')}, each component with copyable code.`),
+     ctas:[hcCta('ghost','left',L('חזרה להגדרות','Back to settings'),'data-act="go" data-v="settings"'),hcCta('ghost',themeGet()==='dark'?'sun':'moon',L('יום / לילה','Day / night'),'data-act="uk-theme"')],aria:L('ערכת רכיבים','UI kit')})+
    `<p class="muted uk-intro">${L('דוגמאות חיות, בנויות מאותם עוזרים ומחלקות CSS של המוצר. לכל רכיב: מתי משתמשים, קוד להעתקה, ומה כן ומה לא.','Live examples built from the product\'s own helpers and classes. Each component lists when to use it, copyable code, and do and don\'t notes.')}</p>
    <nav class="uk-jump" aria-label="${L('קפיצה לסעיף','Jump to section')}">${secs.map(s=>`<button class="btn sm" data-act="uk-jump" data-v="${s[0]}">${s[1]}</button>`).join('')}</nav>${body}`;
 }

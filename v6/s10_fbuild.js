@@ -142,7 +142,7 @@ const fbStPill=s=>pillF(s==='done'?L('הושלם','Done'):s==='sent'?L('נשלח
 function fbList(){
   const grp=(kind,title)=>`<div class="fb-gt">${title}</div>`+FB_TRAV.concat(FB_ENTS).filter(id=>fbForm(id).kind===kind).map(id=>{const f=fbForm(id);
     return `<button class="fb-li${S.fbSel===id?' on':''}" data-act="fb-sel" data-v="${id}"><span class="fb-lt"><b>${esc(fbLb(f.title))}</b><span class="small muted">${f.fields.length} ${L('שדות','fields')} · v${f.version}</span></span>${fbDirty(f)?`<span class="fb-dot" title="${L('שינויים שלא פורסמו','Unpublished changes')}"></span>`:''}</button>`;}).join('');
-  return `<nav class="fb-list card" aria-label="${L('רשימת טפסים','Forms')}">${grp('trav',L('טפסי נוסעים','Traveler forms'))}${grp('ent',L('שדות מותאמים לפי ישות','Custom fields by record'))}</nav>`;
+  return `<nav class="fb-list card hc-card" aria-label="${L('רשימת טפסים','Forms')}">${grp('trav',L('טפסי נוסעים','Traveler forms'))}${grp('ent',L('שדות מותאמים לפי ישות','Custom fields by record'))}</nav>`;
 }
 function fbCanvas(f,can_){
   if(!f.fields.length)return `<div class="fb-empty"><b>${L('אין שדות עדיין','No fields yet')}</b><div class="small muted">${L('הוסיפו שדה מהרשימה למטה.','Add a field from the palette below.')}</div></div>`;
@@ -155,7 +155,7 @@ function fbCanvas(f,can_){
 }
 function fbProps(f,can_){
   const x=f.fields[S.fbField];
-  if(!x)return `<aside class="fb-props card"><h3>${L('מאפייני שדה','Field properties')}</h3><p class="muted small">${L('בחרו שדה בקנבס כדי לערוך את התוויות, החובה והתנאים שלו.','Select a field on the canvas to edit its labels, required state and conditions.')}</p></aside>`;
+  if(!x)return `<aside class="fb-props card hc-card"><h3>${L('מאפייני שדה','Field properties')}</h3><p class="muted small">${L('בחרו שדה בקנבס כדי לערוך את התוויות, החובה והתנאים שלו.','Select a field on the canvas to edit its labels, required state and conditions.')}</p></aside>`;
   const d=can_?'':' disabled',i=S.fbField,inp=(k,lab,val,ta)=>`<label class="fb-pl"><span>${lab}</span>${ta?`<textarea class="fm-in fb-pi" rows="3" data-fbi="${k}"${d}>${esc(val)}</textarea>`:`<input class="fm-in fb-pi" type="text" data-fbi="${k}" value="${esc(val)}"${d}>`}</label>`;
   const others=f.fields.filter((y,j)=>j!==i&&y.type!=='section'&&y.type!=='repeater'),sk=x.showIf&&x.showIf.k,src=others.find(y=>y.k===sk);
   let val='';
@@ -163,7 +163,7 @@ function fbProps(f,can_){
     if(src&&src.type==='toggle')val=`<select class="fm-in fb-pi" data-fbc="showV"${d}><option value="true"${eq===true?' selected':''}>${L('כן','Yes')}</option><option value="false"${eq===true?'':' selected'}>${L('לא','No')}</option></select>`;
     else if(src&&(src.type==='select'||src.type==='multi')&&src.options)val=`<select class="fm-in fb-pi" data-fbc="showV"${d}>${src.options.map(o=>`<option value="${esc(o.v)}"${String(eq)===String(o.v)?' selected':''}>${esc(fbLb(o))}</option>`).join('')}</select>`;
     else val=`<input class="fm-in fb-pi" type="text" data-fbi="showV" value="${esc(eq==null?'':eq)}"${d}>`;}
-  return `<aside class="fb-props card"><h3>${L('מאפייני שדה','Field properties')}</h3><div class="small muted fb-pt">${esc(fbTypeLb(x.type))}</div>
+  return `<aside class="fb-props card hc-card"><h3>${L('מאפייני שדה','Field properties')}</h3><div class="small muted fb-pt">${esc(fbTypeLb(x.type))}</div>
     ${inp('label.en',L('תווית (אנגלית)','Label (English)'),x.label.en)}${inp('label.he',L('תווית (עברית)','Label (Hebrew)'),x.label.he)}
     ${x.type==='section'?'':`<label class="fb-pc"><input type="checkbox" data-fbc="req"${x.req?' checked':''}${d}><span>${x.type==='toggle'?L('חובה לאשר','Must be ticked'):L('שדה חובה','Required')}</span></label>
     ${inp('help.en',L('טקסט עזרה (אנגלית)','Help text (English)'),x.help?x.help.en:'')}${inp('help.he',L('טקסט עזרה (עברית)','Help text (Hebrew)'),x.help?x.help.he:'')}`}
@@ -177,41 +177,56 @@ function fbPreview(f,phone){
   const body=f.fields.length?formRender(sc,{},{ns:'fbp',ro:true,phone}):`<div class="fb-empty small muted">${L('אין שדות להצגה.','No fields to show.')}</div>`;
   const hd=f.kind==='ent'?`${esc(fbLb(f.ent))} - ${L('שדות מותאמים','Custom fields')}`:esc(fbLb(f.title));
   const inner=`<div class="fb-pvh"><b>Redbud Group Tours</b><span class="small muted">${hd}</span></div>${f.kind==='trav'?`<p class="small muted fb-pvd">${esc(fbLb(f.desc))}</p>`:''}${f.fields.length&&f.terms?`${terms}`:''}${body}${f.kind==='trav'?`<button class="btn pri fb-pvs" disabled>${L('שליחה','Submit')}</button>`:''}`;
-  return phone?`<div class="fb-phone" aria-label="${L('תצוגת טלפון','Phone preview')}"><div class="fb-notch"></div><div class="fb-screen">${inner}</div></div>`:`<div class="fb-desk">${inner}</div>`;
+  return phone?`<div class="fb-pwrap"><div class="fb-phone" aria-label="${L('תצוגת טלפון','Phone preview')}"><div class="fb-notch"><span></span></div><div class="fb-screen">${inner}</div></div><p class="small muted fb-pcap">${L('כך הנוסע רואה את הטופס בטלפון.','This is how a traveler sees the form on a phone.')}</p></div>`:`<div class="fb-desk">${inner}</div>`;
 }
 function fbBuild(){
   const f=fbForm(S.fbSel)||fbForm('reg'),can_=fbCan(),pv=S.fbPrev;
   const modes=[['',L('עריכה','Edit'),'pen'],['desk',L('מחשב','Desktop'),'widget'],['phone',L('טלפון','Phone'),'show']];
   const pal=can_?`<div class="fb-pal"><span class="small muted">${L('הוספת שדה','Add field')}</span>${fbPalette().map(k=>`<button class="chip" data-act="fb-add" data-v="${k}">${esc(fbTypeLb(k))}</button>`).join('')}</div>`:'';
-  const mid=pv?`<div class="fb-mid card fb-pvwrap">${fbPreview(f,pv==='phone')}</div>`
-    :`<div class="fb-mid card"><div class="fb-mh"><div><h3>${esc(fbLb(f.title))}</h3><div class="small muted">${esc(fbLb(f.desc))}</div></div>${f.kind==='ent'?`<span class="small muted">${L('מופיע בטופס ה','Shown on the ')}${esc(fbLb(f.ent))}${L(' תחת "שדות מותאמים"',' form under "Custom fields"')}</span>`:''}</div>
+  const mid=pv?`<div class="fb-mid card hc-card fb-pvwrap">${fbPreview(f,pv==='phone')}</div>`
+    :`<div class="fb-mid card hc-card"><div class="fb-mh"><div><h3>${esc(fbLb(f.title))}</h3><div class="small muted">${esc(fbLb(f.desc))}</div></div>${f.kind==='ent'?`<span class="small muted">${L('מופיע בטופס ה','Shown on the ')}${esc(fbLb(f.ent))}${L(' תחת "שדות מותאמים"',' form under "Custom fields"')}</span>`:''}</div>
       ${f.terms?`<div class="fb-fixed"><span class="small muted">${L('נוסח התנאים קבוע בהדגמה','Terms text is fixed in this demo')}</span>${fbTermsHtml()}</div>`:''}
       <div class="fb-cv">${fbCanvas(f,can_)}</div>${pal}</div>`;
   return `<div class="fb-top"><div class="seg fb-modes" role="group" aria-label="${L('מצב תצוגה','View mode')}">${modes.map(m=>`<button class="chip${pv===m[0]?' on':''}" data-act="fb-prev" data-v="${m[0]}">${ic(m[2])} ${m[1]}</button>`).join('')}</div>
     <div class="fb-pub"><span class="pill ${fbDirty(f)?'amber':'green'}">v${f.version} · ${fbDirty(f)?L('שינויים שלא פורסמו','Unpublished changes'):L('פורסם','Published')}</span>${can_?`<button class="btn pri" data-act="fb-pub"${fbDirty(f)?'':' disabled'}>${ic('check')} ${L('פרסום','Publish')}</button>`:''}</div></div>
    <div class="fb-grid">${fbList()}${mid}${pv?'':fbProps(f,can_)}</div>`;
 }
+/* travelers across the Operation-stage trips: finished every form / not yet sent any form */
+function fbSummary(){
+  const ts=visibleTrips().filter(t=>t.stage==='Operations');let n=0,all=0,none=0;
+  ts.forEach(t=>(t.trav||[]).forEach(x=>{n++;const st=FB_TRAV.map(id=>fbSt(x,id));if(st.every(v=>v==='done'))all++;if(st.every(v=>v==='not sent'))none++;}));
+  return {n,all,none,trips:ts.length};
+}
 function fbResp(){
   const ts=visibleTrips().filter(t=>t.stage==='Operations');
-  if(!ts.length)return `<div class="card"><p class="muted">${L('אין טיולים בשלב התפעול.','No trips in the Operation stage.')}</p></div>`;
+  if(!ts.length)return `<div class="card hc-card"><p class="muted">${L('אין טיולים בשלב התפעול. כשהצעה מאושרת והופכת לתפעול, כאן אפשר לשלוח לנוסעים טפסים ולעקוב אחרי התשובות.','No trips in the Operation stage. Once a quote is accepted and moves to Operation, you can send forms to its travelers and follow the answers here.')}</p></div>`;
   const t=ts.find(x=>x.id===S.fbTrip)||ts[0],fid=FB_TRAV.includes(S.fbRf)?S.fbRf:'reg',can_=fbCan();
   const cols=fbCols(fid),tr=t.trav||[],lim=tr.slice(0,40);
-  return `<div class="card fb-rh"><label class="fb-pl"><span>${L('טיול','Trip')}</span><select class="fm-in fb-pi" data-fbc="trip" aria-label="${L('בחירת טיול','Choose trip')}">${ts.map(x=>`<option value="${x.id}"${x.id===t.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+  return `<div class="card hc-card fb-rh"><label class="fb-pl"><span>${L('טיול','Trip')}</span><select class="fm-in fb-pi" data-fbc="trip" aria-label="${L('בחירת טיול','Choose trip')}">${ts.map(x=>`<option value="${x.id}"${x.id===t.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
     <span class="small muted">${tr.length} ${L('נוסעים','travelers')} · ${fmtDate(t.dep)}</span></div>
-   <div class="fb-cards">${FB_TRAV.map(id=>{const c=fbCounts(t,id),f=fbForm(id);
-     return `<button class="fb-sc card${fid===id?' on':''}" data-act="fb-rf" data-v="${id}"><b>${esc(fbLb(f.title))}</b><span class="fb-n"><span><em>${c.done}</em> ${L('הושלמו','done')}</span><span><em>${c.sent}</em> ${L('נשלחו','sent')}</span><span><em>${c['not sent']}</em> ${L('לא נשלחו','not sent')}</span></span><span class="fb-bar"><i style="width:${tr.length?Math.round(c.done/tr.length*100):0}%"></i></span></button>`;}).join('')}</div>
-   <div class="card"><div class="fb-sh"><h3>${esc(fbLb(fbForm(fid).title))}</h3>${can_?`<button class="btn pri" data-act="fb-send" data-v="${fid}"${fbCounts(t,fid)['not sent']?'':' disabled'}>${ic('mail')} ${L('שליחה לנוסעים ('+fbCounts(t,fid)['not sent']+')','Send to travelers ('+fbCounts(t,fid)['not sent']+')')}</button>`:''}</div>
+   <div class="fb-cards">${FB_TRAV.map(id=>{const c=fbCounts(t,id),f=fbForm(id),p=tr.length?Math.round(c.done/tr.length*100):0;
+     return `<button class="fb-sc card hc-card${fid===id?' on':''}" data-act="fb-rf" data-v="${id}" aria-pressed="${fid===id}"><span class="fb-ring"><span class="fb-rg">${hcRing(p,64,p>=100?'ok':'')}<b>${p}%</b></span><span class="fb-st"><b>${esc(fbLb(f.title))}</b><span class="small muted">${c.done}/${tr.length} ${L('הושלמו','done')}</span></span></span><span class="fb-n"><span><em>${c.done}</em> ${L('הושלמו','done')}</span><span><em>${c.sent}</em> ${L('נשלחו','sent')}</span><span><em>${c['not sent']}</em> ${L('לא נשלחו','not sent')}</span></span><span class="fb-bar"><i style="width:${p}%"></i></span></button>`;}).join('')}</div>
+   <div class="card hc-card"><div class="fb-sh hc-h"><h3>${esc(fbLb(fbForm(fid).title))}</h3>${can_?`<button class="btn pri" data-act="fb-send" data-v="${fid}"${fbCounts(t,fid)['not sent']?'':' disabled'}>${ic('mail')} ${L('שליחה לנוסעים ('+fbCounts(t,fid)['not sent']+')','Send to travelers ('+fbCounts(t,fid)['not sent']+')')}</button>`:''}</div>
     <div class="small muted fb-lk">${ic('link')} <bdi>${esc(fbLink(t,fid))}</bdi></div>
     <div class="scroll"><table class="fb-tb"><thead><tr><th>${L('נוסע','Traveler')}</th><th>${L('סטטוס','Status')}</th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${lim.map((x,i)=>{const s=fbSt(x,fid),a=s==='done'?fbAnswers(t,x,i,fid):null;
-      return `<tr><td><b>${esc(x.n)}</b></td><td>${fbStPill(s)}</td>${cols.map((c,j)=>`<td>${a?`<bdi>${esc(a[j])}</bdi>`:'<span class="muted">-</span>'}</td>`).join('')}</tr>`;}).join('')}</tbody></table></div>
+      return `<tr><td><b>${esc(x.n)}</b></td><td>${fbStPill(s)}</td>${cols.map((c,j)=>`<td>${a?`<bdi>${/^<bdi dir="ltr">/.test(a[j])?a[j]:esc(a[j])}</bdi>`:'<span class="muted">-</span>'}</td>`).join('')}</tr>`;}).join('')}</tbody></table></div>
     ${tr.length>lim.length?`<p class="small muted">${L(`מוצגים ${lim.length} מתוך ${tr.length}`,`Showing the first ${lim.length} of ${tr.length}`)}</p>`:''}</div>`;
 }
 VIEWS.forms=function(){
-  const can_=fbCan(),tab=S.fbTab==='resp'?'resp':'build';
-  return head(L('בונה הטפסים','Form builder'),(typeof VIEWS.settings==='function'?`<button class="btn" data-act="go" data-v="settings">${ic('left','flip')} ${L('חזרה להגדרות','Back to settings')}</button>`:''))
-   +(can_?'':`<div class="card fb-note">${ic('lock')} <span>${L('התפקיד שלך יכול לצפות בטפסים אך לא לערוך אותם. מנהלת הסוכנות יכולה להפעיל את ההרשאה "בניית טפסים" בהגדרות.','Your role can view forms but not edit them. The agency owner can turn on the "Build traveler forms" permission in Settings.')}</span></div>`)
-   +`<div class="tabs fb-tabs" role="tablist"><button class="${tab==='build'?'on':''}" role="tab" aria-selected="${tab==='build'}" data-act="fb-tab" data-v="build">${L('בונה','Builder')}</button><button class="${tab==='resp'?'on':''}" role="tab" aria-selected="${tab==='resp'}" data-act="fb-tab" data-v="resp">${L('תשובות נוסעים','Traveler responses')}</button></div>`
-   +(tab==='build'?fbBuild():fbResp());
+  const can_=fbCan(),tab=S.fbTab==='resp'?'resp':'build',sm=fbSummary();
+  const nf=FB_TRAV.length+FB_ENTS.length,dirty=Object.keys(FB.forms).filter(k=>fbDirty(FB.forms[k])).length;
+  const brief=sm.n?L(`${hlPos(sm.all+' מתוך '+sm.n)} נוסעים סיימו את כל הטפסים, ל-${hlNeg(sm.none)} עוד לא נשלח אף טופס.`,
+      `${hlPos(sm.all+' of '+sm.n)} travelers finished every form; ${hlNeg(sm.none)} ${sm.none===1?'has':'have'} not been sent a form.`)
+    :L(`${hlKey(nf+' טפסים')} מוכנים לעריכה${dirty?`, ${hlWarn(dirty+' עם שינויים שלא פורסמו')}`:''}.`,`${hlKey(nf+' forms')} ready to edit${dirty?`, ${hlWarn(dirty+' with unpublished changes')}`:''}.`);
+  const ctas=[tab==='build'?hcCta('mint','play',L('תצוגת טלפון','Phone preview'),'data-act="fb-prev" data-v="phone"'):hcCta('mint','pen',L('לבונה','Open the builder'),'data-act="fb-tab" data-v="build"'),
+    typeof VIEWS.settings==='function'?hcCta('ghost','left',L('חזרה להגדרות','Back to settings'),'data-act="go" data-v="settings"'):''].filter(Boolean);
+  return `<div class="hc fb-page">`+hcPage({eyebrow:L('ניהול','Admin'),title:L('בונה הטפסים','Form builder'),brief,ctas,aria:L('בונה הטפסים','Form builder'),
+     kpis:[{lab:L('טפסי נוסעים','Traveler forms'),val:FB_TRAV.length,sub:L('רישום, רפואי, ויתור, חדרים','Registration, medical, waiver, rooms')},
+       {lab:L('סיימו הכל','Finished all'),val:sm.all,cls:'pf',sub:L(`מתוך ${sm.n} נוסעים`,`of ${sm.n} travelers`)},
+       {lab:L('טרם נשלח להם','Not yet sent'),val:sm.none,cls:sm.none?'warn':'',sub:L(`ב-${sm.trips} טיולים בתפעול`,`across ${sm.trips} trips in Operation`)}]})
+   +(can_?'':`<div class="card hc-card fb-note">${ic('lock')} <span>${L('התפקיד שלך יכול לצפות בטפסים אך לא לערוך אותם. מנהלת הסוכנות יכולה להפעיל את ההרשאה "בניית טפסים" בהגדרות.','Your role can view forms but not edit them. The agency owner can turn on the "Build traveler forms" permission in Settings.')}</span></div>`)
+   +`<div class="st-seg fb-tabs" role="tablist"><button class="${tab==='build'?'on':''}" role="tab" aria-selected="${tab==='build'}" data-act="fb-tab" data-v="build">${ic('pen')} ${L('בונה','Builder')}</button><button class="${tab==='resp'?'on':''}" role="tab" aria-selected="${tab==='resp'}" data-act="fb-tab" data-v="resp">${ic('checklist')} ${L('תשובות נוסעים','Traveler responses')}</button></div>`
+   +(tab==='build'?fbBuild():fbResp())+`</div>`;
 };
 
 /* ---------- events ---------- */
