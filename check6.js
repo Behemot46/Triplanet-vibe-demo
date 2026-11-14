@@ -5,7 +5,7 @@ const els={};
 const mk=id=>els[id]||(els[id]={id,innerHTML:'',value:'',style:{},setAttribute(){},textContent:'',classList:{add(){},remove(){}},addEventListener(){},focus(){}});
 const ctx={document:{getElementById:mk,addEventListener(){},querySelector(){return null;},querySelectorAll(){return []}},window:{scrollY:0,scrollTo(){},matchMedia:()=>({matches:false})},navigator:{},Intl,console,setTimeout:()=>0,clearTimeout(){}};
 ctx.window.window=ctx.window;vm.createContext(ctx);
-vm.runInContext(js+`;globalThis.__t={PH_:typeof PHOTOS!=='undefined'?PHOTOS:null,PHC_:typeof PHOTO_CREDITS!=='undefined'?PHOTO_CREDITS:[],liveSnapshot,liveSystem,mayaTip,mayaPlanFix,dndMoveItem,dndAddTpl,MEET,meetSetCut,leakModel_:leakModel,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
+vm.runInContext(js+`;globalThis.__t={ROLE_KEYS,TESTS,PERSIST,TRIP_TABS,TRIP_INIT,PH_:typeof PHOTOS!=='undefined'?PHOTOS:null,PHC_:typeof PHOTO_CREDITS!=='undefined'?PHOTO_CREDITS:[],liveSnapshot,liveSystem,mayaTip,mayaPlanFix,dndMoveItem,dndAddTpl,MEET,meetSetCut,leakModel_:leakModel,closingHtml,meetBar,S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,visibleTrips,answerText,QS,PTABS,vTrip,winQuote,NAV,NAV2,blankQuote,openTrip,trHtml,trChunk,HE_RE,applyInbox,byId,TOUR,tourGo,resetDemo,invStatus,planC,effAmt,isOpenGap,buildDraft,askQ,dayHours,acLog,ACCT,A,gapLineOf,leakModel,leakRows,genPlan,genCreate,G0,CATALOG,DESTS,DEST_CITIES,GEO,geoViewFor,LK_DIMS};`,ctx);
 const X=ctx.__t,{S,TRIPS,calc,groupsCalc,portfolio,gapStats,tripGaps,VIEWS,render,QS,PTABS,vTrip,NAV,NAV2,trHtml,HE_RE,trChunk}=X;
 let bad=0;const fail=m=>{bad++;console.log('FAIL',m);};
 const chk=(h0,l)=>{const h=String(h0).replace(/data:[a-z/+]+;base64,[A-Za-z0-9+\/=]+/g,'');if(/NaN|undefined|Infinity|\[object|null</.test(h))fail(l+' bad token: '+(h.match(/.{40}(NaN|undefined|Infinity|\[object|null<).{20}/)||[''])[0]);};
@@ -19,7 +19,7 @@ TRIPS.forEach(t=>{const c=calc(t);console.log(t.id.padEnd(5),t.stage.padEnd(10),
 const nen=X.byId('nen');let c0=calc(nen);console.log('NEN before',c0.rev,c0.plan,c0.planProfit,c0.fcProfit);
 let G0=gapStats(TRIPS);console.log('G0 open',G0.open,G0.openN,'disp',G0.disp,'rec',G0.rec,G0.recN,'acc',G0.acc,'under',G0.under,'missing',G0.missing,'recv',G0.received,'matched',G0.matched);
 for(const lang of ['en','he']){S.lang=lang;
- ['manager',...['Priya','Dana','Marcus','Grace','Luis','Tom']].forEach(role=>{S.role=role;
+ X.ROLE_KEYS.forEach(role=>{S.role=role;
   [...NAV,...NAV2].forEach(([k])=>{S.tab=k;try{const h=VIEWS[k]();chk(h,lang+role+'/'+k);if(lang==='en')scan(h,k);}catch(e){fail(lang+role+'/'+k+' '+e.stack.split('\n').slice(0,3).join('|'));}});
   ['prices','import'].forEach(sb=>{S.sub=sb;S.ran=true;S.tab='suppliers';const h=VIEWS.suppliers();chk(h,sb);if(lang==='en')scan(h,sb);});S.sub='bank';
   ['open','disputed','credited','accepted','all'].forEach(f=>{S.gF=f;S.tab='gaps';chk(VIEWS.gaps(),'gaps '+f);});S.gF='open';
@@ -105,6 +105,11 @@ X.resetDemo();
   const n0=t.items.length,k=X.dndAddTpl(t,0,3,null);if(t.items.length!==n0+k||!k)fail('dnd template');X.resetDemo();}
 for(const lang of ['en','he']){S.lang=lang;S.tab='credits';const h=VIEWS.credits();chk(h,'credits');if(lang==='en')scan(h.replace(/<bdi class="cr-au">[^<]*<\/bdi>/g,''),'credits');/* author names stay as the author gave them (licence attribution) */}
 for(const lang of ['en','he']){S.lang=lang;S.tab='status';const h=VIEWS.status();chk(h,'status');if(lang==='en')scan(h,'status');}
+/* v8: module self-tests (TESTS registry). Each run gets helpers: h.chk(html,label) flags bad tokens,
+   h.scan(html,label) records Hebrew left in English mode, h.fail(msg). The demo is reset after each test. */
+X.resetDemo();S.lang='en';
+X.TESTS.forEach(T=>{let out=[];try{out=T.run({chk,scan,fail,S,X,els})||[];}catch(e){out=['threw '+e.stack.split('\n').slice(0,3).join('|')];}
+  out.forEach(m=>fail('['+T.name+'] '+m));console.log('TEST',T.name,out.length?'FAIL '+out.length:'ok');X.resetDemo();S.lang='en';});
 S.lang='en';
 const L=Object.entries(left);console.log('LEFTOVER',L.length);L.slice(0,40).forEach(x=>console.log('  ',x[1],'|',x[0],'=>',trChunk(x[0])));
 const P=portfolio(TRIPS);console.log('P rev',P.rev,'pp',P.pp,'fp',P.fp,'fx',Object.keys(P.fxExp));

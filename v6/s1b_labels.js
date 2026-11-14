@@ -17,16 +17,19 @@ const STE={Quote:'Quote',Operations:'Operations',Finance:'Financial close',Close
 const stn=k=>L(STH[k],STE[k]);
 const stCls=s=>({Quote:'orange',Operations:'blue',Finance:'purple',Closed:'green'}[s]);
 const supCls=s=>({Confirmed:'green',Sent:'blue','No reply':'red','Not sent':''}[s]||'');
-const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple']};
+/* an open quote: still in play (a Lost quote keeps stage Quote but leaves every pipeline total) */
+const isOpenQ=t=>!!t&&t.stage==='Quote'&&t.qst!=='Lost';
+const QST={Draft:['בבנייה','In progress','orange'],Sent:['נשלח ללקוח','Sent to client','yellow'],Negotiating:['ממתין לסגירה','Awaiting close','amber'],Approval:['לאישור מנהל','Manager approval','purple'],Lost:['לא נסגרה','Lost','red']};
 const qn=k=>{const q=QST[k||'Draft'];return L(q[0],q[1]);};
 const sd=s=>S.lang==='en'?s.slice(5,7)+'/'+s.slice(8,10)+'/'+s.slice(0,4):s.split('-').reverse().join('/');
 const endOf=t=>addDays(t.dep,t.nights);
 const range=t=>`<bdi dir="ltr">${sd(t.dep)} - ${sd(endOf(t))}</bdi>`;
 const m=(t,n,dp)=>money(n,t.cur,dp||0);
 const pillF=(txt,c)=>`<span class="pill ${c||''}">${txt}</span>`;
+const stageW=s=>({Quote:L('הצעת מחיר','Quotation'),Operations:L('תפעול','Operation'),Finance:L('כספים','Finance'),Closed:L('נסגר','Closed')}[s]||stn(s));
 function qchip(t){
-  if(t.stage==='Quote'){const q=QST[t.qst||'Draft'];return `<span class="stq"><b>Q</b>${pillF(qn(t.qst),q[2])}</span>`;}
-  return `<span class="stq"><b>F</b>${pillF(stn(t.stage),stCls(t.stage))}</span>`;
+  if(t.stage==='Quote'){const q=QST[t.qst||'Draft'];return `<span class="stq">${pillF(stageW('Quote'),stCls('Quote'))}<small class="muted">${qn(t.qst)}</small></span>`;}
+  return `<span class="stq">${pillF(stageW(t.stage),stCls(t.stage))}</span>`;
 }
 const nightsL=n=>L(n===1?'לילה אחד':n+' לילות',n+(n===1?' night':' nights'));
 const hrsL=n=>L(n===1?'שעה':n+' שעות',n+(n===1?' hour':' hours'));

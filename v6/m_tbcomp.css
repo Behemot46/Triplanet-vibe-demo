@@ -1,0 +1,22 @@
+/* v8 module tbc: trip components, supplier alternatives, quote versions */
+.tbc-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:10px}
+.tbc-sum>div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;box-shadow:var(--sh-card)}
+.tbc-sum strong{font:700 20px var(--f-num);color:var(--ink);unicode-bidi:isolate}
+.tbc-card h3{margin:0 0 10px}
+.tbc-tbl td{vertical-align:middle}
+.tbc-tbl tr.tbc-open>td{background:color-mix(in srgb,var(--primary) 7%,var(--panel))}
+.tbc-panel{margin-top:12px;border-radius:12px;background:var(--recess);padding:14px 16px;border-inline-start:3px solid var(--primary)}
+.tbc-panel .tbl tr.tbc-cur td{background:color-mix(in srgb,var(--primary) 8%,var(--panel))}
+.tbc-dn{color:var(--green);font-weight:600}
+.tbc-up{color:var(--red);font-weight:600}
+.tbc-save{gap:8px;flex-wrap:wrap}
+.tbc-save input{min-width:220px;max-width:100%;font:400 13.5px var(--f-ui);padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink)}
+.tbc-other{margin:12px 0 0;padding-inline-start:18px;font-size:13.5px;color:var(--ink2)}
+.tbc-diff td{vertical-align:top}
+@media (max-width:600px){.tbc-panel{padding:10px}.tbc-save input{min-width:0;width:100%}}
+.tbc-cmp label{display:flex;align-items:center;gap:6px;min-width:0;max-width:100%}.tbc-cmp select{min-width:0;max-width:100%;text-overflow:ellipsis}
+@media (max-width:600px){.tbc-cmp{align-items:stretch}.tbc-cmp label{flex-direction:column;align-items:stretch;width:100%}}
+
+.tbc-rb{display:inline-flex;flex-direction:column;align-items:flex-start;gap:3px}
+.tbc-cancel{min-width:230px}
+.tbc-cx{display:inline-block;white-space:nowrap}

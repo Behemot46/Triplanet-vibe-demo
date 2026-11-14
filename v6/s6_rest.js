@@ -2,9 +2,12 @@
 /* ---------- other pages ---------- */
 function vTemplates(){
   const vt=visibleTrips().filter(t=>t.stage!=='Quote');
-  const cards=vt.map((t,i)=>`<div class="tpl"><div class="im" style="${phBg(phSrc('dest',t.dest),`background:linear-gradient(135deg,${['#3b6fa5,#7fb0d9','#c9894a,#e8c08a','#4c8a6a,#9ccfae','#8a5aa8,#c6a3dc'][i%4]})`)}">${pillF(sn(t.seg),'')}</div><strong>${esc(t.name)}</strong><div class="small muted">${ic('pin')} ${dn(t.dest)} | ${L(`${t.nights+1} ימים`,`${t.nights+1} days`)} | ${paxL(t.pax)}</div><ul>${t.items.filter(x=>x.day>0).slice(0,3).map(x=>`<li>${esc(x.name)}</li>`).join('')}</ul><button class="btn sm" data-act="dup" data-v="${t.id}">${L('צור הצעה מתבנית','Create quote from template')}</button></div>`).join('');
-  return head(L('תבניות','Templates'))+`<p class="muted">${L('טיולים קודמים הופכים לתבניות. שכפול יוצר הצעה חדשה לשנה הבאה עם אותה תוכנית ואותם ספקים, בלי חשבוניות ובלי נוסעים.','Past trips become templates. Duplicating creates next year\'s quote with the same itinerary and suppliers, without invoices or travelers.')}</p><div class="tg">${cards}</div>
-  <h3 style="margin-top:22px">${L('תבניות יום','Day templates')}</h3><div class="tg">${DAYTPL.map(d=>`<div class="tpl"><strong>${L(d.n[0],d.n[1])}</strong> ${pillF(L(d.tag[0],d.tag[1]),'')}<ul>${d.items.map(i=>`<li>${esc(i[0])} (${i[1]} ${L('שעות','hours')})</li>`).join('')}</ul></div>`).join('')}</div>`;
+  const cards=vt.map((t,i)=>`<div class="tpl d-tc"><div class="d-tph" style="${phBg(phSrc('dest',t.dest),`background:linear-gradient(135deg,${['#3b6fa5,#7fb0d9','#c9894a,#e8c08a','#4c8a6a,#9ccfae','#8a5aa8,#c6a3dc'][i%4]})`)}"><span class="hc-pill blue">${sn(t.seg)}</span></div><div class="d-tb"><strong><bdi>${esc(t.name)}</bdi></strong><div class="small muted">${ic('pin')} ${dn(t.dest)} · ${L(`${t.nights+1} ימים`,`${t.nights+1} days`)} · ${paxL(t.pax)}</div><ul>${t.items.filter(x=>x.day>0).slice(0,3).map(x=>`<li>${esc(x.name)}</li>`).join('')}</ul><button class="btn sm pri" data-act="dup" data-v="${t.id}">${L('צור הצעה מתבנית','Create quote from template')}</button></div></div>`).join('');
+  const page=hcPage({eyebrow:L('קטלוג','Catalog'),title:L('תבניות','Templates'),aria:L('תבניות','Templates'),
+    brief:L(`${hlKey(vt.length+' טיולים קודמים')} הופכים לתבניות. שכפול יוצר הצעה חדשה לשנה הבאה עם אותה תוכנית ואותם ספקים, בלי חשבוניות ובלי נוסעים.`,`${hlKey(vt.length+' past trips')} become templates. Duplicating creates next year's quote with the same itinerary and suppliers, without invoices or travelers.`),
+    ctas:[hcCta('mint','magic',L('סטודיו לטיולים','Open the Trip studio'),'data-act="go" data-v="studio"')]});
+  return page+`<div class="hc-grid"><div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('מטיולים קודמים','From past trips')}</h3><span class="muted small">${vt.length}</span></div><div class="tg d-tg">${cards}</div></div></div>
+  <div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('תבניות יום','Day templates')}</h3><span class="muted small">${DAYTPL.length}</span></div><div class="tg d-tg">${DAYTPL.map(d=>`<div class="tpl d-tc"><div class="d-tb"><div class="row" style="justify-content:space-between;gap:8px"><strong>${L(d.n[0],d.n[1])}</strong> ${pillF(L(d.tag[0],d.tag[1]),'')}</div><ul>${d.items.map(i=>`<li>${esc(i[0])} (${i[1]} ${L('שעות','hours')})</li>`).join('')}</ul></div></div>`).join('')}</div></div></div></div>`;
 }
 function vHotels(){
   const hs=Object.entries(DESTS).map(([k,d])=>{const ts=TRIPS.filter(t=>t.dest===k&&t.stage!=='Quote'&&t.room.hotel===d.hotel[0]);return {k,h:d.hotel[0],rate:d.hotel[1],cur:d.cur,held:ts.reduce((a,t)=>a+t.room.held,0),used:ts.reduce((a,t)=>a+t.room.used,0),n:ts.length};});
@@ -43,8 +46,12 @@ function vActivities(){
   return head(L('פעילויות','Activities'))+`<p class="muted">${L('קטלוג האתרים והפעילויות. כל אתר מביא איתו ספק, עלות לאדם, עמלה ומשך מוערך שמזין את בדיקת העומס ביום.','The catalog of sites and activities. Each one brings a supplier, cost per person, commission and an estimated duration that feeds the daily load check.')}</p><div class="card scroll tall" style="max-height:620px"><table class="tbl"><thead><tr><th>${L('אתר','Site')}</th><th>${L('יעד','Destination')}</th><th>${L('ספק','Supplier')}</th><th class="n">${L('עלות','Cost')}</th><th class="n">${L('בדולרים','In USD')}</th><th class="n">${L('עמלה','Commission')}</th><th class="n">${L('שעות','Hours')}</th><th class="n">${L('בטיולים','In trips')}</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
 function vUsers(){
-  const us=[['manager',MGR(),L('בעלים ומנהלת','Owner, manager'),L('רואה את כל התיקים, מאשרת הצעות ורואה את הכספים','Sees all files, approves quotes and sees finance')],...AGENTS.map(a=>[a,agn(a),L('סוכן/ת מכירות','Sales agent'),L('רואה ועורך/ת רק את התיקים שלו/ה','Sees and edits only their own files')])];
-  return head(L('משתמשים','Users'))+`<p class="muted">${L('הרשאות לפי תפקיד. החלפת משתמש בטבלה משנה את מה שהמערכת מציגה.','Permissions by role. Switching user here changes what the system shows.')}</p><div class="card scroll"><table class="tbl"><thead><tr><th>${L('משתמש','User')}</th><th>${L('תפקיד','Role')}</th><th>${L('הרשאות','Permissions')}</th><th class="n">${L('תיקים','Files')}</th><th></th></tr></thead><tbody>${us.map(u=>`<tr><td><span class="row">${avatarOf(u[1])}${u[1]}</span></td><td>${u[2]}</td><td>${u[3]}</td><td class="n">${u[0]==='manager'?TRIPS.length:TRIPS.filter(t=>t.agent===u[0]).length}</td><td><button class="btn sm" data-act="as" data-v="${u[0]}">${L('צפה כמשתמש','View as this user')}</button></td></tr>`).join('')}</tbody></table></div>`;
+  const us=[['manager',MGR(),L('בעלים ומנהלת','Owner, manager'),L('רואה את כל התיקים, מאשרת הצעות ורואה את הכספים','Sees all files, approves quotes and sees finance'),'blue'],['accountant',agn('accountant'),L('הנהלת חשבונות','Accountant'),L('רואה את כל התיקים, מאשרת חשבוניות ספקים ומפיקה מסמכים','Sees all files, approves supplier bills and issues documents'),'purple'],...AGENTS.map(a=>[a,agn(a),L('סוכן/ת מכירות','Sales agent'),L('רואה ועורך/ת רק את התיקים שלו/ה','Sees and edits only their own files'),'green'])];
+  const n=u=>u[0]==='manager'||u[0]==='accountant'?TRIPS.length:TRIPS.filter(t=>t.agent===u[0]).length;
+  const page=hcPage({eyebrow:L('ניהול','Admin'),title:L('משתמשים','Users'),aria:L('משתמשים','Users'),
+    brief:L(`${hlKey(us.length+' משתמשים')} בסוכנות. הרשאות לפי תפקיד, והחלפת משתמש משנה את מה שהמערכת מציגה.`,`${hlKey(us.length+' people')} in the agency. Permissions follow the role, and switching user changes what the system shows.`),
+    ctas:[hcCta('mint','shield',L('תפקידים והרשאות','Roles & permissions'),'data-act="d-roles"')]});
+  return page+`<div class="card hc-card"><div class="hc-h"><h3>${L('הצוות','The team')}</h3><span class="muted small">${L('ההרשאות המלאות בהגדרות','Full permission matrix in Settings')}</span></div><div class="d-ug">${us.map(u=>`<div class="d-uc${S.role===u[0]?' on':''}"><div class="d-ut">${avatarOf(u[1])}<div><b>${u[1]}</b><span class="hc-pill ${u[4]}">${u[2]}</span></div></div><p class="small muted">${u[3]}</p><div class="d-uf"><span>${L('תיקים','Files')} <b>${n(u)}</b></span><button class="btn sm${S.role===u[0]?'':' pri'}" data-act="as" data-v="${u[0]}"${S.role===u[0]?' disabled':''}>${S.role===u[0]?L('מוצג עכשיו','Viewing now'):L('צפה כמשתמש','View as this user')}</button></div></div>`).join('')}</div></div>`;
 }
 
 /* ---------- import ---------- */
@@ -134,9 +141,9 @@ const QS=[
  {g:2,he:'אילו הצעות ממתינות ללקוח יותר משבועיים?',en:'Which quotes have waited more than two weeks for the client?',r:/two weeks|waited|waiting.*client|שבועיים|ממתינות ללקוח/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Sent'&&t.qdays>14);
    return {t:q.length?listL(q.map(t=>L(`${t.name}: נשלחה לפני ${t.qdays} ימים, ${usd(calc(t).rev)}. ${agn(t.agent)} אחראי/ת.`,`${t.name}: sent ${t.qdays} days ago, ${usd(calc(t).rev)}. Owner: ${agn(t.agent)}.`)))+L('\nכדאי שיחת מעקב השבוע.','\nWorth a follow-up call this week.'):L('אין הצעות שממתינות יותר משבועיים.','No quote has waited more than two weeks.')};}},
  {g:2,he:'אילו הצעות ממתינות לאישור שלי?',en:'Which quotes are waiting for my approval?',r:/approv|לאישור/,f:()=>{const q=visibleTrips().filter(t=>t.stage==='Quote'&&t.qst==='Approval');
-   if(S.role!=='manager')return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
+   if(!canApprove())return {t:L('רק מנהל מאשר הצעות. ההצעות שלך שממתינות: ','Only a manager approves quotes. Your quotes waiting: ')+(q.map(t=>t.name).join(', ')||L('אין','none'))+'.'};
    return {t:q.length?listL(q.map(t=>{const c=calc(t);return L(`${t.name}: ${usd(c.rev)}, רווח מתוכנן ${pct(c.planProfit/c.rev)}, ${agn(t.agent)}.`,`${t.name}: ${usd(c.rev)}, planned margin ${pct(c.planProfit/c.rev)}, from ${agn(t.agent)}.`);})):L('אין הצעות שממתינות לאישור.','Nothing is waiting for approval.'),btn:q.length?{label:L('פתח לאישור','Open for approval'),act:'open',v:q[0].id+'|approve'}:null};}},
- {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>S.role==='manager'||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
+ {g:2,he:'מה שיעור ההמרה מהצעה להזמנה לפי סוכן?',en:'What is our quote-to-booking rate by agent?',r:/conversion|quote-to-booking|booking rate|המרה/,f:()=>{const ag=AGENTS.filter(a=>seesAll()||a===S.role).map(a=>{const x=TRIPS.filter(t=>t.agent===a),w=x.filter(t=>t.stage!=='Quote').length;return [a,w,x.length];}).sort((a,b)=>b[1]/b[2]-a[1]/a[2]);
    return {t:listL(ag.map(([a,w,n])=>`${agn(a)}: ${w}/${n} (${Math.round(w/n*100)}%)`))+L('\nכולל הצעות פתוחות, כך שהשיעור יעלה ככל שייסגרו.','\nOpen quotes are included, so rates rise as they close.')};}},
  {g:2,he:'מי הסוכן המוביל לפי רווח צפוי?',en:'Who is our top agent by expected profit?',r:/top agent|best agent|מוביל/,f:()=>{const m={};booked().forEach(t=>{const c=calc(t);m[t.agent]=r2((m[t.agent]||0)+c.fcProfit);});const e=Object.entries(m).sort((a,b)=>b[1]-a[1]);
    return {t:e.length?L(`${agn(e[0][0])} מוביל/ה עם ${usd(e[0][1])} רווח צפוי בטיולים שהוזמנו.\n`,`${agn(e[0][0])} leads with ${usd(e[0][1])} expected profit on booked trips.\n`)+listL(e.slice(1).map(([a,v])=>`${agn(a)}: ${usd(v)}`)):L('אין עדיין טיולים שהוזמנו.','No booked trips yet.')};}},
@@ -167,11 +174,15 @@ function askQ(q){S.chat.push({r:'u',t:L(q.he,q.en)},{r:'a',...q.f()});}
 function askText(txt){S.chat.push({r:'u',t:txt},{r:'a',...answerText(txt)});}
 function vAI(){
   if(!visibleTrips().length)return noTrip();
-  const groups=QG.map((g,i)=>`<div class="qg"><div class="small muted" style="font-weight:600;margin-bottom:6px">${L(g[0],g[1])}</div><div class="row" style="gap:6px">${QS.filter(q=>q.g===i).map(q=>`<button class="btn sm chip" data-act="ask" data-v="${q.id}">${esc(L(q.he,q.en))}</button>`).join('')}</div></div>`).join('');
-  return head(`<span class="row" style="gap:10px">${chenAv(40)}${L('מאיה, העוזרת החכמה','Maya, your AI assistant')}</span>`,`${pillF(L(`תסריט מוכן: ${QS.length} שאלות`,`Scripted: ${QS.length} questions`),'teal')}${S.chat.length?`<button class="btn sm" data-act="clearchat">${L('נקה שיחה','Clear chat')}</button>`:''}`)+`<p class="muted">${L('מאיה עונה מהנתונים שבדמו, בעברית או באנגלית. במוצר מאיה תענה מהיסטוריית הטיולים והחשבוניות של הסוכנות.','Maya answers from the data in this demo, in English or Hebrew. In the product, Maya answers from the agency\'s own trip and invoice history.')}</p>
-  <div class="qgs sec">${groups}</div>
-  <div class="chat">${chatLog()||`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. בחרו שאלה למעלה או כתבו חופשי.','Hi, I am Maya. Pick a question above or type your own.')}</div>`}</div>
-  <form data-form="ask" class="row"><input type="text" name="q" placeholder="${L('שאלו את מאיה...','Ask Maya...')}" style="flex:1;min-width:200px" aria-label="${L('שאלה','Question')}"><button class="btn pri" type="submit">${L('שלח','Send')}</button></form>`;
+  const groups=QG.map((g,i)=>`<div class="card hc-card d-qg"><div class="hc-h"><h3>${L(g[0],g[1])}</h3></div><div class="d-qc">${QS.filter(q=>q.g===i).map(q=>`<button class="btn sm chip" data-act="ask" data-v="${q.id}">${esc(L(q.he,q.en))}</button>`).join('')}</div></div>`).join('');
+  const page=hcPage({eyebrow:L('עזרה','Help'),title:L('מאיה, העוזרת החכמה','Maya, your AI assistant'),aria:L('מאיה','Maya'),cls:'d-mayahead',
+    brief:L(`מאיה עונה מהנתונים שבדמו: ${hlKey('פערי חשבוניות, ספקים, רווחיות, תשלומים, תזרים ומשימות')}. אפשר גם לבקש טיוטת טיול. במוצר היא תענה מההיסטוריה של הסוכנות עצמה.`,`Maya answers from the data in this demo: ${hlKey('invoice gaps, suppliers, margins, payments, cash flow and tasks')}. You can also ask for a draft trip. In the product she answers from the agency's own history.`),
+    ctas:[hcCta('ghost','left',L('חזרה לדף הבית','Back to Home'),'data-act="go" data-v="home"'),...(S.chat.length?[hcCta('ghost','refresh',L('נקה שיחה','Clear chat'),'data-act="clearchat"')]:[])],
+    extra:`<div class="d-mode"><span class="pill teal">${L(`תסריט מוכן: ${QS.length} שאלות`,`Scripted: ${QS.length} questions`)}</span></div>`});
+  return page+`<div class="hc-grid d-maya"><div class="hc-c7"><div class="card hc-card d-chatc"><div class="hc-h"><h3>${L('שיחה','Conversation')}</h3><span class="muted small">${L('Esc חוזר לדף הבית','Esc returns Home')}</span></div>
+  <div class="chat">${chatLog()||`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. בחרו שאלה או כתבו חופשי.','Hi, I am Maya. Pick a question or type your own.')}</div>`}</div>
+  <form data-form="ask" class="row d-ask"><input type="text" name="q" placeholder="${L('שאלו את מאיה...','Ask Maya...')}" aria-label="${L('שאלה','Question')}"><button class="btn pri" type="submit">${ic('right','flip')} ${L('שלח','Send')}</button></form></div></div>
+  <div class="hc-c5 qgs">${groups}</div></div>`;
 }
 
 const VIEWS={home:vHome,quotes:vQuotes,templates:vTemplates,hotels:vHotels,suppliers:vSuppliers,activities:vActivities,users:vUsers,gaps:vGaps,finance:vFinance,ai:vAI};
@@ -179,7 +190,7 @@ const VIEWS={home:vHome,quotes:vQuotes,templates:vTemplates,hotels:vHotels,suppl
 /* ---------- actions ---------- */
 function winQuote(t){
   const R=rng(9000+t.id.length*31+S.nid++);
-  t.stage='Operations';t.qst='';
+  t.stage='Operations';t.qst='';t.wonOn=iso(TODAY);
   t.groups=genGroups(t.seg,t.pax,R);t.groups.forEach(g=>{g.depPaid=false;g.balPaid=false;});
   t.tasks=genTasks(t,R).map(x=>({...x,done:false}));
   t.sups=genSups(t.lines,'Operations',R).map(s=>({...s,st:'Sent'}));
@@ -192,7 +203,7 @@ function blankQuote(o){
     pct:25,depDue:addDays(iso(TODAY),60),balDue:addDays(iso(TODAY),150),lines:genLines(o.seg,o.dest,o.pax,o.nights),items:genItems(o.dest,o.nights,R),groups:[],trav:[],tasks:[]};
   t.sups=genSups(t.lines,'Quote',R);t.room={hotel:t.lines[0].sup,held:0,used:0};TRIPS.push(t);return t;
 }
-const agentNow=()=>S.role==='manager'?'Priya':S.role;
+const agentNow=()=>seesAll()?'Priya':S.role;
 function openTrip(id,pt){S.tripId=id;S.tab='trip';S.ptab=pt||'costs';S.openDay=1;S.disp=null;}
 function gapLineOf(v){const [tid,lid]=v.split('|');const t=byId(tid);return {t,l:t&&t.lines.find(x=>String(x.id)===lid)};}
 document.addEventListener('click',e=>{
@@ -220,9 +231,9 @@ document.addEventListener('click',e=>{
   else if(a==='ask'){const q=QS[+v-1];if(q)askQ(q);render();const c=document.querySelector('.cb');if(c)c.scrollTop=c.scrollHeight;}
   else if(a==='clearchat'){S.chat=[];render();}
   else if(a==='chen'){S.chen=!S.chen;render();}
-  else if(a==='win'){winQuote(byId(v));openTrip(v,'ops');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
-  else if(a==='qs'){t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
-  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:S.role==='manager'?s.agent:S.role,client:s.client,ctype:s.ctype});
+  else if(a==='win'){winQuote(byId(v));openTrip(v,'odash');render();window.scrollTo(0,0);toast(L('ההצעה אושרה. התיק נפתח לתפעול.','Quote accepted. The file is open for operations.'));}
+  else if(a==='qs'){if(v==='Sent'&&t.qst==='Approval'&&!canApprove()){toast(L('התפקיד שלך לא כולל אישור הצעות','Your role cannot approve proposals'));return;}t.qst=v;t.qdays=0;render();toast(v==='Sent'?L('ההצעה אושרה ונשלחה ללקוח','Quote approved and sent to the client'):L('הסטטוס עודכן','Status updated'));}
+  else if(a==='dup'){const s=byId(v);const c=blankQuote({name:s.name.replace(/ 20\d\d$/,'')+' '+(+s.dep.slice(0,4)+1),dest:s.dest,seg:s.seg,pax:s.pax,nights:s.nights,agent:seesAll()?s.agent:S.role,client:s.client,ctype:s.ctype});
     c.lines=s.lines.filter(l=>!l.extra).map(l=>({...l,inv:null}));c.items=s.items.map(i=>({...i}));c.markups={...s.markups};c.rate=s.rate;c.dep=addDays(s.dep,364);c.depDue=addDays(c.dep,-150);c.balDue=addDays(c.dep,-60);
     openTrip(c.id,'plan');render();window.scrollTo(0,0);toast(L('שוכפל כהצעה חדשה','Duplicated as a new quote'));}
   else if(a==='newq'){const c=blankQuote({name:L('טיול חדש','New trip'),dest:'Branson',seg:'Senior',pax:44,nights:3,agent:agentNow()});openTrip(c.id,'general');render();window.scrollTo(0,0);toast(L('נוצרה הצעה חדשה','New quote created'));}
@@ -246,7 +257,7 @@ document.addEventListener('click',e=>{
   else if(a==='gapdisp'){S.disp=v||null;render();}
   else if(a==='copydisp'){const {t:tt,l}=gapLineOf(v);if(l)copy(disputeMail(tt,l));}
   else if(a==='gapsent'){const {l}=gapLineOf(v);if(l){l.inv.st='disputed';S.disp=null;render();toast(L(`דרישת זיכוי נשלחה ל-${l.sup}`,`Dispute sent to ${l.sup}`));}}
-  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=r2(effAmt(l.inv)-planC(l));l.inv.credit=r2((l.inv.credit||0)+amt);l.inv.st='credited';render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
+  else if(a==='gapcred'){const {t:tt,l}=gapLineOf(v);if(l){const amt=gapCredit(l);render();toast(L(`זיכוי של ${usd(amt*lrate(tt,l))} נרשם. הרווח עודכן.`,`Credit of ${usd(amt*lrate(tt,l))} recorded. Profit updated.`));}}
   else if(a==='gapacc'){const {l}=gapLineOf(v);if(l){l.inv.st='accepted';S.disp=null;render();toast(L('החיוב אושר','Charge accepted'));}}
   else if(a==='print'){try{window.print();}catch(err){}toast(L('אם חלון ההדפסה לא נפתח כאן, הדפיסו מהקובץ המקומי.','If no print dialog opened here, print from the offline file.'));}
 });
@@ -260,7 +271,7 @@ document.addEventListener('change',e=>{
   else if(k==='cost')t.lines.find(l=>l.id===+v).cost=Math.max(0,+val||0);
   else if(k==='itemcost'){const l=t.lines.find(x=>x.id===+v);l.cost=Math.max(0,r2((+val||0)/lrate(t,l)));}
   else if(k==='ov')t.lines.find(l=>l.id===+v).ov=val===''?'':Math.min(90,Math.max(0,+val||0));
-  else if(k==='rate')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));
+  else if(k==='rate'){if(t.stage==='Quote')t.rate=Math.min(2,Math.max(.5,+val||BASE_RATE[t.cur]));}
   else if(k==='dm'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.m=val;}
   else if(k==='dv'){const d=t.disc[el.dataset.k]||(t.disc[el.dataset.k]={m:'%',v:''});d.v=val===''?'':Math.max(0,+val||0);}
   else if(k==='mv')t.items.find(i=>i.id===+v).day=+val;

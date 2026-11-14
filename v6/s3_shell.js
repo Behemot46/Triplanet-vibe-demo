@@ -5,17 +5,42 @@ const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
   page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
 const S=S0();
-const VER=7,KEY='triplanet-booth-demo-v7';
+const VER=8,KEY='triplanet-booth-demo-v8';
+/* the demo's version name, shown in the settings menu and the page title (build.py) */
+const DEMO_VERSION='v8.3',DEMO_BUILT='2026-11-14';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
-function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS}));}catch(e){}}
-function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});}catch(e){}}
-function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);try{localStorage.removeItem(KEY);}catch(e){}}
+function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
+function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
+function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);PERSIST.forEach(p=>{try{p.reset();}catch(e){}});try{localStorage.removeItem(KEY);}catch(e){}}
 const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
-const canSee=t=>S.role==='manager'||t.agent===S.role;
+/* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
+const ROLE_KEYS=['manager','accountant',...AGENTS];
+const canApprove=()=>typeof can==='function'?can('prop.approve'):isMgr();
+const canIssueDocs=()=>typeof can==='function'?can('fin.issueDocs'):(isMgr()||isAcct());
+const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
+const seesAll=()=>isMgr()||isAcct();
+AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
+const userName=()=>isMgr()?MGR():agn(S.role);
+const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
+const canSee=t=>seesAll()||t.agent===S.role;
+/* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
+/* Hebrew for generic data strings (s11_trdata.js); identity when absent or in English */
+const heDataIf=h=>S.lang==='he'&&typeof heData==='function'?heData(h):h;
+const NAV_PERM={users:'users.manage',books:'fin.sync'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
+/* Save a generated text file. Inside a published claude.ai page the viewer's "downloads" permission is used
+   (the viewer confirms); on the booth laptop (plain file) a normal browser download is used. Resolves 'saved',
+   'declined' or 'failed'. */
+async function saveFile(name,text,mime){
+  try{if(typeof window!=='undefined'&&window.claude&&typeof window.claude.use==='function'){const d=await window.claude.use('downloads');
+    if(d){try{await d.save({filename:name,data:text});return 'saved';}catch(e){if(e&&e.code==='declined')return 'declined';}}}}catch(e){}
+  try{const u=URL.createObjectURL(new Blob([text],{type:mime||'text/plain;charset=utf-8'})),a=document.createElement('a');
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>{try{URL.revokeObjectURL(u);}catch(e){}},1000);return 'saved';}catch(e){return 'failed';}
+}
+const saveToast=r=>toast(r==='saved'?L('הקובץ נשמר','The file was saved'):r==='declined'?L('השמירה בוטלה','Save canceled'):L('לא ניתן לשמור כאן. נסו בדפדפן.','Saving is not available here. Try in a browser.'));
 async function copy(text){try{await navigator.clipboard.writeText(trHe(text));toast(L('הועתק','Copied'));}catch(e){toast(L('סמנו והעתיקו ידנית','Select and copy manually'));}}
 const noTrip=()=>`<div class="card"><h2>${L('אין כאן טיולים','No trips here')}</h2><p class="muted">${L('סוכנים רואים רק את התיקים שלהם. עברו לתצוגת מנהל כדי לראות הכול.','Agents only see their own files. Switch to the manager view to see everything.')}</p></div>`;
 const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אישור ההצעה','opens after the quote is accepted')}</h2><p class="muted">${esc(t.name)} ${L('עדיין בשלב הצעה','is still a quote')} (${qn(t.qst)}). ${L('אישור ההצעה יוצר קבוצות חיוב, רשימת משימות ואישורי ספקים.','Accepting the quote creates billing groups, a task list and supplier confirmations.')}</p><button class="btn grn" data-act="win" data-v="${t.id}">${L('הלקוח אישר: פתח תיק','Client accepted: open the file')}</button></div>`;
@@ -27,6 +52,15 @@ const avatarOf=(n,cls)=>{const k=avKey(n);return k?`<img class="avatar avimg${cl
 const NEWP=()=>pillF(L('חדש','New'),'green');
 
 /* ---------- shell ---------- */
+/* v8.1: the sidebar is grouped by job. Items not listed in a section go to the last one. */
+const NAV_SECTIONS=[[null,['home']],[['מכירות','Sales'],['quotes','studio','clients']],[['קטלוג','Catalog'],['suppliers','hotels','activities','templates']],
+  [['כספים ורווח','Money'],['finance','gaps','leaks','books']],[['עזרה','Help'],['ai','status']],[['ניהול','Admin'],['users','settings']]];
+function navSections(ok,nb){
+  const all=[...NAV,...NAV2].filter(ok),by={},used=new Set();all.forEach(n=>by[n[0]]=n);
+  const sec=NAV_SECTIONS.map(([lab,keys])=>{const its=keys.filter(k=>by[k]);its.forEach(k=>used.add(k));return [lab,its.map(k=>by[k])];});
+  all.filter(n=>!used.has(n[0])).forEach(n=>sec[sec.length-1][1].push(n));
+  return sec.filter(x=>x[1].length).map(([lab,its])=>(lab?`<div class="nvh">${L(lab[0],lab[1])}</div>`:'')+its.map(nb).join('')).join('');
+}
 const NAV=[['home',['דף הבית','Home'],ic('home')],['quotes',['הצעות מחיר','Quotes'],ic('quotes')],['templates',['תבניות','Templates'],ic('templates')],['hotels',['מלונות','Hotels'],ic('hotels')],['suppliers',['ספקים','Suppliers'],ic('suppliers')],['activities',['פעילויות','Activities'],ic('activities')],['users',['משתמשים','Users'],ic('users')]];
 const NAV2=[['gaps',['בקרת חשבוניות','Invoice check'],ic('gaps')],['finance',['כספים','Finance'],ic('finance')],['ai',['מאיה, העוזרת החכמה','Maya, AI assistant'],ic('ai')]];
 const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><g fill="#b22234">${[0,2,4,6,8,10,12].map(i=>`<rect y="${i*20/13}" width="30" height="${20/13}"/>`).join('')}</g><rect width="13" height="${20*7/13}" fill="#3c3b6e"/></svg>`,
@@ -35,18 +69,20 @@ let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}
 function render(){
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
-  const user=S.role==='manager'?MGR():agn(S.role);
+  const user=userName();
   const act=S.tab==='trip'?'quotes':S.tab;
+  const navOk=n=>typeof can!=='function'||!NAV_PERM[n[0]]||can(NAV_PERM[n[0]]);
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
-  const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
+  const menu=S.menu?`<div class="menu" role="menu">${typeof VIEWS!=='undefined'&&VIEWS.settings?`<button data-act="go" data-v="settings" role="menuitem">${ic('settings')} ${L('הגדרות המערכת','Settings')}</button>`:''}<button data-act="theme" role="menuitem">${ic(themeGet()==='dark'?'sun':'moon')} ${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}</button><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
-     <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
-  const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab" data-act="chen">${chenAv(28)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
+     ${typeof devPanel==='function'?`<button data-act="devnotes" role="menuitem">${ic('document')} ${devOn()?L('הסתר הערות למפתחים','Hide developer notes'):L('הצג הערות למפתחים','Show developer notes')}</button>`:''}
+     <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}<div class="menu-ver">Triplanet demo ${DEMO_VERSION} · ${fmtDate(DEMO_BUILT)}</div></div></div>`:'';
+  const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab${S.tab==='home'?'':' cmp'}" data-act="chen" aria-label="${L('שאלו את מאיה','Ask Maya')}" data-tip="${L('שאלו את מאיה','Ask Maya')}">${chenAv(S.tab==='home'?28:40)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
-  app.innerHTML=trHtml(`<div class="app${S.drawer?' drawer':''}">
-   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${NAV.map(nb).join('')}<div class="nvh">${L('חדש בטריפלאנט','New in Triplanet')}</div>${NAV2.map(nb).join('')}</aside>
+  app.innerHTML=heDataIf(trHtml(`<div class="app${S.drawer?' drawer':''}">
+   <aside class="side"><div class="brand"><img class="tp-logo" src="${TP_LOGO}" alt="Triplanet" width="132" height="30"><small>${AGENCY}</small></div>${navSections(navOk,nb)}</aside>
    <main class="content"><div class="topbar">
      <button class="iconb hamb" data-act="drawer" aria-label="${L('תפריט','Menu')}"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M4 7a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m0 5a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1m1 4a1 1 0 1 0 0 2h7a1 1 0 1 0 0-2z"/></svg></button>
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
@@ -54,6 +90,7 @@ function render(){
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
      <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
        <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
+       <option value="accountant" ${isAcct()?'selected':''}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
        ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
      </select>
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
@@ -62,7 +99,7 @@ function render(){
      <button class="bell" data-act="go" data-v="home" aria-label="${L('התראות','Alerts')}">${ic('bell')}${nAl?`<b>${nAl}</b>`:''}</button>
      <span class="mwrap"><button class="iconb" data-act="menu" aria-label="${L('הגדרות דמו','Demo settings')}" aria-expanded="${S.menu}">${ic('settings')}</button>${menu}</span>
      ${avatarOf(user)}
-   </div><div id="view">${view()}</div></main></div>${fab}${tourPanel()}`);
+   </div><div id="view">${view()}</div></main></div>${fab}${tourPanel()}`));
   window.scrollTo(0,y);
   tourAfter();save();
 }
@@ -79,7 +116,7 @@ var chenSuggest=function(){
   return ids.map(i=>QS[i-1]);
 };
 function chenPanel(){
-  return `<aside class="chen" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm" data-act="chen" aria-label="${L('סגור','Close')}">${ic('x')}</button></div>
+  return `<div class="chen-scrim" data-act="chen" aria-hidden="true"></div><aside class="chen" role="dialog" aria-label="${L('מאיה, העוזרת החכמה','Maya, AI assistant')}"><div class="ch"><span class="row" style="gap:8px">${chenAv(30)}<span><strong>${L('מאיה','Maya')}</strong><div class="small muted">${L('עונה מהנתונים של הסוכנות','Answers from your agency data')}</div></span></span><button class="btn sm chen-x" data-act="chen" aria-label="${L('סגירת השיחה','Close the chat')}">${ic('x')}<span>${L('סגירה','Close')}</span></button></div>
    <div class="cb">${S.chat.length?chatLog():`<div class="msg a"><div class="who">${chenAv(22)} ${L('מאיה','Maya')}</div>${L('היי, אני מאיה. אפשר לשאול אותי על פערי חשבוניות, רווחיות, תשלומים, משימות או לבקש טיוטה לטיול.','Hi, I am Maya. Ask me about invoice gaps, margins, payments or tasks, or ask me to draft a trip.')}</div>`}</div>
    <div class="cs">${chenSuggest().map(q=>`<button class="btn sm" data-act="ask" data-v="${q.id}">${esc(L(q.he,q.en))}</button>`).join('')}</div>
    <form class="row cf" data-form="ask"><input type="text" name="q" placeholder="${L('שאלו את מאיה...','Ask Maya...')}" aria-label="${L('שאלה','Question')}"><button class="btn pri" type="submit">${L('שלח','Send')}</button></form></aside>`;

@@ -10,49 +10,64 @@ FLAG.en=`<svg viewBox="0 0 60 40" width="30" height="20" aria-hidden="true"><cli
 /* ---------- project page: stage switch + stage tabs ---------- */
 const STAGES=[
   ['q',['הצעת מחיר','Quotation'],[['general','כללי','General','document'],['plan','תוכנית טיול','Trip plan','calendar'],['costs','תמחור ומרווחים','Pricing','cash'],['quote','הצעה ללקוח','Proposal','invoice'],['approve','אישור','Approval','check']]],
-  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['ops','משימות וספקים','Tasks & suppliers','checklist'],['people','נוסעים וחיוב','Manifest & billing','users2']]],
+  ['o',['תפעול','Operation'],[['odash','דשבורד','Dashboard','widget'],['people','חיוב ותשלומים','Billing','wallet']]],
   ['f',['כספים','Finance'],[['fdash','דשבורד','Dashboard','widget'],['income','הכנסות','Income','wallet'],['tfin','הוצאות ובקרת חשבוניות','Expenses','gaps'],['vouch','שוברים ומסמכים','Vouchers','ticket']]]];
 PTABS.push(['odash',['דשבורד תפעול','Operation dashboard']],['fdash',['דשבורד כספים','Finance dashboard']],['income',['הכנסות','Income']],['vouch',['שוברים ומסמכים','Vouchers']]);
+/* v8: fixed tab order per stage, so modules can register tabs in any load order */
+const TAB_ORDER={q:['general','plan','costs','quote','tbver','approve'],o:['odash','optasks','spm','manifest','people'],f:['fdash','income','tfin','vouch']};
+function tabInsert(stage,tab){const sg=STAGES.find(s=>s[0]===stage);if(!sg)return;
+  if(!sg[2].some(x=>x[0]===tab[0]))sg[2].push(tab);
+  const o=TAB_ORDER[stage]||[],ix=k=>{const i=o.indexOf(k);return i<0?99:i;};sg[2].sort((a,b)=>ix(a[0])-ix(b[0]));
+  if(!PTABS.some(p=>p[0]===tab[0]))PTABS.push([tab[0],[tab[1],tab[2]]]);}
 const stageOf=pt=>(STAGES.find(s=>s[2].some(x=>x[0]===pt))||STAGES[0])[0];
 const tabIcon=k=>k.startsWith('N:')?nic(k.slice(2)):ic(k);
 function pjStatus(t){
-  if(t.stage==='Quote')return `<span class="pj-status q">${qn(t.qst)} ${ic('down')}</span>`;
-  const lab={Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
-  return `<span class="pj-status s-${t.stage}">${lab} ${ic('down')}</span>`;
+  const lab=t.stage==='Quote'?qn(t.qst):{Operations:L('מוכן','Ready'),Finance:L('בסגירה כספית','In close'),Closed:L('נסגר','Closed')}[t.stage]||stn(t.stage);
+  const cls=t.stage==='Quote'?'q':'s-'+t.stage,open=!!S.pjMenu,mv=typeof stmMoves==='function'?stmMoves(t):[];
+  const items=mv.map(m=>`<button type="button" role="menuitem" class="pj-mi${m.ok?'':' off'}" data-act="pjmove" data-v="${m.mv}" ${m.ok?'':'disabled'}><b>${L(m.he,m.en)}</b><span class="small muted">${m.ok?L(m.dhe,m.den):m.why.map(w=>L(w.he,w.en)).join('. ')}</span></button>`).join('')||`<p class="small muted pj-mn">${L('אין מעברים זמינים.','No moves available.')}</p>`;
+  return `<span class="pj-stwrap"><button type="button" class="pj-status ${cls}" data-act="pjmenu" aria-haspopup="menu" aria-expanded="${open}" aria-label="${L('סטטוס הפרויקט','Project status')}: ${esc(lab)}">${lab} ${ic('down')}</button>${open?`<div class="pj-menu" role="menu" aria-label="${L('מעברי סטטוס','Status moves')}">${items}</div>`:''}</span>`;
 }
 vTrip=function(){
   const t=T();if(!t)return noTrip();
+  if(S.ptab==='ops')S.ptab='odash'; /* v8.1: the digest tab was merged into the dashboard */
   const st=stageOf(S.ptab),SG=STAGES.find(s=>s[0]===st);
-  const f={general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
+  const f=TRIP_TABS[S.ptab]||{general:pGeneral,plan:pPlan,costs:pCosts,quote:pQuote,approve:pApprove,ops:pOps,people:pPeople,tfin:pTripFin,odash:pOpsDash,fdash:pFinDash,income:pIncome,vouch:pVouch}[S.ptab]||pCosts;
   const badge=k=>{if(k!=='tfin')return '';const n=t.inbox.length?t.inbox.length:tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0).length;return n?`<span class="bdg">${n}</span>`:'';};
-  return `<div class="pj-head"><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
+  const bg=phBg(phSrc('dest',t.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))'),ag=agn(t.agent);
+  const chip=(i,x)=>`<span class="pj-chip">${ic(i)}${x}</span>`;
+  return `<div class="pj-head" style="${bg}"><span class="pj-shade" aria-hidden="true"></span><button class="pj-back" data-act="go" data-v="quotes" aria-label="${L('חזרה לפרויקטים','Back to projects')}">${ic('chev','flip back')}</button><span class="pj-no">#${t.no}</span><h1 class="pj-name">${esc(t.name)}</h1>
     <div class="pj-stage" role="tablist">${STAGES.map(s=>`<button role="tab" aria-selected="${s[0]===st}" class="${s[0]===st?'on':''}" data-act="pstage" data-v="${s[0]}">${L(s[1][0],s[1][1])}</button>`).join('')}</div>${pjStatus(t)}</div>
-   <div class="pj-sub">${range(t)} · ${L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`)} · ${dn(t.dest)} · <bdi>${esc(t.client)}</bdi> · ${paxL(t.pax)}</div>
-   <div class="tabs pj-tabs">${SG[2].map(x=>`<button class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
+   <div class="pj-sub">${chip('calendar',range(t))}${chip('clock',L(`${t.nights+1} ימים, ${t.nights} לילות`,`${t.nights+1} days, ${t.nights} nights`))}${chip('pin',dn(t.dest))}${chip('clients',`<bdi>${esc(t.client)}</bdi>`)}${chip('users',paxL(t.pax))}<span class="pj-chip pj-ag">${avatarOf(ag,'xs')}${esc(ag)}</span></div>
+   <div class="tabs pj-tabs" role="tablist" aria-label="${L('לשוניות הפרויקט','Project tabs')}">${SG[2].map(x=>`<button role="tab" aria-selected="${S.ptab===x[0]}" class="${S.ptab===x[0]?'on':''}" data-act="pt" data-v="${x[0]}">${tabIcon(x[3])}${L(x[1],x[2])}${badge(x[0])}</button>`).join('')}</div>${f(t)}`;
 };
 /* Operation dashboard, as in the product: days to trip, urgent tasks, suppliers, revenue */
-function ocard(cls,icon,val,label,act){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span></button>`;}
+function ocard(cls,icon,val,label,act,sub){return `<button class="ocard ${cls}" ${act||''}><span class="oc-ic">${icon}</span><span class="oc-v">${val}</span><span class="oc-l">${label} ${act?ic('chev','flip'):''}</span>${sub?`<span class="oc-s">${sub}</span>`:''}</button>`;}
 function pOpsDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד התפעול','The operation dashboard'));
   const days=Math.max(0,Math.round((D(t.dep)-TODAY)/DAY)),soon=addDays(iso(TODAY),7);
-  const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
-  const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6);
-  return `<div class="ogrid">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
-    ${ocard('red',ic('bell'),urgent.length,L('משימות דחופות','Urgent tasks'),'data-act="pt" data-v="ops"')}
-    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="ops"')}
+  const urgent=t.tasks.filter(x=>!x.done&&x.due<=soon),odue=t.tasks.filter(x=>!x.done&&x.due<iso(TODAY)).length,open=t.sups.filter(s=>s.st!=='Confirmed'),c=calc(t);
+  const next=t.tasks.filter(x=>!x.done).sort((a,b)=>a.due<b.due?-1:1).slice(0,6),rp=t.room&&t.room.held?Math.round(t.room.used/t.room.held*100):0;
+  return `<div class="ogrid od">${ocard('dark',ic('calendar'),days===0?L('0 ימים','0 Days'):L(`${days} ימים`,`${days} Days`),t.stage==='Operations'?L('ימים ליציאה','Days to trip'):L('הטיול חזר','Trip is home'))}
+    ${ocard('red',ic('bell'),urgent.length,L('לביצוע השבוע','Due this week'),'data-act="pt" data-v="optasks"',L(`${odue} באיחור`,`${odue} overdue`))}
+    ${ocard('green',ic('idcard'),open.length,L('ספקים שעוד לא אישרו','Suppliers not confirmed'),'data-act="pt" data-v="spm"')}
     ${ocard('amber',ic('chart2'),usd(c.rev),L('הכנסה צפויה','Estimated revenue'),'data-act="pt" data-v="fdash"')}</div>
-   <div class="card"><h3>${L('המשימות הבאות','Next tasks')}</h3>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div>`;
+   <div class="hc-grid od-grid"><div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('המשימות הבאות','Next tasks')}</h3>${odue?`<span class="hc-pill red">${L(`${odue} באיחור`,`${odue} overdue`)}</span>`:urgent.length?`<span class="hc-pill blue">${L(`${urgent.length} השבוע`,`${urgent.length} this week`)}</span>`:`<span class="hc-pill green">${L('הכל בזמן','On track')}</span>`}</div>${next.length?`<div class="scroll"><table class="tbl"><thead><tr><th>${L('משימה','Task')}</th><th>${L('אחראי','Owner')}</th><th>${L('עד','Due')}</th><th>${L('סטטוס','Status')}</th></tr></thead><tbody>${next.map(x=>`<tr><td>${esc(x.t)}</td><td>${x.who==='Ops desk'?L('דסק תפעול','Ops desk'):agn(x.who)}</td><td>${fmtDate(x.due)}</td><td>${x.due<iso(TODAY)?pillF(L('באיחור','Overdue'),'red'):x.due<=soon?pillF(L('השבוע','This week'),'amber'):pillF(L('מתוכנן','Planned'),'')}</td></tr>`).join('')}</tbody></table></div><button class="hc-more" data-act="pt" data-v="optasks">${L('לכל המשימות','All tasks')} ${ic('chev','flip')}</button>`:`<p class="muted" style="margin:0">${L('כל המשימות הושלמו.','Every task is done.')}</p>`}</div></div>
+   ${t.room?`<div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('בלוק חדרים במלון','Hotel room block')}</h3></div><div class="od-room"><span class="od-ring">${hcRing(rp,84,'')}<b>${rp}%</b></span><div><b><bdi>${esc(t.room.hotel)}</bdi></b><div class="small muted">${fmtDate(t.dep)}</div></div></div><p class="small" style="margin:12px 0 0">${L(`${t.room.used} מתוך ${t.room.held} חדרים נוצלו מהבלוק. ${t.room.held-t.room.used} ניתנים לשחרור עד ${fmtDate(addDays(t.dep,-30))}.`,`${t.room.used} of ${t.room.held} rooms used from the block. ${t.room.held-t.room.used} can be released by ${fmtDate(addDays(t.dep,-30))}.`)}</p></div></div>`:''}</div>`;
 }
 /* Finance dashboard: the trip's own leak bridge */
 function pFinDash(t){
   if(t.stage==='Quote')return gate(t,L('דשבורד הכספים','The finance dashboard'));
   const c=calc(t),g=groupsCalc(t),M=leakModel([t]),open=tripGaps(t).filter(x=>isOpenGap(x.s)&&x.usd>0);
-  return `<div class="stats"><div class="stat"><div class="l">${L('סך הטיול','Trip total')}</div><div class="v">${usd(c.rev)}</div><div class="s">${paxL(t.pax)}</div></div>
+  const nIn=(t.inbox||[]).length,nChk=L(`${nIn} חשבוניות ספקים עדיין לא נבדקו. הרווח עשוי להשתנות.`,`${nIn} supplier invoice${nIn===1?' is':'s are'} not checked yet. Profit may change.`);
+  const oq=open.reduce((a,x)=>a+x.usd,0);
+  const lead=M.leak>0?L(`${hlNeg(usd(M.leak))} מהרווח המתוכנן דלפו בטיול הזה.`,`${hlNeg(usd(M.leak))} of planned profit leaked on this trip.`):nIn?nChk:L(`אין פערים בין החשבוניות להצעה. הרווח הצפוי ${hlPos(usd(c.fcProfit))}.`,`No differences between invoices and the quote. Expected profit is ${hlPos(usd(c.fcProfit))}.`);
+  return `<div class="stats fd-stats"><div class="stat"><div class="l">${L('סך הטיול','Trip total')}</div><div class="v">${usd(c.rev)}</div><div class="s">${paxL(t.pax)}</div></div>
    <div class="stat"><div class="l">${L('רווח מתוכנן','Planned profit')}</div><div class="v">${usd(c.planProfit)}</div><div class="s">${pct(c.planProfit/c.rev)}</div></div>
-   <div class="stat"><div class="l">${L('רווח צפוי','Expected profit')}</div><div class="v ${c.fcProfit<c.planProfit?'neg':''}">${usd(c.fcProfit)}</div><div class="s">${pct(c.fcProfit/c.rev)}</div></div>
+   <div class="stat pf"><div class="l">${L('רווח צפוי','Expected profit')}</div><div class="v ${c.fcProfit<c.planProfit?'neg':''}">${usd(c.fcProfit)}</div><div class="s">${pct(c.fcProfit/c.rev)}</div></div>
    <div class="stat"><div class="l">${L('יתרה לגבייה','Remaining to collect')}</div><div class="v">${usd(g.outstanding)}</div><div class="s">${usd(g.collected)} ${L('התקבלו','received')}</div></div></div>
-   <div class="card"><h3>${M.leak>0?L(`${usd(M.leak)} מהרווח המתוכנן דלפו בטיול הזה`,`${usd(M.leak)} of planned profit leaked on this trip`):L('הרווח המתוכנן נשמר','Planned profit is intact')}</h3>${wfSvg(M)}
-    ${open.length?`<div class="row" style="margin-top:8px"><span class="muted">${L(`${open.length} פערים פתוחים בסך ${usd(open.reduce((a,x)=>a+x.usd,0))}`,`${open.length} open gaps worth ${usd(open.reduce((a,x)=>a+x.usd,0))}`)}</span><button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button></div>`:''}</div>`;
+   <div class="card hc-card fd-card"><div class="hc-h"><h3>${L('הגנה על הרווח בטיול','Profit protection on this trip')}</h3>${open.length?`<span class="hc-pill red">${L(`${open.length} פערים פתוחים`,`${open.length} open ${open.length===1?'gap':'gaps'}`)}</span>`:nIn?`<span class="hc-pill blue">${L(`${nIn} לבדיקה`,`${nIn} to check`)}</span>`:`<span class="hc-pill green">${L('ללא פערים פתוחים','No open gaps')}</span>`}</div>
+    <p class="hc-lead">${lead}${open.length?' '+L(`${open.length} פערים פתוחים בסך ${hlWarn(usd(oq))}.`,`${open.length} open ${open.length===1?'gap':'gaps'} worth ${hlWarn(usd(oq))}.`):''}</p>${wfSvg(M).startsWith('<p class="muted">')?'':wfSvg(M)}
+    ${nIn||open.length?`<div class="row" style="margin-top:12px;justify-content:flex-end">${nIn?`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('בדקו חשבוניות','Check invoices')}</button>`:`<button class="btn sm pri" data-act="pt" data-v="tfin">${L('לבקרת החשבוניות','Open expenses')}</button>`}</div>`:''}</div>`;
 }
 /* Income: client documents per billing group, with the product's totals footer */
 function incomeDocs(t){
@@ -68,11 +83,11 @@ function pIncome(t){
   const {docs,g}=incomeDocs(t),c=calc(t),tab=S.incTab||'all',q=(S.incQ||'').toLowerCase();
   const billed=r2(docs.filter(d=>d.type==='deal').reduce((a,d)=>a+d.amt,0));
   const all=docs.filter(d=>(tab==='all'||d.type===tab)&&(!q||d.name.toLowerCase().includes(q))),rpp=S.incRpp||10,pages=Math.max(1,Math.ceil(all.length/rpp)),pg=Math.min(S.incPage||0,pages-1),rows=all.slice(pg*rpp,pg*rpp+rpp);
-  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('חשבונית מס קבלה','Tax invoice')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
+  const lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')},cnt=k=>docs.filter(d=>k==='all'||d.type===k).length;
   const stl=d=>d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber');
-  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}">${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
+  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('הכנסות','Income')}</h2><button class="btn pri" data-act="toast" data-v="${L('מסמך חדש נוצר כטיוטה','A new document was drafted')}" ${canIssueDocs()?'':`disabled title="${L('התפקיד שלך לא כולל הפקת מסמכים','Your role cannot issue documents')}"`}>${ic('invoice')} ${L('הפקת מסמך','Issue document')}</button></div>
    <div class="card inc" style="padding:0;overflow:hidden"><div class="row inc-f"><input type="text" data-inc="q" value="${esc(S.incQ||'')}" placeholder="${L('חיפוש...','Search...')}" aria-label="${L('חיפוש','Search')}"><button class="btn" data-act="toast" data-v="${L('סינון לפי סוג, סטטוס ותאריך','Filter by type, status and date')}">${ic('filter')} ${L('סינון','Filters')}</button></div>
-    <div class="tabs inc-t">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('חשבוניות מס','Tax invoices')]].map(x=>`<button class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
+    <div class="tabs inc-t" role="tablist" aria-label="${L('סוג מסמך','Document type')}">${[['all',L('הכל','All')],['deal',L('חשבוניות עסקה','Deal invoices')],['receipt',L('קבלות','Receipts')]].map(x=>`<button role="tab" aria-selected="${tab===x[0]}" class="${tab===x[0]?'on':''}" data-act="inctab" data-v="${x[0]}">${x[1]} <span class="cnt">${cnt(x[0])}</span></button>`).join('')}</div>
     <div class="scroll"><table class="tbl"><thead><tr><th>${L('שם לקוח','Client name')}</th><th>${L('סוג מסמך','Document type')}</th><th>${L('מספר','Number')}</th><th>${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
     <tbody>${rows.map(d=>`<tr><td><strong>${esc(d.name)}</strong></td><td>${lab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${stl(d)}</td></tr>`).join('')||`<tr><td colspan="6" class="muted">${L('אין מסמכים.','No documents.')}</td></tr>`}</tbody></table></div>
     <div class="inc-pg"><label class="small muted">${L('שורות בעמוד','Rows per page')} <select data-ch="incrpp" aria-label="${L('שורות בעמוד','Rows per page')}">${[5,10,25].map(n=>`<option value="${n}" ${rpp===n?'selected':''}>${n}</option>`).join('')}</select></label><span class="small muted" dir="ltr">${all.length?pg*rpp+1:0}–${Math.min(all.length,pg*rpp+rpp)} ${L('מתוך','of')} ${all.length}</span><button class="iconb" data-act="incpg" data-v="${pg-1}" ${pg===0?'disabled':''} aria-label="${L('הקודם','Previous')}">${ic('chev','flip back')}</button><button class="iconb" data-act="incpg" data-v="${pg+1}" ${pg>=pages-1?'disabled':''} aria-label="${L('הבא','Next')}">${ic('chev','flip')}</button></div>

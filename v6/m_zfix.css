@@ -1,0 +1,103 @@
+/* v8 QA fixes that cut across modules. Loads last among m_*.css. Tokens only; logical properties only. */
+
+/* landing page phone frame: the same dark frame in day and night mode */
+.pr-dev{border-color:#1C252E;background:#1C252E}
+.pr-bezel{background:#1C252E}
+.pr-bezel span{background:#637381}
+
+/* room for the floating Maya button below the last row */
+.content{padding-bottom:96px}
+
+/* scroll cue for wide tables: edge shadows that show only where more content is hidden (CSS only, RTL safe) */
+.scroll{
+  background:
+    linear-gradient(to right,var(--panel) 30%,transparent) left center/40px 100% no-repeat local,
+    linear-gradient(to left,var(--panel) 30%,transparent) right center/40px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%,var(--scrollsh,rgba(15,30,60,.22)),transparent) left center/14px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%,var(--scrollsh,rgba(15,30,60,.22)),transparent) right center/14px 100% no-repeat scroll;
+}
+:root[data-theme="dark"] .scroll{--scrollsh:rgba(0,0,0,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scroll{--scrollsh:rgba(0,0,0,.6)}}
+
+/* hero bands (agent and accountant home): labels readable on the dark-blue gradient in both modes */
+.db-hero .hp-k,.da-hero .hp-k{color:var(--hero-ink)}
+.db-hero .hp-st small,.da-hero .hp-st small,.db-hero .hp-kpi span,.da-hero .hp-kpi span,.db-hero .hp-hi p,.da-hero .hp-hi p,.db-hero .da-leg,.da-hero .da-leg{color:color-mix(in srgb,var(--hero-ink) 88%,transparent)}
+.db-hero .hp-kpi span,.da-hero .hp-kpi span{font-weight:700}
+.db-hero .hp-k,.da-hero .hp-k{font-weight:700}
+
+/* accessibility (design-system section 10): contrast of at least 4.5:1 for normal text */
+/* light mode: darker green and amber text tokens (pills, chips, positive figures); dark mode keeps its light shades */
+:root[data-theme="light"]{--green:#0B7442;--orange:#8F5500;--yellow:#8F5500;--amber:#8F5500}
+/* small headings that people read use the muted token (the disabled grey is for disabled controls only) */
+.nvh,.dv-s h4{color:var(--muted)}
+/* green button: dark green with white text in both modes (5.4:1) */
+.btn.grn{background:#0B7A47;border-color:#0B7A47;color:#fff}
+.btn.grn:hover{background:#08633A;border-color:#08633A}
+/* the Presentation button is a demo control, not a product one: brand dark blue gives 7.6:1 with white text */
+.tourbtn.meetbtn{background:var(--primary-dark)!important;border-color:var(--primary-dark)!important}
+.tourbtn.meetbtn:hover{background:var(--primary-darker)!important}
+
+/* Maya launcher: compact 56 px round button everywhere except desktop Home (labeled pill) */
+.chenfab.cmp,.chenfab.cmp:hover{width:56px;height:56px;padding:0!important;justify-content:center;gap:0}
+.chenfab.cmp span:not(.chenav){display:none}
+.chenfab.cmp .chenav{width:44px!important;height:44px!important}
+.chenfab.cmp::after{inset-inline-start:40px;top:6px}
+.chenfab::before{content:attr(data-tip);position:absolute;inset-inline-end:calc(100% + 10px);top:50%;transform:translateY(-50%);white-space:nowrap;background:var(--ink);color:var(--bg);font:600 12.5px var(--f-ui);padding:6px 10px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .15s}
+.chenfab:hover::before,.chenfab:focus-visible::before{opacity:1}
+.chenfab:not(.cmp)::before{display:none}
+@media (max-width:640px){
+  .chenfab,.chenfab:hover{width:56px;height:56px;padding:0!important;justify-content:center;gap:0}
+  .chenfab .chenav{width:44px!important;height:44px!important}
+  .chenfab::after{inset-inline-start:40px;top:6px}
+  .chenfab::before{display:none}
+  .chenfab:not(.cmp)::before{display:none}
+}
+.maya-nudge::after{inset-inline-end:40px}
+
+/* clarity round: roles and permissions matrix, toggles, segmented controls */
+.st-sw i{background:var(--muted);opacity:1}
+.st-sw input:disabled+i{opacity:.7}
+.st-sw input:checked:disabled+i{background:var(--primary);opacity:.8}
+.st-sw input:not(:checked):disabled+i{opacity:.55}
+.st-lock{cursor:help}
+@media (max-width:600px){
+  .st-tbl,.st-tbl tbody{display:block}
+  .st-tbl thead{display:none}
+  .st-tbl tr{display:grid;grid-template-columns:repeat(4,1fr);align-items:center;gap:10px 0;padding:12px 0;border-bottom:1px solid var(--line)}
+  .st-tbl tr.st-grp{padding:0;border:0;display:block}
+  .st-tbl tr.st-grp th{display:block}
+  .st-tbl td{border:0;padding:0}
+  .st-tbl td.st-pn{grid-column:1/4;min-width:0}
+  .st-tbl td.st-tagc{grid-column:4;justify-self:end}
+  .st-tbl td.st-c{width:auto;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+  .st-tbl td.st-c::before{content:attr(data-r);order:-1;font:600 11px var(--f-ui);color:var(--muted)}
+}
+.tbd-bar button.on,.pr-seg button.on{box-shadow:0 0 0 1px var(--line2),var(--sh-card)}
+.pr-seg{gap:4px;padding:4px;border-radius:12px;border-color:transparent}
+.pr-seg button{border-radius:9px;color:var(--muted);font-weight:600;font-size:14px}
+.pr-seg button+button{border-inline-start:0}
+.pr-seg button.on{background:var(--panel);color:var(--ink)}
+:root[data-theme="dark"] .tbd-bar button.on,:root[data-theme="dark"] .pr-seg button.on{background:var(--primary-dark);color:#fff;box-shadow:0 0 0 1px var(--primary)}
+:root[data-theme="dark"] .pr-dev{box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .tbd-bar button.on,:root:not([data-theme="light"]) .pr-seg button.on{background:var(--primary-dark);color:#fff;box-shadow:0 0 0 1px var(--primary)}
+  :root:not([data-theme="light"]) .pr-dev{box-shadow:0 0 0 1px rgba(255,255,255,.3)}
+}
+
+/* phones: tab strips scroll sideways with a fade cue where more tabs are hidden */
+@media (max-width:600px){
+  .tabs{scrollbar-width:none;padding-inline-end:20px;
+    background:
+      linear-gradient(to right,var(--bg) 30%,transparent) left center/32px 100% no-repeat local,
+      linear-gradient(to left,var(--bg) 30%,transparent) right center/32px 100% no-repeat local,
+      linear-gradient(to right,var(--bg),transparent) left center/18px 100% no-repeat scroll,
+      linear-gradient(to left,var(--bg),transparent) right center/18px 100% no-repeat scroll}
+  .tabs::-webkit-scrollbar{display:none}
+}
+@media (max-width:600px){.card input[data-ch="name"]{width:100%!important}}
+
+/* stage pill in project lists; names and date ranges stay on one line */
+.stq{flex-wrap:nowrap;white-space:nowrap}
+.stq small{font-size:12px}
+.tbl td>bdi,.tbl td .row[style*="nowrap"]{white-space:nowrap}
+.ocard .oc-s{display:block;font:500 12.5px var(--f-ui);color:var(--muted);margin-top:2px}

@@ -1,0 +1,90 @@
+/* v8.2 (letter c): Suppliers, Hotels, Activities, Clients, Tasks and Master list in the command-center language.
+   Tokens only, logical properties, day and night. Classes: cg-* catalog photo grid, sp-* supplier extras, op-* ops extras. */
+
+/* catalog photo grid (Hotels, Activities) */
+.cg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:16px;margin-top:14px}
+.cg-card{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--panel);padding:0;text-align:start;cursor:pointer;font:inherit;color:var(--ink);transition:transform .15s ease,box-shadow .15s ease}
+.cg-card:hover{transform:translateY(-2px);box-shadow:var(--sh-card)}
+.cg-card:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+.cg-ph{position:relative;display:block;height:132px;background-color:var(--recess)}
+.cg-ph.nophoto{display:grid;place-items:center}
+.cg-big{font:800 54px/1 var(--f-ui);color:rgba(255,255,255,.85)}
+.cg-kind{position:absolute;inset-inline-end:10px;bottom:10px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--tc,var(--primary));color:#fff;box-shadow:0 4px 10px -4px rgba(0,0,0,.5)}
+.cg-kind svg{width:18px;height:18px}
+.cg-chip{position:absolute;top:10px;inset-inline-start:10px;display:inline-flex;align-items:center;gap:4px;font:700 12px var(--f-ui);padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#1C252E}
+.cg-chip .al-stars{display:inline-flex;color:#B76E00}
+.cg-chip svg{width:13px;height:13px}
+[data-theme="dark"] .cg-chip{background:rgba(22,28,36,.9);color:#fff}
+.cg-b{display:flex;flex-direction:column;gap:4px;padding:14px}
+.cg-b>b{font-size:14.5px;line-height:1.3}
+.cg-sub{font-size:12.5px;color:var(--muted)}
+.cg-brand{margin-top:2px}
+.cg-foot{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:8px;padding-top:10px;border-top:1px dashed var(--line)}
+.cg-foot b{font:800 16px var(--f-num)}
+.cg-foot small{font-size:12px;color:var(--muted)}
+.cg-none{padding:28px 8px;text-align:center;color:var(--muted)}
+.al-card.hc-card{margin-bottom:20px}
+.al-card.hc-card .al-pg{margin-top:14px}
+@keyframes cgUp{from{opacity:0;transform:translateY(8px)}}
+.cg-card{animation:cgUp .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0ms)}
+@media (prefers-reduced-motion:reduce){.cg-card{animation:none}}
+
+/* suppliers: header band extras, ring row, phone cards */
+.sp-hbar{display:flex;align-items:center;gap:12px;margin-top:16px}
+.sp-hdx .sp-big{width:56px;height:56px;border-radius:16px;font-size:24px;box-shadow:0 6px 16px -6px rgba(0,0,0,.5)}
+.sp-hbadge{display:inline-flex;padding:4px 8px;border-radius:10px;background:var(--panel);color:var(--ink)}
+.sp-hdx .hc-btn[disabled]{opacity:.5;cursor:not-allowed}
+.sp-hdx .hc-kpi b svg{width:22px;height:22px;color:#FFD666;vertical-align:-3px}
+.hc-btn[disabled]{opacity:.5;cursor:not-allowed}
+.sp-ringrow{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.op-ring{position:relative;display:grid;place-items:center;flex:none}
+.op-ring .hc-ring{display:block}
+.op-ring b{position:absolute;font:800 12px var(--f-num);color:var(--ink)}
+.hc-ring.ok .br{stroke:var(--green)}
+.hc-grid>.hc-c12{display:flex;flex-direction:column;gap:20px}
+.hc-card .sp-kv{margin:0}
+.hc-card .sp-rh{margin-bottom:10px}
+.sp-top .sp-sum{margin:0}
+.sp-tcard .tbl{margin:0}
+.sp-panels{display:flex;flex-direction:column;gap:20px}
+.sp-un,.sp-cmp{margin:0}
+.cl-fin .hc-lead{flex:1 1 260px}
+
+/* tasks and master list: windows as cards with rings, KPI tiles */
+.op-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.op-tile{cursor:default;background:var(--panel);border-radius:16px;padding:14px 16px}
+.op-tile:hover{border-color:var(--line)}
+.op-tile b{font:800 26px/1.1 var(--f-num)}
+.op-tile.rk b{color:var(--red)}
+.op-tile.ok b{color:var(--ink)}
+.op-tp{display:flex;align-items:center;gap:10px}
+.op-tp b{font-size:18px}
+.op-tile small{line-height:1.35}
+.op-win.hc-card,.op-filters.hc-card{margin-bottom:20px}
+.op-wh.hc-h{flex-wrap:nowrap;justify-content:flex-start;gap:14px}
+.op-wt{flex:1;min-width:0}
+.op-wt h3{margin:0;font-size:17px}
+.op-wh .hc-pill{margin-inline-start:auto;white-space:nowrap}
+.op-blocks.hc-card{margin-bottom:20px}
+
+/* phones */
+@media (max-width:1100px){.op-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){
+  .cg-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .cg-ph{height:96px}.cg-b{padding:10px}.cg-b>b{font-size:13.5px}.cg-foot b{font-size:14px}.cg-big{font-size:38px}
+  .cg-chip{font-size:11px;padding:3px 7px}
+  .op-tiles{gap:10px}
+  .op-wh.hc-h{flex-wrap:wrap}
+  /* supplier list: one compact card per supplier */
+  .sp-tbl,.sp-tbl tbody,.sp-tbl tr,.sp-tbl td{display:block}
+  .sp-tbl thead{display:none}
+  .sp-tbl{border:0}
+  .sp-tbl tr.sp-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:14px;margin:0 0 10px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+  .sp-tbl td{padding:0;border:0;width:auto}
+  .sp-tbl td:nth-child(1){flex:1 1 100%}
+  .sp-tbl td:nth-child(3),.sp-tbl td:nth-child(6),.sp-tbl td:nth-child(7),.sp-tbl td:nth-child(9),.sp-tbl td:nth-child(11){display:none}
+  .sp-tbl td:nth-child(10){margin-inline-start:auto;font-weight:700}
+  .sp-tbl td.al-none{display:block;flex:1 1 100%;text-align:center}
+}
+.op-btbl .hc-pill{display:inline-block;white-space:nowrap}
+.sp-hbar{margin-top:0;margin-bottom:14px;order:-1}

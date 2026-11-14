@@ -1,0 +1,79 @@
+/* v8.2d: Trip studio, Maya page, Templates, Users, What's live, Photo credits in the command-center language.
+   Tokens only, logical properties, day and night. */
+.hc-st{display:inline-block;margin-inline-start:10px;vertical-align:top}
+.hc-hero .hc-st .pill{background:rgba(255,255,255,.14);color:var(--hero-ink)}
+
+/* Trip studio */
+.st-wrap{gap:20px}
+.st-form.hc-card{padding:18px}
+.st-res{gap:20px}
+.st-hero{border-radius:20px}
+.st-lead{margin:0;font-size:15px;color:var(--hero-mute)}
+.st-map{position:relative}
+.d-mapl{position:absolute;top:12px;inset-inline-start:14px;display:flex;align-items:center;gap:6px;font:700 11px var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--mint)}
+.d-mapl svg{width:14px;height:14px}
+.st-hotels{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.hcard.d-hot{padding:0;overflow:hidden;gap:0;border-radius:16px}
+.d-hph{display:block;height:112px;background:linear-gradient(135deg,var(--hero1),var(--hero2));overflow:hidden}
+.d-hph .d-him{width:100%;height:100%;object-fit:cover;display:block}
+.d-hb{display:flex;flex-direction:column;gap:6px;padding:12px}
+.hcard.d-hot.on{box-shadow:0 0 0 2px var(--primary);border-color:var(--primary)}
+.hcard.d-hot .pick{color:var(--primary)}
+.st-two{gap:20px}.st-side{gap:20px}
+.st-empty{border-radius:20px}
+
+/* Maya page */
+.d-mode{margin-top:14px}
+.d-mode .pill{background:rgba(255,255,255,.14);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28)}
+.d-maya{align-items:start}
+.d-maya .hc-c5{gap:14px}
+.d-qg{padding:16px}
+.d-qg .hc-h{margin-bottom:10px}.d-qg .hc-h h3{font-size:15px}
+.d-qc{display:flex;flex-wrap:wrap;gap:6px}
+.d-qc .chip{white-space:normal;text-align:start;height:auto;line-height:1.3;padding:6px 10px}
+.d-chatc .chat{margin-bottom:14px;gap:12px}
+.d-chatc .msg{max-width:min(76ch,92%);font-size:14.5px;line-height:1.5;overflow-wrap:anywhere}
+.d-ask{gap:8px;flex-wrap:nowrap;padding-top:4px}
+.d-ask input{flex:1;min-width:0}
+.lv-card.hc-card{margin:0}
+
+/* Templates */
+.d-tg{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.d-tc.tpl{padding:0;margin:0;overflow:hidden;display:flex;flex-direction:column}
+.d-tph{height:130px;display:flex;align-items:flex-start;padding:10px;background-size:cover}
+.d-tph .hc-pill{background:rgba(255,255,255,.92);color:#1C252E}
+.d-tb{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.d-tb ul{margin:4px 0 8px}
+.d-tb .btn{align-self:flex-start;margin-top:auto}
+
+/* Users */
+.d-ug{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.d-uc{border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--panel)}
+.d-uc.on{border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 30%,transparent)}
+.d-ut{display:flex;align-items:center;gap:12px}
+.d-ut b{display:block;margin-bottom:4px}
+.d-uc p{margin:0;flex:1}
+.d-uf{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+
+/* What's live */
+.rm-grid{gap:20px}
+.rm-col.hc-card{gap:2px}
+.rm-n{margin-inline-start:auto;font:800 22px var(--f-num);color:var(--ink)}
+.rm-live{border-top:4px solid var(--green)}.rm-pilot{border-top:4px solid var(--primary)}.rm-roadmap{border-top:4px solid var(--amber)}
+.rm-f+.rm-f{border-top:1px dashed var(--line)}
+
+/* Photo credits */
+.d-crc{margin-bottom:20px}
+.d-crn{margin:0 0 14px}
+
+@media (max-width:600px){
+  .d-ug,.d-tg{grid-template-columns:minmax(0,1fr)}
+  .d-chatc .msg{max-width:94%}
+  .st-hotels{grid-template-columns:minmax(0,1fr)}
+  .st-form.hc-card,.hc-card{padding:16px}
+}
+
+.hc-st{vertical-align:baseline;margin-bottom:10px}
+.d-hph:empty{display:none}
+.st-hero .hl.key{color:var(--hero-ink)}.st-hero .hl.pos{color:var(--mint)}.st-hero .hl.neg{color:#FFB4A9}
+@media (min-width:1100px){.d-chatc{position:sticky;top:12px}}
