@@ -113,7 +113,7 @@ function genPlan(o){
 /* ---------- view ---------- */
 function stForm(g){
   const ks=Object.keys(DESTS),ch=(k,v,lab)=>`<button class="chip ${g[k]===v?'on':''}" data-act="gset" data-k="${k}" data-v="${v}">${lab}</button>`;
-  return `<div class="card st-form">
+  return `<div class="card hc-card st-form">
    <div class="st-sec"><div class="lbl">${L('יעד','Destination')}<span>${ks.length}</span></div><div class="st-dests">${ks.map(k=>{const d=DESTS[k];return `<button class="st-d ${g.dest===k?'on':''} ${GEN_NEW.includes(k)?'new':''} ${phSrc('dest',k)?'has-ph':''}" style="--dc:${REGC[d.country]||'#14b8a6'}${phSrc('dest',k)?`;--ph:url(${phSrc('dest',k)})`:''}" data-act="gset" data-k="dest" data-v="${k}">${dn(k)}<small>${cn(k)}</small></button>`;}).join('')}</div></div>
    <div class="st-sec"><div class="lbl">${L('סוג קבוצה','Group type')}</div><div class="chips">${Object.keys(SEG).map(s=>ch('seg',s,sn(s))).join('')}</div></div>
    <div class="st-sec"><div class="lbl">${L('נוסעים','Travelers')}</div><div class="st-range"><input type="range" min="12" max="60" value="${g.pax}" data-gen="pax" aria-label="${L('נוסעים','Travelers')}"><output>${g.pax}</output></div></div>
@@ -139,23 +139,24 @@ function stResult(P,anim){
     <div class="tl-c"><div class="hd"><strong>${esc(dy.cn||dn(g.dest))}</strong>${P.bases.length>1?`<span class="small muted"> · ${esc(dy.base)}</span>`:''}<span class="small muted">${dy.hrs} ${L('שעות','hrs')}</span></div>
     ${dy.items.map(x=>{const pu=x.k!=='travel'&&x.k!=='meal'?phVenueBy(x.n):'';return `<div class="tl-it"><span class="k${pu?' kph':''}">${pu?`<img src="${pu}" alt="" loading="lazy" decoding="async">`:VK[x.k]}</span><span>${esc(x.n)}</span><span class="h">${x.h} ${L('ש׳','h')}</span></div>`;}).join('')}
     <div class="hrs ${dy.hrs>9?'hot':''}"><i style="width:${Math.min(100,dy.hrs/12*100)}%"></i></div>${dy.hrs>9?`<div class="small" style="color:var(--orange);margin-top:4px">${dy.travel?L('יום נסיעה ארוך. כדאי לשקול לינת ביניים.','A long travel day. Consider an overnight stop on the way.'):L('יום ארוך. כדאי לפצל לשני ימים.','A long day. Consider splitting it.')}</div>`:''}</div></div>`).join('');
-  const hotels=P.hotels.length?`<div class="card"><h3>${L('מלון','Hotel')} <span class="small muted">· ${L('לחיצה מחליפה ומתמחרת מחדש','click to swap and re-price')}</span></h3><div class="st-hotels">${P.hotels.map(h=>`<button class="hcard ${P.bases.some(b=>b.hotel.id===h.id)?'on':''}" data-act="gset" data-k="hotel" data-v="${esc(h.id)}">${phImg('hotel',h.id,'hc-ph',h.name)}
+  const hotels=P.hotels.length?`<div class="card hc-card"><div class="hc-h"><h3>${L('אפשרויות מלון','Hotel options')}</h3><span class="muted small">${L('לחיצה מחליפה ומתמחרת מחדש','Click to swap and re-price')}</span></div><div class="st-hotels">${P.hotels.map(h=>`<button class="hcard d-hot ${P.bases.some(b=>b.hotel.id===h.id)?'on':''}" data-act="gset" data-k="hotel" data-v="${esc(h.id)}"><span class="d-hph">${phImg('hotel',h.id,'d-him',h.name)}</span><span class="d-hb">
       <div class="row2">${brandBadge(h.family)}${P.bases.some(b=>b.hotel.id===h.id)?`<span class="pick">${L('בתוכנית','In the plan')}</span>`:''}</div><div class="nm">${esc(h.name)}</div>
-      <div class="row2">${stars(h.stars)}<span>${usd(h.rate)} / ${L('לילה','night')}</span></div>${h.note?`<div class="small muted">${esc(h.note)}</div>`:''}</button>`).join('')}</div>
+      <div class="row2">${stars(h.stars)}<span>${usd(h.rate)} / ${L('לילה','night')}</span></div>${h.note?`<div class="small muted">${esc(h.note)}</div>`:''}</span></button>`).join('')}</div>
       <p class="st-note">${L('שמות המלונות אמיתיים. התעריפים להמחשה בלבד ואינם הצעת מחיר.','Hotel names are real. Rates are illustrative, not quotes.')}</p></div>`:'';
-  const mix=`<div class="card"><h3>${L('לאן הולך הכסף, לנוסע','Where the money goes, per traveler')}</h3><div class="cmix">${types.map(k=>`<i style="width:${c.byType[k].plan/tot*100}%;background:${TYPEC[k]}" title="${tyn(k)}"></i>`).join('')}</div>
+  const mix=`<div class="card hc-card"><div class="hc-h"><h3>${L('לאן הולך הכסף, לנוסע','Where the money goes, per traveler')}</h3></div><div class="cmix">${types.map(k=>`<i style="width:${c.byType[k].plan/tot*100}%;background:${TYPEC[k]}" title="${tyn(k)}"></i>`).join('')}</div>
     <div class="cleg">${types.map(k=>`<span><b style="background:${TYPEC[k]}"></b>${tyn(k)}<em>${usd(c.byType[k].plan/g.pax)}</em></span>`).join('')}</div></div>`;
-  const hist=`<div class="card"><h3>${L('מול ההיסטוריה שלכם','Against your history')}</h3>${P.past?`<p style="margin:0">${L(`${P.past} טיולים קודמים ל${dn(g.dest)} הרוויחו בממוצע ${pct(P.pastM)}. התוכנית הזו מתוכננת ל-${pct(P.margin)}.`,`${P.past} past ${dn(g.dest)} trips planned an average margin of ${pct(P.pastM)}. This plan is set at ${pct(P.margin)}.`)}</p>`:`<p style="margin:0">${L(`אין עדיין טיולים קודמים ל${dn(g.dest)}. המרקאפ נלקח מסוג הקבוצה.`,`No past ${dn(g.dest)} trips yet. Markups come from the group type.`)}</p>`}
+  const hist=`<div class="card hc-card"><div class="hc-h"><h3>${L('מול ההיסטוריה שלכם','Against your history')}</h3></div>${P.past?`<p style="margin:0">${L(`${P.past} טיולים קודמים ל${dn(g.dest)} הרוויחו בממוצע ${pct(P.pastM)}. התוכנית הזו מתוכננת ל-${pct(P.margin)}.`,`${P.past} past ${dn(g.dest)} trips planned an average margin of ${pct(P.pastM)}. This plan is set at ${pct(P.margin)}.`)}</p>`:`<p style="margin:0">${L(`אין עדיין טיולים קודמים ל${dn(g.dest)}. המרקאפ נלקח מסוג הקבוצה.`,`No past ${dn(g.dest)} trips yet. Markups come from the group type.`)}</p>`}
     <p class="st-note">${L(`${P.lines.length} שורות עלות, ${c.byType.Activities?P.lines.filter(l=>l.type==='Activities').length:0} אטרקציות, מטבע ${d.cur}. אותו חישוב כמו בכל הצעת מחיר.`,`${P.lines.length} cost lines, ${P.lines.filter(l=>l.type==='Activities').length} attractions, priced in ${d.cur}. Same math as every quote.`)}</p></div>`;
   return `<div class="st-res ${anim?'anim':''}">
    <div class="lk-hero st-hero ${phSrc('dest',g.dest)?'has-ph':''}" ${phSrc('dest',g.dest)?`style="--ph:url(${phSrc('dest',g.dest)})"`:''}><div class="txt"><div class="small" style="color:#5eead4;font-weight:700;letter-spacing:.08em;text-transform:uppercase">${L('טיוטת תוכנית','Draft plan')} · ${sn(g.seg)}</div>
      <h2>${dn(g.dest)}: ${g.nights} ${L('לילות','nights')}, ${g.pax} ${L('נוסעים','travelers')}</h2>
      <div class="st-meta"><span>${fmtDate(P.start)} – ${fmtDate(end)}</span><span>${P.bases.map(b=>esc(b.hotel.name)+(P.bases.length>1?` (${b.nights})`:'')).join(' · ')}</span><span>${P.route.length===1?L('תחנה אחת','1 stop'):`${P.route.length} ${L('תחנות','stops')}`}</span></div>
+     <p class="st-lead">${L(`${hlKey(usd(P.pp))} לנוסע, עם שולי רווח של ${P.margin*100<S.thresh?hlNeg(pct(P.margin)):hlPos(pct(P.margin))}.`,`${hlKey(usd(P.pp))} per traveler at a ${P.margin*100<S.thresh?hlNeg(pct(P.margin)):hlPos(pct(P.margin))} planned margin.`)}</p>
      <div class="st-price"><div class="pp"><span class="n" data-count="${P.pp}">${usd(P.pp)}</span><small>${L('מחיר לנוסע','price per traveler')}</small></div>${ring(P.margin,S.thresh)}</div>
      <div class="st-kv"><div>${L('מחיר כולל','Total price')}<b>${usd(c.rev)}</b></div><div>${L('רווח מתוכנן','Planned profit')}<b>${usd(c.planProfit)}</b></div><div>${L('עלות לנוסע','Cost per traveler')}<b>${usd(c.plan/g.pax)}</b></div></div>
      <div class="st-actions"><button class="btn glow" data-act="gcreate">${L('צור הצעת מחיר','Create the quote')} ${ic('right','flip')}</button><button class="btn ghost" data-act="ggo">${ic('refresh')} ${L('בנה מחדש','Rebuild')}</button></div></div>
-     <div class="st-map">${map}</div></div>
-   <div class="st-two"><div class="card"><h3>${L('המסלול יום אחר יום','Day by day')}</h3><div class="tl">${tl}</div></div><div class="st-side">${hotels}${mix}${hist}</div></div></div>`;
+     <div class="st-map" role="group" aria-label="${L('מפת המסלול','Route map')}"><span class="d-mapl">${ic('pin')} ${L('המסלול','Route')}</span>${map}</div></div>
+   <div class="st-two"><div class="card hc-card"><div class="hc-h"><h3>${L('המסלול יום אחר יום','Day by day')}</h3><span class="muted small">${P.days.length} ${L('ימים','days')}</span></div><div class="tl">${tl}</div></div><div class="st-side">${hotels}${mix}${hist}</div></div></div>`;
 }
 const GEN_STEPS=[
   g=>L(`קורא טיולים קודמים ל${dn(g.dest)}`,`Reading past ${dn(g.dest)} trips and templates`),
@@ -174,8 +175,10 @@ function stRight(){
 }
 function vStudio(){
   const g=S.gen||(S.gen=G0()),right=stRight();
-  return head(L('סטודיו לטיולים','Trip studio'),pillF(L('חדש','New'),'green'))+`<p class="muted">${L('מהבקשה של הלקוח להצעה מתומחרת: כל שינוי בצד ימין מתעדכן מיד בתוכנית.','From the client\'s request to a priced proposal. Every change on the left updates the plan instantly.')}</p>
-   <div class="st-wrap">${stForm(g)}<div id="st-right">${right}</div></div>`;
+  const page=hcPage({eyebrow:L('מכירות','Sales'),title:L('סטודיו לטיולים','Trip studio'),aria:L('סטודיו לטיולים','Trip studio'),
+    brief:L('בחרו יעד, גודל קבוצה ותאריך. טריפלאנט בונה את המסלול, המלונות והמחיר לנוסע.','Pick a destination, a group size and a date. Triplanet builds the route, hotels and price per traveler.'),
+    ctas:[hcCta('mint','magic',g.built?L('בנה מחדש','Rebuild the plan'):L('בנה תוכנית טיול','Build the trip plan'),'data-act="ggo"'),hcCta('ghost','templates',L('תבניות','Templates'),'data-act="go" data-v="templates"')]});
+  return page+`<div class="st-wrap">${stForm(g)}<div id="st-right">${right}</div></div>`;
 }
 function genRun(){
   const g=S.gen||(S.gen=G0());
@@ -251,3 +254,11 @@ function vHotels2(){
 VIEWS.hotels=vHotels2;
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="hfam"]');if(b){S.hFam=b.dataset.v;render();}});
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.ch==='hdest'){S.hDest=el.value;render();}});
+
+/* ---------- v8.2d helpers: Users > Roles link, Maya page Esc = back to Home ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="d-roles"]');if(!b)return;S.stSub='roles';S.tab='settings';S.menu=false;render();window.scrollTo(0,0);});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape'||e.defaultPrevented||S.tab!=='ai'||S.menu||S.chen||S.form||S.liveCfg||S.meet>=0||S.tour>=0)return;
+  if(document.querySelector('.gs-root,.modal,[role="dialog"]'))return;
+  const ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)){ae.blur();return;}
+  S.tab='home';render();window.scrollTo(0,0);},true);

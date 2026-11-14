@@ -86,7 +86,7 @@ button.hc-kpi:hover{background:rgba(255,255,255,.14)}
 .hc-rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin:0 -4px;padding-inline:4px}
 .hc-dep{scroll-snap-align:start;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--panel);padding:0;text-align:start;cursor:pointer;font:inherit;color:var(--ink);transition:transform .15s ease,box-shadow .15s ease}
 .hc-dep:hover{transform:translateY(-2px);box-shadow:var(--sh-card)}
-.hc-ph{position:relative;height:120px;display:block}
+.hc-dph{position:relative;height:120px;display:block}
 .hc-when{position:absolute;top:10px;inset-inline-start:10px;font:700 12px var(--f-ui);padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#1C252E}
 .hc-when.soon{background:var(--mint);color:var(--hero1)}
 .hc-rd{position:absolute;bottom:-20px;inset-inline-end:12px;width:44px;height:44px;border-radius:50%;background:var(--panel);display:grid;place-items:center;box-shadow:var(--sh-card)}

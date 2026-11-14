@@ -103,7 +103,7 @@ function hcDepartures(m){
     const bg=phBg(phSrc('dest',t.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))');
     const pt=t.stage==='Quote'?'general':'odash';
     return `<button class="hc-dep" style="--d:${i*70}ms" data-act="open" data-v="${t.id}" data-pt="${pt}">
-     <span class="hc-ph" style="${bg}"><span class="hc-when ${dd<=30?'soon':''}">${hcIn(dd)}</span>${rd!=null?`<span class="hc-rd" title="${L('מוכנות','Readiness')}">${hcRing(rd,44,'sm')}<b>${rd}%</b></span>`:`<span class="hc-stq">${t.stage==='Quote'?L('הצעה','Quote'):stn(t.stage)}</span>`}</span>
+     <span class="hc-dph" style="${bg}"><span class="hc-when ${dd<=30?'soon':''}">${hcIn(dd)}</span>${rd!=null?`<span class="hc-rd" title="${L('מוכנות','Readiness')}">${hcRing(rd,44,'sm')}<b>${rd}%</b></span>`:`<span class="hc-stq">${t.stage==='Quote'?L('הצעה','Quote'):stn(t.stage)}</span>`}</span>
      <span class="hc-dt"><b><bdi>${esc(t.name)}</bdi></b><span>${fmtDate(t.dep)} · ${dn(t.dest)}</span><span class="hc-who">${avatarOf(agn(t.agent),'xs')}${esc(String(agn(t.agent)).split(' ')[0])} · ${paxL(t.pax)}</span></span></button>`;};
   return `<div class="card hc-card hc-deps"><div class="hc-h"><h3>${L('היציאות הקרובות','Coming up')}</h3><span class="muted small">${L('הטבעת מראה כמה התיק מוכן: משימות, דרכונים, ספקים ומקדמות','The ring shows how ready a file is: tasks, passports, suppliers and deposits')}</span></div>
    <div class="hc-rail" role="list">${m.dep.map(card).join('')}</div></div>`;

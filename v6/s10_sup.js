@@ -1,8 +1,8 @@
 /* v8 module "sp": suppliers page, supplier card, in-trip supplier management (Contact / Pending / Approved / Price comparison), client card.
    Wraps VIEWS.suppliers (sub 'bank') and reassigns vClients. Every mutation is a named function (spSetFlow, spRequest, spChoose, spAssign,
    spOpen, spClose, spCliOpen, spCliClose) so tests can call it. Real brands (supplier.real): no performance, no amber, no negative wording. */
-Object.assign(S,{supId:null,spTab:'ov',spQ:'',spDest:'All',spCat:'All',spPref:'All',spPage:0,spRpp:10,spBack:null,cliId:null,cliTab:'ov'});
-const SP_UI=()=>({supId:null,spTab:'ov',spQ:'',spDest:'All',spCat:'All',spPref:'All',spPage:0,spRpp:10,spBack:null,cliId:null,cliTab:'ov'});
+Object.assign(S,{supId:null,spTab:'ov',spQ:'',spDest:'All',spCat:'All',spPref:'All',spPage:0,spRpp:10,spBack:null,cliId:null,cliTab:'ov',spDocs:false,spUsed:false});
+const SP_UI=()=>({supId:null,spTab:'ov',spQ:'',spDest:'All',spCat:'All',spPref:'All',spPage:0,spRpp:10,spBack:null,cliId:null,cliTab:'ov',spDocs:false,spUsed:false});
 {const r0=resetDemo;resetDemo=function(){r0();Object.assign(S,SP_UI());};}
 
 /* ---------- labels and small helpers ---------- */
@@ -53,6 +53,12 @@ function spDocs(s){
   if(!parts.length)parts.push(any?pillF(L('תקין','Complete'),'green'):'<span class="muted">–</span>');
   return `<span class="sp-docs">${parts.join('')}</span>`;
 }
+/* does a fictional supplier have a document to renew (W-9 missing, insurance certificate expired or due within 60 days)? */
+function spDocAttn(s){
+  if(s.real||!s.docs)return {w9:false,exp:0,out:0,any:false};
+  const d=s.docs,n=d.coi?spDays(d.coi):null,w9=d.w9===false,exp=n!=null&&n>=0&&n<60?1:0,out=n!=null&&n<0?1:0;
+  return {w9,exp,out,any:w9||!!exp||!!out};
+}
 const spThumb=s=>s.real?`<span class="al-thumb al-brand" style="--tc:${esc(alBrand(s.family).color)}">${esc(String(alBrand(s.family).label).charAt(0))}</span>`:`<span class="al-thumb">${ic(spCatIc(s))}</span>`;
 const spRating=s=>s.real?(s.stars?alStars(s.stars):'<span class="muted">–</span>'):`<span class="sp-rt">${ic('star')}${s.rating.toFixed(1)}</span>`;
 
@@ -60,6 +66,7 @@ const spRating=s=>s.real?(s.stars?alStars(s.stars):'<span class="muted">–</spa
 function spFiltered(){
   const q=spNorm(S.spQ),d=S.spDest||'All',c=S.spCat||'All',p=S.spPref||'All',U=spUse();
   return SUPPLIERS.filter(s=>(d==='All'||s.dest===d)&&(c==='All'||s.cat===c)&&(p==='All'||s.pref===p)
+    &&(!S.spDocs||spDocAttn(s).any)&&(!S.spUsed||(U[s.name]&&U[s.name].ids.size>0))
     &&(!q||spNorm(s.name+' '+s.city+' '+(s.contact&&s.contact.name)+' '+s.id).includes(q)))
     .map(s=>({s,u:U[s.name]||null}))
     .sort((a,b)=>(b.u?b.u.spend:0)-(a.u?a.u.spend:0)||(b.u?b.u.ids.size:0)-(a.u?a.u.ids.size:0)||a.s.name.localeCompare(b.s.name));
@@ -87,16 +94,43 @@ function spBody(){
   const rows=spFiltered(),pg=spPager(rows.length),page=rows.slice(pg.p*pg.rpp,(pg.p+1)*pg.rpp);
   return `<div class="scroll"><table class="tbl al-tbl sp-tbl"><thead><tr>${alTh(L('ספק','Supplier')+' '+ic('down'))}${alTh(L('קטגוריה','Category'))}${alTh(L('יעד','Destination'))}${alTh(L('העדפה','Preference'))}${alTh(L('דירוג','Rating'))}${alTh(L('מטבע','Currency'))}${alTh(L('עמלה','Commission'),'n')}${alTh(L('מסמכים','Documents'))}${alTh(L('טיולים','Trips'),'n')}${alTh(L('הוצאה','Spend'),'n')}<th class="al-ctl"></th></tr></thead><tbody>${page.map(spRow).join('')||alEmpty(11)}</tbody></table></div>${pg.html}`;
 }
+/* the numbers behind the page header and its tiles */
+function spStats(){
+  const U=spUse();let spend=0,prefSpend=0,used=0,exp=0,out=0,w9=0,attn=0;
+  SUPPLIERS.forEach(s=>{const u=U[s.name];if(u&&u.ids.size)used++;if(u&&u.spend){spend=r2(spend+u.spend);if(s.pref==='High')prefSpend=r2(prefSpend+u.spend);}
+    const a=spDocAttn(s);exp+=a.exp;out+=a.out;w9+=a.w9?1:0;if(a.any)attn++;});
+  return {n:SUPPLIERS.length,dests:new Set(SUPPLIERS.filter(s=>s.dest!=='ALL').map(s=>s.dest)).size,pref:SUPPLIERS.filter(s=>s.pref==='High').length,
+    share:spend?Math.round(prefSpend/spend*100):0,spend,used,exp,out,w9,attn};
+}
+function spKpi(k){
+  if(k==='dest'||k==='all'){S.spDest='All';S.spCat='All';S.spPref='All';S.spQ='';S.spDocs=false;S.spUsed=false;}
+  else if(k==='pref')S.spPref=S.spPref==='High'?'All':'High';
+  else if(k==='docs')S.spDocs=!S.spDocs;
+  else if(k==='used')S.spUsed=!S.spUsed;
+  S.spPage=0;render();
+  if(k==='dest'){const el=document.querySelector('[data-sp-f="dest"]');if(el){try{el.scrollIntoView({block:'center'});el.focus();}catch(e){}}}
+}
 function spList(){
   const dests=[...new Set(SUPPLIERS.map(s=>s.dest))].sort((a,b)=>(a==='ALL'?-1:b==='ALL'?1:dn(a).localeCompare(dn(b))));
   const cats=[...new Set([...(typeof TYPES!=='undefined'?TYPES:[]),...SUPPLIERS.map(s=>s.cat)])].filter(c=>SUPPLIERS.some(s=>s.cat===c));
   const sel=(k,all,opts,cur)=>`<select class="al-sel" data-sp-f="${k}" aria-label="${all}"><option value="All">${all}</option>${opts.map(o=>`<option value="${esc(o[0])}" ${cur===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>`;
-  const newBtn=`<button class="btn pri" data-act="sp-new" ${spNoForm()||!spCan('sup.edit')?`disabled title="${esc(spNoForm()||L('התפקיד שלך לא כולל עריכת ספקים','Your role cannot edit suppliers'))}"`:''}>${L('ספק חדש','New supplier')}</button>`;
-  const subs=[['bank',L('בנק ספקים','Supplier bank')],['prices',L('מחירון','Price list')],['import',L('ייבוא','Import')]];
-  return head(L('ספקים','Suppliers'),newBtn)+`<div class="tabs">${subs.map(s=>`<button class="${(S.sub||'bank')===s[0]?'on':''}" data-act="sub" data-v="${s[0]}">${s[1]}</button>`).join('')}</div>
-  <p class="muted">${L('כל הספקים בקטלוג עם תנאים, מחירון והחלופות שלהם. לחצו על שורה כדי לפתוח את כרטיס הספק.','Every supplier in the catalog with terms, rate cards and alternatives. Click a row to open the supplier card.')}</p>
-  <div class="card al-card"><div class="al-filters">${sel('dest',L('כל היעדים','All destinations'),dests.map(k=>[k,spDestL(k)]),S.spDest)}${sel('cat',L('כל הקטגוריות','All categories'),cats.map(c=>[c,tn(c)]),S.spCat)}${sel('pref',L('כל ההעדפות','All preferences'),['High','Medium','Low'].map(p=>[p,L(SP_PREF[p][0],SP_PREF[p][1])]),S.spPref)}
+  const newBtn=hcCta('mint','idcard',L('ספק חדש','New supplier'),`data-act="sp-new" ${spNoForm()||!spCan('sup.edit')?`disabled title="${esc(spNoForm()||L('התפקיד שלך לא כולל עריכת ספקים','Your role cannot edit suppliers'))}"`:''}`);
+  const z=spStats(),subs=[['bank',L('בנק ספקים','Supplier bank')],['prices',L('מחירון','Price list')],['import',L('ייבוא','Import')]];
+  const dueN=z.exp+z.w9,docsTxt=L(`${z.exp} מסמכים פגים בתוך 60 ימים${z.out?`, ${z.out} כבר פגו`:''}${z.w9?` ו-${z.w9} W-9 חסרים`:''}`,`${z.exp} ${PLN(z.exp,'document expires','documents expire')} within 60 days${z.out?`, ${z.out} already expired`:''}${z.w9?` and ${z.w9} W-9 ${PLN(z.w9,'is','are')} missing`:''}`);
+  const band=hcPage({eyebrow:L('קטלוג','Catalog'),title:L('ספקים','Suppliers'),aria:L('ספקים','Suppliers'),
+    brief:L(`${hlKey(z.n+' ספקים')} ב-${z.dests} יעדים. ${z.exp+z.out+z.w9?hlWarn(docsTxt)+'.':'כל המסמכים בתוקף.'} ספקים מועדפים מחזיקים ${hlPos(z.share+'%')} מההוצאה.`,
+      `${hlKey(z.n+' suppliers')} in ${z.dests} destinations. ${z.exp+z.out+z.w9?hlWarn(docsTxt)+'.':'Every document is valid.'} Preferred suppliers carry ${hlPos(z.share+'%')} of spend.`),
+    ctas:[newBtn],
+    kpis:[{lab:L('יעדים','Destinations'),val:z.dests,sub:L(`${z.n} ספקים`,`${z.n} suppliers`),act:'sp-kpi',v:'dest'},
+      {lab:L('מועדפים','Preferred'),val:z.pref,cls:'pf',sub:L(`${z.share}% מההוצאה`,`${z.share}% of spend`),act:'sp-kpi',v:'pref',on:S.spPref==='High'},
+      {lab:L('מסמכים לחידוש','Documents to renew'),val:z.attn,cls:z.attn?'warn':'',sub:L(`${dueN+z.out} מסמכים אצל ${z.attn} ספקים`,`${dueN+z.out} ${PLN(dueN+z.out,'document','documents')} at ${z.attn} ${PLN(z.attn,'supplier','suppliers')}`),act:'sp-kpi',v:'docs',on:S.spDocs},
+      {lab:L('הוצאה בפועל','Booked spend'),val:usd(z.spend),sub:L(`${z.used} ספקים בשימוש`,`${z.used} ${PLN(z.used,'supplier','suppliers')} in use`),act:'sp-kpi',v:'used',on:S.spUsed}]});
+  const tg=(k,on,lab)=>`<button class="chip ${on?'on':''}" data-act="sp-kpi" data-v="${k}" aria-pressed="${!!on}">${lab}</button>`;
+  return band+`<div class="tabs">${subs.map(s=>`<button class="${(S.sub||'bank')===s[0]?'on':''}" data-act="sub" data-v="${s[0]}">${s[1]}</button>`).join('')}</div>
+  <div class="card hc-card al-card"><div class="al-filters">${sel('dest',L('כל היעדים','All destinations'),dests.map(k=>[k,spDestL(k)]),S.spDest)}${sel('cat',L('כל הקטגוריות','All categories'),cats.map(c=>[c,tn(c)]),S.spCat)}${sel('pref',L('כל ההעדפות','All preferences'),['High','Medium','Low'].map(p=>[p,L(SP_PREF[p][0],SP_PREF[p][1])]),S.spPref)}
+  <div class="chips al-chips">${tg('docs',S.spDocs,L('מסמכים לחידוש','Documents to renew'))}${tg('used',S.spUsed,L('בשימוש','In use'))}</div>
   <label class="al-search">${ic('search')}<input type="text" data-sp-q="1" value="${esc(S.spQ||'')}" placeholder="${L('חיפוש','Search')}" aria-label="${L('חיפוש','Search')}"></label></div>
+  <p class="muted small" style="margin:0 0 8px">${L('לחצו על שורה כדי לפתוח את כרטיס הספק: תנאים, מחירון והחלופות.','Click a row to open the supplier card: terms, rate card and alternatives.')}</p>
   <div id="sp-body">${spBody()}</div></div>`;
 }
 
@@ -114,26 +148,26 @@ function spAccuracy(name){
 function spPerfCard(s){
   if(s.real||s.showPerf===false)return '';
   const a=spAccuracy(s.name),pct=a.inv?Math.round((1-a.n/a.inv)*100):null;
-  return `<div class="card sp-c"><h3>${L('ביצועים','Performance')}</h3><dl class="sp-kv"><dt>${L('דיוק חשבוניות','Invoice accuracy')}</dt><dd>${pct==null?L('אין חשבוניות עדיין','No invoices yet'):`<b>${pct}%</b> <span class="muted">${L(`${a.n} פערים מתוך ${a.inv} חשבוניות, ${usd(a.amt)}`,`${a.n} ${PLN(a.n,'gap','gaps')} in ${a.inv} ${PLN(a.inv,'invoice','invoices')}, ${usd(a.amt)}`)}</span>`}</dd>
+  return `<div class="card hc-card sp-c"><div class="hc-h"><h3>${L('ביצועים','Performance')}</h3></div><dl class="sp-kv"><dt>${L('דיוק חשבוניות','Invoice accuracy')}</dt><dd>${pct==null?L('אין חשבוניות עדיין','No invoices yet'):`<b>${pct}%</b> <span class="muted">${L(`${a.n} פערים מתוך ${a.inv} חשבוניות, ${usd(a.amt)}`,`${a.n} ${PLN(a.n,'gap','gaps')} in ${a.inv} ${PLN(a.inv,'invoice','invoices')}, ${usd(a.amt)}`)}</span>`}</dd>
     <dt>${L('זמן מענה','Reply time')}</dt><dd><b>${s.replyHrs}</b> ${L('שעות','hours')}</dd></dl></div>`;
 }
 function spDocsCard(s){
-  if(s.real||!s.docs)return `<div class="card sp-c"><h3>${L('מסמכים','Documents')}</h3><p>${pillF(L('בתיק','On file'),'')} <span class="muted">${L('W-9, אישור ביטוח וחוזה שמורים בתיק הספק.','W-9, insurance certificate and contract are kept on file.')}</span></p></div>`;
+  if(s.real||!s.docs)return `<div class="card hc-card sp-c"><div class="hc-h"><h3>${L('מסמכים','Documents')}</h3></div><p>${pillF(L('בתיק','On file'),'')} <span class="muted">${L('W-9, אישור ביטוח וחוזה שמורים בתיק הספק.','W-9, insurance certificate and contract are kept on file.')}</span></p></div>`;
   const d=s.docs,row=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`;
   const coi=d.coi?(()=>{const n=spDays(d.coi);return `${fmtDate(d.coi)} ${n<0?pillF(L('פג תוקף','Expired'),'red'):n<60?pillF(L(`עוד ${n} ימים`,`${n} ${PLN(n,'day','days')} left`),'amber'):pillF(L('בתוקף','Valid'),'green')}`;})():'<span class="muted">–</span>';
-  return `<div class="card sp-c"><h3>${L('מסמכים','Documents')}</h3><dl class="sp-kv">${d.w9==null?'':row('W-9',d.w9?pillF(L('התקבל','Received'),'green'):pillF(L('חסר','Missing'),'amber'))}${row(L('אישור ביטוח (COI)','Insurance certificate (COI)'),coi)}${row(L('חוזה בתוקף עד','Contract valid to'),fmtDate(d.contractTo))}</dl></div>`;
+  return `<div class="card hc-card sp-c"><div class="hc-h"><h3>${L('מסמכים','Documents')}</h3></div><dl class="sp-kv">${d.w9==null?'':row('W-9',d.w9?pillF(L('התקבל','Received'),'green'):pillF(L('חסר','Missing'),'amber'))}${row(L('אישור ביטוח (COI)','Insurance certificate (COI)'),coi)}${row(L('חוזה בתוקף עד','Contract valid to'),fmtDate(d.contractTo))}</dl></div>`;
 }
 function spRatesHtml(s){
   const rc=rateCard(s),vs=s.variants||[];
   return `<p class="muted">${L(`מחירי קבוצות להמחשה ב-${esc(s.cur)}, ${spUnitL(s.unit)}. ההצעה משתמשת במחיר של עונת היציאה ובגודל הקבוצה.`,`Illustrative group rates in ${esc(s.cur)}, ${spUnitL(s.unit)}. A quote uses the rate for the departure season and group size.`)}</p>
-  ${Object.keys(SEASONS).map(se=>`<div class="card sp-c"><div class="sp-rh"><h3>${L(SP_SEASON[se][0],SP_SEASON[se][1])}</h3><span class="muted small">${spMonths(se)}</span></div><div class="scroll"><table class="tbl sp-rt-tbl"><thead><tr><th>${L('סוג','Variant')}</th>${BANDS.map(b=>`<th class="n">${b[0]}–${b[1]} ${L('נוסעים','travelers')}</th>`).join('')}</tr></thead><tbody>${vs.map(v=>`<tr><td>${L(v.he,v.en)}</td>${BANDS.map(b=>{const r=rc.find(x=>x.season===se&&x.variant===v.k&&x.band[0]===b[0]);return `<td class="n">${r?money(r.cost,s.cur):'–'}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div></div>`).join('')}`;
+  ${Object.keys(SEASONS).map(se=>`<div class="card hc-card sp-c"><div class="sp-rh hc-h"><h3>${L(SP_SEASON[se][0],SP_SEASON[se][1])}</h3><span class="muted small">${spMonths(se)}</span></div><div class="scroll"><table class="tbl sp-rt-tbl"><thead><tr><th>${L('סוג','Variant')}</th>${BANDS.map(b=>`<th class="n">${b[0]}–${b[1]} ${L('נוסעים','travelers')}</th>`).join('')}</tr></thead><tbody>${vs.map(v=>`<tr><td>${L(v.he,v.en)}</td>${BANDS.map(b=>{const r=rc.find(x=>x.season===se&&x.variant===v.k&&x.band[0]===b[0]);return `<td class="n">${r?money(r.cost,s.cur):'–'}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div></div>`).join('')}`;
 }
 function spTripsHtml(s,U){
   const u=U[s.name],rows=u?u.rows:[];
   if(!rows.length)return `<div class="card sp-c"><p class="muted">${L('הספק עדיין לא משובץ באף טיול. הוא מופיע כחלופה בהשוואות מחירים.','This supplier is not used in any trip yet. It shows up as an alternative in price comparisons.')}</p></div>`;
   const by={};rows.forEach(r=>{(by[r.t.id]||(by[r.t.id]={t:r.t,names:[],amt:0}));by[r.t.id].names.push(r.x.l.name);by[r.t.id].amt=r2(by[r.t.id].amt+r.amt);});
   const list=Object.values(by).sort((a,b)=>D(a.t.dep)-D(b.t.dep));
-  return `<div class="card sp-c" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('לקוח','Client'))}${alTh(L('שלב','Stage'))}${alTh(L('תאריכים','Dates'))}${alTh(L('שירותים','Services'))}${alTh(L('סכום','Amount'),'n')}</tr></thead><tbody>${list.map(x=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${x.t.id}">${esc(x.t.name)}</button></td><td>${esc(x.t.client)}</td><td>${x.t.stage==='Quote'?pillF(qn(x.t.qst),''):pillF(stn(x.t.stage),'blue')}</td><td>${range(x.t)}</td><td class="small">${x.names.map(esc).join('; ')}</td><td class="n">${usd(x.amt)}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="5">${L('הוצאה בטיולים מאושרים (עלות צפויה)','Booked spend (expected cost)')}</th><th class="n">${usd(u.spend)}</th></tr></tfoot></table></div></div>`;
+  return `<div class="card hc-card sp-c"><div class="hc-h"><h3>${L('טיולים והוצאה','Trips and spend')}</h3><span class="muted small">${list.length} ${PLN(list.length,'trip','trips')}</span></div><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('לקוח','Client'))}${alTh(L('שלב','Stage'))}${alTh(L('תאריכים','Dates'))}${alTh(L('שירותים','Services'))}${alTh(L('סכום','Amount'),'n')}</tr></thead><tbody>${list.map(x=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${x.t.id}">${esc(x.t.name)}</button></td><td>${esc(x.t.client)}</td><td>${x.t.stage==='Quote'?pillF(qn(x.t.qst),''):pillF(stn(x.t.stage),'blue')}</td><td>${range(x.t)}</td><td class="small">${x.names.map(esc).join('; ')}</td><td class="n">${usd(x.amt)}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="5">${L('הוצאה בטיולים מאושרים (עלות צפויה)','Booked spend (expected cost)')}</th><th class="n">${usd(u.spend)}</th></tr></tfoot></table></div></div>`;
 }
 function spCardHtml(s,tab){
   tab=tab||S.spTab||'ov';
@@ -144,14 +178,22 @@ function spCardHtml(s,tab){
   let body='';
   if(tab==='rates')body=spRatesHtml(s);
   else if(tab==='trips')body=spTripsHtml(s,U);
-  else body=`<div class="sp-grid"><div class="card sp-c"><h3>${L('איש קשר','Contact')}</h3><dl class="sp-kv">${kv(L('שם','Name'),spPerson(s.contact.name))}${kv(L('תפקיד','Role'),esc(spRole(s.contact.role)))}${kv(ic('mail')+' '+L('אימייל','Email'),spMail(s.contact.email))}${kv(L('טלפון','Phone'),spPh(s.contact.phone))}${kv(L('מטבע','Currency'),esc(s.cur))}${kv(L('עמלה לסוכנות','Commission to the agency'),s.comm+'%')}</dl></div>
-    <div class="card sp-c"><h3>${L('תנאי תשלום','Payment terms')}</h3><dl class="sp-kv">${kv(L('מקדמה','Deposit'),L(`${t.depPct}% תוך ${t.depDays} ימים מההזמנה`,`${t.depPct}% within ${t.depDays} days of booking`))}${kv(L('יתרה','Balance'),L(`${t.balDays} ימים לפני ההגעה`,`${t.balDays} days before arrival`))}${kv(L('אמצעי תשלום','Pay by'),L(SP_PAY[t.payBy]?SP_PAY[t.payBy][0]:esc(t.payBy),SP_PAY[t.payBy]?SP_PAY[t.payBy][1]:esc(t.payBy)))}</dl></div>
-    <div class="card sp-c sp-wide"><h3>${L('מדיניות ביטול','Cancellation policy')}</h3>${spCancelTl(s)}</div>
-    ${spDocsCard(s)}${spPerfCard(s)}
-    <div class="card sp-c sp-wide"><h3>${L('הערות','Notes')}</h3><p>${esc(L(s.notes.he,s.notes.en))}</p></div></div>`;
-  return `<div class="sp-hd"><button class="pj-back" data-act="sp-close" aria-label="${L('חזרה לספקים','Back to suppliers')}">${ic('chev','flip back')}</button>${spThumb(s).replace('al-thumb','al-thumb sp-big')}
-    <div class="sp-ht"><h1><bdi>${esc(s.name)}</bdi></h1><div class="sp-pills">${real?brandBadge(s.family):''}${pillF(tn(s.cat),'blue')}${spPrefPill(s.pref)}${real?(s.stars?alStars(s.stars):''):`<span class="sp-rt">${ic('star')}${s.rating.toFixed(1)}</span>`}<span class="muted small">${esc(s.city)}, ${esc(s.country)} · ${spDestL(s.dest)}</span></div></div>
-    <div class="sp-ha">${spEditBtn(s,'sp-edit',s.id,editWhy)}</div></div>
+  else body=`<div class="hc-grid"><div class="hc-c7"><div class="card hc-card sp-c"><div class="hc-h"><h3>${L('איש קשר','Contact')}</h3><span class="muted small">${esc(s.city)}</span></div><dl class="sp-kv">${kv(L('שם','Name'),spPerson(s.contact.name))}${kv(L('תפקיד','Role'),esc(spRole(s.contact.role)))}${kv(ic('mail')+' '+L('אימייל','Email'),spMail(s.contact.email))}${kv(L('טלפון','Phone'),spPh(s.contact.phone))}${kv(L('מטבע','Currency'),esc(s.cur))}${kv(L('עמלה לסוכנות','Commission to the agency'),s.comm+'%')}</dl></div>
+    <div class="card hc-card sp-c"><div class="hc-h"><h3>${L('מדיניות ביטול','Cancellation policy')}</h3><span class="muted small">${spCancelSum(s.cancel)}</span></div>${spCancelTl(s)}</div>
+    <div class="card hc-card sp-c"><div class="hc-h"><h3>${L('הערות','Notes')}</h3></div><p style="margin:0">${esc(L(s.notes.he,s.notes.en))}</p></div></div>
+    <div class="hc-c5"><div class="card hc-card sp-c"><div class="hc-h"><h3>${L('תנאי תשלום','Payment terms')}</h3></div><dl class="sp-kv">${kv(L('מקדמה','Deposit'),L(`${t.depPct}% תוך ${t.depDays} ימים מההזמנה`,`${t.depPct}% within ${t.depDays} days of booking`))}${kv(L('יתרה','Balance'),L(`${t.balDays} ימים לפני ההגעה`,`${t.balDays} days before arrival`))}${kv(L('אמצעי תשלום','Pay by'),L(SP_PAY[t.payBy]?SP_PAY[t.payBy][0]:esc(t.payBy),SP_PAY[t.payBy]?SP_PAY[t.payBy][1]:esc(t.payBy)))}</dl></div>
+    ${spDocsCard(s)}${spPerfCard(s)}</div></div>`;
+  const cap=real?(s.stars?`${s.stars} ${L('כוכבים','stars')}`:'–'):`${ic('star')} ${s.rating.toFixed(1)}`;
+  const back=`<button class="hc-btn ghost" data-act="sp-close">${ic('chev','flip back')} ${L('חזרה לספקים','Back to suppliers')}</button>`;
+  const edit=`<button class="hc-btn ghost" data-act="sp-edit" data-v="${esc(s.id)}" ${editWhy?`disabled title="${esc(editWhy)}"`:''}>${ic('pen')} ${L('עריכה','Edit')}</button>`;
+  const band=hcPage({cls:'sp-hdx',eyebrow:tn(s.cat),title:`<bdi>${esc(s.name)}</bdi>`,aria:s.name,
+    brief:`${esc(s.city)}, ${esc(s.country)} · ${spDestL(s.dest)}${real?' · '+esc(b.label):''}`,ctas:[back,edit],
+    extra:`<div class="sp-hbar">${spThumb(s).replace('al-thumb','al-thumb sp-big')}${real?`<span class="sp-hbadge">${brandBadge(s.family)}</span>`:''}</div>`,
+    kpis:[{lab:L('העדפה','Preference'),val:L(SP_PREF[s.pref]?SP_PREF[s.pref][0]:s.pref,SP_PREF[s.pref]?SP_PREF[s.pref][1]:s.pref),cls:s.pref==='High'?'pf':''},
+      {lab:real?L('דירוג','Rating'):L('דירוג','Rating'),val:cap},
+      {lab:L('טיולים','Trips'),val:u?u.ids.size:0,sub:L('משתמשים בספק','using this supplier')},
+      {lab:L('הוצאה','Spend'),val:u&&u.spend?usd(u.spend):'–',sub:L('בטיולים מאושרים','on booked trips')}]});
+  return `${band}
   <div class="tabs sp-tabs">${tabs.map(x=>`<button class="${tab===x[0]?'on':''}" data-act="sp-tab" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>${body}`;
 }
 function spPage(){
@@ -225,7 +267,7 @@ function spComparePanel(t,i,c){
     <td>${a.inc?pillF(L('הספק הנוכחי','Current supplier'),'blue'):spPrefPill(a.pref)}</td><td>${sp.real?(sp.stars?alStars(sp.stars):'<span class="muted">–</span>'):`<span class="sp-rt">${ic('star')}${sp.rating!=null?sp.rating.toFixed(1):'–'}</span>`}</td>
     <td class="n">${money(a.cost,a.cur)}</td><td class="n">${a.inc?'<span class="muted">–</span>':spDelta(a.delta)}</td><td class="small">${spCancelSum(a.cancel)}</td><td class="n">${a.comm}%</td>
     <td class="al-ctl">${a.inc?'':`<button class="btn sm pri" data-act="sp-choose" data-v="${i}|${esc(sp.id)}" ${why||!perm?`disabled title="${esc(why||L('התפקיד שלך לא כולל ניהול ספקים','Your role cannot manage suppliers'))}"`:''}>${L('בחירה','Choose')}</button>`}</td></tr>`;};
-  return `<div class="card sp-cmp"><div class="da-h"><h3>${L('השוואת מחירים','Price comparison')}: <bdi>${esc(l.name)}</bdi></h3><button class="btn sm" data-act="sp-req" data-v="${i}" ${perm?'':`disabled title="${esc(L('התפקיד שלך לא כולל ניהול ספקים','Your role cannot manage suppliers'))}"`}>${ic('mail')} ${L('בקשת הצעות מחיר','Request quotes')}</button></div>
+  return `<div class="card hc-card sp-cmp"><div class="da-h"><h3>${L('השוואת מחירים','Price comparison')}: <bdi>${esc(l.name)}</bdi></h3><button class="btn sm" data-act="sp-req" data-v="${i}" ${perm?'':`disabled title="${esc(L('התפקיד שלך לא כולל ניהול ספקים','Your role cannot manage suppliers'))}"`}>${ic('mail')} ${L('בקשת הצעות מחיר','Request quotes')}</button></div>
   <p class="muted small">${L(`עלות נוכחית: ${money(l.cost,l.cur)} ${spUnitL(l.unit)}, ${l.qty} ${esc(l.unit)}${X?`, ${usd(X.planUSD)} בסך הכול`:''}. ההפרש מחושב על כל השורה.`,`Current cost: ${money(l.cost,l.cur)} ${spUnitL(l.unit)}, ${l.qty} ${esc(l.unit)}${X?`, ${usd(X.planUSD)} in total`:''}. The change is for the whole line.`)}</p>
   <div class="scroll"><table class="tbl sp-alt"><thead><tr><th>${L('ספק','Supplier')}</th><th>${L('העדפה','Preference')}</th><th>${L('דירוג','Rating')}</th><th class="n">${L('עלות ליחידה','Unit cost')}</th><th class="n">${L('שינוי בשורה','Line change')}</th><th>${L('ביטול','Cancellation')}</th><th class="n">${L('עמלה','Commission')}</th><th class="al-ctl"></th></tr></thead><tbody>${alts.map(row).join('')}</tbody></table></div>
   ${why?`<p class="small muted sp-why">${ic('lock')} ${why}</p>`:''}</div>`;
@@ -236,16 +278,19 @@ function spmTab(t){
   const c=calc(t),cnt={contact:0,pending:0,approved:0,compare:0};t.sups.forEach(s=>{cnt[spFlow(s)]++;});
   const un=spUnassigned(t),perm=spCan('ops.suppliers'),n=t.sups.length,ok=t.sups.filter(s=>spFromSt(s.st)==='approved').length;
   const sum=`<div class="sp-sum">${SP_FLOWS.map(f=>`<span class="sp-chip">${pillF(spFlowL(f),SP_FC[f])}<b>${cnt[f]}</b></span>`).join('')}<span class="muted small">${L(`${ok} מתוך ${n} ספקים אושרו`,`${ok} of ${n} ${PLN(n,'supplier','suppliers')} approved`)}</span></div>`;
-  const unHtml=un.length?`<div class="card sp-un"><h3>${L('רכיבים בלי ספק ברשימה','Unassigned components')}</h3><p class="muted small">${L('שורות בהצעה שהספק שלהן עדיין לא ברשימת הספקים של הטיול.','Quote lines whose supplier is not yet on this trip\'s supplier list.')}</p><div class="scroll"><table class="tbl"><thead><tr><th>${L('רכיב','Component')}</th><th>${L('ספק','Supplier')}</th><th class="al-ctl"></th></tr></thead><tbody>${un.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.sup)}</td><td class="al-ctl"><button class="btn sm" data-act="sp-assign" data-v="${l.id}" ${perm?'':'disabled'}>${L('הוספה לרשימה','Add to list')}</button></td></tr>`).join('')}</tbody></table></div></div>`:'';
+  const unHtml=un.length?`<div class="card hc-card sp-un"><div class="hc-h"><h3>${L('רכיבים בלי ספק ברשימה','Unassigned components')}</h3><span class="hc-pill red">${un.length}</span></div><p class="muted small">${L('שורות בהצעה שהספק שלהן עדיין לא ברשימת הספקים של הטיול.','Quote lines whose supplier is not yet on this trip\'s supplier list.')}</p><div class="scroll"><table class="tbl"><thead><tr><th>${L('רכיב','Component')}</th><th>${L('ספק','Supplier')}</th><th class="al-ctl"></th></tr></thead><tbody>${un.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.sup)}</td><td class="al-ctl"><button class="btn sm" data-act="sp-assign" data-v="${l.id}" ${perm?'':'disabled'}>${L('הוספה לרשימה','Add to list')}</button></td></tr>`).join('')}</tbody></table></div></div>`:'';
   const rows=t.sups.map((s,i)=>{
     const l=spLine(t,s),X=l&&c.lines.find(x=>x.l===l),sp=supByName(s.n),f=spFlow(s);
     return `<tr><td><span class="al-nm">${sp?spThumb(sp):`<span class="al-thumb">${ic('idcard')}</span>`}<span class="al-t"><strong>${sp?`<button class="sp-lnk" data-act="sp-open" data-v="${esc(sp.id)}" data-from="trip"><bdi>${esc(s.n)}</bdi></button>`:`<bdi>${esc(s.n)}</bdi>`}</strong><small>${tn(s.cat)}${sp&&sp.real?' · '+esc(alBrand(sp.family).label):''}</small></span></span></td>
       <td>${l?esc(l.name):'–'}</td><td class="n">${X?usd(X.planUSD):'–'}</td>
       <td><div class="sp-seg" role="group" aria-label="${L('סטטוס ספק','Supplier status')}">${SP_FLOWS.map(k=>`<button class="${f===k?'on '+k:''}" data-act="sp-set" data-v="${i}|${k}" aria-pressed="${f===k}" ${perm?'':'disabled'}>${spFlowL(k)}</button>`).join('')}</div></td></tr>`;}).join('');
   const panels=t.sups.map((s,i)=>spFlow(s)==='compare'?spComparePanel(t,i,c):'').join('');
-  return `<div class="row" style="justify-content:space-between;margin-bottom:12px"><h2 style="margin:0">${L('ספקי הטיול','Trip suppliers')}</h2></div>${sum}${unHtml}
-  <div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl sp-trip"><thead><tr>${alTh(L('ספק','Supplier'))}${alTh(L('רכיב','Component'))}${alTh(L('עלות בדולרים','Cost in USD'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${rows}</tbody></table></div></div>
-  ${panels?`<div class="sp-panels">${panels}</div>`:`<p class="muted small" style="margin-top:12px">${L('בחרו "השוואת מחירים" בשורת ספק כדי לראות את הספק הנוכחי מול שתי חלופות.','Pick "Price comparison" on a supplier row to see the current supplier next to two alternatives.')}</p>`}`;
+  const pctOk=n?Math.round(ok/n*100):0;
+  return `<div class="hc-grid"><div class="hc-c12"><div class="card hc-card sp-top"><div class="hc-h"><h3>${L('ספקי הטיול','Trip suppliers')}</h3><span class="hc-pill ${n&&ok===n?'green':'blue'}">${ok}/${n}</span></div>
+   <div class="sp-ringrow"><div class="op-ring">${hcRing(pctOk,56,n&&ok===n?'sm ok':'sm')}<b>${pctOk}%</b></div>${sum}</div></div>
+  ${unHtml}
+  <div class="card hc-card sp-tcard"><div class="hc-h"><h3>${L('רכיבים וסטטוס','Components and status')}</h3><span class="muted small">${L('בחרו סטטוס לכל ספק','Set a status for each supplier')}</span></div><div class="scroll"><table class="tbl al-tbl sp-trip"><thead><tr>${alTh(L('ספק','Supplier'))}${alTh(L('רכיב','Component'))}${alTh(L('עלות בדולרים','Cost in USD'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${rows}</tbody></table></div></div>
+  ${panels?`<div class="sp-panels">${panels}</div>`:`<p class="muted small" style="margin:0">${L('בחרו "השוואת מחירים" בשורת ספק כדי לראות את הספק הנוכחי מול שתי חלופות.','Pick "Price comparison" on a supplier row to see the current supplier next to two alternatives.')}</p>`}</div></div>`;
 }
 tabInsert('o',['spm','ספקים','Suppliers','idcard']);
 TRIP_TABS.spm=t=>{const h=spmTab(t);return t.stage==='Quote'||typeof supMsgCard!=='function'?h:h+supMsgCard(t);};
@@ -273,21 +318,32 @@ function spCliHtml(c,tab){
   const kv=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`,sr=SP_SRC[c.source];
   const tabs=[['ov',L('סקירה','Overview')],['fin',L('כספים','Finance')]];
   const tripRows=F.trips.slice().sort((a,b)=>D(b.dep)-D(a.dep)).map(t=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${t.id}">#${t.no} ${esc(t.name)}</button></td><td>${t.stage==='Quote'?pillF(qn(t.qst),''):pillF(stn(t.stage),'blue')}</td><td>${range(t)}</td><td class="n">${t.pax}</td><td class="n">${usd(calc(t).rev)}</td><td>${agn(t.agent)}</td></tr>`).join('');
+  const ovd=F.rows.some(r=>r.open>0&&(D(r.t.depDue)<TODAY||D(r.t.balDue)<TODAY)),hlOpen=ovd?hlNeg:hlWarn;
   let body='';
   if(tab==='fin'){
     const docLab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')};
-    body=`<div class="sp-sum sp-fin"><span class="sp-kpi"><small>${L('הכנסה סגורה','Booked revenue')}</small><b>${usd(F.booked,2)}</b></span><span class="sp-kpi"><small>${L('חויב','Billed')}</small><b>${usd(F.billed,2)}</b></span><span class="sp-kpi"><small>${L('התקבל','Received')}</small><b>${usd(F.received,2)}</b></span><span class="sp-kpi"><small>${L('פתוח','Open')}</small><b class="${F.open>0?'due':''}">${usd(F.open,2)}</b></span></div>
-    ${F.rows.length?`<div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('סך הטיול','Trip total'),'n')}${alTh(L('חויב','Billed'),'n')}${alTh(L('התקבל','Received'),'n')}${alTh(L('פתוח','Open'),'n')}</tr></thead><tbody>${F.rows.map(r=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${r.t.id}|income">#${r.t.no} ${esc(r.t.name)}</button></td><td class="n">${usd(r.rev,2)}</td><td class="n">${usd(r.billed,2)}</td><td class="n">${usd(r.received,2)}</td><td class="n">${usd(r.open,2)}</td></tr>`).join('')}</tbody></table></div></div>
-    <h3 class="al-h2">${L('מסמכים','Documents')}</h3><div class="card" style="padding:0"><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('מסמך','Document'))}${alTh(L('מספר','Number'))}${alTh(L('טיול','Trip'))}${alTh(L('תאריך','Date'))}${alTh(L('סכום','Amount'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${F.docs.map(d=>`<tr><td>${docLab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>#${d.t.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber')}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div></div>`
-    :`<div class="card sp-c"><p class="muted">${L('אין עדיין חיוב. הצעות מחיר לא מפיקות חשבוניות.','Nothing billed yet. Quotes do not issue invoices.')}</p></div>`}`;
-  }else body=`<div class="sp-grid"><div class="card sp-c"><h3>${L('איש קשר','Contact')}</h3><dl class="sp-kv">${kv(L('שם','Name'),esc(ct.name||'–'))}${kv(L('תפקיד','Role'),esc(ct.role?spRole(ct.role):'–'))}${kv(L('אימייל','Email'),ct.email?spMail(ct.email):'–')}${kv(L('טלפון','Phone'),ct.phone?spPh(ct.phone):'–')}${kv(L('עיר','Location'),esc([c.city,c.state].filter(Boolean).join(', ')||'–'))}</dl></div>
-    <div class="card sp-c"><h3>${L('פרטי לקוח','Client details')}</h3><dl class="sp-kv">${kv(L('סוג','Type'),pillF(L(ty[0],ty[1]),ty[2]))}${kv(L('פטור ממס','Tax status'),c.taxExempt?pillF(L('פטור ממס','Tax-exempt'),'green'):pillF(L('חייב במס','Taxable'),''))}${kv(L('לקוח מאז','Client since'),esc(c.since||'–'))}${kv(L('מקור','Source'),sr?L(sr[0],sr[1]):esc(c.source||'–'))}${kv(L('טיולים','Trips'),F.trips.length)}${kv(L('הצעות פתוחות','Open quotes'),quotes.length?`${quotes.length} · ${usd(qv)}`:'0')}</dl></div>
-    ${c.lead&&c.lead.open?`<div class="card sp-c sp-wide"><h3>${L('פנייה פתוחה','Open lead')}</h3><p>${esc(L(c.lead.he,c.lead.en))}</p></div>`:''}
-    <div class="card sp-c sp-wide"><h3>${L('הערות','Notes')}</h3><p>${esc(L((c.notes||{}).he,(c.notes||{}).en)||'–')}</p></div>
-    <div class="card sp-c sp-wide" style="padding:0"><div class="sp-ch"><h3>${L('טיולים','Trips')}</h3></div>${F.trips.length?`<div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('שלב','Stage'))}${alTh(L('תאריכים','Dates'))}${alTh(L('נוסעים','Travelers'),'n')}${alTh(L('שווי','Value'),'n')}${alTh(L('סוכן/ת','Agent'))}</tr></thead><tbody>${tripRows}</tbody></table></div>`:`<p class="muted" style="padding:0 20px 16px">${L('עדיין אין טיולים ללקוח הזה.','No trips for this client yet.')}</p>`}</div></div>`;
-  return `<div class="sp-hd"><button class="pj-back" data-act="sp-cli-close" aria-label="${L('חזרה ללקוחות','Back to clients')}">${ic('chev','flip back')}</button><span class="al-thumb al-av sp-big">${esc(String(c.name).charAt(0))}</span>
-    <div class="sp-ht"><h1><bdi>${esc(c.name)}</bdi></h1><div class="sp-pills">${pillF(L(ty[0],ty[1]),ty[2])}${c.taxExempt?pillF(L('פטור ממס','Tax-exempt'),'green'):''}<span class="muted small">${esc([c.city,c.state].filter(Boolean).join(', '))}</span></div></div>
-    <div class="sp-ha">${spEditBtn(c,'sp-cli-edit',null,editWhy)}</div></div>
+    const rp=F.billed>0?Math.round(F.received/F.billed*100):0;
+    body=`<div class="hc-grid"><div class="hc-c12"><div class="card hc-card cl-fin"><div class="hc-h"><h3>${L('פתוח מול התקבל','Open and received')}</h3>${F.open>0?`<span class="hc-pill ${ovd?'red':'blue'}">${L('פתוח','Open')} ${usd(F.open,2)}</span>`:`<span class="hc-pill green">${L('הכול התקבל','Fully received')}</span>`}</div>
+     <div class="sp-ringrow"><div class="op-ring">${hcRing(rp,64,'sm')}<b>${rp}%</b></div><p class="hc-lead" style="margin:0">${F.billed>0?L(`מתוך ${hlKey(usd(F.billed,2))} שחויבו, ${hlPos(usd(F.received,2))} התקבלו${F.open>0?` ו-${hlOpen(usd(F.open,2))} עדיין פתוחים`:''}. הכנסה סגורה: ${usd(F.booked,2)}.`,`Of ${hlKey(usd(F.billed,2))} billed, ${hlPos(usd(F.received,2))} has been received${F.open>0?` and ${hlOpen(usd(F.open,2))} is still open`:''}. Booked revenue: ${usd(F.booked,2)}.`):L('עדיין אין חיוב. הצעות מחיר לא מפיקות חשבוניות.','Nothing billed yet. Quotes do not issue invoices.')}</p></div></div>
+    ${F.rows.length?`<div class="card hc-card"><div class="hc-h"><h3>${L('טיולים','Trips')}</h3></div><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('סך הטיול','Trip total'),'n')}${alTh(L('חויב','Billed'),'n')}${alTh(L('התקבל','Received'),'n')}${alTh(L('פתוח','Open'),'n')}</tr></thead><tbody>${F.rows.map(r=>`<tr><td><button class="sp-lnk" data-act="open" data-v="${r.t.id}|income">#${r.t.no} ${esc(r.t.name)}</button></td><td class="n">${usd(r.rev,2)}</td><td class="n">${usd(r.billed,2)}</td><td class="n">${usd(r.received,2)}</td><td class="n">${usd(r.open,2)}</td></tr>`).join('')}</tbody></table></div></div>
+    <div class="card hc-card"><div class="hc-h"><h3>${L('מסמכים','Documents')}</h3></div><div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('מסמך','Document'))}${alTh(L('מספר','Number'))}${alTh(L('טיול','Trip'))}${alTh(L('תאריך','Date'))}${alTh(L('סכום','Amount'),'n')}${alTh(L('סטטוס','Status'))}</tr></thead><tbody>${F.docs.map(d=>`<tr><td>${docLab[d.type]}<div class="small muted">${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td>${d.no}</td><td>#${d.t.no}</td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('התקבל תשלום','Payment received'),'green'):pillF(L('נשלחה דרישת תשלום','Payment requested'),'amber')}</td></tr>`).join('')||alEmpty(6)}</tbody></table></div></div>`
+    :''}</div></div>`;
+  }else body=`<div class="hc-grid"><div class="hc-c7"><div class="card hc-card sp-c"><div class="hc-h"><h3>${L('טיולים','Trips')}</h3><span class="muted small">${F.trips.length}</span></div>${F.trips.length?`<div class="scroll"><table class="tbl al-tbl"><thead><tr>${alTh(L('טיול','Trip'))}${alTh(L('שלב','Stage'))}${alTh(L('תאריכים','Dates'))}${alTh(L('נוסעים','Travelers'),'n')}${alTh(L('שווי','Value'),'n')}${alTh(L('סוכן/ת','Agent'))}</tr></thead><tbody>${tripRows}</tbody></table></div>`:`<p class="muted" style="margin:0">${L('עדיין אין טיולים ללקוח הזה.','No trips for this client yet.')}</p>`}</div>
+    ${c.lead&&c.lead.open?`<div class="card hc-card sp-c"><div class="hc-h"><h3>${L('פנייה פתוחה','Open lead')}</h3><span class="hc-pill green">${L('חדש','New')}</span></div><p style="margin:0">${esc(L(c.lead.he,c.lead.en))}</p></div>`:''}
+    <div class="card hc-card sp-c"><div class="hc-h"><h3>${L('הערות','Notes')}</h3></div><p style="margin:0">${esc(L((c.notes||{}).he,(c.notes||{}).en)||'–')}</p></div></div>
+    <div class="hc-c5"><div class="card hc-card sp-c"><div class="hc-h"><h3>${L('איש קשר','Contact')}</h3></div><dl class="sp-kv">${kv(L('שם','Name'),esc(ct.name||'–'))}${kv(L('תפקיד','Role'),esc(ct.role?spRole(ct.role):'–'))}${kv(L('אימייל','Email'),ct.email?spMail(ct.email):'–')}${kv(L('טלפון','Phone'),ct.phone?spPh(ct.phone):'–')}${kv(L('עיר','Location'),esc([c.city,c.state].filter(Boolean).join(', ')||'–'))}</dl></div>
+    <div class="card hc-card sp-c"><div class="hc-h"><h3>${L('פרטי לקוח','Client details')}</h3></div><dl class="sp-kv">${kv(L('סוג','Type'),pillF(L(ty[0],ty[1]),ty[2]))}${kv(L('פטור ממס','Tax status'),c.taxExempt?pillF(L('פטור ממס','Tax-exempt'),'green'):pillF(L('חייב במס','Taxable'),''))}${kv(L('לקוח מאז','Client since'),esc(c.since||'–'))}${kv(L('מקור','Source'),sr?L(sr[0],sr[1]):esc(c.source||'–'))}${kv(L('טיולים','Trips'),F.trips.length)}${kv(L('הצעות פתוחות','Open quotes'),quotes.length?`${quotes.length} · ${usd(qv)}`:'0')}</dl></div></div></div>`;
+  const loc=[c.city,c.state].filter(Boolean).join(', ');
+  const back=`<button class="hc-btn ghost" data-act="sp-cli-close">${ic('chev','flip back')} ${L('חזרה ללקוחות','Back to clients')}</button>`;
+  const edit=`<button class="hc-btn ghost" data-act="sp-cli-edit" ${editWhy?`disabled title="${esc(editWhy)}"`:''}>${ic('pen')} ${L('עריכה','Edit')}</button>`;
+  const band=hcPage({cls:'sp-hdx cl-hd',eyebrow:L(ty[0],ty[1]),title:`<bdi>${esc(c.name)}</bdi>`,aria:c.name,
+    brief:F.trips.length?L(`${loc?esc(loc)+' · ':''}${F.trips.length} טיולים${quotes.length?`, ${quotes.length} הצעות פתוחות בשווי ${hlKey(usd(qv))}`:''}. חויבו ${hlKey(usd(F.billed))}, התקבלו ${hlPos(usd(F.received))}${F.open>0?` ו-${hlOpen(usd(F.open))} עדיין פתוחים`:''}.`,
+        `${loc?esc(loc)+' · ':''}${F.trips.length} ${PLN(F.trips.length,'trip','trips')}${quotes.length?`, ${quotes.length} open ${PLN(quotes.length,'quote','quotes')} worth ${hlKey(usd(qv))}`:''}. Billed ${hlKey(usd(F.billed))}, received ${hlPos(usd(F.received))}${F.open>0?` and ${hlOpen(usd(F.open))} still open`:''}.`)
+      :L(`${loc?esc(loc)+' · ':''}עדיין אין טיולים ללקוח הזה.${c.lead&&c.lead.open?' יש פנייה פתוחה.':''}`,`${loc?esc(loc)+' · ':''}No trips for this client yet.${c.lead&&c.lead.open?' There is an open lead.':''}`),
+    ctas:[back,edit],
+    kpis:[{lab:L('הכנסה סגורה','Booked revenue'),val:usd(F.booked,2),sub:L(`${F.trips.filter(t=>t.stage!=='Quote').length} טיולים`,`${F.trips.filter(t=>t.stage!=='Quote').length} ${PLN(F.trips.filter(t=>t.stage!=='Quote').length,'trip','trips')}`)},
+      {lab:L('חויב','Billed'),val:usd(F.billed,2)},{lab:L('התקבל','Received'),val:usd(F.received,2),cls:'pf'},{lab:L('פתוח','Open'),val:usd(F.open,2),cls:F.open>0?'warn':''}]});
+  return `${band}
   <div class="tabs sp-tabs">${tabs.map(x=>`<button class="${tab===x[0]?'on':''}" data-act="sp-cli-tab" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>${body}`;
 }
 {const v0=vClients;vClients=function(){const c=spCli();if(c)return `<div class="sp-page">${spCliHtml(c)}</div>`;if(S.cliId)S.cliId=null;return v0.apply(this,arguments);};}
@@ -307,6 +363,7 @@ document.addEventListener('click',e=>{
   const a=b.dataset.act,v=b.dataset.v,t=T();
   if(a==='sp-open')spOpen(v,b.dataset.from);
   else if(a==='sp-close')spClose();
+  else if(a==='sp-kpi')spKpi(v);
   else if(a==='sp-tab'){S.spTab=v;render();}
   else if(a==='sp-prev'||a==='sp-next'){S.spPage=(+S.spPage||0)+(a==='sp-next'?1:-1);spPartial();}
   else if(a==='sp-new'){if(typeof formOpen==='function')formOpen('supplier',null);}

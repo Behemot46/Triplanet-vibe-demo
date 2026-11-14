@@ -91,14 +91,14 @@ chatLog=function(){return S.chat.map(x=>`<div class="msg ${x.r}${x.live==='wait'
 /* presenter settings: a card on the Maya page, opened from the settings menu */
 function liveCard(){
   const c=liveCfg(),has=!!c.key;
-  return `<div class="card lv-card"><div class="row" style="justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">${L('תשובות חיות של מאיה','Maya live answers')} ${pillF(L('פיילוט','Pilot'),'info')}</h3><button class="btn sm" data-act="livecfg">${ic('close')} ${L('סגירה','Close')}</button></div>
+  return `<div class="card hc-card lv-card"><div class="row" style="justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">${L('תשובות חיות של מאיה','Maya live answers')} ${pillF(L('פיילוט','Pilot'),'info')}</h3><button class="btn sm" data-act="livecfg">${ic('close')} ${L('סגירה','Close')}</button></div>
    <p class="small muted">${L('שאלה מוקלדת נענית על ידי Claude מתוך נתוני הדמו. כפתורי השאלות המוכנות נשארים בתסריט. המפתח נשמר בדפדפן של המחשב הזה בלבד.','A typed question is answered by Claude from the demo data. The ready-made question buttons stay scripted. The key is kept in this laptop\'s browser only.')}</p>
    <form class="row lv-f" data-form="livekey"><input type="password" name="key" autocomplete="off" placeholder="${has?L('מפתח שמור. הדביקו כדי להחליף','Key saved. Paste to replace'):L('מפתח API של Anthropic','Anthropic API key')}" aria-label="${L('מפתח API','API key')}"><button class="btn pri" type="submit">${L('שמירה','Save')}</button></form>
    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px"><label class="lv-tg"><input type="checkbox" data-ch="liveon" ${c.on?'checked':''} ${has?'':'disabled'}> ${L('להפעיל תשובות חיות','Use live answers')}</label>${has?`<button class="btn sm" data-act="livetest">${L('בדיקת חיבור','Test connection')}</button><button class="btn sm" data-act="liveforget">${L('מחיקת המפתח','Forget key')}</button>`:''}<span class="small muted" id="livestat">${S.liveStat||''}</span></div></div>`;
 }
 {const v0=VIEWS.ai;VIEWS.ai=function(){let h=v0();const live=liveReady();
   h=h.replace(/<span class="pill teal">[^<]*<\/span>/,live?pillF(L('תשובות חיות · Claude','Live answers · Claude'),'green'):pillF(L(`תסריט מוכן: ${QS.length} שאלות`,`Scripted: ${QS.length} questions`),'teal'));
-  return S.liveCfg?h.replace('<div class="qgs sec">',liveCard()+'<div class="qgs sec">'):h;};}
+  return S.liveCfg?h.replace('<div class="hc-grid d-maya">','<div class="hc-grid"><div class="hc-c12">'+liveCard()+'</div></div><div class="hc-grid d-maya">'):h;};}
 function liveMenu(){
   if(!document.querySelector)return;const m=document.querySelector('.menu');if(!m||m.querySelector('[data-act="livecfg"]'))return;
   const b=document.createElement('button');b.setAttribute('role','menuitem');b.dataset.act='livecfg';b.innerHTML=ic('ai')+' '+trHe(L('תשובות חיות של מאיה','Maya live answers'));

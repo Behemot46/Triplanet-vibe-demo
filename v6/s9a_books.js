@@ -55,30 +55,41 @@ function acLogRow(e){const a=A(),p=ACCT[a.sys||'qbo'];
   const pc={import:'green',post:'blue',credit:'green',hold:'amber'}[e.k];
   return `<tr><td>${pillF(lab,pc)}</td><td><strong>${esc(e.sup)}</strong><div class="small muted">${esc(e.no||'')}</div></td><td>${esc(e.t)}</td><td class="n">${usd(e.amt,2)}</td></tr>`;}
 function vBooks(){
-  const a=A(),s=acStats();
-  const head0=head(L('הנהלת חשבונות','Accounting sync'),PILOT());
-  const intro=`<p class="muted">${L('טריפלאנט קוראת את חשבוניות הספקים ממערכת הנהלת החשבונות, מתאימה כל שורה למה שתומחר, ומחזירה לשם חשבוניות מאושרות וזיכויים, מתויגים לפי טיול.','Triplanet reads supplier bills from your accounting system, matches every line to what you quoted, and writes approved bills and credits back, tagged to the trip.')}</p>`;
-  if(a.phase==='connecting'){const k=a.sys;return head0+intro+`<div class="card ac-busy"><div class="row" style="gap:12px;margin-bottom:12px">${acBadge(k)}<h3 style="margin:0">${L(`מתחבר ל${an(k)}...`,`Connecting ${an(k)}...`)}</h3></div>${AC_STEPS.map((f,i)=>i<=a.step?`<div class="st-step ${i<a.step?'done':'cur'}"><span class="dot">${i<a.step?ic('check'):''}</span>${esc(f(k))}</div>`:'').join('')}</div>`;}
+  const a=A(),s=acStats(),G=gapStats(visibleTrips());
+  const eyebrow=L('כסף','Money'),title=`${L('הנהלת חשבונות','Accounting sync')} ${PILOT()}`,aria=L('הנהלת חשבונות','Accounting sync');
+  const hc=(brief,ctas,kpis)=>hcPage({eyebrow,title,aria,brief,ctas,kpis});
+  const gridOpen='<div class="hc-grid">';
+  if(a.phase==='connecting'){const k=a.sys;
+    return hc(L(`מתחבר ל${an(k)}. טריפלאנט קוראת את חשבוניות הספקים ומתאימה כל שורה להצעה.`,`Connecting ${an(k)}. Triplanet will read supplier bills and match every line to the quote.`),[],[])+gridOpen+`<div class="hc-c7"><div class="card hc-card ac-busy"><div class="row" style="gap:12px;margin-bottom:12px">${acBadge(k)}<h3 style="margin:0">${L(`מתחבר ל${an(k)}...`,`Connecting ${an(k)}...`)}</h3></div>${AC_STEPS.map((f,i)=>i<=a.step?`<div class="st-step ${i<a.step?'done':'cur'}"><span class="dot">${i<a.step?ic('check'):''}</span>${esc(f(k))}</div>`:'').join('')}</div></div></div>`;}
   if(a.phase!=='synced'){
+    const first=acctOrder()[0],rate=G.received?G.matched/G.received:0;
     const cards=acctOrder().map(k=>`<div class="card ac-card"><div class="row" style="gap:12px">${acBadge(k)}<div><strong>${an(k)}</strong><div class="small muted">${L(ACCT[k].region[0],ACCT[k].region[1])}</div></div></div>
       <ul class="ac-ul">${ACCT[k].map.slice(0,3).map(m=>`<li>${L(m[0][0],m[0][1])} ${ic('right','flip')} <b><bdi>${L(m[1][0],m[1][1])}</bdi></b></li>`).join('')}</ul>
       <button class="btn pri" data-act="acconn" data-v="${k}">${ic('link')} ${L(`חיבור ${an(k,'short')}`,`Connect ${an(k,'short')}`)}</button></div>`).join('');
-    return head0+intro+`<div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p>`;
+    return hc(L(`חברו את הנהלת החשבונות, וכל חשבונית ספק נבדקת מול ההצעה לפני התשלום. כרגע זה היה עוצר ${hlWarn(usd(r2(G.open+G.disp)))} בפערים פתוחים ובדרישות זיכוי.`,`Connect your accounting system and every supplier bill is checked against the quote before it is paid. Today that would hold ${hlWarn(usd(r2(G.open+G.disp)))} of open and disputed gaps.`),
+      [hcCta('mint','plug',L(`חיבור ${an(first,'short')}`,`Connect ${an(first,'short')}`),`data-act="acconn" data-v="${first}"`)],
+      [{lab:L('פערים שיעצרו','Gaps it would hold'),val:usd(r2(G.open+G.disp)),sub:`${G.openN+G.dispN} ${L('פתוחים או בדרישה',(G.openN+G.dispN)===1?'open or disputed gap':'open or disputed gaps')}`,cls:'warn',act:'fn-gf',v:'open'},
+       {lab:L('תואמות בלי מגע יד','Matched with no touch'),val:pct(rate),sub:`${G.matched} ${L('מתוך','of')} ${G.received} ${L('חשבוניות','bills')}`},
+       {lab:L('הוחזר העונה','Recovered this season'),val:usd(G.rec),sub:`${G.recN} ${L('זיכויים',G.recN===1?'credit':'credits')}`,cls:'pf',act:'fn-gf',v:'credited'}])
+    +gridOpen+`<div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('בחרו את מערכת הנהלת החשבונות','Choose your accounting system')}</h3><span class="muted small">${L('טריפלאנט קוראת חשבוניות, מתאימה לשורות ההצעה, ומחזירה חשבוניות מאושרות וזיכויים מתויגים לפי טיול.','Triplanet reads bills, matches them to quote lines, and writes approved bills and credits back, tagged to the trip.')}</span></div>
+     <div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p></div></div></div>`;
   }
   const k=a.sys,p=ACCT[k],pctm=s.bills?s.matched/s.bills:0;
   const opt=(key,he,en)=>`<label class="ac-opt"><input type="checkbox" data-acopt="${key}" ${a.opt[key]?'checked':''}> <span>${L(he,en)}</span></label>`;
-  return head0+intro+`<div class="card ac-head"><div class="row" style="gap:14px;flex-wrap:wrap">${acBadge(k)}<div style="flex:1;min-width:220px"><strong style="font-size:16px">${an(k)}</strong> ${pillF(L('מחובר','Connected'),'green')}<div class="small muted">Redbud Group Tours LLC · ${L('קובץ חברה לדוגמה','sample company file')} · ${L('סנכרון אחרון: היום','Last sync: today')}</div></div>
-     <button class="btn" data-act="acsync">${ic('refresh')} ${L('סנכרן עכשיו','Sync now')}</button><button class="btn" data-act="acoff">${L('ניתוק','Disconnect')}</button></div></div>
-   <div class="stats"><div class="stat"><div class="l">${L('חשבוניות שיובאו','Bills imported')}</div><div class="v">${s.bills}</div><div class="s">${L('90 הימים האחרונים','last 90 days')}</div></div>
-    <div class="stat"><div class="l">${L('תואמו להצעה','Matched to the quote')}</div><div class="v">${pct(pctm)}</div><div class="s">${s.matched} ${L('בלי מגע יד','with no touch')}</div></div>
-    <div class="stat"><div class="l">${L('פערים שנמצאו','Gaps found')}</div><div class="v neg">${usd(s.gap)}</div><div class="s">${s.gapN} ${L('פתוחים או בדרישה','open or disputed')}</div></div>
-    <div class="stat"><div class="l">${L('טיולים מתויגים','Trips tagged')}</div><div class="v">${s.trips}</div><div class="s">${L(`כ${term(p,'trip')}`,`as ${term(p,'trip',1)}`)}</div></div></div>
-   <div class="two"><div class="card"><h3>${L('מה ממופה למה','What maps to what')}</h3><table class="tbl"><thead><tr><th>Triplanet</th><th>${an(k,'short')}</th></tr></thead><tbody>${p.map.map(m=>`<tr><td>${L(m[0][0],m[0][1])}</td><td><strong><bdi>${L(m[1][0],m[1][1])}</bdi></strong></td></tr>`).join('')}</tbody></table></div>
-    <div class="card"><h3>${L('כללי רישום','Posting rules')}</h3>${opt('auto','לרשום אוטומטית חשבוניות שאושרו','Post approved bills automatically')}${opt('tag',`לתייג כל שורה לפי הטיול (${term(p,'trip')})`,`Tag every line with the trip (${term(p,'trip',1)})`)}${opt('credit',`ליצור ${term(p,'credit')} כשמתקבל זיכוי`,`Create a ${term(p,'credit',1)} when a dispute is credited`)}
-     <p class="st-note">${L('חשבונית עם פער פתוח לא נרשמת לתשלום עד שהיא מטופלת.','A bill with an open gap is held from payment until it is handled.')}</p></div></div>
-   <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h3 style="margin:0">${L('יומן סנכרון','Sync log')}</h3><button class="btn sm" data-act="go" data-v="gaps">${L('לבקרת החשבוניות','Open invoice check')}</button></div>
+  return hc(L(`מחובר ל${an(k)}: ${hlKey(s.bills+' חשבוניות')} יובאו, ${hlPos(pct(pctm))} תואמות בלי מגע יד, ו-${hlWarn(usd(s.gap))} בפערים מוחזקים מתשלום.`,`Connected to ${an(k)}: ${hlKey(s.bills+' bills')} imported, ${hlPos(pct(pctm))} matched with no touch, and ${hlWarn(usd(s.gap))} in gaps held from payment.`),
+    [hcCta('mint','refresh',L('סנכרן עכשיו','Sync now'),'data-act="acsync"'),hcCta('ghost','gaps',L('לבקרת החשבוניות','Open invoice check'),'data-act="go" data-v="gaps"')],
+    [{lab:L('חשבוניות שיובאו','Bills imported'),val:s.bills,sub:L('90 הימים האחרונים','last 90 days')},
+     {lab:L('תואמו להצעה','Matched to the quote'),val:pct(pctm),sub:`${s.matched} ${L('בלי מגע יד','with no touch')}`,cls:'pf'},
+     {lab:L('פערים שנמצאו','Gaps found'),val:usd(s.gap),sub:`${s.gapN} ${L('פתוחים או בדרישה','open or disputed')}`,cls:'warn',act:'fn-gf',v:'open'},
+     {lab:L('טיולים מתויגים','Trips tagged'),val:s.trips,sub:L(`כ${term(p,'trip')}`,`as ${term(p,'trip',1)}`)}])
+  +gridOpen+`<div class="hc-c12"><div class="card hc-card ac-head"><div class="row" style="gap:14px;flex-wrap:wrap">${acBadge(k)}<div style="flex:1;min-width:220px"><strong style="font-size:16px">${an(k)}</strong> ${pillF(L('מחובר','Connected'),'green')}<div class="small muted">Redbud Group Tours LLC · ${L('קובץ חברה לדוגמה','sample company file')} · ${L('סנכרון אחרון: היום','Last sync: today')}</div></div>
+     <button class="btn" data-act="acsync">${ic('refresh')} ${L('סנכרן עכשיו','Sync now')}</button><button class="btn" data-act="acoff">${L('ניתוק','Disconnect')}</button></div></div></div>
+   <div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('יומן סנכרון','Sync log')}</h3><button class="btn sm" data-act="go" data-v="gaps">${L('לבקרת החשבוניות','Open invoice check')}</button></div>
     <div class="scroll"><table class="tbl"><thead><tr><th>${L('פעולה','Action')}</th><th>${L('ספק','Supplier')}</th><th>${L('טיול','Trip')}</th><th class="n">${L('סכום','Amount')}</th></tr></thead><tbody>${a.log.map(acLogRow).join('')||`<tr><td colspan="4" class="muted">${L('אין עדיין פעולות.','Nothing yet.')}</td></tr>`}</tbody></table></div>
-    <p class="st-note">${L('אשרו, שלחו דרישה או רשמו זיכוי בכרטיס פער, והפעולה תופיע כאן ובמערכת הנהלת החשבונות.','Accept, dispute or credit a gap card and the entry appears here and in your accounting system.')}</p></div>`;
+    <p class="st-note">${L('אשרו, שלחו דרישה או רשמו זיכוי בכרטיס פער, והפעולה תופיע כאן ובמערכת הנהלת החשבונות.','Accept, dispute or credit a gap card and the entry appears here and in your accounting system.')}</p></div></div>
+   <div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('כללי רישום','Posting rules')}</h3></div>${opt('auto','לרשום אוטומטית חשבוניות שאושרו','Post approved bills automatically')}${opt('tag',`לתייג כל שורה לפי הטיול (${term(p,'trip')})`,`Tag every line with the trip (${term(p,'trip',1)})`)}${opt('credit',`ליצור ${term(p,'credit')} כשמתקבל זיכוי`,`Create a ${term(p,'credit',1)} when a dispute is credited`)}
+     <p class="st-note">${L('חשבונית עם פער פתוח לא נרשמת לתשלום עד שהיא מטופלת.','A bill with an open gap is held from payment until it is handled.')}</p></div>
+    <div class="card hc-card"><div class="hc-h"><h3>${L('מה ממופה למה','What maps to what')}</h3></div><div class="scroll"><table class="tbl"><thead><tr><th>Triplanet</th><th>${an(k,'short')}</th></tr></thead><tbody>${p.map.map(m=>`<tr><td>${L(m[0][0],m[0][1])}</td><td><strong><bdi>${L(m[1][0],m[1][1])}</bdi></strong></td></tr>`).join('')}</tbody></table></div></div></div></div>`;
 }
 /* sync chip on the trip's finance tabs */
 function acChip(t){const a=A();if(a.phase!=='synced'||t.stage==='Quote')return '';return `<div class="ac-chip">${acBadge(a.sys)}<span>${L(`מסונכרן עם ${an(a.sys,'short')}`,`Synced with ${an(a.sys,'short')}`)} · ${L('מתויג לטיול',term(ACCT[a.sys],'trip')+':')} <strong>${esc(t.name)}</strong></span>${PILOT()}</div>`;}
@@ -86,9 +97,9 @@ function acChip(t){const a=A();if(a.phase!=='synced'||t.stage==='Quote')return '
 /* your numbers: what this leak rate would mean for the visitor's agency (illustration) */
 function yourNumbers(){
   const M=leakModel(visibleTrips()),rate=M.rev?Math.max(0,M.leak)/M.rev:0,n=S.ynTrips||60,rev=S.ynRev||45000,est=r2(n*rev*rate);
-  return `<div class="card yn"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${L('המספרים שלכם','Your numbers')}</h3>${pillF(L('המחשה','Illustration'),'')}</div>
+  return `<div class="hc-grid hc-yngrid"><div class="hc-c12"><div class="card hc-card yn"><div class="hc-h"><h3>${L('המספרים שלכם','Your numbers')}</h3>${pillF(L('המחשה','Illustration'),'')}</div>
    <div class="yn-g"><label>${L('טיולים בשנה','Trips per year')}<input type="number" min="1" max="2000" value="${n}" data-yn="ynTrips"></label><label>${L('הכנסה ממוצעת לטיול ($)','Average revenue per trip ($)')}<input type="number" min="1000" max="1000000" step="1000" value="${rev}" data-yn="ynRev"></label>
-   <div class="yn-out"><span>${L('דליפה צפויה בשנה, בשיעור של הדמו','Leak per year at this demo\'s rate')}</span><b>${usd(est)}</b><small>${L(`${pct(rate)} מההכנסות. הערכה, לא נתון שלכם.`,`${pct(rate)} of revenue. An estimate, not your data.`)}</small></div></div></div>`;
+   <div class="yn-out"><span>${L('דליפה צפויה בשנה, בשיעור של הדמו','Leak per year at this demo\'s rate')}</span><b>${usd(est)}</b><small>${L(`${pct(rate)} מההכנסות. הערכה, לא נתון שלכם.`,`${pct(rate)} of revenue. An estimate, not your data.`)}</small></div></div></div></div></div>`;
 }
 {const v0=VIEWS.leaks;VIEWS.leaks=function(){return v0()+yourNumbers();};}
 /* Maya: three new questions */

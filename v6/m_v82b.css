@@ -1,0 +1,56 @@
+/* v8.2 letter b: Money pages (Invoice check, Finance, Profit leaks, Accounting sync) in the command-center language.
+   Tokens only, logical properties, day and night. */
+
+/* the tour highlights `.stats` on Invoice check: keep that class on the header band without the old stats grid */
+.hc-hero.hc-page.stats{display:block;grid-template-columns:none;gap:0;margin-bottom:20px}
+
+/* status badge inside the page title */
+.hc-page h1 .pill{vertical-align:middle;margin-inline-start:10px;font-size:12px;font-weight:700;letter-spacing:0;background:rgba(93,252,224,.16);color:var(--mint);border:0}
+
+/* consecutive grids (Profit leaks adds Your numbers below) */
+.hc-grid+.hc-grid{margin-top:20px}
+
+/* existing cards inside the new language: rounded 20px, same padding */
+.hc-grid .card.hc-card{border-radius:20px;padding:20px;margin:0}
+.hc-grid .card.hc-card .hc-h h3{font-size:18px}
+.hc-grid .card.hc-card>.hc-lead{margin:0 0 12px}
+.hc-grid .hc-filt{padding:12px 20px}
+.hc-grid .hc-filt .row{gap:16px;flex-wrap:wrap}
+.hc-grid .hc-card .legend{margin:0 0 8px}
+.hc-grid .hc-card .tbl tfoot td{font-weight:700}
+
+/* Profit leaks: the hero band is the centerpiece, in the same type scale and radius */
+.hc-grid .lk-hero{margin:0;border-radius:20px;padding:20px 22px}
+.hc-grid .lk-k{border-radius:16px}
+.hc-grid .lk-k .l{font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:12px}
+.hc-grid .lk-k .v{font-family:var(--f-num);font-weight:800}
+.hc-grid .lk-wf .hc-h h3{line-height:1.4}
+.hc-grid .lk-risk .lk-ri:first-of-type{border-top:0}
+.hc-grid .lk-break,.hc-grid .lk-heat{margin-bottom:0}
+.hc-grid .lk-break .hc-h .seg{max-width:100%}
+
+/* Your numbers */
+.hc-grid .yn{margin-top:0}
+
+/* Accounting sync: system cards sit inside a card, so they get a hairline instead of a second shadow */
+.hc-grid .hc-card .ac-card{box-shadow:none;border:1px solid var(--line);border-radius:16px}
+.hc-grid .hc-card .ac-grid{margin-bottom:8px}
+.hc-grid .ac-busy{max-width:none}
+.hc-grid .ac-head{margin-bottom:0}
+
+/* gap cards (Invoice check, trip Expenses): same corner radius, a bold money line first */
+.gapc{border-radius:20px}
+.gapc .gl-lead{margin:0 0 4px;font-size:14.5px;line-height:1.4}
+
+/* Night mode: the hero tile colors already come from m_home tokens; make the pill and filter inputs legible */
+[data-theme="dark"] .hc-page h1 .pill{background:rgba(93,252,224,.14);color:var(--mint)}
+
+/* phones */
+@media (max-width:600px){
+  .hc-grid .card.hc-card{padding:16px;border-radius:18px}
+  .hc-grid .hc-filt{padding:12px 16px}
+  .hc-grid .lk-hero{padding:16px;border-radius:18px}
+  .hc-grid .hc-h{align-items:flex-start}
+  .hc-grid .hc-h .row{width:100%}
+  .hc-page h1 .pill{display:inline-block;margin-inline-start:8px}
+}
