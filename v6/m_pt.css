@@ -1,0 +1,82 @@
+/* ---------- v8.4 Traveler app (module pt): the phone screen of the demo. Tokens only, logical CSS. ---------- */
+.pt-wrap{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:28px;align-items:start;justify-content:center}
+.pt-phone{display:flex;flex-direction:column;gap:14px;max-width:460px;width:100%;margin-inline:auto;padding:14px;border-radius:32px;background:var(--bg);border:1px solid var(--line);box-shadow:var(--sh-drop,0 24px 48px -24px rgba(1,41,114,.35));box-sizing:border-box}
+.pt-notch{display:flex;justify-content:center}.pt-notch span{width:84px;height:5px;border-radius:99px;background:var(--line)}
+.pt-side{position:sticky;top:76px}
+.pt-pts{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.pt-pts li{display:flex;gap:8px;align-items:flex-start}.pt-pts svg{color:var(--green);flex:none;margin-top:2px}
+.pt-grid,.pt-stack{display:flex;flex-direction:column;gap:14px}
+.pt-phone .card{margin:0}
+/* the hero always uses its phone layout inside the column */
+.pt-phone .hc-hero{padding:20px 16px 16px;border-radius:22px}
+.pt-phone .hc-hl{grid-template-columns:1fr;gap:16px}
+.pt-phone .hc-hi h1{font-size:27px}.pt-phone .hc-hi p{font-size:14.5px}
+.pt-phone .hc-gauge{grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;min-width:0}
+.pt-phone .hc-gauge .hc-ring.big{width:112px;height:112px}
+.pt-phone .hc-gv{height:112px;width:112px;inset-inline:auto;inset-inline-start:0}
+.pt-phone .hc-gv b{font-size:26px}.pt-phone .hc-gv span{font-size:10px;max-width:78px}
+.pt-phone .hc-gl{white-space:normal}
+.pt-phone .hc-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+.pt-phone .hc-kpi{padding:12px}.pt-phone .hc-kpi b{font-size:21px}.pt-phone .hc-kpi span{font-size:10.5px}.pt-phone .hc-kpi small{font-size:11.5px}
+.pt-phone .hc-cta .hc-btn{flex:1;justify-content:center}
+.pt-phone .hc-card{padding:16px;border-radius:18px}
+.pt-phone .hc-steps li{grid-template-columns:12px minmax(0,1fr)}.pt-phone .hc-steps li>.btn{grid-column:2;justify-self:start}
+.pt-phone .hc-steps li span.small{display:block}
+/* chips and person row */
+.pt-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.pt-chips::-webkit-scrollbar{display:none}
+.pt-chips .chip{flex:none}
+.pt-me{display:flex;align-items:center;gap:12px}.pt-me .avatar{width:44px;height:44px;flex:none}
+.pt-me>div{display:flex;flex-direction:column;min-width:0}.pt-me b{font-size:16px}
+/* next-up card */
+.pt-next{padding:0!important;overflow:hidden}
+.pt-ph{display:block;height:132px;position:relative;background-size:cover}
+.pt-ph .hc-when{position:absolute;inset-block-start:10px;inset-inline-start:10px}
+.pt-nb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px}.pt-nb h3{margin:0;font-size:19px}
+.pt-kv{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pt-kv li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.pt-kv li>svg,.pt-kv li>.ic{flex:none;color:var(--primary);margin-top:2px}
+.pt-kv li>span{display:block;min-width:0;overflow-wrap:anywhere}.pt-kv b{display:block;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+/* pay */
+.pt-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:var(--recess);margin:10px 0}
+.pt-total span{color:var(--muted);font-weight:600}.pt-total b{font:800 26px var(--f-num)}
+.pt-pays{list-style:none;margin:0;padding:0}
+.pt-pays li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px dashed var(--line)}
+.pt-pl{display:grid;grid-template-columns:20px 1fr;column-gap:8px;align-items:center}.pt-pl small{grid-column:2;color:var(--muted)}
+.pt-pays li.ok .pt-pl svg{color:var(--green)}.pt-pays li:not(.ok) .pt-pl svg{color:var(--amber)}
+.pt-pa{font:700 16px var(--f-num)}
+.pt-open{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);padding-top:10px;border-top:1px dashed var(--line)}.pt-open b{font-family:var(--f-num)}
+.pt-wide{width:100%;justify-content:center;padding-block:11px;font-size:15px}
+.pt-act{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.pt-cc{display:flex;flex-direction:column;gap:18px;padding:16px;border-radius:16px;color:#fff;background:linear-gradient(135deg,var(--hero1),var(--hero2));position:relative;overflow:hidden}
+.pt-cc b{font:700 19px var(--f-num);letter-spacing:.08em;direction:ltr;text-align:start}
+.pt-cc span{display:flex;justify-content:space-between;font-size:12px;opacity:.85}.pt-cc i{font-style:normal}
+.pt-cc .pt-ccl{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mint);opacity:1}
+.pt-demo{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:12px;font-size:13px;background:color-mix(in srgb,var(--amber) 14%,transparent);color:var(--ink)}.pt-demo svg{flex:none;color:var(--amber);margin-top:2px}
+.pt-ok{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}.pt-ok h3{margin:0}.pt-ok p{margin:0}
+.pt-okic{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}.pt-okic svg{width:28px;height:28px}
+.pt-link{display:flex;gap:8px;align-items:center}.pt-link code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px;padding:8px 10px;border-radius:10px;background:var(--recess);color:var(--ink)}
+/* forms */
+.pt-fl{list-style:none;margin:0;padding:0}
+.pt-fr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}.pt-fr:first-child{border-top:0}
+.pt-fi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--recess);color:var(--primary)}
+.pt-ft{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}
+.pt-fields{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+.pt-sec{margin:8px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pt-fld{display:flex;flex-direction:column;gap:5px}.pt-fld>label{font-weight:600;font-size:13.5px}
+.pt-fld input[type=text],.pt-fld input[type=email],.pt-fld input[type=tel],.pt-fld input[type=number],.pt-fld input[type=date],.pt-fld select,.pt-fld textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.pt-fld input:focus,.pt-fld select:focus,.pt-fld textarea:focus{outline:2px solid var(--primary);outline-offset:1px}
+.pt-fld.bad input,.pt-fld.bad select,.pt-fld.bad textarea{border-color:var(--red)}
+.pt-er{color:var(--red);font-weight:600}.pt-help{color:var(--muted)}.pt-req{color:var(--red);font-style:normal;margin-inline-start:3px}
+.pt-ck{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer}.pt-ck input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--primary)}
+.pt-mc{display:flex;flex-direction:column;gap:8px}
+.pt-terms .fb-terms{max-height:180px;overflow:auto;padding:10px 12px;border-radius:12px;background:var(--recess);font-size:13px;margin-top:8px}
+.pt-sample{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:600;color:var(--amber);margin:8px 0 0}
+/* help */
+.pt-cls{list-style:none;margin:0;padding:0}
+.pt-cl{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}.pt-cl:first-child{border-top:0}
+.pt-cl>svg{color:var(--primary)}.pt-cl span{display:flex;flex-direction:column;min-width:0;overflow-wrap:anywhere}.pt-cl small{color:var(--muted)}
+.pt-cl a.btn{text-decoration:none}
+/* phones: the column becomes the page */
+@media (max-width:1000px){.pt-wrap{grid-template-columns:minmax(0,460px)}.pt-side{display:none}}
+@media (max-width:520px){.pt-phone{padding:0;border:0;box-shadow:none;background:none;border-radius:0}.pt-notch{display:none}}
+@media (prefers-reduced-motion:reduce){.pt-phone *{animation:none!important;transition:none!important}}

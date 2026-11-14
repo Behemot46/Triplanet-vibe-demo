@@ -6,7 +6,7 @@
       tabs:[[key,he,en,icon]], view:(tab,person)=>html}
    Shared helpers keep the plan, households and money notes identical across portals. */
 const PORTALS={};
-const PV_STRICT=false; /* set true once all four portals are merged */
+const PV_STRICT=true;
 let PV_PREV='';
 function pvRegister(k,def){PORTALS[k]=Object.assign({kind:'client',feat:null,tabs:[],people:()=>[],view:()=>''},def,{k});}
 const pvP=()=>S.pv&&PORTALS[S.pv.k];
@@ -94,9 +94,22 @@ document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v||'';
   if(a==='pv-tab'){pvTab(v);try{window.scrollTo(0,0);}catch(err){}render();}
   else if(a==='pv-exit'){pvExit();render();}
-  else if(a==='pv-open'){const [k,id,tab]=v.split('|');pvOpen(k,id,tab);render();}
+  else if(a==='pv-open'){const [k,id,tab]=v.split('|');const pid=b.dataset.id||id,tr=b.dataset.trip;
+    if(tr){if(k==='traveler')S.ptTrip=tr;else if(k==='leader')S.plTrip=tr;else if(k==='guide'){S.pgTrip=tr;S.pgDay=1;}}
+    pvOpen(k,pid,b.dataset.tab||tab);render();}
 });
 document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||el.dataset.ch!=='pv-person'||!S.pv)return;S.pv.id=el.value;render();});
+
+/* ---------- entry links from the agency: "see this as …" strips on the matching agency screens ---------- */
+const pvLink=(k,id,label,sub,extra)=>`<div class="pv-link"><span>${ic('show')} <b>${label}</b>${sub?` <span class="muted small">${sub}</span>`:''}</span><button class="btn sm" data-act="pv-open" data-v="${k}" data-id="${esc(id)}"${extra||''}>${L('פתיחה','Open')} ${ic('chev','flip')}</button></div>`;
+if(typeof opTasksTab==='function'){const f0=opTasksTab;opTasksTab=function(t){const h=f0.apply(this,arguments);const g=t&&t.stage!=='Quote'&&typeof guideOfTrip==='function'&&guideOfTrip(t.id);
+  return g&&PORTALS.guide?pvLink('guide',g.id,L('דף הריצה של מנהל הטיול','The tour director\'s run sheet'),esc(L(g.he,g.en)),` data-trip="${t.id}" data-tab="day"`)+h:h;};}
+if(typeof opManifestTab==='function'){const f0=opManifestTab;opManifestTab=function(t){const h=f0.apply(this,arguments);
+  return t&&t.stage==='Operations'&&t.trav&&t.trav.length&&PORTALS.traveler?pvLink('traveler',t.id+'|0',L('האפליקציה של הנוסע','The traveler app'),L('כפי שנוסע רואה את הטיול','as a traveler sees this trip'),` data-trip="${t.id}"`)+h:h;};}
+if(typeof spCardHtml==='function'){const f0=spCardHtml;spCardHtml=function(s){const h=f0.apply(this,arguments);
+  return s&&PORTALS.supplier&&pvFictionalSuppliers().some(x=>x.id===s.id)?pvLink('supplier',s.id,L('פורטל הספקים','The supplier portal'),L('כפי שהספק רואה את ההזמנות והחשבוניות','as this supplier sees bookings and invoices'))+h:h;};}
+if(typeof spCliHtml==='function'){const f0=spCliHtml;spCliHtml=function(c){const h=f0.apply(this,arguments);
+  return c&&c.id&&PORTALS.leader&&PORTALS.leader.people().some(x=>x.id===c.id)?pvLink('leader',c.id,L('פורטל ראש הקבוצה','The group leader portal'),esc(c.contact&&c.contact.name||''))+h:h;};}
 
 /* ---------- developer notes and tests for the frame ---------- */
 if(typeof SPEC!=='undefined')SPEC['portal:frame']={title:'Portal frame (external viewpoints)',
@@ -125,4 +138,11 @@ TESTS.push({name:'pv portal frame',run:h=>{const out=[];
     if(ds.reduce((a,d)=>a+d.items.length,0)!==t.items.filter(x=>x.day>=1&&x.day<=t.nights+1).length)out.push('items '+t.id);
     ds.forEach(d=>d.items.forEach((x,i)=>{if(x.end<x.start||(i&&x.start<d.items[i-1].end))out.push('times '+t.id+' d'+d.i);}));});
   if(pvFictionalSuppliers().some(s=>s.real))out.push('real supplier in the portal list');
+  /* entry links from the agency */
+  S.role='manager';S.pv=null;const nas=TRIPS.find(t=>t.id==='nas');
+  if(!opTasksTab(nas).includes('data-v="guide"'))out.push('no run sheet link on Tasks');
+  if(!opManifestTab(nas).includes('data-v="traveler"'))out.push('no traveler link on the Master list');
+  const fs=pvFictionalSuppliers()[0],rs=SUPPLIERS.find(x=>x.real);
+  if(fs&&!spCardHtml(fs).includes('data-v="supplier"'))out.push('no supplier portal link');if(rs&&spCardHtml(rs).includes('data-v="supplier"'))out.push('supplier portal link on a real supplier');
+  const cl=cliByName(nas.client);if(cl&&!spCliHtml(cl).includes('data-v="leader"'))out.push('no leader portal link on the client card');
   return out;}});

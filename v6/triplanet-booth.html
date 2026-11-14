@@ -1780,6 +1780,70 @@ button.pj-status{border:0;cursor:pointer}
   .pg-run .pv-st .pv-tick{width:100%}
 }
 
+/* v8.4 group leader portal (s13_pl.js): tokens only, logical properties, phone first */
+.pv-leader .hc{gap:16px}
+.pv-leader .pv-main>*+*{margin-top:0}
+.pl-chips{display:flex;flex-wrap:wrap;gap:8px}
+.pl-chip{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;padding:8px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;cursor:pointer;text-align:start;min-height:40px}
+.pl-chip b{font-weight:700;font-size:13.5px}
+.pl-chip small{color:var(--muted);font-size:12px}
+.pl-chip:hover{border-color:var(--primary)}
+.pl-chip.on{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--panel));box-shadow:inset 0 0 0 1px var(--primary)}
+.pl-flt .pl-chip{flex-direction:row;align-items:center;gap:6px;padding:6px 12px;min-height:36px;border-radius:999px}
+.pl-flt{margin-bottom:12px}
+.pl-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:28px 18px}
+.pl-empty svg{width:34px;height:34px;color:var(--primary)}
+.pl-empty h3{margin:0}
+.pl-empty p{margin:0;max-width:44ch}
+.pl-note{display:flex;gap:14px;align-items:flex-start}
+.pl-note>svg{flex:none;width:28px;height:28px;color:var(--primary)}
+.pl-note h3{margin:0 0 4px}.pl-note p{margin:0}
+.pl-price{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:6px 0 14px}
+.pl-price>div{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:12px;background:var(--recess)}
+.pl-price b{font:700 22px var(--f-num);color:var(--ink)}
+.pl-prop h4{margin:0 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.pl-inc{list-style:none;margin:0 0 12px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.pl-inc li{display:flex;gap:6px;align-items:center;font-size:14px}
+.pl-inc svg{width:16px;height:16px;color:var(--green);flex:none}
+.pl-act{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pl-land{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;overflow-x:auto}
+.pl-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:0}
+.pl-facts>div{display:flex;flex-direction:column;gap:2px}
+.pl-facts dt{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.pl-facts dd{margin:0;font-weight:600}
+.pl-days{display:flex;flex-direction:column;gap:16px}
+.pl-tbl th,.pl-tbl td{vertical-align:top}
+.pl-tbl td svg{width:14px;height:14px;vertical-align:-2px;color:var(--green)}
+.pl-tbl td svg+*,.pl-tbl .small svg{color:inherit}
+.pl-tbl tfoot td{font-weight:700;border-top:2px solid var(--line);background:var(--recess)}
+.pl-tbl .pill svg{color:inherit}
+.pl-rm{margin-top:6px}
+.pl-rm[aria-disabled="true"]{opacity:.6}
+.pl-ag{display:flex;gap:14px;align-items:center;margin-bottom:8px}
+.pl-ag .avatar{width:56px;height:56px;flex:none}
+.pl-waiver blockquote{margin:0 0 10px;padding:12px 14px;border-inline-start:3px solid var(--primary);background:var(--recess);border-radius:8px;font-size:14px;line-height:1.55}
+.pl-flag{display:flex;gap:8px;align-items:center;margin:0 0 10px;padding:8px 10px;border-radius:8px;font-weight:600;font-size:13.5px;background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--ink)}
+.pl-flag svg{width:18px;height:18px;flex:none;color:var(--amber)}
+.pl-thread{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:12px}
+.pl-m{display:flex;gap:10px;align-items:flex-end;max-width:88%}
+.pl-m.me{align-self:flex-end;flex-direction:row-reverse}
+.pl-m .avatar{width:28px;height:28px;flex:none}
+.pl-b{padding:10px 14px;border-radius:16px;background:var(--recess);min-width:0}
+.pl-m.me .pl-b{background:color-mix(in srgb,var(--primary) 14%,var(--panel))}
+.pl-bh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.pl-b p{margin:4px 0 0;overflow-wrap:anywhere;line-height:1.5}
+.pl-compose textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);font:inherit;resize:vertical}
+.pl-compose textarea:focus{outline:2px solid var(--primary);outline-offset:1px}
+.pl-cf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+@media (max-width:720px){
+  .pl-price{grid-template-columns:1fr}
+  .pl-inc,.pl-facts{grid-template-columns:1fr}
+  .pl-m{max-width:96%}
+  .pl-chip{width:100%}
+  .pl-flt .pl-chip{width:auto}
+  .pl-hm{display:none}
+}
+
 /* ---------- v8.4 portal frame (s13_portal.js): minimal, mobile-first shell for external viewpoints ---------- */
 .pv{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--f-ui);display:flex;flex-direction:column}
 .pv .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -1839,6 +1903,10 @@ button.pj-status{border:0;cursor:pointer}
   .pv-st{grid-template-columns:58px 26px 1fr;}
   .pv-st .pv-tick{grid-column:3;justify-self:start}
 }
+/* entry links on agency screens */
+.pv-link{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 14px;margin:0 0 12px;border:1px dashed var(--primary-light);border-radius:12px;background:var(--recess);color:var(--ink)}
+.pv-link>span{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pv-link .ic,.pv-link>span>svg{color:var(--primary)}
 
 /* v8 module pr: proposal formats and pricing extras */
 .pr-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -1882,6 +1950,143 @@ button.pj-status{border:0;cursor:pointer}
 .pr-hero{position:relative;isolation:isolate}
 .pr-hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(1,41,114,.15) 0%,rgba(1,41,114,.55) 45%,rgba(1,20,60,.88) 100%)}
 .pr-hero h2,.pr-hero .pr-meta,.pr-hero .pr-agy,.pr-hero .pr-from{text-shadow:0 1px 3px rgba(0,0,0,.45)}
+
+/* v8.4 supplier portal (s13_ps.js). Tokens only, logical properties, day and night. */
+.ps-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
+.ps-head h2{margin:0;font:700 20px/1.2 var(--f-ui);color:var(--ink)}
+.ps-lm{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ps-tn{font-size:15px;color:var(--ink)}
+.ps-ts{line-height:1.35}
+.ps-rh{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ps-chips{display:flex;flex-wrap:wrap;gap:6px;margin-block:10px}
+.ps-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:var(--recess);color:var(--ink2);font-size:12.5px}
+.ps-chip .ic{color:var(--primary)}
+.ps-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-block-start:12px}
+.ps-acts .btn{display:inline-flex;align-items:center;gap:6px}
+.ps-acts .btn[disabled]{opacity:.55;cursor:default}
+.ps-lst{list-style:none;margin:6px 0 0;padding:0}
+.ps-lst li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed var(--line)}
+.ps-lst li:first-child{border-top:0}
+.ps-la{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:end;flex:none}
+.ps-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0 0}
+.ps-dl dt{color:var(--muted);font-size:13px}
+.ps-dl dd{margin:0;color:var(--ink);font-size:13.5px}
+.ps-nums{grid-template-columns:auto auto;justify-content:start;padding:10px 12px;border-radius:12px;background:var(--recess)}
+.ps-nums dd{font-family:var(--f-num);font-weight:600;text-align:end}
+.ps-ct{display:flex;align-items:center;gap:10px;margin-block-start:14px;padding-block-start:12px;border-top:1px dashed var(--line)}
+.ps-qk{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-block-start:10px}
+.ps-ex{margin:10px 0 0;color:var(--ink2);font-size:14px;line-height:1.5}
+.ps-empty{display:flex;align-items:center;gap:12px}
+.ps-empty p{margin:0}
+.ps-ei{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--recess);color:var(--primary)}
+.ps-cr{margin-block-start:16px}
+.ps-ilist{display:flex;flex-direction:column}
+.ps-ir,.ps-sch{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}
+.ps-ilist>:first-child{border-top:0}
+.ps-ia{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.ps-ia .n{font-family:var(--f-num)}
+.ps-id{grid-column:1/-1}
+.ps-sch{grid-template-columns:1fr}
+.ps-pr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.ps-pr>span:first-child{min-width:150px}
+.ps-pr .n{font-family:var(--f-num);margin-inline-start:6px}
+.ps-tbl td.n{font-family:var(--f-num);text-align:start}
+.ps-roster .hc-h{align-items:flex-start}
+.ps-sim{margin:12px 0 0}
+.pv-supplier .hc-c6{grid-column:span 6}
+.pv-supplier .hc-hero .hc-eye bdi{unicode-bidi:isolate}
+@media (max-width:720px){
+  .pv-supplier .hc-c6{grid-column:1/-1}
+  .ps-ir{grid-template-columns:1fr}
+  .ps-ia{justify-content:space-between}
+  .ps-pr>span:first-child{min-width:0;flex:1 1 100%}
+  .ps-acts .btn{flex:1 1 auto;justify-content:center}
+  .ps-head h2{font-size:18px}
+}
+@media print{.pv-top,.pv-rib,.pv-tabs,.pv-foot,.ps-acts,.hc-hero,.hc-more{display:none!important}}
+
+/* ---------- v8.4 Traveler app (module pt): the phone screen of the demo. Tokens only, logical CSS. ---------- */
+.pt-wrap{display:grid;grid-template-columns:minmax(0,460px) minmax(0,1fr);gap:28px;align-items:start;justify-content:center}
+.pt-phone{display:flex;flex-direction:column;gap:14px;max-width:460px;width:100%;margin-inline:auto;padding:14px;border-radius:32px;background:var(--bg);border:1px solid var(--line);box-shadow:var(--sh-drop,0 24px 48px -24px rgba(1,41,114,.35));box-sizing:border-box}
+.pt-notch{display:flex;justify-content:center}.pt-notch span{width:84px;height:5px;border-radius:99px;background:var(--line)}
+.pt-side{position:sticky;top:76px}
+.pt-pts{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.pt-pts li{display:flex;gap:8px;align-items:flex-start}.pt-pts svg{color:var(--green);flex:none;margin-top:2px}
+.pt-grid,.pt-stack{display:flex;flex-direction:column;gap:14px}
+.pt-phone .card{margin:0}
+/* the hero always uses its phone layout inside the column */
+.pt-phone .hc-hero{padding:20px 16px 16px;border-radius:22px}
+.pt-phone .hc-hl{grid-template-columns:1fr;gap:16px}
+.pt-phone .hc-hi h1{font-size:27px}.pt-phone .hc-hi p{font-size:14.5px}
+.pt-phone .hc-gauge{grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;min-width:0}
+.pt-phone .hc-gauge .hc-ring.big{width:112px;height:112px}
+.pt-phone .hc-gv{height:112px;width:112px;inset-inline:auto;inset-inline-start:0}
+.pt-phone .hc-gv b{font-size:26px}.pt-phone .hc-gv span{font-size:10px;max-width:78px}
+.pt-phone .hc-gl{white-space:normal}
+.pt-phone .hc-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+.pt-phone .hc-kpi{padding:12px}.pt-phone .hc-kpi b{font-size:21px}.pt-phone .hc-kpi span{font-size:10.5px}.pt-phone .hc-kpi small{font-size:11.5px}
+.pt-phone .hc-cta .hc-btn{flex:1;justify-content:center}
+.pt-phone .hc-card{padding:16px;border-radius:18px}
+.pt-phone .hc-steps li{grid-template-columns:12px minmax(0,1fr)}.pt-phone .hc-steps li>.btn{grid-column:2;justify-self:start}
+.pt-phone .hc-steps li span.small{display:block}
+/* chips and person row */
+.pt-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.pt-chips::-webkit-scrollbar{display:none}
+.pt-chips .chip{flex:none}
+.pt-me{display:flex;align-items:center;gap:12px}.pt-me .avatar{width:44px;height:44px;flex:none}
+.pt-me>div{display:flex;flex-direction:column;min-width:0}.pt-me b{font-size:16px}
+/* next-up card */
+.pt-next{padding:0!important;overflow:hidden}
+.pt-ph{display:block;height:132px;position:relative;background-size:cover}
+.pt-ph .hc-when{position:absolute;inset-block-start:10px;inset-inline-start:10px}
+.pt-nb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:4px}.pt-nb h3{margin:0;font-size:19px}
+.pt-kv{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pt-kv li{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.pt-kv li>svg,.pt-kv li>.ic{flex:none;color:var(--primary);margin-top:2px}
+.pt-kv li>span{display:block;min-width:0;overflow-wrap:anywhere}.pt-kv b{display:block;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+/* pay */
+.pt-total{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:var(--recess);margin:10px 0}
+.pt-total span{color:var(--muted);font-weight:600}.pt-total b{font:800 26px var(--f-num)}
+.pt-pays{list-style:none;margin:0;padding:0}
+.pt-pays li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px dashed var(--line)}
+.pt-pl{display:grid;grid-template-columns:20px 1fr;column-gap:8px;align-items:center}.pt-pl small{grid-column:2;color:var(--muted)}
+.pt-pays li.ok .pt-pl svg{color:var(--green)}.pt-pays li:not(.ok) .pt-pl svg{color:var(--amber)}
+.pt-pa{font:700 16px var(--f-num)}
+.pt-open{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);padding-top:10px;border-top:1px dashed var(--line)}.pt-open b{font-family:var(--f-num)}
+.pt-wide{width:100%;justify-content:center;padding-block:11px;font-size:15px}
+.pt-act{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.pt-cc{display:flex;flex-direction:column;gap:18px;padding:16px;border-radius:16px;color:#fff;background:linear-gradient(135deg,var(--hero1),var(--hero2));position:relative;overflow:hidden}
+.pt-cc b{font:700 19px var(--f-num);letter-spacing:.08em;direction:ltr;text-align:start}
+.pt-cc span{display:flex;justify-content:space-between;font-size:12px;opacity:.85}.pt-cc i{font-style:normal}
+.pt-cc .pt-ccl{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mint);opacity:1}
+.pt-demo{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border-radius:12px;font-size:13px;background:color-mix(in srgb,var(--amber) 14%,transparent);color:var(--ink)}.pt-demo svg{flex:none;color:var(--amber);margin-top:2px}
+.pt-ok{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}.pt-ok h3{margin:0}.pt-ok p{margin:0}
+.pt-okic{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}.pt-okic svg{width:28px;height:28px}
+.pt-link{display:flex;gap:8px;align-items:center}.pt-link code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px;padding:8px 10px;border-radius:10px;background:var(--recess);color:var(--ink)}
+/* forms */
+.pt-fl{list-style:none;margin:0;padding:0}
+.pt-fr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}.pt-fr:first-child{border-top:0}
+.pt-fi{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--recess);color:var(--primary)}
+.pt-ft{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0}
+.pt-fields{display:flex;flex-direction:column;gap:14px;margin-top:10px}
+.pt-sec{margin:8px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pt-fld{display:flex;flex-direction:column;gap:5px}.pt-fld>label{font-weight:600;font-size:13.5px}
+.pt-fld input[type=text],.pt-fld input[type=email],.pt-fld input[type=tel],.pt-fld input[type=number],.pt-fld input[type=date],.pt-fld select,.pt-fld textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.pt-fld input:focus,.pt-fld select:focus,.pt-fld textarea:focus{outline:2px solid var(--primary);outline-offset:1px}
+.pt-fld.bad input,.pt-fld.bad select,.pt-fld.bad textarea{border-color:var(--red)}
+.pt-er{color:var(--red);font-weight:600}.pt-help{color:var(--muted)}.pt-req{color:var(--red);font-style:normal;margin-inline-start:3px}
+.pt-ck{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer}.pt-ck input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--primary)}
+.pt-mc{display:flex;flex-direction:column;gap:8px}
+.pt-terms .fb-terms{max-height:180px;overflow:auto;padding:10px 12px;border-radius:12px;background:var(--recess);font-size:13px;margin-top:8px}
+.pt-sample{display:flex;gap:8px;align-items:center;font-size:12.5px;font-weight:600;color:var(--amber);margin:8px 0 0}
+/* help */
+.pt-cls{list-style:none;margin:0;padding:0}
+.pt-cl{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px dashed var(--line)}.pt-cl:first-child{border-top:0}
+.pt-cl>svg{color:var(--primary)}.pt-cl span{display:flex;flex-direction:column;min-width:0;overflow-wrap:anywhere}.pt-cl small{color:var(--muted)}
+.pt-cl a.btn{text-decoration:none}
+/* phones: the column becomes the page */
+@media (max-width:1000px){.pt-wrap{grid-template-columns:minmax(0,460px)}.pt-side{display:none}}
+@media (max-width:520px){.pt-phone{padding:0;border:0;box-shadow:none;background:none;border-radius:0}.pt-notch{display:none}}
+@media (prefers-reduced-motion:reduce){.pt-phone *{animation:none!important;transition:none!important}}
 
 /* v8.1 global search popover (module gs). Colors from theme tokens. */
 .gs-root{position:fixed;inset:0;z-index:110;display:flex;justify-content:center;align-items:flex-start;padding:72px 16px 16px}
@@ -12161,7 +12366,7 @@ SPEC['home:manager']={title:'Home, owner (command center)',
       tabs:[[key,he,en,icon]], view:(tab,person)=>html}
    Shared helpers keep the plan, households and money notes identical across portals. */
 const PORTALS={};
-const PV_STRICT=false; /* set true once all four portals are merged */
+const PV_STRICT=true;
 let PV_PREV='';
 function pvRegister(k,def){PORTALS[k]=Object.assign({kind:'client',feat:null,tabs:[],people:()=>[],view:()=>''},def,{k});}
 const pvP=()=>S.pv&&PORTALS[S.pv.k];
@@ -12249,9 +12454,22 @@ document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v||'';
   if(a==='pv-tab'){pvTab(v);try{window.scrollTo(0,0);}catch(err){}render();}
   else if(a==='pv-exit'){pvExit();render();}
-  else if(a==='pv-open'){const [k,id,tab]=v.split('|');pvOpen(k,id,tab);render();}
+  else if(a==='pv-open'){const [k,id,tab]=v.split('|');const pid=b.dataset.id||id,tr=b.dataset.trip;
+    if(tr){if(k==='traveler')S.ptTrip=tr;else if(k==='leader')S.plTrip=tr;else if(k==='guide'){S.pgTrip=tr;S.pgDay=1;}}
+    pvOpen(k,pid,b.dataset.tab||tab);render();}
 });
 document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||el.dataset.ch!=='pv-person'||!S.pv)return;S.pv.id=el.value;render();});
+
+/* ---------- entry links from the agency: "see this as …" strips on the matching agency screens ---------- */
+const pvLink=(k,id,label,sub,extra)=>`<div class="pv-link"><span>${ic('show')} <b>${label}</b>${sub?` <span class="muted small">${sub}</span>`:''}</span><button class="btn sm" data-act="pv-open" data-v="${k}" data-id="${esc(id)}"${extra||''}>${L('פתיחה','Open')} ${ic('chev','flip')}</button></div>`;
+if(typeof opTasksTab==='function'){const f0=opTasksTab;opTasksTab=function(t){const h=f0.apply(this,arguments);const g=t&&t.stage!=='Quote'&&typeof guideOfTrip==='function'&&guideOfTrip(t.id);
+  return g&&PORTALS.guide?pvLink('guide',g.id,L('דף הריצה של מנהל הטיול','The tour director\'s run sheet'),esc(L(g.he,g.en)),` data-trip="${t.id}" data-tab="day"`)+h:h;};}
+if(typeof opManifestTab==='function'){const f0=opManifestTab;opManifestTab=function(t){const h=f0.apply(this,arguments);
+  return t&&t.stage==='Operations'&&t.trav&&t.trav.length&&PORTALS.traveler?pvLink('traveler',t.id+'|0',L('האפליקציה של הנוסע','The traveler app'),L('כפי שנוסע רואה את הטיול','as a traveler sees this trip'),` data-trip="${t.id}"`)+h:h;};}
+if(typeof spCardHtml==='function'){const f0=spCardHtml;spCardHtml=function(s){const h=f0.apply(this,arguments);
+  return s&&PORTALS.supplier&&pvFictionalSuppliers().some(x=>x.id===s.id)?pvLink('supplier',s.id,L('פורטל הספקים','The supplier portal'),L('כפי שהספק רואה את ההזמנות והחשבוניות','as this supplier sees bookings and invoices'))+h:h;};}
+if(typeof spCliHtml==='function'){const f0=spCliHtml;spCliHtml=function(c){const h=f0.apply(this,arguments);
+  return c&&c.id&&PORTALS.leader&&PORTALS.leader.people().some(x=>x.id===c.id)?pvLink('leader',c.id,L('פורטל ראש הקבוצה','The group leader portal'),esc(c.contact&&c.contact.name||''))+h:h;};}
 
 /* ---------- developer notes and tests for the frame ---------- */
 if(typeof SPEC!=='undefined')SPEC['portal:frame']={title:'Portal frame (external viewpoints)',
@@ -12280,6 +12498,13 @@ TESTS.push({name:'pv portal frame',run:h=>{const out=[];
     if(ds.reduce((a,d)=>a+d.items.length,0)!==t.items.filter(x=>x.day>=1&&x.day<=t.nights+1).length)out.push('items '+t.id);
     ds.forEach(d=>d.items.forEach((x,i)=>{if(x.end<x.start||(i&&x.start<d.items[i-1].end))out.push('times '+t.id+' d'+d.i);}));});
   if(pvFictionalSuppliers().some(s=>s.real))out.push('real supplier in the portal list');
+  /* entry links from the agency */
+  S.role='manager';S.pv=null;const nas=TRIPS.find(t=>t.id==='nas');
+  if(!opTasksTab(nas).includes('data-v="guide"'))out.push('no run sheet link on Tasks');
+  if(!opManifestTab(nas).includes('data-v="traveler"'))out.push('no traveler link on the Master list');
+  const fs=pvFictionalSuppliers()[0],rs=SUPPLIERS.find(x=>x.real);
+  if(fs&&!spCardHtml(fs).includes('data-v="supplier"'))out.push('no supplier portal link');if(rs&&spCardHtml(rs).includes('data-v="supplier"'))out.push('supplier portal link on a real supplier');
+  const cl=cliByName(nas.client);if(cl&&!spCliHtml(cl).includes('data-v="leader"'))out.push('no leader portal link on the client card');
   return out;}});
 
 /* ---------- v8.4 Operations coordinator home (module oc, spec-v8.4-viewpoints.md §3.1 + §8) ----------
@@ -12477,6 +12702,969 @@ SPEC['home:ops']={title:'Home, operations coordinator',
   states:{empty:'No Operations trips: a card says approved quotes appear here.',loading:'Not applicable (local data).',error:'Cards with nothing to do are hidden.'},
   status:'pilot',api:['GET /v1/t/{tenantId}/dashboard/operations (proposed)','PATCH /v1/t/{tenantId}/trips/{id}/suppliers/{n} (proposed)'],
   tests:['TEST oc operations home'],code:['v6/s13_oc.js: hcOps, ocModel, ocBoard, ocTasks, ocSups, ocBlocks, ocDocs','v6/m_oc.css']};
+
+/* ---------- v8.4 group leader portal (spec-v8.4-viewpoints.md §3.2 + amendments A5-A9, A11) ----------
+   What the person who books the trip for a church, club or school sees: the proposal to accept, the itinerary,
+   who has paid, who has sent forms, the documents, and a thread with the agent. Plugs into the portal frame
+   (s13_portal.js) with pvRegister('leader',...). People are client contacts (id = client id); the trip chips pick
+   among the client's non-Lost trips. Everything is simulated: reminders are toasts, messages stay on this laptop. */
+Object.assign(S,{plTrip:'',plFlt:'all',plPf:'all',plAll:false,plLand:false});
+let PVMSG={};
+PERSIST.push({key:'pv-msgs',get:()=>jclone(PVMSG),set:v=>{if(v&&typeof v==='object'&&!Array.isArray(v))PVMSG=v;},reset:()=>{PVMSG={};}});
+const plRem={};  /* simulated reminders sent this session: 'tripId|household' or 'tripId|t<index>' */
+
+/* ---------- selection ---------- */
+const plClients=()=>CLIENTS.filter(c=>pvTripsOfClient(c).length);
+const plTrips=c=>pvTripsOfClient(c).slice().sort((a,b)=>a.dep<b.dep?-1:a.dep>b.dep?1:0);
+/* A6: the chosen trip, else the nearest upcoming one, else the most recent */
+function plTripOf(c){const ts=plTrips(c);if(!ts.length)return null;
+  const hit=ts.find(t=>t.id===S.plTrip);if(hit)return hit;
+  const td=iso(TODAY);return ts.find(t=>t.dep>=td)||ts[ts.length-1];}
+const plClientOf=p=>p?CLI_BY[p.id]||CLIENTS.find(c=>c.id===p.id)||null:null;
+/* a title in the contact name ("Rev. Alan Mercer") greets as "Rev. Mercer", otherwise the first name */
+const plGreetName=n=>{const w=String(n||'').trim().split(/\s+/);return /^(rev\.|father|pastor|dr\.)$/i.test(w[0])&&w.length>1?w[0]+' '+w[w.length-1]:w[0]||'';};
+const plIsQ=t=>t.stage==='Quote';
+/* proposal state as the client sees it (A5) */
+const plState=t=>!plIsQ(t)?'booked':(t.qst||'Draft')==='Draft'?'draft':t.qst==='Sent'?'sent':'accepted';
+const plAgent=t=>STAFF.find(s=>s.key===t.agent)||{en:AGE[t.agent]||t.agent,he:AGN[t.agent]||t.agent,email:'',phone:''};
+const plAgentName=t=>{const a=plAgent(t);return L(a.he,a.en);};
+const plIntl=t=>!!(DESTS[t.dest]&&DESTS[t.dest].intl);
+const plFormsDone=x=>!!(x.form&&OP_FORMS.every(f=>x.form[f[0]]==='done'));
+const plPP=t=>{const c=calc(t);return t.pax?Math.ceil(c.rev/t.pax):0;};
+/* one set of numbers for the hero, the pay tab and the tests */
+function plMoney(t){
+  if(plIsQ(t)||!t.groups.length)return null;
+  const c=calc(t),g=groupsCalc(t),rows=g.rows,openRows=rows.filter(r=>r.open>0.005);
+  return {c,g,rows,rev:c.rev,collected:g.collected,outstanding:g.outstanding,
+    pct:c.rev?Math.round(g.collected/c.rev*100):0,paidN:rows.length-openRows.length,openN:openRows.length,
+    lateN:rows.filter(r=>r.late>0).length,amt:r2(rows.reduce((a,r)=>a+r.amt,0)),paid:r2(rows.reduce((a,r)=>a+r.paid,0)),open:r2(rows.reduce((a,r)=>a+r.open,0))};
+}
+const plFmtLoc=(d,loc)=>D(d).toLocaleDateString(loc,{day:'numeric',month:'short'});
+
+/* ---------- messages: a seeded thread per trip (deterministic) ---------- */
+function plSeed(t){
+  const R=rng(hashId(t.id)),a=plAgent(t),afE=String(AGE[t.agent]||a.en).split(' ')[0],afH=String(AGN[t.agent]||a.he).split(' ')[0];
+  const both=(d)=>({en:plFmtLoc(d,'en-US'),he:plFmtLoc(d,'he-IL')});
+  const dd=both(t.depDue),bd=both(t.balDue),dp=both(t.dep),rl=both(addDays(t.dep,-30));
+  const cands=plIsQ(t)?[
+    ['agent',`היי, תודה על השיחה. אני מרכיב/ה הצעה ל${t.name} עבור ${t.pax} נוסעים. אעדכן ברגע שהיא מוכנה.`,`Hi, thanks for the call. I am putting together a proposal for ${t.name} for ${t.pax} travelers. I will message you as soon as it is ready.`],
+    ['leader',`תודה. האם אפשר להוסיף יום חופשי באמצע הטיול?`,`Thank you. Could we add a free afternoon in the middle of the trip?`],
+    ['agent',`בוודאי. הוספתי זאת לטיוטה, והמחיר מתעדכן אוטומטית.`,`Of course. I added it to the draft and the price updates automatically.`],
+    ['agent',`ההצעה כוללת מקדמה של ${t.pct}% בלבד לשמירת המקום. אשמח לענות על כל שאלה.`,`The proposal only needs a ${t.pct}% deposit to hold your space. Happy to answer any question.`],
+    ['leader',`קיבלנו. נעבור עליה עם הוועדה ונחזור אליך.`,`Got it. We will go through it with the committee and get back to you.`]]
+  :[
+    ['agent',`תודה על המקדמה ל${t.name}. היתרה (${100-t.pct}%) לתשלום עד ${bd.he}.`,`Thank you for the deposit on ${t.name}. The balance (${100-t.pct}%) is due ${bd.en}.`],
+    ['leader',`תודה ${afH}. נעביר תזכורת למשפחות שעדיין לא שילמו.`,`Thanks ${afE}. We will remind the households that have not paid yet.`],
+    ['agent',`אפשר לשלוח לי את רשימת החדרים עד ${rl.he}? כולל בקשות לשותפי חדר.`,`Could you send me the rooming list by ${rl.en}? Roommate requests included, please.`],
+    ['agent',`תזכורת: כל נוסע צריך להשלים רישום, טופס רפואי וכתב ויתור לפני היציאה.`,`Reminder: every traveler needs the registration, medical and waiver forms completed before departure.`],
+    ['agent',`האוטובוס יוצא ממשרדי Redbud Group Tours בטולסה ב-7:00 בבוקר, ב-${dp.he}. כדאי להגיע 30 דקות מוקדם.`,`The coach leaves from the Redbud Group Tours office in Tulsa at 7:00 AM on ${dp.en}. Please arrive 30 minutes early.`]];
+  const n=3+Math.floor(R()*3),pick=cands.slice(0,n);
+  return pick.map((m,i)=>({from:m[0],at:addDays(iso(TODAY),-((pick.length-i)*3+Math.floor(R()*3))),he:m[1],en:m[2]}));
+}
+function plThread(t){if(!PVMSG[t.id])PVMSG[t.id]=plSeed(t);return PVMSG[t.id];}
+function plSend(t,text){text=String(text||'').trim();if(!t||!text)return false;
+  plThread(t).push({from:'leader',at:iso(TODAY),text:text.slice(0,1000)});return true;}
+
+/* ---------- actions ---------- */
+function plAccept(id){const t=TRIPS.find(x=>x.id===id);
+  if(!t||t.stage!=='Quote'||t.qst!=='Sent'||typeof prAccept!=='function')return false;
+  if(!prAccept(t))return false;try{toast(L('הסוכן שלכם קיבל הודעה','Your agent has been notified'));}catch(e){}return true;}
+function plRemind(t,key){
+  const m=plMoney(t);if(!m)return;
+  if(key==='all'){const rs=m.rows.filter(r=>r.open>0.005);rs.forEach(r=>{plRem[t.id+'|'+r.name]=1;});
+    toast(rs.length?L(`נשלחה תזכורת ל-${rs.length} משקי בית (הדגמה)`,`Reminder sent to ${rs.length} ${rs.length===1?'household':'households'} (simulated)`):L('כל משקי הבית שילמו','Every household has paid'));}
+  else{const r=m.rows.find(x=>x.name===key);if(!r)return;plRem[t.id+'|'+r.name]=1;toast(L(`נשלחה תזכורת ל${r.name} (הדגמה)`,`Reminder sent to ${r.name} (simulated)`));}
+}
+
+/* ---------- pieces ---------- */
+const plChips=(c,t)=>{const ts=plTrips(c);if(ts.length<2)return '';
+  return `<div class="pl-chips" role="group" aria-label="${L('הטיולים שלכם','Your trips')}">${ts.map(x=>`<button class="pl-chip${x.id===t.id?' on':''}" data-act="pl-trip" data-v="${x.id}" aria-pressed="${x.id===t.id}"><b><bdi>${esc(x.name)}</bdi></b><small>${fmtDate(x.dep)} · ${plIsQ(x)?L('הצעה','Proposal'):L('הזמנה','Booked')}</small></button>`).join('')}</div>`;};
+const plEmpty=(icon,title,sub)=>`<div class="card hc-card pl-empty">${ic(icon)}<h3>${title}</h3><p class="muted">${sub}</p></div>`;
+const plStatusPill=r=>r.open<=0.005?pillF(`${ic('check')} ${L('שולם','Paid')}`,'green'):r.late>0?pillF(L(`באיחור ${r.days} ימים`,`Late ${r.days} days`),'red'):pillF(L('יתרה פתוחה','Balance open'),'amber');
+const plFormPill=(x,id)=>{const s=(x.form&&x.form[id])||'not sent',m=OP_FSTATE[s]||OP_FSTATE['not sent'];return pillF(L(m[0],m[1]),m[2]);};
+const plNext=t=>{const m=plMoney(t);if(!m)return '';
+  const miss=t.trav.filter(x=>!plFormsDone(x)).length;
+  return m.openN?L(`תזכורת ל-${m.openN} משקי בית`,`Remind ${m.openN} ${m.openN===1?'household':'households'}`):miss?L(`${miss} נוסעים עם טפסים חסרים`,`${miss} with forms missing`):L('מוכנים ליציאה','Ready to go');};
+const plIncluded=t=>{const c=calc(t);
+  const inc={Lodging:L('לינה במלונות','Hotel accommodation'),Transport:DESTS[t.dest].air?L('טיסות קבוצתיות והסעות','Group air and ground transportation'):L('הסעה באוטובוס תיור','Motorcoach transportation'),Guide:L('מדריך מקצועי','Professional guide'),Activities:L('פעילויות וכרטיסי כניסה','Activities and entrances'),Meals:L('ארוחות קבוצתיות','Group meals'),Insurance:L('הגנת נסיעה','Travel protection')};
+  return TYPES.filter(ty=>c.byType[ty]).map(ty=>inc[ty]).filter(Boolean);};
+
+/* ---------- home ---------- */
+function plHome(p,c,t){
+  const st=plState(t),days=pvDaysTo(t),ag=plAgentName(t),dep=fmtDate(t.dep),cn=calc(t),m=plMoney(t);
+  let hero,steps=[];
+  const dayK=days>=0?{lab:L('ימים ליציאה','Days to departure'),val:days,sub:dep}:{lab:L('יצאה','Departed'),text:fmtDate(t.dep),sub:L(`לפני ${-days} ימים`,`${-days} days ago`)};
+  if(st==='booked'&&m){
+    const fOK=t.trav.filter(plFormsDone).length,late=m.lateN;
+    const miss=t.pax-fOK;
+    hero=pvHero({cls:'pl-hero',role:esc(c.name),aria:L('תמונת מצב של הקבוצה','Group overview'),name:plGreetName(p.name),
+      brief:L(`${hlKey(m.pct+'%')} ממחיר הקבוצה כבר נגבה. ${m.openN?`${hlWarn(usd(m.outstanding))} עדיין פתוחים ב-${m.openN} משקי בית${late?`, ${hlNeg(late+' באיחור')}`:''}.`:'כל משקי הבית שילמו.'} ${days>=0?`היציאה ${hcIn(days)}.`:`הקבוצה יצאה ב-${dep}.`}`,
+        `${hlKey(m.pct+'%')} of the group price is in. ${m.openN?`${hlWarn(usd(m.outstanding))} is still open across ${m.openN} ${m.openN===1?'household':'households'}${late?`, ${hlNeg(late+' late')}`:''}.`:'Every household has paid.'} ${days>=0?`Departure ${hcIn(days)}.`:`The group departed on ${dep}.`}`),
+      ctas:[m.openN?hcCta('mint','mail',L('תזכורת למשקי בית שלא שילמו','Remind unpaid households'),'data-act="pl-remind" data-v="all"'):hcCta('mint','plane',L('לצפות במסלול','View itinerary'),'data-act="pv-tab" data-v="trip"'),
+        m.openN?hcCta('ghost','plane',L('לצפות במסלול','View itinerary'),'data-act="pv-tab" data-v="trip"'):''].filter(Boolean),
+      gauge:{pct:m.pct,label:L('ממחיר הקבוצה נגבה','of the group price collected'),lines:[
+        {cls:'ok',icon:'check',lab:L('שילמו','Paid households'),val:m.paidN},{cls:'op',icon:'hourglass',lab:L('יתרה פתוחה','Balance open'),val:m.openN},{cls:'op',icon:'clock',lab:L('באיחור','Late'),val:m.lateN}]},
+      kpis:[Object.assign(dayK,{act:'pv-tab',v:'trip'}),
+        {lab:L('טפסים מלאים','Forms complete'),val:fOK,sub:L(`מתוך ${t.pax} נוסעים`,`of ${t.pax} travelers`),act:'pv-tab',v:'people'},
+        {lab:L('יתרה לתשלום','Balance due'),val:m.outstanding,money:1,cls:'warn',sub:L(`עד ${fmtDate(t.balDue)}`,`due ${fmtDate(t.balDue)}`),act:'pv-tab',v:'pay'},
+        {lab:L('הצעד הבא','Next step'),text:plNext(t),cls:'hc-next',sub:miss?L(`${miss} נוסעים חסרים טפסים`,`${miss} travelers still owe forms`):L('הכל מסודר','All set'),act:'pv-tab',v:m.openN?'pay':'people'}]});
+    if(m.openN)steps.push({sev:late?'urgent':'todo',tx:L(`${m.openN} משקי בית עם יתרה פתוחה`,`${m.openN} ${m.openN===1?'household has':'households have'} a balance open`),sub:L(`סך ${usd(m.outstanding)}`,`${usd(m.outstanding)} in total`),b:L('לתשלומים','Payments'),a:'pv-tab',v:'pay'});
+    if(miss)steps.push({sev:'todo',tx:L(`${miss} נוסעים צריכים להשלים טפסים`,`${miss} ${miss===1?'traveler needs':'travelers need'} to finish forms`),sub:L('רישום, רפואה וכתב ויתור','Registration, medical and waiver'),b:L('לנוסעים','Travelers'),a:'pv-tab',v:'people'});
+    steps.push({sev:'ok',tx:L('שלחו לסוכן את רשימת החדרים','Send your agent the rooming list'),sub:L(`עד ${fmtDate(addDays(t.dep,-30))}`,`by ${fmtDate(addDays(t.dep,-30))}`),b:L('להודעות','Messages'),a:'pv-tab',v:'msgs'});
+  }else{
+    const pp=plPP(t),dep$=r2(cn.rev*t.pct/100);
+    const prog=st==='draft'?20:st==='sent'?50:80;
+    const greet=st==='sent'?L('ההצעה שלכם מוכנה','Your proposal is ready'):st==='draft'?L('ברוכים הבאים','Welcome'):L('תודה','Thank you');
+    const brief=st==='sent'?L(`ההצעה ל${hlKey(esc(t.name))} מוכנה: ${hlKey(usd(pp))} לנוסע, ${t.pax} נוסעים, יציאה ב-${dep}. אישור לוקח רגע.`,`Your proposal for ${hlKey(esc(t.name))} is ready: ${hlKey(usd(pp))} per traveler for ${t.pax} travelers, departing ${dep}. Accepting takes one tap.`)
+      :st==='draft'?L(`${esc(ag)} מכין/ה את ההצעה ל${hlKey(esc(t.name))}. נעדכן אתכם ברגע שהיא מוכנה לעיון.`,`${esc(ag)} is preparing the proposal for ${hlKey(esc(t.name))}. You will hear as soon as it is ready to review.`)
+      :L(`אושר, ${esc(ag)} מכין/ה את ההזמנה ל${hlKey(esc(t.name))}. ${hlPos('ההצעה התקבלה')} ונעבור יחד על הפרטים.`,`${hlPos('Accepted')}, ${esc(ag)} is preparing the booking for ${hlKey(esc(t.name))}. You will get the confirmation and the payment schedule next.`);
+    hero=pvHero({cls:'pl-hero',role:esc(c.name),aria:L('תמונת מצב של ההצעה','Proposal overview'),name:plGreetName(p.name),greet,brief,
+      ctas:[st==='sent'?hcCta('mint','check',L('אישור ההצעה','Accept proposal'),`data-act="pl-accept" data-v="${t.id}"`):hcCta('mint','mail',L('הודעה לסוכן','Message your agent'),'data-act="pv-tab" data-v="msgs"'),
+        hcCta('ghost','plane',L('לצפות במסלול','View itinerary'),'data-act="pv-tab" data-v="trip"')],
+      gauge:{pct:prog,label:L('בדרך להזמנה מאושרת','of the way to a booked trip'),lines:[
+        {cls:'ok',icon:'check',lab:L('מצב','Status'),val:st==='draft'?L('בהכנה','In preparation'):st==='sent'?L('נשלחה','Sent'):L('אושרה','Accepted')},
+        ...(st==='draft'?[]:[{cls:'op',icon:'hourglass',lab:L('מקדמה','Deposit'),val:usd(dep$)}])]},
+      kpis:st==='draft'?[
+        Object.assign(dayK,{act:'pv-tab',v:'trip'}),{lab:L('נוסעים','Travelers'),val:t.pax,sub:dn(t.dest)},
+        {lab:L('לילות','Nights'),val:t.nights,sub:`${fmtDate(t.dep)} - ${fmtDate(endOf(t))}`,act:'pv-tab',v:'trip'},{lab:L('הסוכן שלכם','Your agent'),text:ag,sub:L('עונה בדוא"ל','replies by email'),act:'pv-tab',v:'msgs'}]
+      :[{lab:L('מחיר לנוסע','Price per traveler'),val:pp,money:1,cls:'pf',sub:L(`סך ${usd(cn.rev)} ל-${t.pax}`,`${usd(cn.rev)} for ${t.pax}`),act:'pv-tab',v:'trip'},
+        {lab:L('מקדמה','Deposit'),val:dep$,money:1,sub:L(`${t.pct}% · עד ${fmtDate(t.depDue)}`,`${t.pct}% · due ${fmtDate(t.depDue)}`),act:'pv-tab',v:'pay'},
+        Object.assign(dayK,{act:'pv-tab',v:'trip'}),{lab:L('נוסעים','Travelers'),val:t.pax,sub:dn(t.dest)}]});
+    if(st==='sent')steps.push({sev:'todo',tx:L('לעבור על ההצעה ולאשר','Review the proposal and accept it'),sub:L(`מקדמה ${usd(dep$)} אחרי האישור`,`A ${usd(dep$)} deposit follows acceptance`),b:L('לאשר','Accept'),a:'pl-accept',v:t.id});
+    if(st==='accepted')steps.push({sev:'ok',tx:L('הסוכן מכין את ההזמנה','Your agent is preparing the booking'),sub:L('לוח התשלומים יופיע כאן','The payment schedule will appear here'),b:L('להודעות','Messages'),a:'pv-tab',v:'msgs'});
+    if(st==='draft')steps.push({sev:'ok',tx:L('הסוכן מכין את ההצעה','Your agent is preparing the proposal'),sub:L('יש בקשות או שינויים? כתבו לו/לה','Any requests or changes? Write to your agent'),b:L('להודעות','Messages'),a:'pv-tab',v:'msgs'});
+  }
+  const a=plAgent(t);
+  const stepsCard=`<div class="card hc-card"><div class="hc-h"><h3>${L('מה צריך מכם','What needs you')}</h3><span class="muted small"><bdi>${esc(t.name)}</bdi></span></div>
+    <ol class="hc-steps">${steps.map((s,i)=>`<li class="${s.sev}" style="--d:${i*60}ms"><span class="hc-dot"></span><div><b>${s.tx}</b><small class="muted">${s.sub}</small></div><button class="btn sm${i?'':' pri'}" data-act="${s.a}" data-v="${s.v}">${s.b}</button></li>`).join('')}</ol></div>`;
+  const agentCard=`<div class="card hc-card pl-agent"><div class="hc-h"><h3>${L('הסוכן שלכם','Your agent')}</h3></div>
+    <div class="pl-ag">${avatarOf(L(AGN[t.agent]||a.he,AGE[t.agent]||a.en))}<div><b>${esc(L(a.he,a.en))}</b><div class="muted small">${L('Redbud Group Tours, טולסה','Redbud Group Tours, Tulsa')}</div>
+     <div class="small"><bdi>${esc(a.email||'')}</bdi></div><div class="small"><bdi>${esc(a.phone||'')}</bdi></div></div></div>
+    <p class="small muted">${L('קו חירום 24/7 בזמן הטיול: 918-555-0100','24/7 line while you travel: 918-555-0100')}</p>
+    <button class="hc-more" data-act="pv-tab" data-v="msgs">${L('לשלוח הודעה','Send a message')} ${ic('chev','flip')}</button></div>`;
+  return `<div class="hc${PV_ANIM?' anim':''}">${plChips(c,t)}${hero}<div class="hc-grid"><div class="hc-c7">${stepsCard}</div><div class="hc-c5">${agentCard}</div></div></div>`;
+}
+
+/* ---------- trip ---------- */
+function plTrip(p,c,t){
+  const st=plState(t),cn=calc(t),days=pvDays(t),hot=t.room&&t.room.hotel?t.room.hotel:'';
+  let prop='';
+  if(plIsQ(t)){
+    if(st==='draft')prop=`<div class="card hc-card pl-note">${ic('pen')}<div><h3>${L('ההצעה בהכנה','The proposal is being prepared')}</h3><p class="muted">${L(`${plAgentName(t)} עובד/ת על המחיר והפרטים. המסלול למטה הוא טיוטה ועשוי להשתנות.`,`${esc(plAgentName(t))} is working on the price and the details. The itinerary below is a draft and may change.`)}</p></div></div>`;
+    else{
+      const pp=plPP(t),dep$=r2(cn.rev*t.pct/100),inc=plIncluded(t);
+      prop=`<div class="card hc-card pl-prop"><div class="hc-h"><h3>${L('סיכום ההצעה','Proposal summary')}</h3>${st==='sent'?`<span class="hc-pill blue">${L('ממתינה לאישור שלכם','Waiting for you')}</span>`:`<span class="hc-pill green">${L('אושרה','Accepted')}</span>`}</div>
+       <div class="pl-price"><div><span class="muted small">${L('מחיר לנוסע','Price per traveler')}</span><b>${usd(pp)}</b></div><div><span class="muted small">${L(`סך הכל ל-${t.pax}`,`Total for ${t.pax}`)}</span><b>${usd(cn.rev)}</b></div><div><span class="muted small">${L(`מקדמה ${t.pct}%`,`Deposit ${t.pct}%`)}</span><b>${usd(dep$)}</b><small class="muted">${L('עד','due')} ${fmtDate(t.depDue)}</small></div></div>
+       <h4>${L('כלול במחיר','Included')}</h4><ul class="pl-inc">${inc.map(x=>`<li>${ic('check')} ${x}</li>`).join('')}</ul>
+       <div class="pl-act">${st==='sent'?`<button class="hc-btn mint" data-act="pl-accept" data-v="${t.id}">${ic('check')} ${L('אישור ההצעה','Accept proposal')}</button>`:''}
+        <button class="btn" data-act="pl-land" aria-pressed="${!!S.plLand}">${ic('link')} ${S.plLand?L('הסתרת דף ההצעה','Hide proposal page'):L('דף ההצעה','Open proposal page')}</button></div>
+       <p class="small muted">${L('קישור ציבורי','Public link')}: <code dir="ltr">${esc(typeof prLink==='function'?prLink(t):'')}</code></p>
+       ${S.plLand&&typeof prLanding==='function'?`<div class="pl-land">${prLanding(t).replace('data-act="pr-accept"',`data-act="pl-accept" data-v="${t.id}"`)}</div>`:''}</div>`;}
+  }
+  const ov=`<div class="card hc-card"><div class="hc-h"><h3><bdi>${esc(t.name)}</bdi></h3><span class="muted small">${paxL(t.pax)}</span></div>
+    <dl class="pl-facts"><div><dt>${L('תאריכים','Dates')}</dt><dd>${fmtDate(t.dep)} - ${fmtDate(endOf(t))}</dd></div><div><dt>${L('יעד','Destination')}</dt><dd>${dn(t.dest)} · ${L(`${t.nights+1} ימים`,`${t.nights+1} days`)}</dd></div>
+     <div><dt>${L('נקודת יציאה','Departure point')}</dt><dd>Redbud Group Tours office, Tulsa · ${pvClock(7*60)}</dd></div>${hot?`<div><dt>${L('מלון','Hotel')}</dt><dd><bdi>${esc(hot)}</bdi></dd></div>`:''}</dl></div>`;
+  return `<div class="hc">${plChips(c,t)}${prop}${ov}<div class="pl-days">${days.map(d=>pvDayCard(t,d)).join('')}</div></div>`;
+}
+
+/* ---------- pay ---------- */
+function plPay(p,c,t){
+  const m=plMoney(t);
+  if(!m){
+    const cn=calc(t),dep$=r2(cn.rev*t.pct/100),st=plState(t);
+    return `<div class="hc">${plChips(c,t)}<div class="card hc-card"><div class="hc-h"><h3>${L('לוח תשלומים','Payment schedule')}</h3><span class="muted small">${st==='draft'?L('בהכנה','In preparation'):L('לפי ההצעה','Per the proposal')}</span></div>
+     ${st==='draft'?`<p class="muted">${L('לוח התשלומים יופיע כשההצעה תהיה מוכנה.','The payment schedule appears once the proposal is ready.')}</p>`
+     :`<div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('תשלום','Payment')}</th><th>${L('עד','Due')}</th><th class="n">${L('סכום','Amount')}</th></tr></thead><tbody>
+       <tr><td>${L(`מקדמה ${t.pct}%`,`Deposit ${t.pct}%`)}</td><td>${fmtDate(t.depDue)}</td><td class="n">${usd(dep$,2)}</td></tr>
+       <tr><td>${L('יתרה','Balance')}</td><td>${fmtDate(t.balDue)}</td><td class="n">${usd(r2(cn.rev-dep$),2)}</td></tr></tbody>
+       <tfoot><tr><td colspan="2">${L('סך הכל','Total')}</td><td class="n">${usd(cn.rev,2)}</td></tr></tfoot></table></div>
+      <p class="small muted">${L('התשלום לפי משק בית נפתח אחרי אישור ההזמנה.','Payment by household opens once the booking is confirmed.')}</p>`}</div></div>`;
+  }
+  const f=S.plFlt||'all',rows=m.rows.filter(r=>f==='open'?r.open>0.005:f==='late'?r.late>0:true);
+  const cnt=k=>k==='open'?m.openN:k==='late'?m.lateN:m.rows.length;
+  return `<div class="hc">${plChips(c,t)}<div class="card hc-card"><div class="hc-h"><h3>${L('תשלומים לפי משק בית','Payments by household')}</h3><span class="muted small">${L('מחיר לנוסע','Per traveler')} ${usd(m.g.perHead,2)}</span></div>
+   <div class="pl-chips pl-flt" role="group" aria-label="${L('סינון','Filter')}">${[['all',L('הכל','All')],['open',L('פתוח','Open')],['late',L('באיחור','Late')]].map(x=>`<button class="pl-chip${f===x[0]?' on':''}" data-act="pl-flt" data-v="${x[0]}" aria-pressed="${f===x[0]}"><b>${x[1]}</b> <small>${cnt(x[0])}</small></button>`).join('')}</div>
+   <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th class="n">${L('סכום','Amount')}</th><th class="pl-hm">${L('מקדמה / יתרה','Deposit / balance')}</th><th class="n">${L('פתוח','Open')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td><b><bdi>${esc(r.name)}</bdi></b><div class="muted small">${r.size===1?L('נוסע אחד','1 traveler'):paxL(r.size)}</div></td><td class="n">${usd(r.amt,2)}</td>
+      <td class="small pl-hm">${r.depPaid?ic('check'):ic('clock')} ${L('מקדמה','Deposit')} ${usd(r.dep,2)}<br>${r.balPaid?ic('check'):ic('clock')} ${L('יתרה','Balance')} ${usd(r.bal,2)}</td>
+      <td class="n"><b>${usd(r.open,2)}</b></td>
+      <td>${plStatusPill(r)}${r.open>0.005?`<div><button class="btn sm pl-rm" data-act="pl-remind" data-v="${esc(r.name)}" ${plRem[t.id+'|'+r.name]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[t.id+'|'+r.name]?L('התזכורת נשלחה','Reminder sent'):L('שליחת תזכורת','Send reminder')}</button></div>`:''}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין משקי בית במסנן הזה.','No households in this filter.')}</td></tr>`}</tbody>
+    <tfoot><tr><td>${L('כל משקי הבית','All households')} <span class="muted small">(${m.rows.length})</span></td><td class="n">${usd(m.amt,2)}</td><td class="small pl-hm">${L('נגבה','Collected')} ${usd(m.paid,2)}</td><td class="n">${usd(m.open,2)}</td><td>${m.pct}%</td></tr></tfoot></table></div>
+   <p class="small muted">${L('תשלומים בכרטיס אשראי נעשים בקישור האישי של כל משק בית. הדגמה: לא מועבר כסף.','Households pay by card through their own link. Demo: no money moves.')}</p></div></div>`;
+}
+
+/* ---------- people ---------- */
+function plPeople(p,c,t){
+  if(plIsQ(t))return `<div class="hc">${plChips(c,t)}${plEmpty('users2',L('רשימת הנוסעים נפתחת אחרי אישור ההזמנה','The traveler list opens once the booking is confirmed'),L('אז תוכלו לראות כאן מי השלים רישום, טופס רפואי וכתב ויתור.','Then you can see here who has finished registration, medical and waiver forms.'))}</div>`;
+  const intl=plIntl(t),done=t.trav.filter(plFormsDone).length,f=S.plPf||'all';
+  const inc=t.trav.map((x,i)=>({x,i})).filter(z=>f==='all'||!plFormsDone(z.x)||(intl&&z.x.pass==='Missing'));
+  const lim=S.plAll?inc.length:12,rows=inc.slice(0,lim);
+  return `<div class="hc">${plChips(c,t)}<div class="card hc-card"><div class="hc-h"><h3>${L('נוסעים וטפסים','Travelers and forms')}</h3><span class="hc-pill ${done===t.pax?'green':'blue'}">${L(`${done} מתוך ${t.pax} השלימו`,`${done} of ${t.pax} complete`)}</span></div>
+   <div class="pl-chips pl-flt" role="group" aria-label="${L('סינון','Filter')}">${[['all',L('כולם','Everyone'),t.pax],['todo',L('חסר משהו','Needs attention'),inc.length&&f!=='all'?inc.length:t.trav.filter(x=>!plFormsDone(x)||(intl&&x.pass==='Missing')).length]].map(x=>`<button class="pl-chip${f===x[0]?' on':''}" data-act="pl-pf" data-v="${x[0]}" aria-pressed="${f===x[0]}"><b>${x[1]}</b> <small>${x[2]}</small></button>`).join('')}</div>
+   <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('נוסע','Traveler')}</th>${OP_FORMS.map(fm=>`<th>${L(fm[1][0],fm[1][1])}</th>`).join('')}${intl?`<th>${L('דרכון','Passport')}</th>`:''}<th></th></tr></thead>
+    <tbody>${rows.map(({x,i})=>{const need=!plFormsDone(x)||(intl&&x.pass==='Missing'),k=t.id+'|t'+i;
+      return `<tr><td><b><bdi>${esc(x.n)}</bdi></b><div class="muted small"><bdi>${esc(x.g)}</bdi></div></td>${OP_FORMS.map(fm=>`<td>${plFormPill(x,fm[0])}</td>`).join('')}
+      ${intl?`<td>${x.pass==='Missing'?pillF(L('חסר','Missing'),'amber'):opPassWarn(t,x)?pillF(L('תוקף קצר','Check expiry'),'amber'):pillF(`${ic('check')} ${L('התקבל','Received')}`,'green')}</td>`:''}
+      <td>${need?`<button class="btn sm pl-rm" data-act="pl-rem-trav" data-v="${t.id}|${i}" ${plRem[k]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[k]?L('נשלח','Sent'):L('תזכורת','Remind')}</button>`:''}</td></tr>`;}).join('')||`<tr><td colspan="${5+(intl?1:0)}" class="muted">${L('כל הנוסעים השלימו הכל.','Everyone has finished everything.')}</td></tr>`}</tbody></table></div>
+   ${inc.length>lim?`<button class="hc-more" data-act="pl-all">${L(`ועוד ${inc.length-lim} נוסעים`,`and ${inc.length-lim} more`)} ${ic('chev','flip')}</button>`:S.plAll&&inc.length>12?`<button class="hc-more" data-act="pl-all">${L('פחות','Show fewer')} ${ic('chev','flip')}</button>`:''}
+   <p class="small muted">${L('תזכורות נשלחות לנוסעים בדוא"ל (הדגמה).','Reminders go to travelers by email (simulated).')}</p></div></div>`;
+}
+
+/* ---------- documents ---------- */
+function plDocs(p,c,t){
+  const cn=calc(t),st=plState(t),m=plMoney(t);
+  const prop=`<div class="card hc-card"><div class="hc-h"><h3>${L('ההצעה','The proposal')}</h3><span class="hc-pill ${st==='accepted'||st==='booked'?'green':'blue'}">${st==='draft'?L('בהכנה','In preparation'):st==='sent'?L('נשלחה','Sent'):L('אושרה','Accepted')}</span></div>
+    <p><b><bdi>${esc(t.name)}</bdi></b><br><span class="muted small">${fmtDate(t.dep)} - ${fmtDate(endOf(t))} · ${paxL(t.pax)}${st==='draft'?'':` · ${usd(plPP(t))} ${L('לנוסע','per traveler')}`}</span></p>
+    <div class="pl-act"><button class="btn" data-act="pl-print">${ic('printer')} ${L('מסלול להדפסה (PDF)','Itinerary, print as PDF')}</button>${st==='draft'?'':`<button class="btn" data-act="pv-tab" data-v="trip">${ic('document')} ${L('סיכום ההצעה','Proposal summary')}</button>`}</div></div>`;
+  let inv='';
+  if(m){const docs=incomeDocs(t).docs,lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')},rs=docs.slice(0,8);
+    inv=`<div class="card hc-card"><div class="hc-h"><h3>${L('חשבוניות וקבלות','Invoices and receipts')}</h3><span class="muted small">${docs.length}</span></div>
+     <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th>${L('מסמך','Document')}</th><th>${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
+     <tbody>${rs.map(d=>`<tr><td><bdi>${esc(d.name)}</bdi></td><td>${lab[d.type]} <span class="muted small">#${d.no} · ${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</span></td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('שולם','Paid'),'green'):pillF(L('ממתין לתשלום','Awaiting payment'),'amber')}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין מסמכים עדיין.','No documents yet.')}</td></tr>`}</tbody></table></div>
+     ${docs.length>rs.length?`<p class="small muted">${L(`מוצגים ${rs.length} מתוך ${docs.length} מסמכים. השאר אצל הסוכן.`,`Showing ${rs.length} of ${docs.length}. Your agent has the rest.`)}</p>`:''}</div>`;}
+  else inv=`<div class="card hc-card"><div class="hc-h"><h3>${L('חשבוניות וקבלות','Invoices and receipts')}</h3></div><p class="muted">${L('חשבוניות מופקות אחרי אישור ההזמנה.','Invoices are issued once the booking is confirmed.')}</p></div>`;
+  const waiver=`<div class="card hc-card pl-waiver"><div class="hc-h"><h3>${L('כתב ויתור לדוגמה','Waiver template')}</h3><span class="hc-pill blue">${L('נוסח לדוגמה','Sample')}</span></div>
+    <p class="pl-flag">${ic('shield')} ${L('נוסח לדוגמה, יש לבדוק מול יועץ משפטי.','Sample wording, to be reviewed by counsel.')}</p>
+    <blockquote>${L(`אני מאשר/ת שהבנתי את מסלול הטיול ואת הסיכונים הכרוכים בנסיעה קבוצתית, ושהמידע הרפואי שמסרתי מדויק. אני מסכים/ה לפעול לפי הנחיות מנהל/ת הקבוצה ומדריך/ת הטיול, ומשחרר/ת את ${AGENCY} מאחריות לאובדן או נזק שלא נגרמו ברשלנות.`,
+      `I confirm that I understand the itinerary and the risks of group travel, that the medical information I gave is accurate, and that I will follow the directions of the group leader and tour director. I release ${AGENCY} from liability for loss or injury not caused by its negligence.`)}</blockquote>
+    <p class="small muted">${L('כל נוסע חותם בנפרד דרך טופס כתב הוויתור שלו.','Each traveler signs separately through their own waiver form.')}</p></div>`;
+  return `<div class="hc">${plChips(c,t)}<div class="hc-grid"><div class="hc-c7">${prop}${inv}</div><div class="hc-c5">${waiver}</div></div></div>`;
+}
+
+/* ---------- messages ---------- */
+function plMsgs(p,c,t){
+  const a=plAgent(t),th=plThread(t).slice().sort((x,y)=>x.at<y.at?-1:x.at>y.at?1:0);
+  const bub=m=>{const me=m.from==='leader',tx=m.text!=null?m.text:L(m.he,m.en);
+    return `<li class="pl-m ${me?'me':'ag'}">${me?'':avatarOf(L(AGN[t.agent]||a.he,AGE[t.agent]||a.en),'xs')}<div class="pl-b"><div class="pl-bh"><b>${me?esc(p.name):esc(L(a.he,a.en))}</b> <span class="muted small">${fmtDate(m.at)}</span></div><p>${esc(tx)}</p></div></li>`;};
+  return `<div class="hc">${plChips(c,t)}<div class="card hc-card"><div class="hc-h"><h3>${L('שיחה עם','Conversation with')} <bdi>${esc(L(a.he,a.en))}</bdi></h3><span class="muted small"><bdi>${esc(t.name)}</bdi></span></div>
+   <ul class="pl-thread" aria-live="polite">${th.map(bub).join('')}</ul>
+   <form class="pl-compose" data-form="pl-msg" data-v="${t.id}"><label class="sr" for="pl-msg-t">${L('הודעה לסוכן','Message to your agent')}</label>
+    <textarea id="pl-msg-t" name="text" rows="3" maxlength="1000" placeholder="${L('כתבו הודעה לסוכן...','Write a message to your agent...')}" required></textarea>
+    <div class="pl-cf"><span class="small muted">${L('הסוכן שלכם עונה בדוא"ל.','Your agent replies by email.')}</span><button class="hc-btn mint" type="submit">${ic('mail')} ${L('שליחה','Send')}</button></div></form></div></div>`;
+}
+
+/* ---------- registration ---------- */
+const PL_TABS=[['home',['בית','Home'],'home'],['trip',['הטיול','Trip'],'plane'],['pay',['תשלומים','Payments'],'wallet'],['people',['נוסעים','Travelers'],'users2'],['docs',['מסמכים','Documents'],'document'],['msgs',['הודעות','Messages'],'mail']];
+pvRegister('leader',{role:['ראש/ת קבוצה','Group leader'],label:['פורטל ראש הקבוצה','Group leader portal'],kind:'client',feat:'pleader',
+  people:()=>plClients().map(c=>({id:c.id,name:c.contact.name,sub:c.name})),
+  def:(()=>{const t=TRIPS.find(x=>x.id==='nas'),c=t&&CLIENTS.find(x=>x.name===t.client);return c?c.id:'';})(),
+  tabs:PL_TABS.map(x=>[x[0],x[1][0],x[1][1],x[2]]),
+  view:(tab,p)=>{const c=plClientOf(p),t=c&&plTripOf(c);
+    if(!c||!t)return plEmpty('users2',L('אין טיולים להצגה','No trips to show'),L('כשיהיה טיול או הצעה ללקוח הזה, הוא יופיע כאן.','When this client has a trip or a proposal, it will show up here.'));
+    return {home:plHome,trip:plTrip,pay:plPay,people:plPeople,docs:plDocs,msgs:plMsgs}[tab](p,c,t);}});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act^="pl-"]');if(!b||!S.pv||S.pv.k!=='leader')return;
+  const a=b.dataset.act,v=b.dataset.v||'',p=pvPerson(),c=plClientOf(p),t=c&&plTripOf(c);
+  if(a==='pl-trip'){S.plTrip=v;S.plAll=false;S.plFlt='all';S.plPf='all';S.plLand=false;render();}
+  else if(a==='pl-flt'){S.plFlt=v;render();}
+  else if(a==='pl-pf'){S.plPf=v;S.plAll=false;render();}
+  else if(a==='pl-all'){S.plAll=!S.plAll;render();}
+  else if(a==='pl-land'){S.plLand=!S.plLand;render();}
+  else if(a==='pl-accept'){plAccept(v);render();}
+  else if(a==='pl-remind'&&t){plRemind(t,v);render();}
+  else if(a==='pl-rem-trav'&&t){const [tid,i]=v.split('|'),x=t.trav[+String(i)];if(x){plRem[tid+'|t'+i]=1;render();toast(L(`נשלחה תזכורת ל${x.n} (הדגמה)`,`Reminder sent to ${x.n} (simulated)`));}}
+  else if(a==='pl-print'){try{window.print();}catch(err){}toast(L('אם חלון ההדפסה לא נפתח כאן, הדפיסו מהקובץ המקומי.','If no print dialog opened here, print from the offline file.'));}
+});
+document.addEventListener('submit',e=>{const f=e.target;if(!(f&&f.dataset&&f.dataset.form==='pl-msg'))return;e.preventDefault();
+  const t=TRIPS.find(x=>x.id===f.dataset.v),ta=f.querySelector('textarea');if(!t||!ta)return;
+  if(plSend(t,ta.value)){render();toast(L('ההודעה נשלחה. הסוכן עונה בדוא"ל.','Message sent. Your agent replies by email.'));}});
+
+/* ---------- developer notes ---------- */
+if(typeof SPEC!=='undefined'){
+  const base={roles:{view:['leader'],act:['leader']},perms:[],status:'roadmap',tests:['TEST pl group leader portal'],code:['v6/s13_pl.js','v6/m_pl.css'],
+    api:['GET /v1/portal/{token}/trips (proposed)'],states:{empty:'A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.',loading:'Not applicable (local data).',error:'A view that throws shows "This screen could not load."'}};
+  const put=(tab,o)=>{SPEC['portal:leader:'+tab]=Object.assign({},base,o);};
+  put('home',{title:'Group leader portal: home',purpose:'The leader sees how much of the group price is collected, who still owes forms, and the one next step. For a quote it shows the proposal state and, when Sent, an Accept button.',
+    data:['CLIENTS[].contact','TRIPS where t.client===c.name and not Lost','groupsCalc(t)','calc(t)','t.trav[].form'],
+    actions:[{label:'Accept proposal',does:'Calls prAccept(t): Sent becomes Negotiating, stage stays Quote',rule:'Only for qst Sent; never winQuote'},{label:'Remind unpaid households',does:'Simulated toast, no email sent',rule:'Only when a balance is open'}],
+    rules:['Default trip is the nearest upcoming non-Lost trip, else the most recent','Gauge = collected / group price','Draft: no accept, "being prepared"; Negotiating and Approval: "Accepted"']});
+  put('trip',{title:'Group leader portal: trip',purpose:'The day-by-day itinerary with clock times, hotel and departure point. For a quote, the proposal summary: price per traveler, deposit, inclusions and the public proposal page.',
+    data:['pvDays(t)','t.room.hotel','calc(t).byType','prLanding(t) (preview)'],actions:[{label:'Open proposal page',does:'Shows the public proposal page inline',rule:'Quotes that are not Draft'}],
+    rules:['Departure point is a fixed demo placeholder at 7:00 AM','Commissions and margins never appear']});
+  put('pay',{title:'Group leader portal: payments',purpose:'Payment status per household with a totals footer that ties to the agency books.',data:['groupsCalc(t).rows','calc(t).rev'],
+    actions:[{label:'Send reminder',does:'Simulated toast per household',rule:'Only rows with a balance open'},{label:'Filter',does:'All / Open / Late',rule:'Footer always shows all households'}],
+    rules:['Footer amount = group price; collected = sum of paid; open = amount - collected','Quotes show the deposit and balance schedule instead']});
+  put('people',{title:'Group leader portal: travelers',purpose:'Which travelers have finished registration, medical and waiver forms, and passports for international trips.',data:['t.trav[].form','t.trav[].pass','opPassWarn(t,x)'],
+    actions:[{label:'Remind',does:'Simulated toast per traveler',rule:'Only when something is missing'}],rules:['Complete = all three forms done','Passport column only on international trips','The rooming-preference form has no per-traveler data here']});
+  put('docs',{title:'Group leader portal: documents',purpose:'The proposal, the household invoices and receipts, the printable itinerary and a sample waiver.',data:['incomeDocs(t).docs','calc(t)'],
+    actions:[{label:'Itinerary, print as PDF',does:'window.print() in a try/catch',rule:'Always'}],rules:['Waiver wording is a sample and says it must be reviewed by counsel','Quote-stage trips have no invoices']});
+  put('msgs',{title:'Group leader portal: messages',purpose:'A thread with the trip agent. The seed is deterministic per trip; the leader can add messages.',data:['PVMSG[tripId] (PERSIST pv-msgs)','agn(t.agent)'],
+    actions:[{label:'Send',does:'Appends {from:"leader",at,text} to the thread',rule:'Non-empty text, 1000 characters'}],rules:['The agent does not reply automatically; the note says "Your agent replies by email."','Messages live on this laptop only']});
+}
+
+/* ---------- tests ---------- */
+TESTS.push({name:'pl group leader portal',run:h=>{const out=[];
+  const brands=new Set([...CATALOG.hotels.map(x=>x.name),...CATALOG.venues.map(x=>x.name)]);
+  const cli=n=>CLIENTS.find(c=>c.name===n),NEG=/unconfirmed|overdue|exposure|\blate\b|risk|query|gap|dispute|overbill/i;
+  const cases=[['New Hope Baptist Church','nas'],['Grace Fellowship Church','hl'],['Prairie State Alumni Assn.','can'],['Riverbend Seniors Club','irl'],['Riverbend Seniors Club','nia']];
+  const ident=t=>{const c=calc(t);if(Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit)>0.05)out.push('identity '+t.id);};
+  if(!pvPerson||!PORTALS.leader)return ['leader portal not registered'];
+  if(PORTALS.leader.people().length<8)out.push('few leaders '+PORTALS.leader.people().length);
+  const defc=CLI_BY[PORTALS.leader.def];if(!defc||defc.contact.name!=='Rev. Alan Mercer')out.push('default leader '+(defc&&defc.contact.name));
+  const guard=(hh,l)=>hh.split(/<div class="card|<section|<tr/).forEach(ch=>{[...brands].forEach(b=>{if(ch.includes('>'+esc(b))||ch.includes(esc(b)+'<')||ch.includes(' '+esc(b)+' ')){if(NEG.test(ch.replace(/<[^>]*>/g,' ').replace(esc(b),'')))out.push('brand next to negative wording '+b+' '+l);}});});
+  for(const lang of ['en','he']){S.lang=lang;
+    cases.forEach(([cn,tid])=>{const c=cli(cn);if(!c){out.push('no client '+cn);return;}
+      PL_TABS.forEach(([tab])=>{pvOpen('leader',c.id,tab);S.plTrip=tid;S.plFlt='all';S.plPf='all';S.plAll=false;S.plLand=false;
+        try{render();const hh=h.els.app.innerHTML,l=`pl ${tid} ${tab} ${lang}`;h.chk(hh,l);if(lang==='en')h.scan(hh,'pl '+tab);guard(hh,l);
+          if(hh.includes('class="side"'))out.push('agency sidebar '+l);
+          const t=TRIPS.find(x=>x.id===tid),st=plState(t);
+          if(tab==='home'){const acc=hh.includes('data-act="pl-accept"');
+            if(st==='sent'&&!acc)out.push('no accept for Sent '+tid);if(st!=='sent'&&acc)out.push('accept offered in '+st+' '+tid);
+            if(st==='draft'&&lang==='en'&&!/being|preparing/i.test(hh))out.push('draft not "preparing"');
+            if(st==='accepted'&&lang==='en'&&!/Accepted/.test(hh))out.push('accepted state missing '+tid);}
+          if(tab==='docs'&&lang==='en'&&!/reviewed by counsel/.test(hh))out.push('waiver flag missing');
+          if(tab==='msgs'&&!hh.includes('data-form="pl-msg"'))out.push('compose missing');
+        }catch(e){out.push(`pl ${tid} ${tab} ${lang} threw ${e.message}`);}});});}
+  S.lang='en';
+  /* the trip chips: Riverbend has two trips, the default is the nearest upcoming one */
+  {const c=cli('Riverbend Seniors Club');S.plTrip='';const t=plTripOf(c),ts=plTrips(c);if(ts.length<2||t.id!=='nia')out.push('default trip '+t.id);
+   pvOpen('leader',c.id,'home');render();if(!h.els.app.innerHTML.includes('pl-chips'))out.push('no trip chips');}
+  /* pay totals equal groupsCalc, in the markup and in the model */
+  ['nas','nia'].forEach(tid=>{const t=TRIPS.find(x=>x.id===tid),c=cli(t.client),m=plMoney(t),g=groupsCalc(t),cn=calc(t);
+    if(Math.abs(m.amt-cn.rev)>0.01||Math.abs(m.paid-g.collected)>0.01||Math.abs(m.open-g.outstanding)>0.01)out.push('pay totals '+tid);
+    if(m.paidN+m.openN!==g.rows.length)out.push('paid+open '+tid);
+    pvOpen('leader',c.id,'pay');S.plTrip=tid;S.plFlt='all';render();const hh=h.els.app.innerHTML;
+    [usd(cn.rev,2),usd(g.collected,2),usd(g.outstanding,2)].forEach(s=>{if(!hh.includes(s))out.push('pay footer lacks '+s+' '+tid);});
+    S.plFlt='late';render();const nl=(h.els.app.innerHTML.match(/class="btn sm pl-rm"/g)||[]).length;if(nl!==m.lateN)out.push(`late filter ${tid} ${nl} vs ${m.lateN}`);S.plFlt='all';
+    /* the hero gauge is the collected share */
+    pvOpen('leader',c.id,'home');S.plTrip=tid;render();if(!h.els.app.innerHTML.includes(`<b>${m.pct}%</b>`))out.push('gauge pct '+tid);});
+  /* messages: deterministic seed, compose appends, persistence round trip */
+  {const t=TRIPS.find(x=>x.id==='nas'),a=JSON.stringify(plSeed(t)),b=JSON.stringify(plSeed(t));if(a!==b)out.push('seed not deterministic');
+   const n=plSeed(t).length;if(n<3||n>5)out.push('seed size '+n);
+   PVMSG={};const n0=plThread(t).length;plSend(t,'We will <b>send</b> the rooming list');if(plThread(t).length!==n0+1)out.push('send did not append');
+   pvOpen('leader',defc.id,'msgs');S.plTrip='nas';render();if(!h.els.app.innerHTML.includes('We will &lt;b&gt;send&lt;/b&gt; the rooming list'))out.push('sent text not shown escaped');
+   const pe=PERSIST.find(x=>x.key==='pv-msgs'),snap=pe.get();PVMSG={};pe.set(snap);if(plThread(t).length!==n0+1)out.push('persist round trip');pe.reset();if(Object.keys(PVMSG).length)out.push('reset did not clear');
+   if(plSend(t,'   '))out.push('blank message accepted');}
+  /* accept: Sent moves to Negotiating, stays in Quote, identity holds; Draft and Negotiating refuse */
+  {const can=TRIPS.find(x=>x.id==='can'),hl=TRIPS.find(x=>x.id==='hl'),irl=TRIPS.find(x=>x.id==='irl');
+   if(plAccept('hl')||hl.qst!=='Draft')out.push('draft accepted');if(plAccept('irl')||irl.qst!=='Negotiating')out.push('negotiating re-accepted');
+   const rev0=calc(can).rev;
+   if(!plAccept('can'))out.push('accept refused');if(can.qst!=='Negotiating'||can.stage!=='Quote')out.push('accept result '+can.qst+' '+can.stage);
+   if(Math.abs(calc(can).rev-rev0)>0.005)out.push('accept changed revenue');
+   TRIPS.forEach(ident);
+   pvOpen('leader',cli('Prairie State Alumni Assn.').id,'home');S.plTrip='can';render();if(h.els.app.innerHTML.includes('data-act="pl-accept"'))out.push('accept still offered after accepting');}
+  return out;}});
+
+/* ---------- v8.4 Traveler app (module code pt): the phone screen of the demo ----------
+   Portal 'traveler' (s13_portal.js). People = travelers of one Operations trip (S.ptTrip), id 'tripId|index'.
+   Tabs: home (readiness, balance, forms), pay (simulated card step), forms (4 traveler forms inline), plan (day by day), help.
+   Mutations (all finance-neutral): t.groups[gi].depPaid/balPaid via ptPay(), x.form[k]='done' via ptSubmit(), PT_ROOM for the 4th form.
+   Nothing here is a real payment: the card step is a labelled placeholder. */
+Object.assign(S,{ptTrip:'nas',ptPay:'',ptFill:'',ptErr:null});
+const PT_FORMS=['reg','med','waiver','room'];            /* the four traveler forms (FB_TRAV) */
+const PT_REAL=['reg','med','waiver'];                    /* the three with per-traveler data (x.form) */
+const PT_ROOM={};                                        /* 4th form status per traveler: 'tripId|index' -> 'done' */
+const PT_DRAFT={};                                       /* unsaved answers, not persisted */
+let PT_LAST=null;                                        /* the last simulated payment, for the confirmation card */
+PERSIST.push({key:'pt-room',get:()=>PT_ROOM,set:v=>{Object.keys(PT_ROOM).forEach(k=>delete PT_ROOM[k]);if(v&&typeof v==='object')Object.assign(PT_ROOM,v);},reset:()=>{Object.keys(PT_ROOM).forEach(k=>delete PT_ROOM[k]);}});
+
+/* ---------- data helpers ---------- */
+const ptTrips=()=>TRIPS.filter(t=>t.stage==='Operations'&&t.trav&&t.trav.length);
+const ptTrip=()=>{const a=ptTrips();return a.find(t=>t.id===S.ptTrip)||a[0]||null;};
+const ptKey=(t,i)=>t.id+'|'+i;
+function ptPeople(){const t=ptTrip();if(!t)return [];
+  const order=t.groups.map(g=>g.name);
+  return t.trav.map((x,i)=>({id:ptKey(t,i),name:x.n,sub:x.g,first:String(x.n).split(' ')[0],o:order.indexOf(x.g)*1000+i})).sort((a,b)=>a.o-b.o);}
+/* the traveler behind a person id; falls back to the trip's first traveler */
+function ptWho(p){const id=p?p.id:'',[tid,ix]=String(id).split('|');
+  const t=TRIPS.find(z=>z.id===tid&&z.trav&&z.trav.length)||ptTrip();if(!t)return null;
+  const i=t.trav[+ix]?+ix:0;return {t,i,x:t.trav[i]};}
+const ptStat=(t,x,i,k)=>k==='room'?(PT_ROOM[ptKey(t,i)]||((x.form&&x.form.reg)==='not sent'?'not sent':'sent')):((x.form&&x.form[k])||'not sent');
+const ptTodo=(t,x,i)=>PT_REAL.filter(k=>ptStat(t,x,i,k)!=='done');
+const ptIntl=t=>!!(typeof DESTS!=='undefined'&&DESTS[t.dest]&&DESTS[t.dest].intl);
+const ptRoomies=(t,x)=>t.trav.filter(y=>y!==x&&y.room===x.room);
+const PT_RT={Single:['יחיד','Single'],Twin:['שתי מיטות','Twin'],Double:['זוגי','Double'],Triple:['משולש','Triple'],Quad:['מרובע','Quad']};
+const ptRoomType=x=>{const r=PT_RT[x.roomType];return r?L(r[0],r[1]):esc(x.roomType||'');};
+const PT_FN={reg:['רישום','Registration'],med:['רפואה ותזונה','Medical and dietary'],waiver:['כתב ויתור','Waiver'],room:['העדפות חדר','Rooming preference']};
+const PT_FI={reg:'idcard',med:'shield',waiver:'document',room:'bed'};
+const PT_FD={reg:['שם, תאריך לידה, דרכון ואיש קשר לשעת חירום.','Name, date of birth, passport and emergency contact.'],med:['תזונה, אלרגיות וצרכי ניידות.','Diet, allergies and mobility needs.'],waiver:['תנאים, חתימה מוקלדת ותאריך.','Terms, typed signature and date.'],room:['סוג מיטה, שותף לחדר ובקשות לחדר שקט.','Bed type, roommate and quiet-room requests.']};
+/* readiness: forms done, household paid, passport received (international trips only), as equal parts */
+function ptReady(t,x,i){const hh=pvHousehold(t,i),parts=[];
+  parts.push(PT_REAL.filter(k=>ptStat(t,x,i,k)==='done').length/PT_REAL.length);
+  parts.push(hh&&hh.row.open<=0?1:0);
+  if(ptIntl(t))parts.push(x.pass==='Missing'?0:1);
+  return Math.round(parts.reduce((a,b)=>a+b,0)/parts.length*100);}
+/* the next payment a household owes: deposit first, then balance */
+function ptNext(t,gi){const row=groupsCalc(t).rows[gi];if(!row||row.open<=0)return null;
+  return !row.depPaid?{k:'dep',amt:row.dep,due:t.depDue}:{k:'bal',amt:row.bal,due:t.balDue};}
+/* the simulated payment: deposit first if unpaid, else balance. Returns the amount paid (0 if nothing was due). */
+function ptPay(t,gi){const nx=ptNext(t,gi);if(!nx)return 0;const g=t.groups[gi];if(nx.k==='dep')g.depPaid=true;else g.balPaid=true;return nx.amt;}
+
+/* ---------- forms: answers, validation, submit ---------- */
+const ptFields=k=>{const f=typeof fbForm==='function'?fbForm(k):null;if(!f)return [];return (f.pub&&f.pub.length?f.pub:f.fields)||[];};
+const ptDK=(t,i,k)=>ptKey(t,i)+'|'+k;
+function ptAnswers(t,i,k){const dk=ptDK(t,i,k);if(PT_DRAFT[dk])return PT_DRAFT[dk];const x=t.trav[i],a={};
+  if(k==='reg'){a.fullName=x.n;a.dob=x.dob||'';a.passExp=x.passExp||'';if(x.emerg){a.emName=x.emerg.name;a.emPhone=x.emerg.phone;}}
+  if(k==='med'){const f=ptFields('med').find(z=>z.k==='diet'),o=f&&(f.options||[]).find(z=>z.en===x.diet);a.diet=o?o.v:'';}
+  if(k==='waiver')a.signDate=iso(TODAY);
+  if(k==='room'){const f=ptFields('room').find(z=>z.k==='roomType'),o=f&&(f.options||[]).find(z=>z.v===x.roomType);a.roomType=o?o.v:'';}
+  return (PT_DRAFT[dk]=a);}
+const ptVisible=(f,a)=>!f.showIf||(a[f.showIf.k]===f.showIf.eq)||(f.showIf.eq===true&&!!a[f.showIf.k]);
+function ptValidate(k,a){const err={};
+  ptFields(k).forEach(f=>{if(f.type==='section'||!ptVisible(f,a))return;const v=a[f.k];
+    if(f.type==='toggle'){if(f.req&&!v)err[f.k]=L('יש לאשר כדי להמשיך','Please confirm to continue');return;}
+    if(f.req&&(v==null||String(v).trim()===''))err[f.k]=L('שדה חובה','Required');});
+  return err;}
+/* submit: sets the per-traveler status. Returns the error map (empty = saved). */
+function ptSubmit(t,i,k){const a=ptAnswers(t,i,k),err=ptValidate(k,a);if(Object.keys(err).length)return err;
+  if(k==='room')PT_ROOM[ptKey(t,i)]='done';else{const x=t.trav[i];if(!x.form)x.form={reg:'not sent',med:'not sent',waiver:'not sent'};x.form[k]='done';}
+  delete PT_DRAFT[ptDK(t,i,k)];return {};}
+
+function ptField(f,a,err,uid){
+  const lab=fbLb(f.label);
+  if(f.type==='section')return `<h4 class="pt-sec">${esc(lab)}</h4>`;
+  if(!ptVisible(f,a))return '';
+  const v=a[f.k]==null?'':a[f.k],id=`pt-${uid}-${f.k}`,at=`data-form="pt-f" data-k="${esc(f.k)}" id="${id}"`;
+  const e=err&&err[f.k],help=f.help?`<small class="pt-help">${esc(fbLb(f.help))}</small>`:'';
+  const req=f.req?'<i class="pt-req" aria-hidden="true">*</i>':'';
+  let ctl='';
+  if(f.type==='toggle')return `<div class="pt-fld pt-chk${e?' bad':''}"><label class="pt-ck"><input type="checkbox" ${at} ${v===true?'checked':''}><span>${esc(lab)}${req}</span></label>${help}${e?`<small class="pt-er" role="alert">${esc(e)}</small>`:''}</div>`;
+  if(f.type==='select')ctl=`<select ${at}><option value="">${L('בחרו','Choose')}</option>${(f.options||[]).map(o=>`<option value="${esc(o.v)}" ${v===o.v?'selected':''}>${esc(L(o.he,o.en))}</option>`).join('')}</select>`;
+  else if(f.type==='textarea')ctl=`<textarea rows="3" ${at}>${esc(v)}</textarea>`;
+  else if(f.type==='date')ctl=`<input type="date" ${at} value="${esc(v)}">`;
+  else if(f.type==='file')ctl=`<button class="btn sm" type="button" disabled>${ic('document')} ${L('צירוף קובץ (דמו)','Attach a file (demo)')}</button>`;
+  else if(f.type==='multi')ctl=`<div class="pt-mc">${(f.options||[]).map(o=>`<label class="pt-ck"><input type="checkbox" data-form="pt-m" data-k="${esc(f.k)}" data-o="${esc(o.v)}" ${(Array.isArray(v)&&v.includes(o.v))?'checked':''}><span>${esc(L(o.he,o.en))}</span></label>`).join('')}</div>`;
+  else if(f.type==='repeater')return '';
+  else ctl=`<input type="${f.type==='email'?'email':f.type==='tel'?'tel':(f.type==='number'||f.type==='money')?'number':'text'}" ${at} value="${esc(v)}" ${f.type==='tel'?'inputmode="tel"':''}>`;
+  return `<div class="pt-fld${e?' bad':''}"><label for="${id}">${esc(lab)}${req}</label>${ctl}${help}${e?`<small class="pt-er" role="alert">${esc(e)}</small>`:''}</div>`;
+}
+function ptFormBody(t,i,k){const a=ptAnswers(t,i,k),f=typeof fbForm==='function'?fbForm(k):null;
+  const err=S.ptErr&&S.ptErr.k===k?S.ptErr.e:null,uid=t.id+i+k;
+  return `<div class="card hc-card pt-form" id="pt-form">
+   <div class="hc-h"><h3>${ic(PT_FI[k])} ${L(PT_FN[k][0],PT_FN[k][1])}</h3><button class="btn sm" data-act="pt-fclose" aria-label="${L('סגירה','Close')}">${ic('x')}</button></div>
+   <p class="muted small">${L(PT_FD[k][0],PT_FD[k][1])}</p>
+   ${k==='waiver'&&typeof fbTermsHtml==='function'?`<div class="pt-terms">${fbTermsHtml()}</div><p class="pt-sample">${ic('danger')} ${L('נוסח לדוגמה, יש להעביר לבדיקת יועץ משפטי.','Sample wording, to be reviewed by counsel')}</p>`:''}
+   <div class="pt-fields">${ptFields(k).map(z=>ptField(z,a,err,uid)).join('')}</div>
+   <div class="pt-act"><button class="btn pri pt-wide" data-act="pt-submit" data-v="${k}">${ic('check')} ${L('שליחה','Submit')}</button><button class="btn pt-wide" data-act="pt-fclose">${L('ביטול','Cancel')}</button></div></div>`;
+}
+
+/* ---------- tab views ---------- */
+const ptChips=()=>{const a=ptTrips();if(a.length<2)return '';
+  return `<div class="pt-chips" role="group" aria-label="${L('בחירת טיול','Choose a trip')}">${a.map(t=>`<button class="chip${t.id===(ptTrip()&&ptTrip().id)?' on':''}" data-act="pt-trip" data-v="${t.id}"><bdi>${esc(t.name)}</bdi></button>`).join('')}</div>`;};
+const ptDue=d=>d?fmtDate(d):'';
+/* "Due by <date>", or "Was due <date>" once the date has passed */
+const ptDueL=d=>D(d)<TODAY?L('היה אמור להשתלם ב-','Was due ')+ptDue(d):L('עד ','Due by ')+ptDue(d);
+const ptStPill=s=>s==='done'?pillF(`${ic('done')} ${L('בוצע','Done')}`,'green'):s==='sent'?pillF(L('מחכה לך','Waiting for you'),'amber'):pillF(L('עוד לא נשלח','Not sent yet'),'');
+
+function ptMe(t,x,i){const hh=pvHousehold(t,i);
+  return `<div class="pt-me">${avatarOf(x.n)}<div><b><bdi>${esc(x.n)}</bdi></b><span class="muted small">${hh?'<bdi>'+esc(x.g)+'</bdi> · ':''}<bdi>${esc(t.name)}</bdi></span></div></div>`;}
+
+function ptHome(t,x,i){
+  const hh=pvHousehold(t,i),open=hh?hh.row.open:0,todo=ptTodo(t,x,i),days=pvDaysTo(t),pct=ptReady(t,x,i),intl=ptIntl(t),ro=ptRoomies(t,x);
+  const dTxt=days>0?L(`בעוד ${hlKey(days+' ימים')}`,`in ${hlKey(days+' days')}`):days===0?hlKey(L('היום','today')):L('כבר בדרך','already under way');
+  const brief=(open>0||todo.length||(intl&&x.pass==='Missing'))
+    ?L(`הטיול ל-<bdi>${esc(t.name)}</bdi> יוצא ${dTxt}. ${open>0?`נשארו ${hlWarn(usd(open))} לתשלום`:'התשלום סגור'}${todo.length?`, ו-${hlWarn(todo.length+(todo.length===1?' טופס':' טפסים'))} למילוי`:''}.`,
+       `Your <bdi>${esc(t.name)}</bdi> trip leaves ${dTxt}. ${open>0?`${hlWarn(usd(open))} is still to pay`:'Your payment is complete'}${todo.length?` and ${hlWarn(todo.length+(todo.length===1?' form':' forms'))} to fill`:''}.`)
+    :L(`הכל מוכן ל-<bdi>${esc(t.name)}</bdi>. ${hlPos('אין מה לעשות')} עד היציאה ${dTxt}.`,`You are all set for <bdi>${esc(t.name)}</bdi>. ${hlPos('Nothing to do')} before you leave ${dTxt}.`);
+  const ctas=[];if(open>0)ctas.push(hcCta('mint','card',L('תשלום יתרה','Pay balance'),'data-act="pt-go" data-v="pay"'));
+  ctas.push(hcCta(open>0?'ghost':'mint','pen',L('מילוי טפסים','Fill forms'),'data-act="pt-go" data-v="forms"'));
+  const roomSub=ro.length?L('עם ','with ')+ro.map(y=>String(y.n).split(' ')[0]).join(', '):L('חדר ','Room ')+esc(x.room);
+  const hero=pvHero({cls:'pt-hero',greet:L('שלום','Hello'),role:L('אפליקציית הנוסע','Traveler app'),brief,ctas:ctas.slice(0,2),aria:L('הנסיעה שלי','My trip'),
+    gauge:{pct,label:L('מוכנים לנסיעה','ready to travel'),lines:[
+      {cls:todo.length?'op':'ok',icon:todo.length?'hourglass':'check',lab:L('טפסים','Forms'),val:`${PT_REAL.length-todo.length}/${PT_REAL.length}`},
+      {cls:open>0?'op':'ok',icon:open>0?'hourglass':'check',lab:L('תשלום','Payment'),val:open>0?usd(open):L('שולם','Paid')},
+      ...(intl?[{cls:x.pass==='Missing'?'op':'ok',icon:x.pass==='Missing'?'hourglass':'check',lab:L('דרכון','Passport'),val:x.pass==='Missing'?L('חסר','Missing'):L('התקבל','Received')}]:[])]},
+    kpis:[{lab:L('ימים ליציאה','Days to go'),val:Math.max(0,days),sub:fmtDate(t.dep)},
+      {lab:L('היתרה שלי','My balance'),val:open,money:1,cls:'pf',act:'pt-go',v:'pay',sub:open>0?ptDueL(ptNext(t,hh.gi).due):L('שולם במלואו','Paid in full')},
+      {lab:L('טפסים למילוי','Forms to fill'),val:todo.length,act:'pt-go',v:'forms',sub:todo.length?L('הקישו להשלמה','Tap to complete'):L('הכל הוגש','All sent')},
+      {lab:L('החדר שלי','My room'),text:ptRoomType(x).replace(/<[^>]*>/g,''),sub:roomSub}]});
+  /* to-do list */
+  const steps=[];
+  if(open>0)steps.push({sev:'urgent',t:L(`לשלם ${usd(open)} (${ptNext(t,hh.gi).k==='dep'?'מקדמה':'יתרה'})`,`Pay ${usd(open)} (${ptNext(t,hh.gi).k==='dep'?'deposit':'balance'})`),s:ptDueL(ptNext(t,hh.gi).due),b:L('תשלום','Pay'),a:'pay'});
+  todo.forEach(k=>steps.push({sev:'todo',t:L(`למלא: ${PT_FN[k][0]}`,`Fill in: ${PT_FN[k][1]}`),s:ptStat(t,x,i,k)==='sent'?L('הסוכנות שלחה לך את הטופס','Your agent sent you this form'):L('עוד לא נשלח, אפשר למלא כבר עכשיו','Not sent yet, you can fill it in now'),b:L('מילוי','Fill'),a:'forms',f:k}));
+  if(intl&&x.pass==='Missing')steps.push({sev:'todo',t:L('להעביר עותק דרכון לסוכן','Send your passport copy to your agent'),s:L('נדרש לנסיעה בינלאומית','Needed for international travel'),b:L('עזרה','Help'),a:'help'});
+  if(ptStat(t,x,i,'room')!=='done')steps.push({sev:'todo',t:L('לאשר העדפות חדר','Confirm your rooming preference'),s:L('סוג מיטה ושותף לחדר','Bed type and roommate'),b:L('מילוי','Fill'),a:'forms',f:'room'});
+  const stepsCard=`<div class="card hc-card"><div class="hc-h"><h3>${L('מה נשאר לי','What is left for me')}</h3>${steps.length?`<span class="hc-pill blue">${steps.length}</span>`:`<span class="hc-pill green">${L('הכל מוכן','All set')}</span>`}</div>
+    ${steps.length?`<ol class="hc-steps">${steps.map(s=>`<li class="${s.sev}"><span class="hc-dot"></span><div><b>${s.t}</b><span class="muted small">${s.s}</span></div><button class="btn sm${s.sev==='urgent'?' pri':''}" data-act="pt-go" data-v="${s.a}"${s.f?` data-f="${s.f}"`:''}>${s.b}</button></li>`).join('')}</ol>`
+      :`<p class="muted">${L('כל הטפסים הוגשו והתשלום סגור. נתראה ביציאה.','Every form is in and your payment is complete. See you at departure.')}</p>`}</div>`;
+  /* next up: photo card */
+  const bg=phBg(phSrc('dest',t.dest),'background:linear-gradient(135deg,var(--hero1),var(--hero2))'),g=typeof guideOfTrip==='function'?guideOfTrip(t.id):null;
+  const nxt=`<div class="card hc-card pt-next"><span class="pt-ph" style="${bg}"><span class="hc-when ${days<=30?'soon':''}">${days>0?L(`בעוד ${days} ימים`,`In ${days} days`):L('בדרך','Under way')}</span></span>
+    <div class="pt-nb"><h3><bdi>${esc(t.name)}</bdi></h3><span class="muted small">${fmtDate(t.dep)} · ${t.nights+1} ${L('ימים','days')} · ${dn(t.dest)}</span>
+    <ul class="pt-kv"><li>${ic('pin')}<span><b>${L('נקודת מפגש','Meeting point')}</b>${AGENCY} ${L('(משרד), טולסה','office, Tulsa')} · ${pvClock(7*60)}</span></li>
+     ${t.room&&t.room.hotel?`<li>${ic('bed')}<span><b>${L('מלון','Hotel')}</b><bdi>${esc(t.room.hotel)}</bdi></span></li>`:''}
+     ${g?`<li>${ic('users')}<span><b>${L('מנהל הטיול','Tour director')}</b>${esc(L(g.he,g.en))}</span></li>`:''}</ul>
+    <button class="hc-more" data-act="pt-go" data-v="plan">${L('לתוכנית היומית','Day-by-day plan')} ${ic('chev','flip')}</button></div></div>`;
+  return `<div class="hc pt-grid">${hero}${stepsCard}${nxt}</div>`;
+}
+
+function ptPayView(t,x,i){
+  const hh=pvHousehold(t,i);if(!hh)return `<div class="card hc-card"><p class="muted">${L('אין נתוני תשלום לנוסע הזה.','No payment details for this traveler.')}</p></div>`;
+  const r=hh.row,nx=ptNext(t,hh.gi),late=r.late>0;
+  const line=(lab,amt,due,paid)=>`<li class="${paid?'ok':''}"><span class="pt-pl">${paid?ic('done'):ic('clock')}<b>${lab}</b><small>${paid?L('שולם','Paid'):ptDueL(due)}</small></span><span class="pt-pa">${usd(amt)}</span></li>`;
+  const sum=`<div class="card hc-card"><div class="hc-h"><h3>${L('התשלום של משק הבית','My household payment')}</h3>${r.open<=0?`<span class="hc-pill green">${L('שולם במלואו','Paid in full')}</span>`:late?`<span class="hc-pill red">${L('באיחור','Overdue')}</span>`:`<span class="hc-pill blue">${L('פתוח','Open')}</span>`}</div>
+    <p class="muted small"><bdi>${esc(r.name)}</bdi> · ${hh.members.map(z=>'<bdi>'+esc(String(z.y.n).split(' ')[0])+'</bdi>').join(', ')}</p>
+    <div class="pt-total"><span>${L('סך הכל','Total')}</span><b>${usd(r.amt)}</b></div>
+    <ul class="pt-pays">${line(L(`מקדמה (${t.pct}%)`,`Deposit (${t.pct}%)`),r.dep,t.depDue,r.depPaid)}${line(L('יתרה','Balance'),r.bal,t.balDue,r.balPaid)}</ul>
+    <div class="pt-open"><span>${L('שולם עד כה','Paid so far')} <b>${usd(r.paid)}</b></span><span>${L('נשאר','Still to pay')} <b>${r.open>0?hlWarn(usd(r.open)):hlPos(usd(0))}</b></span></div></div>`;
+  let act='';
+  if(S.ptPay==='done'&&PT_LAST&&PT_LAST.id===ptKey(t,i))
+    act=`<div class="card hc-card pt-ok"><span class="pt-okic">${ic('done')}</span><h3>${L('התשלום התקבל (הדמיה)','Payment received (simulation)')}</h3><p>${L(`${usd(PT_LAST.amt)} נרשמו עבור משק הבית.`,`${usd(PT_LAST.amt)} was recorded for your household.`)}</p><p class="muted small">${pvMoneyNote()}</p>
+      <button class="btn" data-act="pt-paycancel">${L('סגירה','Done')}</button></div>`;
+  else if(nx&&S.ptPay==='card')
+    act=`<div class="card hc-card pt-card"><div class="hc-h"><h3>${L('אישור תשלום','Confirm payment')}</h3><span class="pill amber">${L('דמו','DEMO')}</span></div>
+      <div class="pt-cc" aria-hidden="true"><span class="pt-ccl">${L('כרטיס לדוגמה','Sample card')}</span><b>•••• •••• •••• 4242</b><span><i>${L('תוקף','Valid')} 12/30</i><i>${AGENCY}</i></span></div>
+      <p class="pt-demo">${ic('lock')} ${L('זה שלב מדומה. לא מזינים פרטי כרטיס ולא יוצא כסף.','This step is simulated. No card details are entered and no money moves.')}</p>
+      <div class="pt-total"><span>${nx.k==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</span><b>${usd(nx.amt)}</b></div>
+      <div class="pt-act"><button class="btn pri pt-wide" data-act="pt-payconfirm">${ic('check')} ${L(`אישור ותשלום ${usd(nx.amt)}`,`Confirm and pay ${usd(nx.amt)}`)}</button><button class="btn pt-wide" data-act="pt-paycancel">${L('ביטול','Cancel')}</button></div></div>`;
+  else if(nx)
+    act=`<div class="card hc-card"><div class="hc-h"><h3>${L('התשלום הבא','Next payment')}</h3><span class="muted small">${ptDueL(nx.due)}</span></div>
+      <div class="pt-total"><span>${nx.k==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</span><b>${usd(nx.amt)}</b></div>
+      <button class="btn pri pt-wide" data-act="pt-paynow">${ic('card')} ${L('תשלום עכשיו','Pay now')}</button></div>`;
+  else act=`<div class="card hc-card pt-ok"><span class="pt-okic">${ic('done')}</span><h3>${L('שולם במלואו','Paid in full')}</h3><p class="muted">${L('אין יתרה פתוחה למשק הבית שלך.','Nothing is open for your household.')}</p></div>`;
+  const link=pvPayLink(t,r);
+  const lk=`<div class="card hc-card"><div class="hc-h"><h3>${L('קישור תשלום','Payment link')}</h3></div><p class="muted small">${L('אפשר לשלוח את הקישור לבן או בת הזוג כדי שישלמו במקומך.','Send this link to a family member so they can pay for you.')}</p>
+    <div class="pt-link"><code dir="ltr">${esc(link)}</code><button class="btn sm" data-act="pt-copy" data-v="${esc(link)}">${ic('copy')} ${L('העתקה','Copy')}</button></div></div>`;
+  return `<div class="pt-stack">${ptMe(t,x,i)}${act}${sum}${lk}</div>`;
+}
+
+function ptFormsView(t,x,i){
+  const open=S.ptFill&&PT_FORMS.includes(S.ptFill)?S.ptFill:'',done=PT_FORMS.filter(k=>ptStat(t,x,i,k)==='done').length;
+  const row=k=>{const s=ptStat(t,x,i,k);
+    return `<li class="pt-fr"><span class="pt-fi">${ic(PT_FI[k])}</span><div class="pt-ft"><b>${L(PT_FN[k][0],PT_FN[k][1])}</b><span class="muted small">${L(PT_FD[k][0],PT_FD[k][1])}</span>${ptStPill(s)}</div>
+      <button class="btn sm${s==='done'?'':' pri'}" data-act="pt-fill" data-v="${k}">${s==='done'?L('צפייה','Review'):L('מילוי','Fill in')}</button></li>`;};
+  return `<div class="pt-stack">${ptMe(t,x,i)}
+   <div class="card hc-card"><div class="hc-h"><h3>${L('הטפסים שלי','My forms')}</h3><span class="hc-pill ${done===PT_FORMS.length?'green':'blue'}">${done}/${PT_FORMS.length}</span></div>
+    <ul class="pt-fl">${PT_FORMS.map(row).join('')}</ul></div>
+   ${open?ptFormBody(t,i,open):''}</div>`;
+}
+
+function ptPlanView(t,x,i){
+  const days=pvDays(t),run=pvDaysTo(t),cur=run<=0&&-run<=t.nights?-run+1:0;
+  const meet=`<div class="card hc-card"><div class="hc-h"><h3>${L('יום היציאה','Departure day')}</h3><span class="muted small">${fmtDate(t.dep)}</span></div>
+    <ul class="pt-kv"><li>${ic('pin')}<span><b>${L('נקודת מפגש','Meeting point')}</b>${AGENCY} ${L('(משרד), טולסה','office, Tulsa')}</span></li><li>${ic('clock')}<span><b>${L('שעה','Time')}</b>${pvClock(7*60)}</span></li>
+    ${t.room&&t.room.hotel?`<li>${ic('bed')}<span><b>${L('מלון','Hotel')}</b><bdi>${esc(t.room.hotel)}</bdi></span></li>`:''}</ul></div>`;
+  return `<div class="pt-stack">${ptMe(t,x,i)}${meet}${days.map(d=>pvDayCard(t,d,{hl:cur===d.i})).join('')}</div>`;
+}
+
+function ptHelp(t,x,i){
+  const g=typeof guideOfTrip==='function'?guideOfTrip(t.id):null,ag=STAFF.find(s=>s.key===t.agent);
+  const warn=x.pass!=='Missing'&&typeof opPassWarn==='function'&&opPassWarn(t,x);
+  const call=(ico,lab,sub,tel)=>`<li class="pt-cl">${ic(ico)}<span><b>${lab}</b><small>${sub}</small></span>${tel?`<a class="btn sm pri" href="tel:${esc(tel.replace(/[^0-9+]/g,''))}">${ic('travel')} ${L('התקשרות','Call')}</a>`:''}</li>`;
+  const pass=x.pass==='Missing'?pillF(L('עוד לא התקבל','Not received yet'),'amber'):`<bdi>${esc(x.passNo||'')}</bdi> · ${warn?pillF(L('בתוקף פחות מ-6 חודשים אחרי החזרה','Under 6 months valid after return'),'amber'):L('בתוקף עד ','Valid to ')+fmtDate(x.passExp)}`;
+  return `<div class="pt-stack">${ptMe(t,x,i)}
+   <div class="card hc-card"><div class="hc-h"><h3>${L('מי עוזר לי','Who can help')}</h3></div><ul class="pt-cls">
+     ${call('travel',`${AGENCY} · ${L('24/7','24/7')}`,L('קו חירום כל היום','Emergency line, any hour'),'918-555-0100')}
+     ${g?call('users',esc(L(g.he,g.en)),esc(L(g.role.he,g.role.en))+' · <bdi>'+esc(g.phone)+'</bdi>',g.phone):''}
+     ${ag?call('mail',esc(L(typeof AGN!=='undefined'&&AGN[ag.key]||ag.he,ag.en)),L('הסוכן/ת שלי','My agent')+' · <bdi>'+esc(ag.email)+'</bdi>',ag.phone):''}</ul></div>
+   <div class="card hc-card"><div class="hc-h"><h3>${L('הפרטים שלי','My details')}</h3></div><ul class="pt-kv">
+     <li>${ic('danger')}<span><b>${L('איש קשר לחירום','Emergency contact')}</b>${x.emerg?`<bdi>${esc(x.emerg.name)}</bdi> · <bdi>${esc(x.emerg.phone)}</bdi>`:L('לא הוזן','Not provided')}</span></li>
+     <li>${ic('dining')}<span><b>${L('תזונה','Diet')}</b>${esc(dietn(x.diet||'None'))}</span></li>
+     <li>${ic('idcard')}<span><b>${L('דרכון','Passport')}</b>${pass}</span></li>
+     <li>${ic('bed')}<span><b>${L('חדר','Room')}</b>${esc(x.room)} · ${ptRoomType(x)}</span></li></ul></div></div>`;
+}
+
+const PT_SIDE={
+  home:['המסך הראשי','Home','מוכנות אישית לנסיעה: טפסים, תשלום, דרכון, וצעדים אחרונים.','Personal readiness: forms, payment, passport and the last steps.'],
+  pay:['תשלום','Pay','התשלום של משק הבית, מקדמה ויתרה, ושלב כרטיס מדומה. הגבייה בסוכנות מתעדכנת, ההכנסות והרווח לא משתנים.','The household payment, deposit and balance, with a simulated card step. Collected moves in the agency; revenue and profit do not.'],
+  forms:['טפסים','Forms','ארבעת טפסי הנוסע ממעצב הטפסים, ממולאים בטלפון.','The four traveler forms from the form builder, filled in on the phone.'],
+  plan:['תוכנית','Plan','יום אחרי יום, עם שעות, מלון ונקודת מפגש.','Day by day, with times, hotel and meeting point.'],
+  help:['עזרה','Help','קו 24/7, מנהל הטיול, הסוכן ואיש הקשר לחירום.','The 24/7 line, tour director, agent and emergency contact.']};
+function ptView(tab,p){
+  const w=ptWho(p);if(!w)return `<div class="card hc-card"><p class="muted">${L('אין נוסעים בטיולים בשלב תפעול.','No travelers on Operations trips.')}</p></div>`;
+  const {t,x,i}=w;let body='';
+  if(tab==='pay')body=ptPayView(t,x,i);else if(tab==='forms')body=ptFormsView(t,x,i);else if(tab==='plan')body=ptPlanView(t,x,i);else if(tab==='help')body=ptHelp(t,x,i);else body=ptHome(t,x,i);
+  const s=PT_SIDE[tab]||PT_SIDE.home;
+  return `<div class="pt-wrap"><div class="pt-phone"><div class="pt-notch" aria-hidden="true"><span></span></div>${ptChips()}${body}</div>
+   <aside class="pt-side"><div class="card hc-card"><div class="hc-h"><h3>${L('מה הנוסע רואה','What the traveler sees')}</h3><span class="hc-pill blue">${L(s[0],s[1])}</span></div>
+    <p class="muted">${L(s[2],s[3])}</p>
+    <ul class="pt-pts"><li>${ic('check')} ${L('נוסעים מזינים הכל בטלפון, בלי התקנה.','Travelers do everything on the phone, no install.')}</li><li>${ic('check')} ${L('כל שינוי נשמר בתיק של הסוכנות.','Every change lands in the agency file.')}</li><li>${ic('check')} ${L('בחרו נוסע אחר בסרגל העליון.','Pick another traveler in the bar above.')}</li></ul>
+    <p class="muted small">${L('תצוגה מקדימה בלבד. האפליקציה לנוסעים עדיין לא קיימת.','Preview only. The traveler app does not exist yet.')}</p></div></aside></div>`;
+}
+
+/* default traveler: Linda Garcia on nas (found by name, not by index) */
+const PT_DEF=(()=>{const t=TRIPS.find(z=>z.id==='nas'&&z.trav&&z.trav.length)||ptTrips()[0];if(!t)return '';
+  const i=t.trav.findIndex(x=>x.n==='Linda Garcia');return t.id+'|'+(i>=0?i:0);})();
+pvRegister('traveler',{role:['נוסע/ת','Traveler'],label:['אפליקציית הנוסע','Traveler app'],kind:'client',feat:'ptrav',people:ptPeople,def:PT_DEF,
+  tabs:[['home','בית','Home','home'],['pay','תשלום','Pay','wallet'],['forms','טפסים','Forms','checklist'],['plan','תוכנית','Plan','calendar'],['help','עזרה','Help','shield']],view:ptView});
+
+/* ---------- events (own listeners) ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act^="pt-"]');if(!b||!S.pv||S.pv.k!=='traveler')return;const a=b.dataset.act,v=b.dataset.v||'',w=ptWho(pvPerson());if(!w)return;
+  if(a==='pt-go'){pvTab(v);if(b.dataset.f){S.ptFill=b.dataset.f;}S.ptPay='';try{window.scrollTo(0,0);}catch(err){}render();}
+  else if(a==='pt-trip'){S.ptTrip=v;const t=ptTrip();S.pv.id=t?(t.id==='nas'?PT_DEF:t.id+'|0'):S.pv.id;S.ptFill='';S.ptPay='';S.ptErr=null;render();}
+  else if(a==='pt-paynow'){S.ptPay='card';render();}
+  else if(a==='pt-paycancel'){S.ptPay='';render();}
+  else if(a==='pt-payconfirm'){const hh=pvHousehold(w.t,w.i);const amt=hh?ptPay(w.t,hh.gi):0;if(amt){PT_LAST={id:ptKey(w.t,w.i),amt};S.ptPay='done';}else S.ptPay='';render();toast(pvMoneyNote());}
+  else if(a==='pt-copy'){try{navigator.clipboard.writeText(v);}catch(err){}toast(L('הקישור הועתק','Link copied'));}
+  else if(a==='pt-fill'){S.ptFill=v;S.ptErr=null;render();try{const f=document.getElementById('pt-form');if(f)f.scrollIntoView({block:'start'});}catch(err){}}
+  else if(a==='pt-fclose'){S.ptFill='';S.ptErr=null;render();}
+  else if(a==='pt-submit'){const err=ptSubmit(w.t,w.i,v);
+    if(Object.keys(err).length){S.ptErr={k:v,e:err};render();toast(L('יש להשלים את שדות החובה','Please complete the required fields'));}
+    else{S.ptFill='';S.ptErr=null;render();toast(L(`${PT_FN[v][0]} נשלח לסוכן`,`${PT_FN[v][1]} sent to your agent`));}}
+});
+document.addEventListener('input',e=>{const el=e.target;if(!el.dataset||el.dataset.form!=='pt-f'||!S.pv||S.pv.k!=='traveler'||el.type==='checkbox'||el.tagName==='SELECT')return;
+  const w=ptWho(pvPerson());if(!w||!S.ptFill)return;ptAnswers(w.t,w.i,S.ptFill)[el.dataset.k]=el.value;});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||!S.pv||S.pv.k!=='traveler'||!S.ptFill)return;
+  const w=ptWho(pvPerson());if(!w)return;const a=ptAnswers(w.t,w.i,S.ptFill);
+  if(el.dataset.form==='pt-f'){a[el.dataset.k]=el.type==='checkbox'?el.checked:el.value;
+    if(el.type==='checkbox'||el.tagName==='SELECT'){const y=window.scrollY;render();window.scrollTo(0,y);}}
+  else if(el.dataset.form==='pt-m'){const c=Array.isArray(a[el.dataset.k])?a[el.dataset.k]:[];a[el.dataset.k]=el.checked?c.concat(el.dataset.o):c.filter(z=>z!==el.dataset.o);}});
+
+/* ---------- developer notes ---------- */
+(function(){if(typeof SPEC==='undefined')return;
+  const base={roles:{view:['traveler'],act:['traveler']},perms:[],status:'roadmap',tests:['TEST pt traveler app'],code:['v6/s13_pt.js','v6/m_pt.css'],
+    states:{empty:'A trip with no travelers shows an empty-state card.',loading:'Not applicable (local data).',error:'A view that throws shows "This screen could not load."'}};
+  const E=(tab,o)=>{SPEC['portal:traveler:'+tab]=Object.assign({},base,o);};
+  const rules=['Portal access is by invitation link (proposed); the traveler sees only their own household','Simulated payment: no card data, no money moves','Phone-width column on desktop, full width on phones'];
+  E('home',{title:'Traveler app: home',purpose:'The traveler\'s own readiness, balance and what is left to do before departure.',data:['t.trav[i]','groupsCalc(t).rows','t.dep','pt-room'],
+    actions:[{label:'Pay balance',does:'Opens the Pay tab',rule:'Shown only when the household has an open amount'},{label:'Fill forms',does:'Opens the Forms tab',rule:'Always available'}],
+    rules:rules.concat(['Readiness = equal parts: forms done (reg, medical, waiver), household paid, passport received (international only)']),api:['GET /v1/portal/{token}/me (proposed)']});
+  E('pay',{title:'Traveler app: pay',purpose:'The household amount, deposit and balance, and a simulated card payment.',data:['t.groups[gi].depPaid','t.groups[gi].balPaid','t.depDue','t.balDue','pvPayLink'],
+    actions:[{label:'Pay now',does:'Opens the simulated card step',rule:'Deposit first if unpaid, else balance'},{label:'Confirm and pay',does:'Sets depPaid or balPaid on the household',rule:'Collected rises by the amount; revenue and profit do not change'},{label:'Copy link',does:'Copies the household payment link',rule:'pay.redbudtours.example placeholder'}],
+    rules:rules,api:['POST /v1/portal/{token}/payments (proposed)']});
+  E('forms',{title:'Traveler app: forms',purpose:'The four traveler forms (registration, medical, waiver, rooming), filled in inline.',data:['x.form.reg|med|waiver','pt-room (4th form)','FB forms (published fields)'],
+    actions:[{label:'Fill in / Review',does:'Opens the form inline',rule:'Fields come from the form builder'},{label:'Submit',does:'Sets the form status to done',rule:'Required fields checked; waiver needs acceptance'}],
+    rules:rules.concat(['Waiver wording is a sample, to be reviewed by counsel','The rooming form is not counted in "forms missing"']),api:['PUT /v1/portal/{token}/forms/{form} (proposed)']});
+  E('plan',{title:'Traveler app: plan',purpose:'The trip day by day with clock times, hotel and meeting point.',data:['pvDays(t)','t.room.hotel'],
+    actions:[],rules:rules.concat(['Day 1 starts at the 07:00 demo departure; the meeting point is a fixed placeholder','Today\'s day is highlighted only while the trip is running']),api:['GET /v1/portal/{token}/itinerary (proposed)']});
+  E('help',{title:'Traveler app: help',purpose:'Who to call, the traveler\'s emergency contact, diet and passport status.',data:['GUIDES','STAFF','x.emerg','x.diet','x.passNo','opPassWarn'],
+    actions:[{label:'Call',does:'Dials the number (tel: link)',rule:'Agency 24/7 line, tour director, agent'}],rules:rules.concat(['Passport shown masked; warning when valid under 6 months after return']),api:['GET /v1/portal/{token}/contacts (proposed)']});
+})();
+
+/* ---------- tests ---------- */
+TESTS.push({name:'pt traveler app',run:h=>{const out=[];
+  const t=TRIPS.find(z=>z.id==='nas');if(!t){return ['no nas trip'];}
+  const lin=t.trav.findIndex(x=>x.n==='Linda Garcia');if(lin<0)out.push('Linda Garcia missing on nas');
+  if(PORTALS.traveler.def!==('nas|'+lin))out.push('default is '+PORTALS.traveler.def);
+  const idn=()=>{const c=calc(t);return Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit);};
+  /* a fully paid traveler: a household whose balance we settle */
+  const gi0=t.groups.findIndex(g=>g.name===t.trav[lin].g);
+  const real=[].concat(CATALOG.hotels,CATALOG.venues).map(z=>z.name).filter(Boolean);
+  const NEG=/unconfirmed|overdue|exposure|\blate\b|\brisk\b|\bquery\b|\bgap\b|dispute|overbilling/i;
+  const guard=(hh,label)=>{hh.split('class="card hc-card').slice(1).forEach(seg=>{const card=seg.split('</div></div>')[0];const rn=real.find(n=>card.includes(n)||card.includes(n.replace(/&/g,'&amp;')));if(rn&&NEG.test(card.replace(/<[^>]*>/g,' ')))out.push('real brand '+rn+' next to negative wording '+label);});};
+  const pass=()=>{const tabs=['home','pay','forms','plan','help'];
+    for(const lang of ['en','he']){S.lang=lang;
+      [PORTALS.traveler.def,t.id+'|'+(t.trav.length-1)].forEach(id=>tabs.forEach(tab=>{pvOpen('traveler',id,tab);
+        try{render();const hh=h.els.app.innerHTML;h.chk(hh,`pt ${id} ${tab} ${lang}`);if(lang==='en')h.scan(hh,`pt ${id} ${tab}`);guard(hh,`${id} ${tab} ${lang}`);
+          if(!hh.includes('pt-phone'))out.push('no phone column '+tab);
+          if(tab==='home'&&!hh.includes('hc-hero'))out.push('no hero');
+        }catch(e){out.push(`pt ${id} ${tab} ${lang} threw ${e.message}`);}}));}
+    S.lang='en';};
+  pass();
+  /* open forms inline (all four) in both languages */
+  for(const lang of ['en','he']){S.lang=lang;PT_FORMS.forEach(k=>{pvOpen('traveler',PORTALS.traveler.def,'forms');S.ptFill=k;try{render();const hh=h.els.app.innerHTML;h.chk(hh,`pt form ${k} ${lang}`);if(lang==='en')h.scan(hh,'pt form '+k);
+    if(!hh.includes('id="pt-form"'))out.push('form not open '+k);
+    if(k==='waiver'&&lang==='en'&&!hh.includes('Sample wording, to be reviewed by counsel'))out.push('waiver note missing');
+    if(/<input[^>]*(cc-num|cardnumber|autocomplete="cc)/i.test(hh))out.push('card input');}catch(e){out.push('pt form '+k+' threw '+e.message);}});}
+  S.lang='en';S.ptFill='';
+  /* pay: collected rises by exactly the paid amount; revenue and identity unchanged */
+  if(gi0>=0){const g=t.groups[gi0];g.depPaid=false;g.balPaid=false;
+    const rev0=calc(t).rev,id0=idn(),col0=groupsCalc(t).collected,row=groupsCalc(t).rows[gi0];
+    const a1=ptPay(t,gi0);if(!g.depPaid||g.balPaid)out.push('first pay should set depPaid only');if(Math.abs(a1-row.dep)>.005)out.push('deposit amount '+a1+' vs '+row.dep);
+    let col1=groupsCalc(t).collected;if(Math.abs(col1-col0-a1)>.005)out.push('collected after deposit '+(col1-col0)+' vs '+a1);
+    const a2=ptPay(t,gi0);if(!g.balPaid)out.push('second pay should set balPaid');if(Math.abs(a2-row.bal)>.005)out.push('balance amount '+a2+' vs '+row.bal);
+    const col2=groupsCalc(t).collected;if(Math.abs(col2-col0-a1-a2)>.01)out.push('collected after balance');
+    if(groupsCalc(t).rows[gi0].open>.005)out.push('household still open');
+    if(ptPay(t,gi0)!==0)out.push('third pay should do nothing');
+    if(calc(t).rev!==rev0)out.push('rev changed by pay');if(Math.abs(idn()-id0)>.01||idn()>.01)out.push('identity broke '+idn());
+    /* a fully paid traveler renders every tab */
+    pass();
+    /* the browser flow through the real handlers */
+    pvOpen('traveler',PORTALS.traveler.def,'pay');g.depPaid=false;g.balPaid=false;S.ptPay='';render();
+    if(!h.els.app.innerHTML.includes('data-act="pt-paynow"'))out.push('no Pay now button');
+    S.ptPay='card';render();const ph=h.els.app.innerHTML;if(!ph.includes('data-act="pt-payconfirm"')||!/DEMO|דמו/.test(ph))out.push('card step missing or unlabelled');
+    if(/<input/i.test(ph.slice(ph.indexOf('pt-card'),ph.indexOf('pt-card')+1500)))out.push('inputs in card step');
+    S.ptPay='';}
+  /* form submit sets the status */
+  const x=t.trav[lin];S.lang='en';x.form.waiver='sent';delete PT_ROOM[ptKey(t,lin)];
+  let err=ptSubmit(t,lin,'waiver');if(!Object.keys(err).length)out.push('empty waiver should not submit');if(x.form.waiver==='done')out.push('waiver done without answers');
+  const wa=ptAnswers(t,lin,'waiver');wa.agree=true;wa.sig=x.n;err=ptSubmit(t,lin,'waiver');if(Object.keys(err).length||x.form.waiver!=='done')out.push('waiver submit failed '+JSON.stringify(err));
+  x.form.med='sent';err=ptSubmit(t,lin,'med');if(Object.keys(err).length||x.form.med!=='done')out.push('med submit '+JSON.stringify(err));
+  const ra=ptAnswers(t,lin,'room');ra.roomType=ra.roomType||'Twin';err=ptSubmit(t,lin,'room');if(Object.keys(err).length||PT_ROOM[ptKey(t,lin)]!=='done')out.push('room submit '+JSON.stringify(err));
+  const ready=ptReady(t,x,lin);if(ready<0||ready>100)out.push('readiness '+ready);
+  /* trip chips and person list */
+  if(ptPeople().length!==t.trav.length)out.push('people count');
+  pvExit();S.ptFill='';S.ptPay='';PT_LAST=null;
+  return out;}});
+
+/* ---------- v8.4 module "ps": Supplier portal (spec-v8.4-viewpoints.md §3.4 + amendments A1, A10, A11) ----------
+   What the supplier of a trip sees: booking requests (Confirm / Decline write the same fields as spSetFlow), rooming lists,
+   invoices in neutral supplier-side words, queries from the agency (Issue credit, Reply with documents), and the payment schedule.
+   FICTIONAL SUPPLIERS ONLY (real-brand rule): the picker, every row and every card come from pvFictionalSuppliers().
+   Supplier-side wording: "difference", "query", "credit". Never "overbilling" or "dispute". Prefix ps- on every act, class and listener. */
+const PS_UI={all:{}};
+const PS_UNIT={'room-night':['לילות חדר','room nights'],day:['ימים','days'],person:['אנשים','people'],meal:['ארוחות','meals'],transfer:['העברות','transfers'],evening:['ערבים','evenings']};
+const psUnitL=u=>PS_UNIT[u]?L(PS_UNIT[u][0],PS_UNIT[u][1]):esc(u||'');
+const PS_QST=['','open','disputed'];
+
+/* ---------- model (pure) ---------- */
+const psSup=()=>{const p=pvPerson();return p?SUPPLIERS.find(s=>s.id===p.id)||null:null;};
+const psTrips=s=>TRIPS.filter(t=>t.stage!=='Quote'&&t.lines.some(l=>l.sup===s.name));
+/* booking requests: the trip's supplier entries (t.sups) that name this supplier */
+function psRequests(s){const out=[];
+  psTrips(s).forEach(t=>(t.sups||[]).forEach((e,i)=>{if(e.n!==s.name)return;const l=typeof spLine==='function'?spLine(t,e):t.lines.find(x=>x.sup===s.name);out.push({t,i,e,l,flow:spFlow(e)});}));
+  return out.sort((a,b)=>a.t.dep<b.t.dep?-1:a.t.dep>b.t.dep?1:0);}
+/* the field writes of spSetFlow(t,i,flow), mirrored: the supplier acts as the supplier, so there is no agency permission gate (A1) */
+function psSetFlow(t,i,flow){const e=t&&t.sups&&t.sups[i];if(!e||(flow!=='approved'&&flow!=='contact'))return false;
+  e.flow=flow;e.st=SP_ST[flow];return true;}
+/* queries: this supplier's open differences above what was contracted (A10) */
+function psQueries(s){const out=[];
+  TRIPS.filter(t=>t.stage!=='Quote').forEach(t=>tripGaps(t).forEach(x=>{
+    if(x.l.sup===s.name&&x.s.k==='gap'&&x.usd>0&&PS_QST.includes(x.l.inv.st||''))out.push(x);}));
+  return out.sort((a,b)=>b.usd-a.usd);}
+const psCredited=s=>{const out=[];TRIPS.filter(t=>t.stage!=='Quote').forEach(t=>tripGaps(t).forEach(x=>{if(x.l.sup===s.name&&x.s.k==='credited')out.push(x);}));return out;};
+const psQSum=s=>r2(psQueries(s).reduce((a,x)=>a+x.usd,0));
+/* the credit: gapCredit (s11_fix) is the single function behind the agency's "Credit received" button; same formula as A10 */
+function psCredit(t,l){const i=l&&l.inv;if(!i||!PS_QST.includes(i.st||''))return 0;
+  const amt=r2(effAmt(i)-planC(l));if(!(amt>0))return 0;
+  if(typeof gapCredit==='function')gapCredit(l);else{i.credit=r2((i.credit||0)+amt);i.st='credited';}
+  return r2(amt*lrate(t,l));}
+function psReply(l){if(!l||!l.inv)return false;l.inv.reply=true;return true;}
+/* invoice status in supplier words, in the order of A10 */
+function psInvSt(l){const i=l.inv;if(!i)return {k:'none',pill:['לא הוגשה חשבונית','Not invoiced',''],pay:false};
+  const s=invStatus(l);
+  if(i.st==='credited')return {k:'credited',pill:['זיכוי הונפק','Credit issued','green']};
+  if(i.st==='accepted')return {k:'accepted',pill:['אושר','Approved','green']};
+  if(i.paid)return {k:'paid',pill:['שולם','Paid','green']};
+  if(s.k==='match')return {k:'match',pill:['תואם','Matched','blue']};
+  if(s.k==='gap'&&s.diff>0&&PS_QST.includes(i.st||''))return {k:'query',pill:['שאילתה פתוחה','Query open','amber']};
+  return {k:'recv',pill:['התקבלה','Received','']};}
+const psPill=st=>pillF(L(st.pill[0],st.pill[1]),st.pill[2]);
+const psPayDate=(t,s)=>addDays(endOf(t),s.terms.balDays);
+function psInvoices(s){const out=[];
+  psTrips(s).forEach(t=>t.lines.forEach(l=>{if(l.sup!==s.name)return;const st=psInvSt(l);out.push({t,l,i:l.inv,st,usd:l.inv?r2(effAmt(l.inv)*lrate(t,l)):0,due:psPayDate(t,s)});}));
+  return out.sort((a,b)=>a.t.dep<b.t.dep?-1:a.t.dep>b.t.dep?1:a.l.id-b.l.id);}
+/* payment schedule per trip from the supplier's terms: deposit depDays before arrival, balance balDays after the trip ends */
+function psSchedule(s){const T=s.terms,tdy=iso(TODAY);
+  return psTrips(s).map(t=>{const ls=t.lines.filter(l=>l.sup===s.name),lr=l=>lrate(t,l);
+    const total=r2(ls.reduce((a,l)=>a+(l.inv?effAmt(l.inv):planC(l))*lr(l),0));
+    const dep=r2(total*T.depPct/100),bal=r2(total-dep),dd=addDays(t.dep,-T.depDays),bd=psPayDate(t,s);
+    const inv=ls.filter(l=>l.inv),allPaid=inv.length>0&&inv.length===ls.length&&inv.every(l=>l.inv.paid||l.inv.st==='credited');
+    return {t,total,dep,bal,dd,bd,depPaid:dd<=tdy||allPaid,balPaid:allPaid};});}
+const psArrivals=(s,days)=>psTrips(s).filter(t=>{const d=pvDaysTo(t);return d>=0&&d<=days;});
+function psModel(s){
+  const reqs=psRequests(s),toConfirm=reqs.filter(r=>r.flow!=='approved'),qs=psQueries(s),invs=psInvoices(s).filter(x=>x.i);
+  const total=r2(invs.reduce((a,x)=>a+x.usd,0)),settled=r2(invs.filter(x=>x.st.k==='paid'||x.st.k==='accepted'||x.st.k==='credited').reduce((a,x)=>a+x.usd,0));
+  const wait=invs.filter(x=>x.st.k!=='paid'&&x.st.k!=='credited'),waitAmt=r2(wait.reduce((a,x)=>a+x.usd,0));
+  return {reqs,toConfirm,qs,qAmt:r2(qs.reduce((a,x)=>a+x.usd,0)),invs,total,settled,pct:total>0?Math.round(settled/total*100):0,wait,waitAmt,arr:psArrivals(s,60)};}
+
+/* ---------- small view helpers ---------- */
+const psFlowL={approved:['אושר','Confirmed','green'],pending:['ממתין לתשובתך','Awaiting your reply','blue'],contact:['לא אושר','Not confirmed',''],compare:['בבדיקה','Under review','purple']};
+const psFlowPill=f=>{const x=psFlowL[f]||psFlowL.contact;return pillF(L(x[0],x[1]),x[2]);};
+const psDates=t=>`${fmtDate(t.dep)} – ${fmtDate(endOf(t))}`;
+const psTripH=t=>`<b class="ps-tn"><bdi>${esc(t.name)}</bdi></b><span class="muted small ps-ts"><bdi>${esc(t.client)}</bdi> · ${psDates(t)} · ${paxL(t.pax)}</span>`;
+const psEmpty=(ic0,txt)=>`<div class="card hc-card ps-empty"><span class="ps-ei">${ic(ic0)}</span><p class="muted">${txt}</p></div>`;
+const psTabBtn=(tab,cls,label)=>hcCta(cls,tab==='req'?'check':tab==='inv'?'receipt':'mail',label,`data-act="ps-tab" data-v="${tab}"`);
+
+/* ---------- tabs ---------- */
+function psHome(s,p){
+  const m=psModel(s),first=String(p.name).split(' ')[0],nx=m.arr[0]||psTrips(s).filter(t=>pvDaysTo(t)>=0)[0];
+  const rq=m.toConfirm.length,q=m.qs.length;
+  const brief=(rq?L(`${hlKey(rq)} ${rq===1?'הזמנה':'הזמנות'} ממתינות לאישורך.`,`${hlKey(rq)} ${PLN(rq,'booking','bookings')} to confirm.`):L('כל ההזמנות אושרו.','Every booking is confirmed.'))+' '+
+    (q?L(`ל-Redbud ${q===1?'יש שאלה אחת':'יש '+q+' שאלות'} על חשבוניות, בסך ${hlWarn(usd(m.qAmt))}.`,`Redbud has ${hlKey(q)} ${PLN(q,'query','queries')} on invoices, ${hlWarn(usd(m.qAmt))} in total.`):L('אין שאלות פתוחות על חשבוניות.','No open invoice queries.'));
+  const hero=pvHero({cls:'ps-hero',name:first,role:esc(s.name),brief,
+    ctas:[psTabBtn('req','mint',L('לאשר הזמנות','Confirm bookings')),psTabBtn('inv','ghost',L('חשבוניות','Invoices'))],
+    gauge:{pct:m.pct,label:L('מהסכום שהוגש שולם או אושר','of invoiced amount paid or approved'),lines:[{cls:'ok',icon:'check',lab:L('שולם או אושר','Paid or approved'),val:usd(m.settled)},{cls:'op',icon:'hourglass',lab:L('ממתין לתשלום','Awaiting payment'),val:usd(m.waitAmt)}]},
+    kpis:[{lab:L('הזמנות לאישור','Bookings to confirm'),val:rq,cls:rq?'warn':'',sub:L(`מתוך ${m.reqs.length} בקשות`,`of ${m.reqs.length} ${PLN(m.reqs.length,'request','requests')}`),act:'ps-tab',v:'req'},
+      {lab:L('הגעות ב-60 הימים הקרובים','Arrivals in 60 days'),val:m.arr.length,sub:nx?`${esc(nx.name)} · ${hcIn(pvDaysTo(nx))}`:L('אין הגעות קרובות','Nothing scheduled'),act:'ps-tab',v:'list'},
+      {lab:L('חשבוניות ממתינות לתשלום','Invoices awaiting payment'),val:usd(m.waitAmt),cls:'pf',sub:L(`${m.wait.length} חשבוניות`,`${m.wait.length} ${PLN(m.wait.length,'invoice','invoices')}`),act:'ps-tab',v:'inv'},
+      {lab:L('שאילתות פתוחות מ-Redbud','Open queries from Redbud'),val:q,cls:q?'warn':'',sub:q?usd(m.qAmt):L('הכל סגור','All answered'),act:'ps-tab',v:'disp'}]});
+  const arr=psTrips(s).filter(t=>pvDaysTo(t)>=0).slice(0,4),T=s.terms;
+  const ag=nx?nx.agent:'Priya';
+  return hero+`<div class="hc-grid">
+   <div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('ההגעות הבאות','Next arrivals')}</h3><span class="muted small">${L('קבוצות שמגיעות אליכם','Groups coming to you')}</span></div>
+    ${arr.length?`<ul class="ps-lst">${arr.map(t=>{const e=(t.sups||[]).find(x=>x.n===s.name);return `<li><div class="ps-lm">${psTripH(t)}</div><div class="ps-la"><span class="muted small">${hcIn(pvDaysTo(t))}</span>${e?psFlowPill(spFlow(e)):''}</div></li>`;}).join('')}</ul>`
+      :`<p class="muted">${L('אין הגעות מתוכננות.','No arrivals scheduled.')}</p>`}
+    <button class="hc-more" data-act="ps-tab" data-v="list">${L('לרשימות האורחים','To the rooming lists')} ${ic('chev','flip')}</button></div></div>
+   <div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('התנאים שלכם עם Redbud','Your terms with Redbud')}</h3></div>
+    <dl class="ps-dl"><dt>${L('מקדמה','Deposit')}</dt><dd><bdi>${T.depPct}%</bdi> · ${L(`${T.depDays} ימים לפני ההגעה`,`${T.depDays} days before arrival`)}</dd>
+     <dt>${L('יתרה','Balance')}</dt><dd>${L(`${T.balDays} ימים אחרי סוף הטיול`,`${T.balDays} days after the trip ends`)}</dd>
+     <dt>${L('אופן תשלום','Paid by')}</dt><dd>${esc(typeof SP_PAY!=='undefined'&&SP_PAY[T.payBy]?L(SP_PAY[T.payBy][0],SP_PAY[T.payBy][1]):T.payBy)}</dd></dl>
+    <div class="ps-ct">${avatarOf(agn(ag),'xs')}<span class="small"><b>${esc(agn(ag))}</b><br><span class="muted"><bdi>${esc((AGE[ag]||'agent').split(' ')[0].toLowerCase())}@redbudtours.example</bdi> · <bdi>918-555-0100</bdi></span></span></div></div></div></div>`;
+}
+
+function psReqCard(r,s){const {t,i,l,flow}=r,e=r.e;
+  const rooms=l&&l.unit==='room-night'&&t.nights?Math.round(l.qty/t.nights):0;
+  const units=l?(rooms?L(`${rooms} חדרים · ${l.qty} ${psUnitL(l.unit)}`,`${rooms} rooms · ${l.qty} ${psUnitL(l.unit)}`):L(`${l.qty} ${psUnitL(l.unit)}`,`${l.qty} ${psUnitL(l.unit)}`)):'';
+  return `<div class="card hc-card ps-req" data-trip="${t.id}">
+   <div class="ps-rh"><div class="ps-lm">${psTripH(t)}</div>${psFlowPill(flow)}</div>
+   <div class="ps-chips">${l?`<span class="ps-chip">${ic('tag')} <bdi>${esc(l.name)}</bdi></span><span class="ps-chip">${ic('users2')} ${units}</span><span class="ps-chip">${ic('wallet')} ${money(planC(l),l.cur)}</span>`:''}</div>
+   <div class="ps-acts">${flow!=='approved'?`<button class="btn pri sm" data-act="ps-set" data-v="${t.id}|${i}|approved">${ic('check')} ${L('אישור','Confirm')}</button>`:`<span class="pos small">${ic('done')} ${L('אישרתם את ההזמנה. Redbud רואה זאת בלשונית הספקים של הטיול.','You confirmed this booking. Redbud sees it in the trip\'s Suppliers tab.')}</span>`}
+    ${flow!=='contact'?`<button class="btn sm" data-act="ps-set" data-v="${t.id}|${i}|contact">${ic('x')} ${L('דחייה','Decline')}</button>`:''}</div></div>`;}
+function psReq(s){const m=psModel(s);
+  if(!m.reqs.length)return psEmpty('inbox',L('אין בקשות הזמנה כרגע.','No booking requests right now.'));
+  const todo=m.toConfirm.length;
+  return `<div class="hc-grid"><div class="hc-c12"><div class="ps-head"><h2>${L('בקשות הזמנה','Booking requests')}</h2><span class="muted small">${todo?L(`${todo} ממתינות לאישור`,`${todo} to confirm`):L('הכל אושר','All confirmed')}</span></div></div>
+   ${m.reqs.map(r=>`<div class="hc-c6">${psReqCard(r,s)}</div>`).join('')}</div>`;}
+
+/* rooming list: rooms from the trip's travelers; other services: head count, dietary counts and service times */
+function psRooms(t){const by={};(t.trav||[]).forEach(x=>{const r=by[x.room]||(by[x.room]={room:x.room,type:x.roomType||'',names:[],diet:[]});r.names.push(x.n);if(x.diet&&x.diet!=='None')r.diet.push(x.diet);});
+  return Object.values(by).sort((a,b)=>a.room-b.room);}
+const PS_DIET={Vegetarian:['צמחוני','Vegetarian'],'Gluten-free':['ללא גלוטן','Gluten-free'],Diabetic:['סוכרתי','Diabetic'],'Nut allergy':['אלרגיה לאגוזים','Nut allergy']};
+const psDietL=d=>PS_DIET[d]?L(PS_DIET[d][0],PS_DIET[d][1]):esc(d);
+const PS_RT={Single:['יחיד','Single'],Double:['זוגי','Double'],Twin:['שתי מיטות','Twin'],Triple:['משולש','Triple'],Quad:['רביעייה','Quad']};
+const psRtL=r=>PS_RT[r]?L(PS_RT[r][0],PS_RT[r][1]):esc(r);
+function psService(t,l){const ds=pvDays(t),kind={Transport:'travel',Meals:'meal',Activities:'visit',Guide:'visit'}[l.type];
+  const nm=String(l.name).toLowerCase(),hit=[];
+  ds.forEach(d=>d.items.forEach(x=>{const a=x.name.toLowerCase();if(a.includes(nm)||nm.includes(a)||(kind&&x.kind===kind&&!hit.length&&l.type!=='Activities'))hit.push({d,x});}));
+  return hit.slice(0,3);}
+function psList(s){
+  const ts=psTrips(s).filter(t=>pvDaysTo(t)>=0);
+  if(!ts.length)return psEmpty('checklist',L('אין הגעות קרובות, ולכן אין רשימת אורחים.','No upcoming arrivals, so there is no rooming list yet.'));
+  return `<div class="hc-grid">${ts.map(t=>{
+    const ls=t.lines.filter(l=>l.sup===s.name&&!l.extra),lodge=ls.some(l=>l.type==='Lodging'),dietN={};(t.trav||[]).forEach(x=>{if(x.diet&&x.diet!=='None')dietN[x.diet]=(dietN[x.diet]||0)+1;});
+    const dietTxt=Object.keys(dietN).map(k=>`${psDietL(k)} <b>${dietN[k]}</b>`).join(' · ')||L('אין העדפות מזון מיוחדות','No dietary needs');
+    let body='';
+    if(lodge){const rooms=psRooms(t),b=typeof blockOf==='function'&&t.room&&t.room.hotel===s.name?blockOf(t):null,all=PS_UI.all[t.id],shown=all?rooms:rooms.slice(0,8);
+      const types=b?b.types:rooms.reduce((a,r)=>{a[r.type||'Twin']=(a[r.type||'Twin']||0)+1;return a;},{});
+      body=`<div class="ps-chips">${Object.keys(types).map(k=>`<span class="ps-chip">${ic('bed')} ${psRtL(k)} <b>${types[k]}</b></span>`).join('')}<span class="ps-chip">${ic('users2')} ${paxL(t.pax)}</span></div>
+       ${rooms.length?`<div class="scroll"><table class="tbl ps-tbl"><thead><tr><th>${L('חדר','Room')}</th><th>${L('סוג','Type')}</th><th>${L('אורחים','Guests')}</th><th>${L('מזון','Dietary')}</th></tr></thead><tbody>${shown.map(r=>`<tr><td class="n"><bdi>${esc(r.room)}</bdi></td><td>${psRtL(r.type)}</td><td><bdi>${esc(r.names.join(', '))}</bdi></td><td>${r.diet.length?r.diet.map(psDietL).join(', '):'<span class="muted">–</span>'}</td></tr>`).join('')}</tbody></table></div>
+       ${rooms.length>8?`<button class="hc-more" data-act="ps-all" data-v="${t.id}">${all?L('להציג פחות','Show fewer'):L(`לכל ${rooms.length} החדרים`,`Show all ${rooms.length} rooms`)} ${ic('chev','flip')}</button>`:''}`
+        :`<p class="muted small">${L('רשימת החדרים תישלח קרוב להגעה.','The rooming list is sent closer to arrival.')}</p>`}`;}
+    else{body=`<div class="ps-chips"><span class="ps-chip">${ic('users2')} ${paxL(t.pax)}</span></div><p class="small">${dietTxt}</p>
+      <ul class="ps-lst">${ls.map(l=>{const hit=psService(t,l);return `<li><div class="ps-lm"><b>${esc(l.name)}</b><span class="muted small">${l.qty} ${psUnitL(l.unit)}</span></div><div class="ps-la small">${hit.length?hit.map(h=>`${L('יום','Day')} ${h.d.i} · <bdi>${pvClock(h.x.start)}</bdi>`).join('<br>'):'<span class="muted">–</span>'}</div></li>`;}).join('')}</ul>`;}
+    return `<div class="hc-c12"><div class="card hc-card ps-roster"><div class="hc-h"><div class="ps-lm">${psTripH(t)}</div><button class="btn sm" data-act="ps-print">${ic('printer')} ${L('הדפסה','Print')}</button></div>${body}</div></div>`;}).join('')}</div>`;}
+
+function psInv(s){const m=psModel(s),rows=psInvoices(s);
+  if(!rows.length)return psEmpty('receipt',L('עוד לא הוגשו חשבוניות.','No invoices yet.'));
+  const row=x=>`<div class="ps-ir"><div class="ps-lm"><b><bdi>${esc(x.l.name)}</bdi></b><span class="muted small"><bdi>${esc(x.t.name)}</bdi>${x.i?` · <bdi>${esc(x.i.no)}</bdi>`:''}</span></div>
+    <div class="ps-ia"><b class="n">${x.i?money(effAmt(x.i),x.l.cur):'–'}</b>${psPill(x.st)}</div>
+    <div class="ps-id muted small">${x.st.k==='paid'?L('שולם','Paid'):x.st.k==='credited'?L('קוזז בזיכוי','Settled by credit'):x.i?`${L('תשלום צפוי','Expected')} ${fmtDate(x.due)}`:L('עוד לא הוגשה','Not submitted yet')}</div></div>`;
+  return `<div class="hc-grid"><div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('חשבוניות שהגשתם','Invoices you submitted')}</h3><span class="muted small">${m.invs.length} ${L('חשבוניות','invoices')} · ${usd(m.total)}</span></div>
+   <div class="ps-ilist">${rows.map(row).join('')}</div></div></div></div>`;}
+
+function psQCard(x){const {t,l}=x,i=l.inv,k=kindOf(l,x.s),cur=l.cur,mm=v=>money(v,cur,0);
+  return `<div class="card hc-card ps-disp" data-trip="${t.id}" data-line="${l.id}">
+   <div class="ps-rh"><div class="ps-lm">${psTripH(t)}</div>${i.reply?pillF(L('נשלחו מסמכים','Documents sent'),'blue'):pillF(L('שאילתה פתוחה','Query open'),'amber')}</div>
+   <div class="ps-qk">${kindPill(k)}<span class="muted small"><bdi>${esc(l.name)}</bdi> · <bdi>${esc(i.no)}</bdi></span></div>
+   <p class="ps-ex">${gapExplain(t,l)}</p>
+   <dl class="ps-dl ps-nums"><dt>${L('מה שהוסכם','Agreed')}</dt><dd>${mm(planC(l))}</dd><dt>${L('מה שהוגש','Invoiced')}</dt><dd>${mm(effAmt(i))}</dd><dt>${L('הפרש','Difference')}</dt><dd><b class="hl warn">${mm(r2(effAmt(i)-planC(l)))}</b></dd></dl>
+   <div class="ps-acts"><button class="btn pri sm" data-act="ps-credit" data-v="${t.id}|${l.id}">${ic('receipt')} ${L('להנפיק זיכוי','Issue credit')} ${usd(x.usd)}</button>
+    <button class="btn sm" data-act="ps-reply" data-v="${t.id}|${l.id}" ${i.reply?'disabled':''}>${ic('mail')} ${L('להשיב עם מסמכים','Reply with documents')}</button></div></div>`;}
+function psDisp(s){const qs=psQueries(s),done=psCredited(s);
+  const open=qs.length?`<div class="hc-grid"><div class="hc-c12"><div class="ps-head"><h2>${L('שאילתות מ-Redbud','Queries from Redbud')}</h2><span class="muted small">${L(`${qs.length} פתוחות · ${usd(r2(qs.reduce((a,x)=>a+x.usd,0)))} הפרש`,`${qs.length} open · ${usd(r2(qs.reduce((a,x)=>a+x.usd,0)))} difference`)}</span></div></div>${qs.map(x=>`<div class="hc-c6">${psQCard(x)}</div>`).join('')}</div>`
+    :`<div class="card hc-card ps-empty ps-disp"><span class="ps-ei">${ic('done')}</span><p>${done.length?L('כל השאילתות נענו. הזיכויים נרשמו אצל Redbud.','Every query is answered. The credits are recorded at Redbud.'):L('אין שאילתות פתוחות מ-Redbud.','No open queries from Redbud.')}</p></div>`;
+  const cr=done.length?`<div class="card hc-card ps-cr"><div class="hc-h"><h3>${L('זיכויים שהונפקו','Credits issued')}</h3><span class="hc-pill green">${usd(r2(done.reduce((a,x)=>a+x.usd,0)))}</span></div>
+   <ul class="ps-lst">${done.map(x=>`<li><div class="ps-lm"><b><bdi>${esc(x.l.name)}</bdi></b><span class="muted small"><bdi>${esc(x.t.name)}</bdi> · <bdi>${esc(x.l.inv.no)}</bdi></span></div><div class="ps-la"><b class="pos">${usd(x.usd,2)}</b></div></li>`).join('')}</ul></div>`:'';
+  return open+cr;}
+
+function psPay(s){const sc=psSchedule(s),T=s.terms,tdy=iso(TODAY);
+  if(!sc.length)return psEmpty('wallet',L('אין עדיין לוח תשלומים.','No payment schedule yet.'));
+  const hist=[];psInvoices(s).forEach(x=>{if(!x.i)return;
+    if(x.st.k==='credited')hist.push({d:x.due<tdy?x.due:tdy,t:x.t,l:x.l,a:x.l.inv.credit*lrate(x.t,x.l),k:'credit'});
+    else if(x.st.k==='paid')hist.push({d:x.due<tdy?x.due:tdy,t:x.t,l:x.l,a:x.usd,k:'paid'});});
+  hist.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);
+  const state=(paid,d)=>paid?pillF(L('שולם','Paid'),'green'):d<=tdy?pillF(L('לתשלום','Due'),'blue'):pillF(L('מתוזמן','Scheduled'),'');
+  return `<div class="hc-grid"><div class="hc-c7"><div class="card hc-card"><div class="hc-h"><h3>${L('לוח תשלומים','Payment schedule')}</h3><span class="muted small">${L(`מקדמה ${T.depPct}% · יתרה ${T.balDays} ימים אחרי הטיול`,`${T.depPct}% deposit · balance ${T.balDays} days after the trip`)}</span></div>
+    <div class="ps-ilist">${sc.map(x=>`<div class="ps-sch"><div class="ps-lm">${psTripH(x.t)}</div>
+     <div class="ps-pr"><span>${L('מקדמה','Deposit')} <b class="n">${usd(x.dep)}</b></span><span class="muted small">${fmtDate(x.dd)}</span>${state(x.depPaid,x.dd)}</div>
+     <div class="ps-pr"><span>${L('יתרה','Balance')} <b class="n">${usd(x.bal)}</b></span><span class="muted small">${fmtDate(x.bd)}</span>${state(x.balPaid,x.bd)}</div></div>`).join('')}</div></div></div>
+   <div class="hc-c5"><div class="card hc-card"><div class="hc-h"><h3>${L('היסטוריית העברות','Remittance history')}</h3></div>
+    ${hist.length?`<ul class="ps-lst">${hist.slice(0,8).map(h=>`<li><div class="ps-lm"><b><bdi>${esc(h.l.name)}</bdi></b><span class="muted small"><bdi>${esc(h.t.name)}</bdi> · ${fmtDate(h.d)}</span></div><div class="ps-la"><b class="n ${h.k==='credit'?'':'pos'}">${usd(h.a,2)}</b><span class="muted small">${h.k==='credit'?L('זיכוי','Credit'):L('שולם','Paid')}</span></div></li>`).join('')}</ul>`
+     :`<p class="muted">${L('עוד לא התקבלו העברות.','No remittances yet.')}</p>`}
+    <p class="small muted ps-sim">${pvMoneyNote()}</p></div></div></div>`;}
+
+/* ---------- register ---------- */
+const PS_DEF=(SUPPLIERS.find(x=>x.name==='Ozark Lakeside Lodge')||pvFictionalSuppliers()[0]||{}).id;
+pvRegister('supplier',{role:['ספק','Supplier'],label:['פורטל ספקים','Supplier portal'],kind:'field',feat:'psup',
+  people:()=>pvFictionalSuppliers().map(s=>({id:s.id,name:s.contact.name,sub:s.name})),def:PS_DEF,
+  tabs:[['home','בית','Home','home'],['req','בקשות','Requests','inbox'],['list','רשימות','Lists','checklist'],['inv','חשבוניות','Invoices','receipt'],['disp','שאילתות','Queries','mail'],['pay','תשלומים','Payments','wallet']],
+  view:(tab,p)=>{const s=psSup();if(!s||s.real)return psEmpty('suppliers',L('אין ספק להצגה.','No supplier to show.'));
+    return ({home:psHome,req:psReq,list:psList,inv:psInv,disp:psDisp,pay:psPay}[tab]||psHome)(s,p);}});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act^="ps-"]');if(!b||!S.pv||S.pv.k!=='supplier')return;
+  const a=b.dataset.act,v=b.dataset.v||'',p=v.split('|'),t=TRIPS.find(x=>x.id===p[0]);
+  if(a==='ps-tab'){pvTab(v);try{window.scrollTo(0,0);}catch(err){}render();}
+  else if(a==='ps-set'&&t){if(psSetFlow(t,+p[1],p[2])){toast(p[2]==='approved'?L('ההזמנה אושרה. Redbud רואה זאת בלשונית הספקים של הטיול.','Booking confirmed. Redbud sees it in the trip\'s Suppliers tab.'):L('ההזמנה נדחתה. Redbud תקבל הודעה.','Booking declined. Redbud is notified.'));render();}}
+  else if(a==='ps-credit'&&t){const l=t.lines.find(x=>String(x.id)===p[1]),n=psCredit(t,l);if(n>0){toast(L(`זיכוי על ${usd(n,2)} הונפק ונרשם אצל Redbud.`,`Credit for ${usd(n,2)} issued and recorded at Redbud.`));render();}}
+  else if(a==='ps-reply'&&t){const l=t.lines.find(x=>String(x.id)===p[1]);if(psReply(l)){toast(L('המסמכים נשלחו ל-Redbud.','Documents sent to Redbud.'));render();}}
+  else if(a==='ps-all'){PS_UI.all[v]=!PS_UI.all[v];render();}
+  else if(a==='ps-print'){try{window.print();}catch(err){}}
+});
+
+/* ---------- developer notes ---------- */
+if(typeof SPEC!=='undefined'){
+  const base={roles:{view:['supplier'],act:['supplier']},perms:[],status:'roadmap',code:['v6/s13_ps.js','v6/m_ps.css'],tests:['TEST ps supplier portal'],
+    api:['GET /v1/portal/{token}/supplier (proposed)'],
+    states:{empty:'A supplier with nothing to show gets a short explanation card.',loading:'Not applicable (local data).',error:'A view that throws shows "This screen could not load."'}};
+  const E=(title,purpose,data,actions,rules)=>Object.assign({},base,{title,purpose,data,actions,rules:rules.concat(['Fictional suppliers only: a real hotel or venue is never listed or shown','Portal access is by invitation link (proposed), so no agency permissions apply'])});
+  SPEC['portal:supplier:home']=E('Supplier portal: home','What needs the supplier today: bookings to confirm, arrivals, invoices awaiting payment and open queries.',['SUPPLIERS (fictional)','t.sups','tripGaps(t)','effAmt(inv)'],
+    [{label:'Confirm bookings',does:'Opens the requests tab',rule:'Always available'},{label:'Invoices',does:'Opens the invoices tab',rule:'Always available'}],['Gauge = invoiced amount paid, approved or credited, over all invoiced','KPI tiles open the matching tab']);
+  SPEC['portal:supplier:req']=E('Supplier portal: booking requests','Every booking the agency asked this supplier for, with Confirm and Decline.',['t.sups entry (st, flow)','t.lines'],
+    [{label:'Confirm',does:'flow=approved, st=Confirmed (same writes as spSetFlow)',rule:'The agency sees it in the trip Suppliers tab'},{label:'Decline',does:'flow=contact, st=Not sent',rule:'Agency is notified (simulated)'}],['Supplier acts as the supplier: no agency permission gate (A1)']);
+  SPEC['portal:supplier:list']=E('Supplier portal: rooming lists','Rooming list for lodging and head count, dietary counts and service times for other services.',['t.trav','blockOf(t)','pvDays(t)'],
+    [{label:'Print',does:'Prints the page',rule:'window.print in try/catch'},{label:'Show all rooms',does:'Expands the room table',rule:'First 8 rooms shown'}],['Upcoming trips only']);
+  SPEC['portal:supplier:inv']=E('Supplier portal: invoices','Invoices the supplier submitted, in neutral words, with the expected payment date.',['l.inv','invStatus(l)','terms.balDays'],
+    [],['Status order: Credit issued, Approved, Paid, Matched, Query open, Received, Not invoiced','Expected payment = trip end + terms.balDays']);
+  SPEC['portal:supplier:disp']=E('Supplier portal: queries','Differences the agency found between the invoice and the agreed price, with two answers.',['tripGaps(t)','l.inv.st','l.inv.reply'],
+    [{label:'Issue credit',does:'inv.credit += effAmt(inv) - planC(l); inv.st=credited (gapCredit)',rule:'Only for open or sent queries above zero'},{label:'Reply with documents',does:'inv.reply=true and a toast',rule:'Query stays open'}],
+    ['Wording: difference, query, credit; never overbilling or dispute','Finance identity planProfit - amtDiff - fx - fcProfit = 0 still holds','Meeting beat selects .ps-disp']);
+  SPEC['portal:supplier:pay']=E('Supplier portal: payments','Deposit and balance dates from the supplier terms, and the remittance history.',['SUPPLIERS[].terms','l.inv.paid','l.inv.credit'],
+    [],['Deposit due = arrival - depDays; balance due = trip end + balDays','Payments are simulated: no money moved']);
+}
+
+/* ---------- tests ---------- */
+TESTS.push({name:'ps supplier portal',run:h=>{const out=[];
+  const P=PORTALS.supplier;if(!P)return ['supplier portal not registered'];
+  const ps=P.people();
+  if(!ps.length)return ['no supplier people'];
+  ps.forEach(x=>{const s=SUPPLIERS.find(y=>y.id===x.id);if(!s||s.real||s.fictional!==true)out.push('picker lists a non-fictional supplier '+x.id);});
+  if(!ps.some(x=>x.id===P.def))out.push('default supplier not in picker');
+  if(SUPPLIERS.find(x=>x.id===P.def).name!=='Ozark Lakeside Lodge')out.push('default is not Ozark Lakeside Lodge');
+  const bigGap=()=>ps.map(x=>SUPPLIERS.find(y=>y.id===x.id)).sort((a,b)=>psQSum(b)-psQSum(a))[0];
+  const catNames=(CATALOG.hotels||[]).concat(CATALOG.venues||[]).map(x=>x.name).filter(n=>n&&n.length>5);
+  const fictNames=pvFictionalSuppliers().map(x=>x.name).sort((a,b)=>b.length-a.length);
+  const NEG=/query|queries|credit|difference|unconfirmed|overdue|\blate\b|risk|\bgap|dispute|overbill/i;
+  const sweep=(ids,tag)=>{for(const lang of ['en','he']){S.lang=lang;
+    ids.forEach(id=>P.tabs.forEach(([tab])=>{pvOpen('supplier',id,tab);
+      try{render();const hh=h.els.app.innerHTML;h.chk(hh,`ps ${tag} ${id} ${tab} ${lang}`);
+        if(lang==='en'){h.scan(hh,`ps ${tab}`);
+          if(/overbill|dispute/i.test(hh.replace(/<[^>]*>/g,' ')))out.push(`buyer-side wording on supplier side: ${tag} ${tab}`);
+          const main=(hh.match(/<main[\s\S]*<\/main>/)||[hh])[0].replace(/<[^>]*>/g,' ');
+          /* fictional suppliers may carry a landmark in their name (Colosseum Group Tickets); only REAL catalog names are guarded */
+          const txt=fictNames.reduce((a,n)=>a.split(n).join(' '),main);
+          if(NEG.test(txt))catNames.forEach(n=>{if(txt.includes(n))out.push(`catalog name "${n}" in ps ${tag} ${tab}`);});}
+        if(hh.includes('class="side"')||!hh.includes('pv-rib'))out.push('frame '+tag+tab);
+        if(specKey()!=='portal:supplier:'+tab)out.push('specKey '+tab);
+        if(tab==='disp'){const s=SUPPLIERS.find(y=>y.id===id),n=psQueries(s).length,c=(hh.match(/class="card hc-card ps-disp"/g)||[]).length;
+          if(n!==c)out.push(`query cards ${c} != queries ${n} for ${id}`);if(!hh.includes('ps-disp'))out.push('no ps-disp '+id);}
+      }catch(e){out.push(`ps ${tag} ${id} ${tab} ${lang} threw ${e.message}`);}}));}
+    S.lang='en';};
+  const big=bigGap();
+  if(!(psQSum(big)>0))out.push('no supplier has an open query');
+  sweep([P.def,big.id],'base');
+  /* after the nen inbox is read, again for the largest fictional nen supplier */
+  const nen=byId('nen');applyInbox(nen);
+  const nenSups=ps.map(x=>SUPPLIERS.find(y=>y.id===x.id)).map(s=>({s,a:r2(psQueries(s).filter(q=>q.t.id==='nen').reduce((a,q)=>a+q.usd,0))})).sort((a,b)=>b.a-a.a);
+  if(!(nenSups[0]&&nenSups[0].a>0))out.push('nen inbox gives no fictional supplier a query');
+  else sweep([nenSups[0].s.id],'nen');
+  /* confirm and decline: same field writes as spSetFlow */
+  const rq=ps.map(x=>SUPPLIERS.find(y=>y.id===x.id)).map(psRequests).find(r=>r.some(q=>q.flow!=='approved'));
+  if(!rq)out.push('no unconfirmed request to test');
+  else{const r=rq.find(q=>q.flow!=='approved');
+    ['approved','contact'].forEach(fl=>{const clone={sups:[{...r.e}]};spSetFlow(clone,0,fl);
+      if(!psSetFlow(r.t,r.i,fl))out.push('psSetFlow '+fl);
+      if(r.e.flow!==clone.sups[0].flow||r.e.st!==clone.sups[0].st)out.push(`psSetFlow differs from spSetFlow (${fl}): ${r.e.flow}/${r.e.st} vs ${clone.sups[0].flow}/${clone.sups[0].st}`);});
+    if(psSetFlow(r.t,r.i,'bogus')||psSetFlow(r.t,99,'approved'))out.push('psSetFlow accepts junk');
+    psSetFlow(r.t,r.i,'approved');if(spFlow(r.e)!=='approved')out.push('confirm did not make spFlow approved');
+    S.lang='en';pvOpen('supplier',SUPPLIERS.find(y=>y.name===r.l.sup).id,'req');render();
+    if(!h.els.app.innerHTML.includes('Confirmed'))out.push('confirmed state not shown');}
+  /* issuing a credit: identity holds, gapStats open falls by exactly that gap, status becomes Credit issued */
+  const cand=[];ps.forEach(x=>psQueries(SUPPLIERS.find(y=>y.id===x.id)).forEach(q=>{if((q.l.inv.st||'open')==='open')cand.push(q);}));
+  cand.sort((a,b)=>b.usd-a.usd);
+  if(!cand.length)out.push('no open-state query to credit');
+  else{const q=cand[0],G0=gapStats(TRIPS),sup=SUPPLIERS.find(y=>y.name===q.l.sup);
+    if(!psReply(q.l)||q.l.inv.reply!==true)out.push('reply flag');
+    const n=psCredit(q.t,q.l),G1=gapStats(TRIPS),c=calc(q.t);
+    if(Math.abs(n-q.usd)>.005)out.push(`credit returned ${n} != gap ${q.usd}`);
+    if(Math.abs(r2(G0.open-G1.open)-q.usd)>.005)out.push(`gapStats open fell by ${r2(G0.open-G1.open)}, expected ${q.usd}`);
+    if(Math.abs(r2(G1.rec-G0.rec)-q.usd)>.005)out.push('recovered did not rise by the credit');
+    if(Math.abs(c.planProfit-c.amtDiff-c.fx-c.fcProfit)>.05)out.push('identity after credit '+q.t.id);
+    if(q.l.inv.st!=='credited')out.push('inv.st not credited');
+    if(psInvSt(q.l).k!=='credited')out.push('status not Credit issued');
+    if(psQueries(sup).some(y=>y.l===q.l))out.push('credited query still open');
+    if(psCredit(q.t,q.l)!==0)out.push('credit applied twice');
+    pvOpen('supplier',sup.id,'disp');render();if(!/Credits issued/.test(h.els.app.innerHTML))out.push('credits card missing after credit');
+    S.lang='he';render();h.chk(h.els.app.innerHTML,'ps credited he');S.lang='en';}
+  /* status mapping (A10) */
+  const L0={inv:null};if(psInvSt(L0).k!=='none')out.push('status none');
+  pvExit();render();
+  return out;}});
 
 /* ---------- v8.4 module "pg": the tour director run sheet (spec-v8.4-viewpoints.md §3.5, amendments A7 A8 A9 A11) ----------
    A field portal for the tour director or driver-guide. It is read on a phone, on a coach, in sunlight: big tap targets,
