@@ -6,6 +6,8 @@ const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab
   page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
 const S=S0();
 const VER=8,KEY='triplanet-booth-demo-v8';
+/* the demo's version name, shown in the settings menu and the page title (build.py) */
+const DEMO_VERSION='v8.2',DEMO_BUILT='2026-11-14';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
 function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
 function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
@@ -72,10 +74,10 @@ function render(){
   const navOk=n=>typeof can!=='function'||!NAV_PERM[n[0]]||can(NAV_PERM[n[0]]);
   const nb=(a)=>`<button class="nv ${act===a[0]?'on':''}" data-act="go" data-v="${a[0]}"><span class="ic">${a[2]}</span>${L(a[1][0],a[1][1])}${['gaps','studio','leaks'].includes(a[0])?' '+pillF(L('חדש','New'),'info nvp'):''}</button>`;
   const nAl=alertsFor(visibleTrips(),S.thresh).filter(a=>a.sev!=='info').length;
-  const menu=S.menu?`<div class="menu" role="menu"><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
+  const menu=S.menu?`<div class="menu" role="menu">${typeof VIEWS!=='undefined'&&VIEWS.settings?`<button data-act="go" data-v="settings" role="menuitem">${ic('settings')} ${L('הגדרות המערכת','Settings')}</button>`:''}<button data-act="theme" role="menuitem">${ic(themeGet()==='dark'?'sun':'moon')} ${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}</button><button data-act="tourgo" role="menuitem">${ic('play')} ${L('סיור מודרך (3 דקות)','Guided tour (3 minutes)')}</button><button data-act="lang" role="menuitem">${L('English','עברית')}</button>
      <div class="mz"><span>${L('גודל תצוגה','Display size')}</span>${[[1,'100%'],[1.15,'115%'],[1.3,'130%']].map(z=>`<button class="btn sm ${S.zoom===z[0]?'pri':''}" data-act="zoom" data-v="${z[0]}">${z[1]}</button>`).join('')}</div>
      ${typeof devPanel==='function'?`<button data-act="devnotes" role="menuitem">${ic('document')} ${devOn()?L('הסתר הערות למפתחים','Hide developer notes'):L('הצג הערות למפתחים','Show developer notes')}</button>`:''}
-     <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}</div></div>`:'';
+     <button data-act="reset" role="menuitem" class="neg">${ic('restart')} ${L('איפוס נתוני הדמו','Reset demo data')}</button><div class="small muted" style="padding:6px 10px 2px">${L('נתוני הסוכנות פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה.','Agency data is fictional. Hotel and venue names are real; rates are illustrative.')}<div class="menu-ver">Triplanet demo ${DEMO_VERSION} · ${fmtDate(DEMO_BUILT)}</div></div></div>`:'';
   const fab=S.tab==='ai'?'':S.chen?chenPanel():`<button class="chenfab${S.tab==='home'?'':' cmp'}" data-act="chen" aria-label="${L('שאלו את מאיה','Ask Maya')}" data-tip="${L('שאלו את מאיה','Ask Maya')}">${chenAv(S.tab==='home'?28:40)}<span>${L('שאלו את מאיה','Ask Maya')}</span></button>`;
   const app=document.getElementById('app');app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
   try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}

@@ -33,14 +33,15 @@ function hcModel(){
   return {ts,P,G,M,steps,urgent,stage,dep,kept,months,team};
 }
 
-function hcHero(m){
-  const {P,M}=m,first=String(userName()).split(' ')[0],an=hpAnim();
+/* one hero for every role: brief, two buttons, a gauge and four KPI tiles */
+function hcShell(o){
+  const an=hpAnim(),first=String(userName()).split(' ')[0];
   const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
-  const nx=m.dep[0],margin=P.rev?P.fp/P.rev:0;
-  const brief=L(`העונה נסגרו ${usd(P.rev)} ב-${m.ts.filter(t=>t.stage!=='Quote').length} תיקים, ברווח צפוי של ${pct(margin)}. עוד ${usd(M.rec)} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${m.urgent} דברים דחופים מחכים לך היום`:''}.`,
-    `This season you booked ${usd(P.rev)} across ${m.ts.filter(t=>t.stage!=='Quote').length} files at ${pct(margin)} expected margin. ${usd(M.rec)} is still recoverable from supplier invoices${m.urgent?`, and ${m.urgent} urgent ${m.urgent===1?'item needs':'items need'} you today`:''}.`);
-  const kpi=(lab,val,sub,cls,d)=>`<div class="hc-kpi ${cls||''}" style="--d:${d}ms"><span>${lab}</span><b data-count="${Math.round(val)}">${usd(val)}</b><small>${sub}</small></div>`;
-  return `<section class="ptiles hc-hero${an?' anim':''}" aria-label="${L('תמונת מצב','Overview')}">
+  const kp=(k,i)=>{const tag=k.act?'button':'div',at=k.act?` data-act="${k.act}" data-v="${k.v}"${k.pt?` data-pt="${k.pt}"`:''}${k.on!=null?` aria-pressed="${!!k.on}"`:''}`:'';
+    const val=k.money?`<b data-count="${Math.round(k.val)}">${usd(k.val)}</b>`:k.text?`<b class="hc-nn"><bdi>${esc(k.text)}</bdi></b>`:`<b>${k.val}</b>`;
+    return `<${tag} class="hc-kpi ${k.cls||''}${k.on?' on':''}" style="--d:${60+i*80}ms"${at}><span>${k.lab}</span>${val}<small>${k.sub||''}</small></${tag}>`;};
+  const g=o.gauge;
+  return `<section class="${o.cls||''} hc-hero${an?' anim':''}" aria-label="${o.aria||L('תמונת מצב','Overview')}">
    <svg class="hc-bg" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs><radialGradient id="hcg1" cx="85%" cy="10%" r="60%"><stop offset="0" stop-color="#5DFCE0" stop-opacity=".22"/><stop offset="1" stop-color="#5DFCE0" stop-opacity="0"/></radialGradient></defs>
     <rect width="1200" height="420" fill="url(#hcg1)"/>
@@ -48,23 +49,32 @@ function hcHero(m){
     <circle class="hc-pin" cx="860" cy="250" r="5"/><circle class="hc-pin" cx="1150" cy="120" r="5"/><circle class="hc-pin" cx="1110" cy="300" r="5"/><circle class="hc-pin p0" cx="80" cy="360" r="5"/>
    </svg>
    <div class="hc-hl">
-    <div class="hc-hi"><span class="hc-eye">${day}</span><h1>${L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${brief}</p>
-     <div class="hc-cta"><button class="hc-btn mint" data-act="go" data-v="gaps">${ic('cash')} ${L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`)}</button><button class="hc-btn ghost" data-act="go" data-v="studio">${ic('magic')} ${L('לבנות טיול','Build a trip')}</button></div></div>
-    <div class="hc-gauge" role="img" aria-label="${L(`${m.kept}% מהרווח המתוכנן נשמר`,`${m.kept}% of planned profit kept`)}">${hcRing(m.kept,148,'big')}<div class="hc-gv"><b>${m.kept}%</b><span>${L('מהרווח המתוכנן נשמר','of planned profit kept')}</span></div>
-     <div class="hc-gl"><span class="ok">${ic('check')} ${L('הוחזרו','Recovered')} <b>${usd(M.got)}</b></span><span class="op">${ic('hourglass')} ${L('פתוח','Still open')} <b>${usd(M.rec)}</b></span></div></div>
+    <div class="hc-hi"><span class="hc-eye">${day}${o.role?` · ${o.role}`:''}</span><h1>${L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${o.brief}</p>
+     ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
+    <div class="hc-gauge" role="img" aria-label="${g.pct}% ${esc(g.label)}">${hcRing(g.pct,148,'big')}<div class="hc-gv"><b>${g.pct}%</b><span>${g.label}</span></div>
+     <div class="hc-gl">${g.lines.map(x=>`<span class="${x.cls}">${ic(x.icon)} ${x.lab} <b>${x.val}</b></span>`).join('')}</div></div>
    </div>
-   <div class="hc-kpis">
-    ${kpi(L('הכנסות שנסגרו','Booked revenue'),P.rev,L(`${P.pax} נוסעים`,`${P.pax} travelers`),'',60)}
-    ${kpi(L('רווח צפוי','Expected profit'),P.fp,L(`${pct(margin)} מרווח · ${usd(r2(P.pp-P.fp))} מתחת לתכנון`,`${pct(margin)} margin · ${usd(r2(P.pp-P.fp))} below plan`),'pf',140)}
-    ${kpi(L('בהצעות פתוחות','Open quotes'),P.pipeline,L(`${P.pipelineN} הצעות`,`${P.pipelineN} ${P.pipelineN===1?'quote':'quotes'}`),'',220)}
-    ${nx?`<button class="hc-kpi hc-next" style="--d:300ms" data-act="open" data-v="${nx.id}" data-pt="${nx.stage==='Quote'?'general':'odash'}"><span>${L('היציאה הבאה','Next departure')}</span><b class="hc-nn"><bdi>${esc(nx.name)}</bdi></b><small>${hcIn(hcDays(nx.dep))} · ${fmtDate(nx.dep)}</small></button>`:''}
-   </div></section>`;
+   <div class="hc-kpis">${o.kpis.map(kp).join('')}</div></section>`;
+}
+const hcCta=(cls,icon,label,attrs)=>`<button class="hc-btn ${cls}" ${attrs}>${ic(icon)} ${label}</button>`;
+
+function hcHero(m){
+  const {P,M}=m,nx=m.dep[0],margin=P.rev?P.fp/P.rev:0,files=m.ts.filter(t=>t.stage!=='Quote').length;
+  return hcShell({cls:'ptiles',
+    brief:L(`העונה נסגרו ${usd(P.rev)} ב-${files} תיקים, ברווח צפוי של ${pct(margin)}. עוד ${usd(M.rec)} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${m.urgent} דברים דחופים מחכים לך היום`:''}.`,
+      `This season you booked ${usd(P.rev)} across ${files} files at ${pct(margin)} expected margin. ${usd(M.rec)} is still recoverable from supplier invoices${m.urgent?`, and ${m.urgent} urgent ${m.urgent===1?'item needs':'items need'} you today`:''}.`),
+    ctas:[hcCta('mint','cash',L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`),'data-act="go" data-v="gaps"'),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'data-act="go" data-v="studio"')],
+    gauge:{pct:m.kept,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(M.got)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(M.rec)}]},
+    kpis:[{lab:L('הכנסות שנסגרו','Booked revenue'),val:P.rev,money:1,sub:L(`${P.pax} נוסעים`,`${P.pax} travelers`)},
+      {lab:L('רווח צפוי','Expected profit'),val:P.fp,money:1,cls:'pf',sub:L(`${pct(margin)} מרווח · ${usd(r2(P.pp-P.fp))} מתחת לתכנון`,`${pct(margin)} margin · ${usd(r2(P.pp-P.fp))} below plan`)},
+      {lab:L('בהצעות פתוחות','Open quotes'),val:P.pipeline,money:1,sub:L(`${P.pipelineN} הצעות`,`${P.pipelineN} ${P.pipelineN===1?'quote':'quotes'}`)},
+      ...(nx?[{lab:L('היציאה הבאה','Next departure'),text:nx.name,cls:'hc-next',act:'open',v:nx.id,pt:nx.stage==='Quote'?'general':'odash',sub:`${hcIn(hcDays(nx.dep))} · ${fmtDate(nx.dep)}`}]:[])]});
 }
 
-function hcToday(m){
-  const r=m.steps;
+function hcToday(m,o){
+  o=o||{};const r=m.steps;
   const btn=(x,i)=>`<button class="btn sm${i?'':' pri'}" ${x.s.act.a==='advance'?`data-act="advance" data-v="${x.t.id}"`:`data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.v}"`}>${L(x.s.label[0],x.s.label[1])}</button>`;
-  return `<div class="card hc-card hc-today"><div class="hc-h"><h3>${L('היום','Today')}</h3>${m.urgent?`<span class="hc-pill red">${L(`${m.urgent} דחופים`,`${m.urgent} urgent`)}</span>`:`<span class="hc-pill green">${L('הכל בשליטה','All clear')}</span>`}</div>
+  return `<div class="card hc-card hc-today ${o.cls||''}"><div class="hc-h"><h3>${o.title||L('היום','Today')}</h3>${m.urgent?`<span class="hc-pill red">${L(`${m.urgent} דחופים`,`${m.urgent} urgent`)}</span>`:`<span class="hc-pill green">${L('הכל בשליטה','All clear')}</span>`}</div>
    ${r.length?`<ol class="hc-steps">${r.map((x,i)=>`<li class="${x.s.sev}" style="--d:${i*60}ms"><span class="hc-dot"></span><div><b>${L(x.s.he,x.s.en)}</b><button class="hc-trip" data-act="open" data-v="${x.t.id}" data-pt="${x.s.act.a==='advance'?'fdash':x.s.act.v}"><bdi>${esc(x.t.name)}</bdi> · ${avatarOf(agn(x.t.agent),'xs')}${esc(String(agn(x.t.agent)).split(' ')[0])}</button></div>${btn(x,i)}</li>`).join('')}</ol>`
      :`<p class="muted">${L('אין צעדים פתוחים. כל התיקים מעודכנים.','No open steps. Every file is up to date.')}</p>`}
    <button class="hc-more" data-act="go" data-v="quotes">${L('לכל הפרויקטים','All projects')} ${ic('chev','flip')}</button></div>`;
@@ -137,8 +147,62 @@ function hcHome(){
    </div></div>`;
 }
 
-/* the owner gets the command center; accountant and agents keep their own homes */
-{const h1=VIEWS.home;VIEWS.home=function(){return isMgr()?hcHome():h1.apply(this,arguments);};}
+/* ---------- accountant: the money desk ---------- */
+function hcAcct(){
+  const ts=visibleTrips();if(!ts.length)return noTrip();
+  const P=portfolio(ts),G=gapStats(ts),M=leakModel(ts),ar=daArNext30(),od=daOverdue(),bills=daBillsToApprove(),cm=daCommReceivable(),docs=daDocsToIssue();
+  const col=P.rev>0?Math.round(P.col/P.rev*1000)/10:100,dt=daDetail(S.daDet);
+  const hero=hcShell({cls:'da-hero hc-acct',role:L('הנהלת חשבונות','Accounting'),aria:L('תמונת מצב כספית','Finance overview'),
+    brief:L(`${usd(ar.total)} צפויים להיכנס מלקוחות ב-30 הימים הקרובים ו-${usd(od.total)} באיחור. ${bills.n} חשבוניות ספקים תואמות להצעה ומחכות לאישור שלך${docs.n?`, ו-${docs.n} מסמכים מחכים להפקה`:''}.`,
+      `${usd(ar.total)} is due from clients in the next 30 days and ${usd(od.total)} is overdue. ${bills.n} supplier ${bills.n===1?'bill matches its quote and waits':'bills match their quotes and wait'} for your approval${docs.n?`, and ${docs.n} ${docs.n===1?'document is':'documents are'} ready to issue`:''}.`),
+    ctas:[hcCta('mint','check',L(`לאישור ${bills.n} חשבוניות`,`Approve ${bills.n} ${bills.n===1?'bill':'bills'}`),'data-act="da-det" data-v="bills"'),hcCta('ghost','bell',L('חובות באיחור','Overdue payments'),'data-act="da-det" data-v="overdue"')],
+    gauge:{pct:col,label:L('מההכנסות כבר נגבו','of booked revenue collected'),lines:[{cls:'ok',icon:'check',lab:L('נגבה','Collected'),val:usd(P.col)},{cls:'op',icon:'hourglass',lab:L('יתרה','Outstanding'),val:usd(P.outstanding)}]},
+    kpis:[{lab:L('לגבייה ב-30 יום','Due in 30 days'),val:ar.total,money:1,sub:L(`${ar.n} תשלומים`,`${ar.n} ${ar.n===1?'installment':'installments'}`),act:'da-det',v:'ar30',on:S.daDet==='ar30'},
+      {lab:L('באיחור','Overdue'),val:od.total,money:1,cls:'warn',sub:L(`${od.n} קבוצות חיוב`,`${od.n} billing ${od.n===1?'group':'groups'}`),act:'da-det',v:'overdue',on:S.daDet==='overdue'},
+      {lab:L('חשבוניות ספק לאישור','Bills to approve'),val:bills.total,money:1,sub:L(`${bills.n} תואמות להצעה`,`${bills.n} matched`),act:'da-det',v:'bills',on:S.daDet==='bills'},
+      {lab:L('עמלות לגבייה','Commission receivable'),val:cm.total,money:1,sub:L(`${cm.n} שורות`,`${cm.n} ${cm.n===1?'line':'lines'}`),act:'da-det',v:'comm',on:S.daDet==='comm'}]});
+  const m={P,M};
+  return `<div class="hc${hpAnim()?' anim':''}">${hero}
+   <div class="hc-grid">
+    <div class="hc-c12"><div class="card hc-card da-card da-det"><div class="hc-h"><h3>${dt.title}</h3>${dt.sum?`<span class="hc-pill blue">${dt.sum}</span>`:''}</div>${dt.body}</div></div>
+    <div class="hc-c7">${daArCard()}${daApCard()}</div>
+    <div class="hc-c5">${hcProfit(m)}${daFxCard()}${daSyncCard()}</div>
+    <div class="hc-c7">${daDocsCard()}</div><div class="hc-c5">${daMonthCard()}</div>
+   </div></div>`;
+}
+
+/* ---------- agent: my files ---------- */
+function hcAgent(){
+  const a=S.role,ts=visibleTrips();if(!ts.length)return noTrip();
+  const K=dbAgentKpis(a,ts),att=Math.round(Math.min(1,K.att||0)*1000)/10,togo=Math.max(0,r2((K.target||0)-K.booked));
+  const steps=typeof nxAgentSteps==='function'?nxAgentSteps(ts,6):[],urgent=steps.filter(x=>x.s.sev==='urgent').length;
+  const dep=ts.filter(t=>t.dep>=iso(TODAY)&&!(t.stage==='Quote'&&t.qst==='Lost')).sort((x,y)=>x.dep<y.dep?-1:x.dep>y.dep?1:0).slice(0,8);
+  const nx=dep.find(t=>t.stage!=='Quote'),s0=steps[0];
+  const brief=L(`${K.openN?`יש לך ${K.openN} הצעות פתוחות בשווי ${usd(K.openVal)}${K.followN?`, ${K.followN} מהן צריכות מעקב`:''}.`:'אין לך הצעות פתוחות כרגע.'} ${nx?`היציאה הבאה שלך: ${nx.name}, ${hcIn(hcDays(nx.dep))}.`:'אין לך יציאות קרובות; כדאי לסגור את התיקים שבסגירה כספית.'}`,
+    `${K.openN?`You have ${K.openN} open ${K.openN===1?'quote':'quotes'} worth ${usd(K.openVal)}${K.followN?`, and ${K.followN} ${K.followN===1?'needs':'need'} a follow-up`:''}.`:'No open quotes right now.'} ${nx?`Your next departure is ${nx.name}, ${hcIn(hcDays(nx.dep))}.`:'No departures coming up; your files in financial close are the next thing to finish.'}`);
+  const first=s0?hcCta('mint','arrup',L(s0.s.label[0],s0.s.label[1]),s0.s.act.a==='advance'?`data-act="advance" data-v="${s0.t.id}"`:`data-act="open" data-v="${s0.t.id}" data-pt="${s0.s.act.v}"`):'';
+  const hero=hcShell({cls:'db-hero hc-agent',role:L('סוכן/ת מכירות','Sales agent'),
+    brief,ctas:[first,hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'data-act="go" data-v="studio"')].filter(Boolean),
+    gauge:{pct:att,label:L('מהיעד השנתי שלך','of your annual target'),lines:[{cls:'ok',icon:'check',lab:L('נסגרו','Booked'),val:usd(K.booked)},{cls:'op',icon:'hourglass',lab:L('נותרו','To go'),val:usd(togo)}]},
+    kpis:[{lab:L('הצעות פתוחות','Open quotes'),val:K.openVal,money:1,sub:L(`${K.openN} הצעות`,`${K.openN} ${K.openN===1?'quote':'quotes'}`),act:'hc-q',v:'quotes'},
+      {lab:L('מעקבים לביצוע','Follow-ups due'),val:K.followN,sub:L('נשלחו לפני יותר משבוע','sent over a week ago'),act:'hc-q',v:'quotes'},
+      {lab:L('יציאות ב-60 יום','Departures, 60 days'),val:K.depN,sub:L('תיקים בתפעול','files in operations'),act:'hc-q',v:'files'},
+      {lab:L('רווח צפוי','Expected profit'),val:K.fp,money:1,cls:'pf',sub:L(`${pct(K.margin)} מרווח · צוות ${pct(K.teamMargin)}`,`${pct(K.margin)} margin · team ${pct(K.teamMargin)}`)}]});
+  const m={steps,urgent,dep};
+  const close=typeof nxHasUpcoming==='function'&&!nxHasUpcoming(ts)?nxCloseCard(ts):'';
+  /* empty cards add noise: show the week only when tasks exist, forms only when some are pending */
+  const wk=dbTasks(ts,400).length?dbWeekCard(ts):'',fm=dbFormsPending(ts).rows.length?dbFormsCard(ts):'';
+  return `<div class="hc${hpAnim()?' anim':''}">${hero}
+   <div class="hc-grid">
+    <div class="hc-c7">${hcToday(m,{cls:'nx-card',title:L('הצעדים הבאים שלי','My next steps')})}</div>
+    <div class="hc-c5">${close}${wk}${fm}</div>
+    <div class="hc-c12">${dbPipelineCard(ts)}</div>
+    <div class="hc-c12">${hcDepartures(m)}</div>
+   </div></div>`;
+}
+
+/* every role gets the command-center language: owner, accountant, agents */
+{const h1=VIEWS.home;VIEWS.home=function(){return isMgr()?hcHome():isAcct()?hcAcct():isAgent()?hcAgent():h1.apply(this,arguments);};}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="hc-q"]');if(!b)return;
   S.tab='quotes';S.qtab=b.dataset.v||'all';S.page=0;render();window.scrollTo(0,0);});
 
@@ -152,8 +216,10 @@ TESTS.push({name:'hc home command center',run:h=>{const out=[];const r0=S.role,l
   if(m.dep.some((t,i)=>i&&t.dep<m.dep[i-1].dep))out.push('departures not sorted');
   for(const lang of ['en','he']){S.lang=lang;const hh=VIEWS.home();h.chk(hh,'hc '+lang);if(lang==='en')h.scan(hh,'hc');
     if(!hh.includes('ptiles'))out.push('hero lost ptiles (tour target)');if(!hh.includes('hc-today'))out.push('no today card');}
-  S.role='accountant';if(VIEWS.home().includes('hc-hero'))out.push('accountant got the owner home');
-  S.role='Priya';if(VIEWS.home().includes('hc-hero'))out.push('agent got the owner home');
+  for(const lang of ['en','he']){S.lang=lang;
+    S.role='accountant';{const hh=VIEWS.home();h.chk(hh,'hc acct '+lang);if(lang==='en')h.scan(hh,'hc acct');if(!hh.includes('hc-acct')||hh.includes('ptiles'))out.push('accountant home');}
+    for(const ag of AGENTS){S.role=ag;const hh=VIEWS.home();h.chk(hh,'hc agent '+ag+' '+lang);if(lang==='en')h.scan(hh,'hc agent');if(!hh.includes('hc-agent')||hh.includes('hc-acct'))out.push('agent home '+ag);}}
+  S.lang='en';S.role='accountant';{const P=portfolio(visibleTrips()),ar=daArNext30();if(!VIEWS.home().includes(usd(ar.total)))out.push('accountant hero lacks the 30-day figure');if(P.col>P.rev)out.push('collected above revenue');}
   S.role=r0;S.lang=l0;return out;}});
 
 /* developer notes for the redesigned owner home (replaces the entry in s11_spec.js) */
@@ -172,3 +238,8 @@ SPEC['home:manager']={title:'Home, owner (command center)',
   status:'pilot',api:['GET /v1/t/{tenantId}/dashboard/owner (proposed)','GET /v1/t/{tenantId}/reports/trip-pnl','GET /v1/t/{tenantId}/trips?from=today&limit=8 (proposed)'],
   tests:['TEST hc home command center','TEST db manager and agent dashboards'],
   code:['v6/s12_home.js: hcHome, hcModel, hcHero, hcToday, hcProfit, hcDepartures, hcPipeline, hcCash, hcTeam, hcStudio','v6/m_home.css']};
+
+/* developer notes: the accountant and agent homes now render through the shared hero (hcShell) */
+['home:accountant','home:agent'].forEach(k=>{const e=SPEC[k];if(!e)return;const fn=k==='home:agent'?'hcAgent':'hcAcct';
+  e.code=[`v6/s12_home.js: ${fn}, hcShell`].concat((e.code||[]).filter(c=>!/s12_home/.test(c))).slice(0,8);
+  e.tests=['TEST hc home command center'].concat((e.tests||[]).filter(x=>x!=='TEST hc home command center')).slice(0,8);});

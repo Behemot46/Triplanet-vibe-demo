@@ -162,10 +162,12 @@ The money to collect and pay: receivables, payables schedule, documents to issue
 - `GET /v1/t/{tenantId}/commissions`
 
 **Tests**
+- `TEST hc home command center`
 - `TEST da accountant dashboard`
 - `check6.js: every view renders for each role in EN and HE`
 
 **Code**
+- `v6/s12_home.js: hcAcct, hcShell`
 - `v6/s10_dacct.js: dbAcct, daArNext30, daOverdue, daBillsToApprove, daMonthEnd`
 - `v6/s5_fin.js: gapStats`
 
@@ -205,10 +207,12 @@ One agent: own quote pipeline, next departures with readiness, tasks due this we
 - `GET /v1/t/{tenantId}/reports/agent-numbers (proposed)`
 
 **Tests**
+- `TEST hc home command center`
 - `TEST db manager and agent dashboards`
 - `check6.js: every view renders for each role in EN and HE`
 
 **Code**
+- `v6/s12_home.js: hcAgent, hcShell`
 - `v6/s10_dash.js: dbAgent, dbAgentKpis, dbWeekCard, dbNumbersCard, dbFormsCard`
 
 ## Pages

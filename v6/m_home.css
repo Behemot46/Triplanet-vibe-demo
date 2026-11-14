@@ -213,3 +213,18 @@ button.hc-kpi:hover{background:rgba(255,255,255,.14)}
 .hc-btn{white-space:nowrap}
 .hc-studio .pill{background:rgba(93,252,224,.16);color:var(--mint)}
 @media (max-width:600px){.hc-btn{padding:11px 12px;font-size:13.5px}}
+
+/* the header and its gear menu always sit above page content (the hero makes its own stacking context) */
+.topbar{z-index:60}
+.topbar .mwrap .menu{z-index:61}
+.hc-hero{z-index:0}
+/* phones: the header must not clip the gear menu (it used to scroll sideways and cut the menu at 72 px) */
+@media (max-width:900px){.topbar{overflow:visible!important}.topbar .mwrap .menu{position:absolute;max-height:calc(100vh - 90px);overflow:auto;inset-inline-end:0;inset-inline-start:auto;width:min(290px,calc(100vw - 24px))}}
+.menu-ver{padding:8px 10px 4px;margin-top:4px;border-top:1px dashed var(--line);font:600 11.5px var(--f-ui);color:var(--muted);letter-spacing:.02em}
+
+@media (min-width:601px){.hc-rail{grid-auto-columns:minmax(230px,290px)}}
+.hc .card{margin:0}.hc .nx-card{margin:0}
+.hc-kpi.on{background:rgba(255,255,255,.2);border-color:var(--mint)}
+.hc-kpi.warn b{color:#FFD666}
+.hc-pill.blue{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+@media (max-width:600px){.hc .da-tbl td,.hc .da-tbl th{white-space:nowrap}}
