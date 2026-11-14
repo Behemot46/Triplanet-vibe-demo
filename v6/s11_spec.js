@@ -19,10 +19,11 @@ const devVisible=()=>devOn()&&!(S.meet>=0)&&!(S.tour>=0)&&!dvAttract();
 
 /* which entry describes the screen on show: an open modal or drawer wins, then role home, trip tab, page */
 function specKey(){
+  if(S.pv&&S.pv.k)return 'portal:'+S.pv.k+':'+S.pv.tab;
   if(S.form)return 'modal:form';
   if(S.tab==='suppliers'&&S.supId)return 'drawer:supplier';
   if(S.tab==='clients'&&S.cliId)return 'drawer:client';
-  if(S.tab==='home')return 'home:'+(isMgr()?'manager':isAcct()?'accountant':'agent');
+  if(S.tab==='home')return 'home:'+(isMgr()?'manager':isAcct()?'accountant':isOps()?'ops':'agent');
   if(S.tab==='trip'){const pt=S.ptab==='ops'?'odash':S.ptab;
     /* sub-views have their own entries: plan by day/components/map, proposal pdf/table/landing */
     const sub=pt==='plan'?(S.tbView||'day'):pt==='quote'?({table:'table',landing:'landing'}[S.prFmt]||'pdf'):'';

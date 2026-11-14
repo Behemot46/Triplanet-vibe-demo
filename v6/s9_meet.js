@@ -39,7 +39,7 @@ meetSetCut(3);
 const meetIs=id=>S.meet>=0&&!!MEET[S.meet]&&MEET[S.meet].id===id;
 const meetLen=()=>MEET_CUT===10?'10:00':MEET_CUT===1?'1:00':'3:00';
 function meetGo(i){MEET_LAST_SCROLL=-1;
-  S.meet=Math.max(0,Math.min(MEET.length-1,i));S.menu=false;S.chen=false;S.tour=-1;
+  S.meet=Math.max(0,Math.min(MEET.length-1,i));S.menu=false;S.chen=false;S.tour=-1;S.pv=null;
   MEET[S.meet].go();window.scrollTo(0,0);render();
 }
 function meetStart(c){if(c)meetSetCut(c);resetDemo();S.meet=0;MEET_T0=Date.now();clearInterval(MEET_TICK);MEET_TICK=setInterval(meetClock,1000);meetGo(0);}

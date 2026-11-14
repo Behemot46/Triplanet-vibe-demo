@@ -61,13 +61,15 @@ function genStaff(){
   const out=[{key:'manager',en:'Ella Brooks',he:'אלה ברוקס',role:'owner',email:'ella.brooks@redbudtours.example',phone:'918-555-0101',target:null,active:true},
     {key:'accountant',en:'Nora Kim',he:'נורה קים',role:'accountant',email:'nora.kim@redbudtours.example',phone:'918-555-0102',target:null,active:true}];
   AGENTS.forEach((a,i)=>out.push({key:a,en:AGE[a],he:AGN[a],role:'agent',email:AGE[a].toLowerCase().replace(/[^a-z]+/g,'.')+'@redbudtours.example',phone:'918-555-01'+String(10+i),target:STAFF_TARGET[a],active:true}));
+  /* v8.4: the operations coordinator, a real person behind the "Ops desk" queue (tasks keep who:'Ops desk') */
+  out.push({key:'ops',en:'Kelsey Dawson',he:'קלסי דוסון',role:'ops',email:'kelsey.dawson@redbudtours.example',phone:'918-555-0103',target:null,active:true});
   out.push({key:'Ops desk',en:'Ops desk',he:'צוות תפעול',role:'ops',email:'ops@redbudtours.example',phone:'918-555-0100',target:null,active:true});
   return out;
 }
 const STAFF=genStaff(),STAFF_BY={};
 const staffIndex=()=>{Object.keys(STAFF_BY).forEach(k=>delete STAFF_BY[k]);STAFF.forEach(s=>{STAFF_BY[s.key]=s;});};
 staffIndex();
-const ROLES={owner:{en:'Owner',he:'בעלים'},admin:{en:'Admin',he:'מנהל/ת מערכת'},agent:{en:'Agent',he:'סוכן/ת'},accountant:{en:'Accountant',he:'חשב/ת'}};
+const ROLES={owner:{en:'Owner',he:'בעלים'},admin:{en:'Admin',he:'מנהל/ת מערכת'},agent:{en:'Agent',he:'סוכן/ת'},accountant:{en:'Accountant',he:'חשב/ת'},ops:{en:'Operations',he:'תפעול'}};
 /* role of a role key (S.role) or staff key: manager -> owner, accountant -> accountant, agents -> agent */
 const roleOf=key=>{const s=STAFF_BY[key];return s&&ROLES[s.role]?s.role:'agent';};
 function staffUpdate(key,patch){const s=STAFF_BY[key];if(!s)return null;Object.assign(s,patch||{});return s;}
@@ -94,7 +96,9 @@ const PERM_ROWS=[
   ['users.manage','users','Manage users','ניהול משתמשים',1,1,0],['users.roles','users','Edit roles and permissions','עריכת תפקידים והרשאות',1,1,1],['settings.edit','users','Edit agency settings','עריכת הגדרות הסוכנות',1,1,0],
   ['settings.stages','users','Customize project stages','התאמת שלבי פרויקט',1,1,0],['forms.build','users','Build traveler forms','בניית טפסים לנוסעים',0,1,0],
   ['ai.maya','ai','Use Maya, the AI assistant','שימוש במאיה, העוזרת החכמה',0,0,0],['ai.live','ai','Use live AI answers','שימוש בתשובות AI חיות',0,0,0]];
-const PERMS=PERM_ROWS.map(r=>({k:r[0],group:r[1],en:r[2],he:r[3],owner:true,admin:!r[6],agent:!r[4],accountant:!r[5]}));
+/* v8.4: the operations coordinator sees every file and edits only operations (spec-v8.4 §2.1) */
+const OPS_PERMS=new Set(['proj.viewAll','price.seeCost','ops.tasks','ops.manifest','ops.suppliers','ops.blocks','ops.messages','sup.edit','cli.view','forms.build','ai.maya','ai.live']);
+const PERMS=PERM_ROWS.map(r=>({k:r[0],group:r[1],en:r[2],he:r[3],owner:true,admin:!r[6],agent:!r[4],accountant:!r[5],ops:OPS_PERMS.has(r[0])}));
 const PERM_BY={};PERMS.forEach(p=>{PERM_BY[p.k]=p;});
 /* can(k): the current role (S.role) from the S.perms override ({role:{perm:bool}}, set by the settings screen) else the defaults */
 function can(k){
@@ -165,7 +169,7 @@ TESTS.push({name:'people data',run:h=>{const out=[],S=h.S;
   if(!can('users.manage')||can('fin.view')||!can('price.edit'))out.push('S.perms override');S.perms=undefined;
   if(can('nope.x')!==false)out.push('unknown perm');
   const st=STAFF_BY.accountant;if(!st||st.en!=='Nora Kim'||st.role!=='accountant'||!/[֐-׿]/.test(st.he))out.push('Nora Kim');
-  if(STAFF.length!==9)out.push('staff count '+STAFF.length);
+  if(STAFF.length!==10)out.push('staff count '+STAFF.length);
   AGENTS.forEach(a=>{const s=STAFF_BY[a];if(!s||!(s.target>0)||s.en!==AGE[a]||s.he!==AGN[a])out.push('agent staff '+a);});
   STAFF.forEach(s=>{if(!/\.example$/.test(s.email))out.push('staff email '+s.key);});
   /* clients */
@@ -220,3 +224,10 @@ TESTS.push({name:'people travelers+blocks',run:h=>{const out=[];
     if(!(b.attrition>=0&&b.attrition<=100))out.push('attrition '+t.id);});
   if(!TRIPS.some(t=>blockOf(t).exposure>0))out.push('no exposure example');
   return out;}});
+
+/* ---------- v8.4: field staff for the tour director run sheet (fictional people) ---------- */
+const GUIDES=[
+  {id:'wade',en:'Wade Turner',he:'וייד טרנר',role:{en:'Tour director',he:'מנהל טיול'},phone:'918-555-0177',email:'wade.turner@redbudtours.example',trips:['nas','bra','nia','dc1']},
+  {id:'cody',en:'Cody Harper',he:'קודי הארפר',role:{en:'Driver-guide',he:'נהג ומדריך'},phone:'918-555-0178',email:'cody.harper@redbudtours.example',trips:['gre','hl2']}];
+const GUIDE_BY={};GUIDES.forEach(g=>{GUIDE_BY[g.id]=g;});
+const guideOfTrip=id=>GUIDES.find(g=>g.trips.includes(id))||null;

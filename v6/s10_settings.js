@@ -38,7 +38,7 @@ const stPreviewLine=()=>{const p=stPreview();
   return `<span>${L('תאריך','Date')}: <b><bdi>${p.date}</bdi></b></span><span>${L('שעה','Time')}: <b><bdi>${p.time}</bdi></b></span><span>${L('סכום','Amount')}: <b><bdi>${p.money}</bdi></b></span><span>${L('עמלת שירות','Service fee')} <bdi>${p.fee}</bdi> + ${L('מס מכירה','sales tax')} <bdi>${ST_ORG.tax}%</bdi> = <b><bdi>${p.total}</bdi></b></span>`;};
 
 /* ---------- permissions ---------- */
-const ST_ROLES=['owner','admin','agent','accountant'];
+const ST_ROLES=['owner','admin','agent','accountant','ops'];
 /* exactly the keys the code checks with can() (a TEST in s11_fix.js pins the list): pages, approvals, document issue, supplier work, clients, settings, forms */
 const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','settings.stages','price.edit','forms.build','sup.edit','sup.swap','ops.suppliers','cli.edit'];
 PERSIST.push({key:'st-perms',get:()=>S.perms?JSON.parse(JSON.stringify(S.perms)):null,set:v=>{S.perms=v&&typeof v==='object'?v:null;},reset:()=>{S.perms=null;}});
@@ -203,8 +203,8 @@ TESTS.push({name:'st settings',run:h=>{const out=[],S=h.S,role0=S.role,lang0=S.l
       const ro=!can('settings.edit');if(ro!==html.includes('st-ro'))out.push(`read-only note mismatch ${role} ${tb}`);
       if(tb==='roles'&&ro&&(html.match(/<input type="checkbox" class="st-tg"[^>]*>/g)||[]).some(x=>!/disabled/.test(x)))out.push('read-only matrix has an enabled toggle for '+role);});});});
   S.lang='en';S.role='manager';S.stSub='roles';
-  /* 40 x 4 = 160 toggles; 13 enforced tags, no matrix-only tags; owner column locked on */
-  {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==160)out.push('toggles '+n);
+  /* 40 x 5 = 200 toggles (v8.4: operations column); 13 enforced tags, no matrix-only tags; owner column locked on */
+  {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==200)out.push('toggles '+n);
     if(count(html,'class="st-mx"')!==0)out.push('matrix-only tags '+count(html,'class="st-mx"'));
     if((html.match(/pill ok/g)||[]).length!==ST_ENFORCED.length)out.push('enforced tags');
     const own=html.match(/<input type="checkbox" class="st-tg"[^>]*data-role="owner"[^>]*>/g)||[];if(own.length!==40||own.some(x=>!/checked/.test(x)||!/disabled/.test(x)))out.push('owner column not locked on');}

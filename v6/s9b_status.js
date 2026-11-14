@@ -25,11 +25,16 @@ const FEAT=[
   ['pnl','pilot','chart2',['רווח והפסד לטיול','Trip P&L'],['רווח מתוכנן מול צפוי לכל טיול ולכל העונה.','Planned against expected profit for every trip and for the season.'],'finance'],
   ['fx','pilot','cash',['מטבעות ושער נעול','Currencies and a locked rate'],['עלויות ב-EUR, GBP או CAD, עם שער נעול לכל טיול.','Costs in EUR, GBP or CAD, with a locked rate per trip.'],null],
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
+  // v8.4 (14 Nov 2026): the ops coordinator works on existing data; the external portals are previews until the product team confirms
+  ['opsrole','pilot','checklist',['תצוגה לרכז/ת התפעול','Operations coordinator view'],['מוכנות יציאות, משימות, ספקים לאישור, בלוקים של חדרים וטפסים חסרים, במסך אחד.','Departure readiness, tasks, suppliers to confirm, room blocks and missing forms, on one screen.'],null],
   // Roadmap: planned, not available yet
   
   ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
   ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
   ['trust','roadmap','shield',['דוחות חשבון נאמנות','Trust account reports'],['לחוקי Seller of Travel במדינות ארה״ב.','For US Seller of Travel rules.'],null],
+  ['pleader','roadmap','users2',['פורטל לראש הקבוצה','Group leader portal'],['הצעה לאישור, מסלול, תשלומים לפי משק בית, טפסים והודעות עם הסוכן.','Proposal to accept, itinerary, payments by household, forms and messages with the agent.'],null],
+  ['ptrav','roadmap','idcard',['אפליקציה לנוסע','Traveler app'],['התשלום שלי, הטפסים שלי, תוכנית יום אחר יום ואנשי קשר לחירום, בטלפון.','My payment, my forms, a day-by-day plan and emergency contacts, on the phone.'],null],
+  ['psup','roadmap','suppliers',['פורטל לספקים','Supplier portal'],['אישור הזמנות, רשימת חדרים, חשבוניות ומענה לשאלות על חשבונית.','Confirm bookings, rooming lists, invoices and answers to invoice queries.'],null],
   ['guide','roadmap','users2',['אפליקציה למדריך','Guide mobile app'],['מסלול, רשימת נוסעים ושוברים בטלפון.','Itinerary, passenger list and vouchers on the phone.'],null],
 ];
 const ST_META={live:[['זמין','Live'],'green'],pilot:[['פיילוט','Pilot'],'info'],roadmap:[['בתכנון','Roadmap'],'amber']};

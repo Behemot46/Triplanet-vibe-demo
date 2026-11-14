@@ -264,7 +264,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const el=e.target,k=el.dataset.ch;if(!k)return;
   const v=el.dataset.v,val=el.value,t=T();
-  if(k==='role'){S.role=val;S.fAgent='All';}
+  if(k==='role'){if(/^pv:/.test(val)&&typeof pvOpen==='function'){pvOpen(val.slice(3));}else{S.pv=null;S.role=val;S.fAgent='All';}}
   else if(k==='name')t.name=val.trim()||t.name;
   else if(k==='pct')t.pct=Math.min(100,Math.max(0,+val||0));
   else if(k==='mk')t.markups[v]=Math.min(90,Math.max(0,+val||0));

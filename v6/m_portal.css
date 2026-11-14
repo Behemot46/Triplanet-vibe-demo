@@ -1,0 +1,54 @@
+/* ---------- v8.4 portal frame (s13_portal.js): minimal, mobile-first shell for external viewpoints ---------- */
+.pv{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--f-ui);display:flex;flex-direction:column}
+.pv .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pv-top{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--panel);border-bottom:1px dashed var(--line);position:sticky;top:0;z-index:30}
+.pv-top .grow{flex:1}
+.pv-top .avatar{width:34px;height:34px}
+.pv-ag{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);white-space:nowrap}
+.pv-agb{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;font-style:normal;font-weight:800;font-size:15px}
+.pv-pn{color:var(--muted);font-weight:600;white-space:nowrap;padding-inline-start:10px;border-inline-start:1px solid var(--line)}
+.pv-rib{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 20px;background:linear-gradient(90deg,var(--hero1),var(--hero2));color:var(--hero-ink);font-size:13.5px}
+.pv-rib .pv-rt{display:inline-flex;align-items:center;gap:6px}
+.pv-rib .pv-rt b{color:var(--mint)}
+.pv-rib .pv-rt .ic,.pv-rib .pv-rt svg{color:var(--mint)}
+.pv-rib select{max-width:240px;background:rgba(255,255,255,.1);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 8px;font:inherit;font-size:13px}
+.pv-rib select option,.pv-rib select optgroup{color:var(--ink);background:var(--panel)}
+.pv-rib .pv-sw{margin-inline-start:auto}
+.pv-rib .pv-back{padding:6px 12px;font-size:13px}
+.pv-tabs{display:flex;gap:4px;padding:8px 20px 0;max-width:960px;width:100%;margin:0 auto;box-sizing:border-box;border-bottom:1px solid var(--line)}
+.pv-tb{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pv-tb.on{color:var(--primary);border-bottom-color:var(--primary)}
+.pv-tb:hover{color:var(--ink)}
+.pv-main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:18px 20px 28px;box-sizing:border-box}
+.pv-main>*+*{margin-top:16px}
+.pv-foot{text-align:center;padding:14px 20px 22px}
+/* plan: a timeline shared by leader, traveler and tour director */
+.pv-tl{list-style:none;margin:6px 0 0;padding:0}
+.pv-st{display:grid;grid-template-columns:72px 30px 1fr auto;align-items:start;gap:4px 10px;padding:9px 0;border-top:1px dashed var(--line)}
+.pv-st:first-child{border-top:0}
+.pv-tm{display:flex;flex-direction:column;font-family:var(--f-num);line-height:1.2}
+.pv-tm b{font-size:14px}.pv-tm small{color:var(--muted);font-size:12px}
+.pv-dot{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--recess);color:var(--primary)}
+.pv-st.k-travel .pv-dot{color:var(--blue)}.pv-st.k-meal .pv-dot{color:var(--orange)}.pv-st.k-free .pv-dot{color:var(--green)}
+.pv-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pv-tx small{color:var(--muted)}
+.pv-st.done .pv-tx b{text-decoration:line-through;color:var(--muted)}
+.pv-today{outline:2px solid var(--primary-light);outline-offset:-2px}
+.pv-hot{display:inline-flex;align-items:center;gap:4px}
+/* phones: bottom tab bar, tighter frame */
+@media (max-width:720px){
+  .pv-top{padding:8px 12px;gap:8px}
+  .pv-pn{display:none}
+  .pv-rib{padding:8px 12px;font-size:12.5px}
+  .pv-rib .pv-sw{margin-inline-start:0}
+  .pv-rib select{max-width:100%}
+  .pv-hastabs .pv-main{padding:14px 12px 92px}
+  .pv-main{padding:14px 12px 24px}
+  .pv-tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;margin:0;max-width:none;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);border-bottom:0;justify-content:space-around;box-shadow:0 -6px 18px -12px rgba(0,0,0,.3)}
+  .pv-tb{flex:1;flex-direction:column;gap:2px;padding:6px 2px;font-size:11px;border-bottom:0;margin:0;min-width:0}
+  .pv-tb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .pv-tb.on{border-bottom:0}
+  .pv-hastabs .pv-foot{padding-bottom:86px}
+  .pv-st{grid-template-columns:58px 26px 1fr;}
+  .pv-st .pv-tick{grid-column:3;justify-self:start}
+}

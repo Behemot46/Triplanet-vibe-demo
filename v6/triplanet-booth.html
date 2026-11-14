@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Triplanet Demo v8.3</title>
+<title>Triplanet Demo v8.4</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Triplanet booth demo: group tour operations with automatic supplier invoice checking.">
 <style>
@@ -1694,6 +1694,61 @@ button.pj-status{border:0;cursor:pointer}
 .op-tot strong{font:700 20px var(--f-num)}
 .op-btbl td{vertical-align:top}
 @media (max-width:600px){.op-fg>.small{min-width:100%}.op-tot{align-items:flex-start}}
+
+/* ---------- v8.4 portal frame (s13_portal.js): minimal, mobile-first shell for external viewpoints ---------- */
+.pv{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--f-ui);display:flex;flex-direction:column}
+.pv .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pv-top{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--panel);border-bottom:1px dashed var(--line);position:sticky;top:0;z-index:30}
+.pv-top .grow{flex:1}
+.pv-top .avatar{width:34px;height:34px}
+.pv-ag{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);white-space:nowrap}
+.pv-agb{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;font-style:normal;font-weight:800;font-size:15px}
+.pv-pn{color:var(--muted);font-weight:600;white-space:nowrap;padding-inline-start:10px;border-inline-start:1px solid var(--line)}
+.pv-rib{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 20px;background:linear-gradient(90deg,var(--hero1),var(--hero2));color:var(--hero-ink);font-size:13.5px}
+.pv-rib .pv-rt{display:inline-flex;align-items:center;gap:6px}
+.pv-rib .pv-rt b{color:var(--mint)}
+.pv-rib .pv-rt .ic,.pv-rib .pv-rt svg{color:var(--mint)}
+.pv-rib select{max-width:240px;background:rgba(255,255,255,.1);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 8px;font:inherit;font-size:13px}
+.pv-rib select option,.pv-rib select optgroup{color:var(--ink);background:var(--panel)}
+.pv-rib .pv-sw{margin-inline-start:auto}
+.pv-rib .pv-back{padding:6px 12px;font-size:13px}
+.pv-tabs{display:flex;gap:4px;padding:8px 20px 0;max-width:960px;width:100%;margin:0 auto;box-sizing:border-box;border-bottom:1px solid var(--line)}
+.pv-tb{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pv-tb.on{color:var(--primary);border-bottom-color:var(--primary)}
+.pv-tb:hover{color:var(--ink)}
+.pv-main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:18px 20px 28px;box-sizing:border-box}
+.pv-main>*+*{margin-top:16px}
+.pv-foot{text-align:center;padding:14px 20px 22px}
+/* plan: a timeline shared by leader, traveler and tour director */
+.pv-tl{list-style:none;margin:6px 0 0;padding:0}
+.pv-st{display:grid;grid-template-columns:72px 30px 1fr auto;align-items:start;gap:4px 10px;padding:9px 0;border-top:1px dashed var(--line)}
+.pv-st:first-child{border-top:0}
+.pv-tm{display:flex;flex-direction:column;font-family:var(--f-num);line-height:1.2}
+.pv-tm b{font-size:14px}.pv-tm small{color:var(--muted);font-size:12px}
+.pv-dot{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--recess);color:var(--primary)}
+.pv-st.k-travel .pv-dot{color:var(--blue)}.pv-st.k-meal .pv-dot{color:var(--orange)}.pv-st.k-free .pv-dot{color:var(--green)}
+.pv-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pv-tx small{color:var(--muted)}
+.pv-st.done .pv-tx b{text-decoration:line-through;color:var(--muted)}
+.pv-today{outline:2px solid var(--primary-light);outline-offset:-2px}
+.pv-hot{display:inline-flex;align-items:center;gap:4px}
+/* phones: bottom tab bar, tighter frame */
+@media (max-width:720px){
+  .pv-top{padding:8px 12px;gap:8px}
+  .pv-pn{display:none}
+  .pv-rib{padding:8px 12px;font-size:12.5px}
+  .pv-rib .pv-sw{margin-inline-start:0}
+  .pv-rib select{max-width:100%}
+  .pv-hastabs .pv-main{padding:14px 12px 92px}
+  .pv-main{padding:14px 12px 24px}
+  .pv-tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;margin:0;max-width:none;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);border-bottom:0;justify-content:space-around;box-shadow:0 -6px 18px -12px rgba(0,0,0,.3)}
+  .pv-tb{flex:1;flex-direction:column;gap:2px;padding:6px 2px;font-size:11px;border-bottom:0;margin:0;min-width:0}
+  .pv-tb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .pv-tb.on{border-bottom:0}
+  .pv-hastabs .pv-foot{padding-bottom:86px}
+  .pv-st{grid-template-columns:58px 26px 1fr;}
+  .pv-st .pv-tick{grid-column:3;justify-self:start}
+}
 
 /* v8 module pr: proposal formats and pricing extras */
 .pr-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -3735,13 +3790,15 @@ function genStaff(){
   const out=[{key:'manager',en:'Ella Brooks',he:'אלה ברוקס',role:'owner',email:'ella.brooks@redbudtours.example',phone:'918-555-0101',target:null,active:true},
     {key:'accountant',en:'Nora Kim',he:'נורה קים',role:'accountant',email:'nora.kim@redbudtours.example',phone:'918-555-0102',target:null,active:true}];
   AGENTS.forEach((a,i)=>out.push({key:a,en:AGE[a],he:AGN[a],role:'agent',email:AGE[a].toLowerCase().replace(/[^a-z]+/g,'.')+'@redbudtours.example',phone:'918-555-01'+String(10+i),target:STAFF_TARGET[a],active:true}));
+  /* v8.4: the operations coordinator, a real person behind the "Ops desk" queue (tasks keep who:'Ops desk') */
+  out.push({key:'ops',en:'Kelsey Dawson',he:'קלסי דוסון',role:'ops',email:'kelsey.dawson@redbudtours.example',phone:'918-555-0103',target:null,active:true});
   out.push({key:'Ops desk',en:'Ops desk',he:'צוות תפעול',role:'ops',email:'ops@redbudtours.example',phone:'918-555-0100',target:null,active:true});
   return out;
 }
 const STAFF=genStaff(),STAFF_BY={};
 const staffIndex=()=>{Object.keys(STAFF_BY).forEach(k=>delete STAFF_BY[k]);STAFF.forEach(s=>{STAFF_BY[s.key]=s;});};
 staffIndex();
-const ROLES={owner:{en:'Owner',he:'בעלים'},admin:{en:'Admin',he:'מנהל/ת מערכת'},agent:{en:'Agent',he:'סוכן/ת'},accountant:{en:'Accountant',he:'חשב/ת'}};
+const ROLES={owner:{en:'Owner',he:'בעלים'},admin:{en:'Admin',he:'מנהל/ת מערכת'},agent:{en:'Agent',he:'סוכן/ת'},accountant:{en:'Accountant',he:'חשב/ת'},ops:{en:'Operations',he:'תפעול'}};
 /* role of a role key (S.role) or staff key: manager -> owner, accountant -> accountant, agents -> agent */
 const roleOf=key=>{const s=STAFF_BY[key];return s&&ROLES[s.role]?s.role:'agent';};
 function staffUpdate(key,patch){const s=STAFF_BY[key];if(!s)return null;Object.assign(s,patch||{});return s;}
@@ -3768,7 +3825,9 @@ const PERM_ROWS=[
   ['users.manage','users','Manage users','ניהול משתמשים',1,1,0],['users.roles','users','Edit roles and permissions','עריכת תפקידים והרשאות',1,1,1],['settings.edit','users','Edit agency settings','עריכת הגדרות הסוכנות',1,1,0],
   ['settings.stages','users','Customize project stages','התאמת שלבי פרויקט',1,1,0],['forms.build','users','Build traveler forms','בניית טפסים לנוסעים',0,1,0],
   ['ai.maya','ai','Use Maya, the AI assistant','שימוש במאיה, העוזרת החכמה',0,0,0],['ai.live','ai','Use live AI answers','שימוש בתשובות AI חיות',0,0,0]];
-const PERMS=PERM_ROWS.map(r=>({k:r[0],group:r[1],en:r[2],he:r[3],owner:true,admin:!r[6],agent:!r[4],accountant:!r[5]}));
+/* v8.4: the operations coordinator sees every file and edits only operations (spec-v8.4 §2.1) */
+const OPS_PERMS=new Set(['proj.viewAll','price.seeCost','ops.tasks','ops.manifest','ops.suppliers','ops.blocks','ops.messages','sup.edit','cli.view','forms.build','ai.maya','ai.live']);
+const PERMS=PERM_ROWS.map(r=>({k:r[0],group:r[1],en:r[2],he:r[3],owner:true,admin:!r[6],agent:!r[4],accountant:!r[5],ops:OPS_PERMS.has(r[0])}));
 const PERM_BY={};PERMS.forEach(p=>{PERM_BY[p.k]=p;});
 /* can(k): the current role (S.role) from the S.perms override ({role:{perm:bool}}, set by the settings screen) else the defaults */
 function can(k){
@@ -3839,7 +3898,7 @@ TESTS.push({name:'people data',run:h=>{const out=[],S=h.S;
   if(!can('users.manage')||can('fin.view')||!can('price.edit'))out.push('S.perms override');S.perms=undefined;
   if(can('nope.x')!==false)out.push('unknown perm');
   const st=STAFF_BY.accountant;if(!st||st.en!=='Nora Kim'||st.role!=='accountant'||!/[֐-׿]/.test(st.he))out.push('Nora Kim');
-  if(STAFF.length!==9)out.push('staff count '+STAFF.length);
+  if(STAFF.length!==10)out.push('staff count '+STAFF.length);
   AGENTS.forEach(a=>{const s=STAFF_BY[a];if(!s||!(s.target>0)||s.en!==AGE[a]||s.he!==AGN[a])out.push('agent staff '+a);});
   STAFF.forEach(s=>{if(!/\.example$/.test(s.email))out.push('staff email '+s.key);});
   /* clients */
@@ -3894,6 +3953,13 @@ TESTS.push({name:'people travelers+blocks',run:h=>{const out=[];
     if(!(b.attrition>=0&&b.attrition<=100))out.push('attrition '+t.id);});
   if(!TRIPS.some(t=>blockOf(t).exposure>0))out.push('no exposure example');
   return out;}});
+
+/* ---------- v8.4: field staff for the tour director run sheet (fictional people) ---------- */
+const GUIDES=[
+  {id:'wade',en:'Wade Turner',he:'וייד טרנר',role:{en:'Tour director',he:'מנהל טיול'},phone:'918-555-0177',email:'wade.turner@redbudtours.example',trips:['nas','bra','nia','dc1']},
+  {id:'cody',en:'Cody Harper',he:'קודי הארפר',role:{en:'Driver-guide',he:'נהג ומדריך'},phone:'918-555-0178',email:'cody.harper@redbudtours.example',trips:['gre','hl2']}];
+const GUIDE_BY={};GUIDES.forEach(g=>{GUIDE_BY[g.id]=g;});
+const guideOfTrip=id=>GUIDES.find(g=>g.trips.includes(id))||null;
 
 
 /* ---------- labels ---------- */
@@ -4141,31 +4207,32 @@ function LOC(){try{return S.lang==='en'?'en-US':'he-IL';}catch(e){return 'he-IL'
 const S0=()=>({lang:'en',role:'manager',tab:'home',ptab:'costs',tripId:'hl',qtab:'all',q:'',qseg:'All',sub:'bank',openDay:1,openT:{},tplQ:'',tplDest:'All',
   fSeg:'All',fStage:'All',fAgent:'All',thresh:12,shock:0,chat:[],docGroup:0,docMode:'pay',msgSup:0,ran:false,imported:false,priceExtra:[],
   cats:['Lodging','Transport','Guide','Activities','Meals','Insurance'],draft:null,nid:1,showPP:true,showItems:true,showSched:true,siteSel:0,
-  page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0});
+  page:0,rpp:8,zoom:1,menu:false,tour:-1,chen:false,reading:null,lastMatch:{},disp:null,gF:'open',gK:'All',qg:0,pv:null});
 const S=S0();
 const VER=8,KEY='triplanet-booth-demo-v8';
 /* the demo's version name, shown in the settings menu and the page title (build.py) */
-const DEMO_VERSION='v8.3',DEMO_BUILT='2026-11-14';
+const DEMO_VERSION='v8.4',DEMO_BUILT='2026-11-14';
 const KEEP=['lang','role','tab','ptab','tripId','qtab','qseg','sub','openDay','thresh','shock','chat','docGroup','docMode','msgSup','ran','imported','priceExtra','cats','nid','showPP','showItems','showSched','page','rpp','zoom','lastMatch','gF','gK','qg'];
 function save(){try{const s={};KEEP.forEach(k=>s[k]=S[k]);const X={};PERSIST.forEach(p=>{try{X[p.key]=p.get();}catch(e){}});localStorage.setItem(KEY,JSON.stringify({v:VER,S:s,T:TRIPS,X}));}catch(e){}}
 function load(){try{const raw=localStorage.getItem(KEY);if(!raw)return;const d=JSON.parse(raw);if(!d||d.v!==VER||!Array.isArray(d.T)||!d.T.length)return;TRIPS.splice(0,TRIPS.length,...d.T);Object.assign(S,d.S||{});if(d.X)PERSIST.forEach(p=>{if(d.X[p.key]!==undefined)try{p.set(d.X[p.key]);}catch(e){}});TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>f(t,i)));}catch(e){}}
 function resetDemo(){const keep={lang:S.lang,zoom:S.zoom};TRIPS.splice(0,TRIPS.length,...TRIP_SPECS.map(buildTrip));Object.assign(S,S0(),keep);PERSIST.forEach(p=>{try{p.reset();}catch(e){}});try{localStorage.removeItem(KEY);}catch(e){}}
 const T=()=>TRIPS.find(t=>t.id===S.tripId);
 const byId=id=>TRIPS.find(t=>t.id===id);
-/* roles: owner (key manager), accountant, and the agents. Owner and accountant see every file. */
-const ROLE_KEYS=['manager','accountant',...AGENTS];
+/* roles: owner (key manager), accountant, operations coordinator (v8.4) and the agents. Owner, accountant and ops see every file.
+   External viewpoints (group leader, traveler, supplier, tour director) are NOT roles: they are portals (S.pv, s13_portal.js). */
+const ROLE_KEYS=['manager','accountant',...AGENTS,'ops'];
 const canApprove=()=>typeof can==='function'?can('prop.approve'):isMgr();
 const canIssueDocs=()=>typeof can==='function'?can('fin.issueDocs'):(isMgr()||isAcct());
-const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role);
-const seesAll=()=>isMgr()||isAcct();
-AGN.accountant='נורה קים';AGE.accountant='Nora Kim';
+const isMgr=()=>S.role==='manager',isAcct=()=>S.role==='accountant',isAgent=()=>AGENTS.includes(S.role),isOps=()=>S.role==='ops';
+const seesAll=()=>isMgr()||isAcct()||isOps();
+AGN.accountant='נורה קים';AGE.accountant='Nora Kim';AGN.ops='קלסי דוסון';AGE.ops='Kelsey Dawson';
 const userName=()=>isMgr()?MGR():agn(S.role);
 const noAccess=what=>`<div class="card"><h2>${L('אין הרשאה','No access')}</h2><p class="muted">${what?esc(what)+'. ':''}${L('התפקיד שלך לא כולל את המסך הזה. מנהלת הסוכנות יכולה לשנות הרשאות בהגדרות.','Your role does not include this page. The agency owner can change permissions in Settings.')}</p></div>`;
 const canSee=t=>seesAll()||t.agent===S.role;
 /* pages gated by a permission (can() comes from s1e_people.js); gated views render noAccess() in s9_boot.js */
 /* Hebrew for generic data strings (s11_trdata.js); identity when absent or in English */
 const heDataIf=h=>S.lang==='he'&&typeof heData==='function'?heData(h):h;
-const NAV_PERM={users:'users.manage',books:'fin.sync'};
+const NAV_PERM={users:'users.manage',books:'fin.sync',finance:'fin.view',gaps:'fin.view',leaks:'fin.view'};
 const visibleTrips=()=>TRIPS.filter(canSee);
 function ensureTrip(){const v=visibleTrips();if(!v.find(t=>t.id===S.tripId))S.tripId=v.length?v[0].id:null;if(S.tab==='trip'&&!S.tripId)S.tab='quotes';}
 function toast(msg){const e=document.getElementById('toast');e.textContent=trHe(msg);e.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>e.classList.remove('on'),2200);}
@@ -4185,9 +4252,29 @@ const gate=(t,what)=>`<div class="card"><h2>${what} ${L('נפתח אחרי אי�
 const head=(title,right)=>`<div class="ph"><h1>${title}</h1><div class="row">${right||''}</div></div>`;
 /* staff portraits (v6/s0_avatars.js, generated): looked up by agent key or by the full name in either language */
 const avKey=n=>{n=String(n).trim();if(typeof AVATARS==='undefined')return null;if(AVATARS[n])return n;
-  for(const a of AGENTS)if(n===AGN[a]||n===AGE[a])return a;if(n==='אלה ברוקס'||n==='Ella Brooks')return 'Ella';return null;};
+  for(const a of AGENTS)if(n===AGN[a]||n===AGE[a])return a;if(n==='אלה ברוקס'||n==='Ella Brooks')return 'Ella';
+  const k2=AV_NAMES[n];return k2&&AVATARS[k2]?k2:null;};
+/* v8.4: the new viewpoints' people (AI-generated headshots of people who do not exist) */
+const AV_NAMES={'Kelsey Dawson':'Kelsey','קלסי דוסון':'Kelsey','Rev. Alan Mercer':'Alan','Alan Mercer':'Alan','Linda Garcia':'Linda','Morgan Pratt':'Morgan','Wade Turner':'Wade','וייד טרנר':'Wade'};
 const avatarOf=(n,cls)=>{const k=avKey(n);return k?`<img class="avatar avimg${cls?' '+cls:''}" src="${AVATARS[k]}" alt="" width="40" height="40">`:`<span class="avatar${cls?' '+cls:''}">${esc(trHe(String(n)).trim().charAt(0))}</span>`;};
 const NEWP=()=>pillF(L('חדש','New'),'green');
+
+/* v8.4: one grouped "View as" switcher: agency team, client side, suppliers and field.
+   Portal options carry the value pv:<k> and open that portal with its default person (s13_portal.js). */
+function viewAsSelect(id){
+  const pv=S.pv&&S.pv.k,sel=v=>(pv?('pv:'+pv)===v:S.role===v)?'selected':'';
+  const po=k=>{const P=typeof PORTALS!=='undefined'&&PORTALS[k];if(!P)return '';const d=(P.people().find(x=>x.id===P.def)||P.people()[0]||{name:''});
+    return `<option value="pv:${k}" ${sel('pv:'+k)}>${esc(d.name)} (${L(P.role[0],P.role[1])})</option>`;};
+  return `<select id="${id}" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
+   <optgroup label="${L('צוות הסוכנות','Agency team')}">
+    <option value="manager" ${sel('manager')}>${MGR()} (${L('מנהלת','owner')})</option>
+    <option value="accountant" ${sel('accountant')}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
+    <option value="ops" ${sel('ops')}>${agn('ops')} (${L('תפעול','operations')})</option>
+    ${AGENTS.map(a=>`<option value="${a}" ${sel(a)}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}</optgroup>
+   ${typeof PORTALS!=='undefined'?`<optgroup label="${L('צד הלקוח','Client side')}">${po('leader')}${po('traveler')}</optgroup>
+   <optgroup label="${L('ספקים ושטח','Suppliers and field')}">${po('supplier')}${po('guide')}</optgroup>`:''}
+  </select>`;
+}
 
 /* ---------- shell ---------- */
 /* v8.1: the sidebar is grouped by job. Items not listed in a section go to the last one. */
@@ -4205,6 +4292,7 @@ const FLAG={en:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="tru
   he:`<svg viewBox="0 0 30 20" width="30" height="20" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#d6dbe3" stroke-width=".6"/><rect y="2.2" width="30" height="2.6" fill="#0038b8"/><rect y="15.2" width="30" height="2.6" fill="#0038b8"/><g fill="none" stroke="#0038b8" stroke-width="1"><path d="M15 6.3l3.2 5.5h-6.4z"/><path d="M15 13.7l3.2-5.5h-6.4z"/></g></svg>`};
 let chenAv=(sz)=>`<span class="chenav" style="width:${sz||30}px;height:${sz||30}px">${L('מ','M')}</span>`;
 function render(){
+  if(S.pv&&typeof pvRender==='function'&&typeof PORTALS!=='undefined'&&PORTALS[S.pv.k]){pvRender();return;}
   const y=window.scrollY;ensureTrip();
   const view=S.tab==='trip'?vTrip:VIEWS[S.tab];
   const user=userName();
@@ -4226,11 +4314,7 @@ function render(){
      <button class="btn sm tourbtn" data-act="tourgo" title="${L('סיור מודרך','Guided tour')}">${ic('play')} ${L('סיור מודרך','Guided tour')}</button>
      <span class="grow"></span>
      <label class="small muted" for="role">${L('צפייה כ','View as')}</label>
-     <select id="role" data-ch="role" aria-label="${L('בחירת משתמש','Choose user')}">
-       <option value="manager" ${S.role==='manager'?'selected':''}>${MGR()} (${L('מנהלת','owner')})</option>
-       <option value="accountant" ${isAcct()?'selected':''}>${agn('accountant')} (${L('הנהלת חשבונות','accountant')})</option>
-       ${AGENTS.map(a=>`<option value="${a}" ${S.role===a?'selected':''}>${agn(a)} (${L('סוכן/ת','agent')})</option>`).join('')}
-     </select>
+     ${viewAsSelect('role')}
      <button class="iconb" data-act="go" data-v="quotes" aria-label="${L('חיפוש','Search')}" title="${L('חיפוש','Search')}">${ic('search')}</button>
      <button class="iconb themeb" data-act="theme" aria-label="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}" title="${themeGet()==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}">${ic(themeGet()==='dark'?'sun':'moon')}</button>
      <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
@@ -4291,7 +4375,7 @@ function tourPanel(){
    <div class="tbar"><div style="width:${(S.tour+1)/TOUR.length*100}%"></div></div><h3>${ti}</h3><p>${tx}</p>
    <div class="row" style="justify-content:space-between"><button class="btn" data-act="tourprev" ${S.tour===0?'disabled':''}>${L('הקודם','Back')}</button><button class="btn pri" data-act="${last?'tourend':'tournext'}">${last?L('סיום','Finish'):L('הבא','Next')}</button></div></div>`;
 }
-function tourGo(i){S.tour=i;S.menu=false;S.chen=false;TOUR[i].go();window.scrollTo(0,0);render();}
+function tourGo(i){S.tour=i;S.menu=false;S.chen=false;S.pv=null;TOUR[i].go();window.scrollTo(0,0);render();}
 function tourAfter(){
   if(S.tour<0)return;
   const el=document.querySelector&&document.querySelector(TOUR[S.tour].sel);
@@ -5054,7 +5138,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const el=e.target,k=el.dataset.ch;if(!k)return;
   const v=el.dataset.v,val=el.value,t=T();
-  if(k==='role'){S.role=val;S.fAgent='All';}
+  if(k==='role'){if(/^pv:/.test(val)&&typeof pvOpen==='function'){pvOpen(val.slice(3));}else{S.pv=null;S.role=val;S.fAgent='All';}}
   else if(k==='name')t.name=val.trim()||t.name;
   else if(k==='pct')t.pct=Math.min(100,Math.max(0,+val||0));
   else if(k==='mk')t.markups[v]=Math.min(90,Math.max(0,+val||0));
@@ -6065,11 +6149,16 @@ const FEAT=[
   ['pnl','pilot','chart2',['רווח והפסד לטיול','Trip P&L'],['רווח מתוכנן מול צפוי לכל טיול ולכל העונה.','Planned against expected profit for every trip and for the season.'],'finance'],
   ['fx','pilot','cash',['מטבעות ושער נעול','Currencies and a locked rate'],['עלויות ב-EUR, GBP או CAD, עם שער נעול לכל טיול.','Costs in EUR, GBP or CAD, with a locked rate per trip.'],null],
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
+  // v8.4 (14 Nov 2026): the ops coordinator works on existing data; the external portals are previews until the product team confirms
+  ['opsrole','pilot','checklist',['תצוגה לרכז/ת התפעול','Operations coordinator view'],['מוכנות יציאות, משימות, ספקים לאישור, בלוקים של חדרים וטפסים חסרים, במסך אחד.','Departure readiness, tasks, suppliers to confirm, room blocks and missing forms, on one screen.'],null],
   // Roadmap: planned, not available yet
   
   ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
   ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
   ['trust','roadmap','shield',['דוחות חשבון נאמנות','Trust account reports'],['לחוקי Seller of Travel במדינות ארה״ב.','For US Seller of Travel rules.'],null],
+  ['pleader','roadmap','users2',['פורטל לראש הקבוצה','Group leader portal'],['הצעה לאישור, מסלול, תשלומים לפי משק בית, טפסים והודעות עם הסוכן.','Proposal to accept, itinerary, payments by household, forms and messages with the agent.'],null],
+  ['ptrav','roadmap','idcard',['אפליקציה לנוסע','Traveler app'],['התשלום שלי, הטפסים שלי, תוכנית יום אחר יום ואנשי קשר לחירום, בטלפון.','My payment, my forms, a day-by-day plan and emergency contacts, on the phone.'],null],
+  ['psup','roadmap','suppliers',['פורטל לספקים','Supplier portal'],['אישור הזמנות, רשימת חדרים, חשבוניות ומענה לשאלות על חשבונית.','Confirm bookings, rooming lists, invoices and answers to invoice queries.'],null],
   ['guide','roadmap','users2',['אפליקציה למדריך','Guide mobile app'],['מסלול, רשימת נוסעים ושוברים בטלפון.','Itinerary, passenger list and vouchers on the phone.'],null],
 ];
 const ST_META={live:[['זמין','Live'],'green'],pilot:[['פיילוט','Pilot'],'info'],roadmap:[['בתכנון','Roadmap'],'amber']};
@@ -6297,7 +6386,7 @@ document.addEventListener('click',e=>{
 /* "/" or Ctrl/Cmd+K opens Maya with the cursor in her box */
 document.addEventListener('keydown',e=>{
   const typing=e.target&&e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]');
-  if(((e.key==='/'&&!typing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'))&&!(S.meet>=0)&&!document.getElementById('attract')){
+  if(((e.key==='/'&&!typing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'))&&!(S.meet>=0)&&!S.pv&&!document.getElementById('attract')){
     e.preventDefault();if(S.tab==='ai'){const i=document.querySelector('[data-form="ask"] input');if(i)i.focus();return;}
     S.chen=true;mayaHide();render();const i=document.querySelector('.chen [data-form="ask"] input');if(i)i.focus();}
 });
@@ -8795,7 +8884,7 @@ const stPreviewLine=()=>{const p=stPreview();
   return `<span>${L('תאריך','Date')}: <b><bdi>${p.date}</bdi></b></span><span>${L('שעה','Time')}: <b><bdi>${p.time}</bdi></b></span><span>${L('סכום','Amount')}: <b><bdi>${p.money}</bdi></b></span><span>${L('עמלת שירות','Service fee')} <bdi>${p.fee}</bdi> + ${L('מס מכירה','sales tax')} <bdi>${ST_ORG.tax}%</bdi> = <b><bdi>${p.total}</bdi></b></span>`;};
 
 /* ---------- permissions ---------- */
-const ST_ROLES=['owner','admin','agent','accountant'];
+const ST_ROLES=['owner','admin','agent','accountant','ops'];
 /* exactly the keys the code checks with can() (a TEST in s11_fix.js pins the list): pages, approvals, document issue, supplier work, clients, settings, forms */
 const ST_ENFORCED=['users.manage','fin.sync','fin.view','prop.approve','fin.issueDocs','settings.edit','settings.stages','price.edit','forms.build','sup.edit','sup.swap','ops.suppliers','cli.edit'];
 PERSIST.push({key:'st-perms',get:()=>S.perms?JSON.parse(JSON.stringify(S.perms)):null,set:v=>{S.perms=v&&typeof v==='object'?v:null;},reset:()=>{S.perms=null;}});
@@ -8960,8 +9049,8 @@ TESTS.push({name:'st settings',run:h=>{const out=[],S=h.S,role0=S.role,lang0=S.l
       const ro=!can('settings.edit');if(ro!==html.includes('st-ro'))out.push(`read-only note mismatch ${role} ${tb}`);
       if(tb==='roles'&&ro&&(html.match(/<input type="checkbox" class="st-tg"[^>]*>/g)||[]).some(x=>!/disabled/.test(x)))out.push('read-only matrix has an enabled toggle for '+role);});});});
   S.lang='en';S.role='manager';S.stSub='roles';
-  /* 40 x 4 = 160 toggles; 13 enforced tags, no matrix-only tags; owner column locked on */
-  {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==160)out.push('toggles '+n);
+  /* 40 x 5 = 200 toggles (v8.4: operations column); 13 enforced tags, no matrix-only tags; owner column locked on */
+  {const html=VIEWS.settings(),n=count(html,'class="st-tg"');if(n!==200)out.push('toggles '+n);
     if(count(html,'class="st-mx"')!==0)out.push('matrix-only tags '+count(html,'class="st-mx"'));
     if((html.match(/pill ok/g)||[]).length!==ST_ENFORCED.length)out.push('enforced tags');
     const own=html.match(/<input type="checkbox" class="st-tg"[^>]*data-role="owner"[^>]*>/g)||[];if(own.length!==40||own.some(x=>!/checked/.test(x)||!/disabled/.test(x)))out.push('owner column not locked on');}
@@ -10391,7 +10480,7 @@ document.addEventListener('click',e=>{
 },true);
 document.addEventListener('input',e=>{const el=e.target;if(!S.gs||!el||el.id!=='gs-in')return;S.gs.q=el.value;S.gs.sel=0;gsRedraw(false);});
 document.addEventListener('keydown',e=>{
-  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&String(e.key).toLowerCase()==='f'){e.preventDefault();if(!S.gs&&!(S.meet>=0)&&!document.getElementById('attract'))gsOpen();return;}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&String(e.key).toLowerCase()==='f'){e.preventDefault();if(!S.gs&&!(S.meet>=0)&&!S.pv&&!document.getElementById('attract'))gsOpen();return;}
   if(!S.gs)return;
   if(e.key==='Escape'){e.preventDefault();e.stopPropagation();gsClose(true);}
   else if(e.key==='ArrowDown'){e.preventDefault();gsMove(1);}
@@ -10723,10 +10812,11 @@ const devVisible=()=>devOn()&&!(S.meet>=0)&&!(S.tour>=0)&&!dvAttract();
 
 /* which entry describes the screen on show: an open modal or drawer wins, then role home, trip tab, page */
 function specKey(){
+  if(S.pv&&S.pv.k)return 'portal:'+S.pv.k+':'+S.pv.tab;
   if(S.form)return 'modal:form';
   if(S.tab==='suppliers'&&S.supId)return 'drawer:supplier';
   if(S.tab==='clients'&&S.cliId)return 'drawer:client';
-  if(S.tab==='home')return 'home:'+(isMgr()?'manager':isAcct()?'accountant':'agent');
+  if(S.tab==='home')return 'home:'+(isMgr()?'manager':isAcct()?'accountant':isOps()?'ops':'agent');
   if(S.tab==='trip'){const pt=S.ptab==='ops'?'odash':S.ptab;
     /* sub-views have their own entries: plan by day/components/map, proposal pdf/table/landing */
     const sub=pt==='plan'?(S.tbView||'day'):pt==='quote'?({table:'table',landing:'landing'}[S.prFmt]||'pdf'):'';
@@ -11764,7 +11854,7 @@ function hcModel(){
 
 /* one hero for every role: brief, two buttons, a gauge and four KPI tiles */
 function hcShell(o){
-  const an=hpAnim(),first=String(userName()).split(' ')[0];
+  const an=o.anim!=null?o.anim:hpAnim(),first=o.name!=null?String(o.name):String(userName()).split(' ')[0];
   const day=TODAY.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
   const kp=(k,i)=>{const tag=k.act?'button':'div',at=k.act?` data-act="${k.act}" data-v="${k.v}"${k.pt?` data-pt="${k.pt}"`:''}${k.on!=null?` aria-pressed="${!!k.on}"`:''}`:'';
     const val=k.money?`<b data-count="${Math.round(k.val)}">${usd(k.val)}</b>`:k.text?`<b class="hc-nn"><bdi>${esc(k.text)}</bdi></b>`:`<b>${k.val}</b>`;
@@ -11778,7 +11868,7 @@ function hcShell(o){
     <circle class="hc-pin" cx="860" cy="250" r="5"/><circle class="hc-pin" cx="1150" cy="120" r="5"/><circle class="hc-pin" cx="1110" cy="300" r="5"/><circle class="hc-pin p0" cx="80" cy="360" r="5"/>
    </svg>
    <div class="hc-hl">
-    <div class="hc-hi"><span class="hc-eye">${day}${o.role?` · ${o.role}`:''}</span><h1>${L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${o.brief}</p>
+    <div class="hc-hi"><span class="hc-eye">${day}${o.role?` · ${o.role}`:''}</span><h1>${o.greet||L('בוקר טוב','Good morning')}, ${esc(first)}</h1><p>${o.brief}</p>
      ${o.ctas&&o.ctas.length?`<div class="hc-cta">${o.ctas.join('')}</div>`:''}</div>
     <div class="hc-gauge" role="img" aria-label="${g.pct}% ${esc(g.label)}">${hcRing(g.pct,148,'big')}<div class="hc-gv"><b>${g.pct}%</b><span>${g.label}</span></div>
      <div class="hc-gl">${g.lines.map(x=>`<span class="${x.cls}">${ic(x.icon)} ${x.lab} <b>${x.val}</b></span>`).join('')}</div></div>
@@ -11973,6 +12063,135 @@ SPEC['home:manager']={title:'Home, owner (command center)',
   e.code=[`v6/s12_home.js: ${fn}, hcShell`].concat((e.code||[]).filter(c=>!/s12_home/.test(c))).slice(0,8);
   e.tests=['TEST hc home command center'].concat((e.tests||[]).filter(x=>x!=='TEST hc home command center')).slice(0,8);});
 
+/* ---------- v8.4 portals: the frame every external viewpoint shares (spec-v8.4-viewpoints.md §2.2) ----------
+   External people (group leader, traveler, supplier, tour director) are not agency roles. While S.pv is set,
+   render() draws this minimal, mobile-first shell instead of the agency app: agency badge, a "viewing as" ribbon
+   with a way back, tabs (bottom bar on phones) and one content column. Modules register with pvRegister(k,def):
+     {role:[he,en], label:[he,en], kind:'client'|'field', feat:<FEAT key>, people:()=>[{id,name,sub}], def:<id>,
+      tabs:[[key,he,en,icon]], view:(tab,person)=>html}
+   Shared helpers keep the plan, households and money notes identical across portals. */
+const PORTALS={};
+const PV_STRICT=false; /* set true once all four portals are merged */
+let PV_PREV='';
+function pvRegister(k,def){PORTALS[k]=Object.assign({kind:'client',feat:null,tabs:[],people:()=>[],view:()=>''},def,{k});}
+const pvP=()=>S.pv&&PORTALS[S.pv.k];
+function pvPerson(){const P=pvP();if(!P)return null;const ps=P.people();return ps.find(x=>x.id===S.pv.id)||ps.find(x=>x.id===P.def)||ps[0]||null;}
+function pvOpen(k,id,tab){const P=PORTALS[k];if(!P)return;
+  S.pv={k,id:id||P.def,tab:tab&&P.tabs.some(x=>x[0]===tab)?tab:P.tabs[0][0]};S.menu=false;S.chen=false;S.tour=-1;try{window.scrollTo(0,0);}catch(e){}}
+function pvExit(){S.pv=null;S.tab='home';}
+const pvTab=k=>{if(S.pv&&pvP()&&pvP().tabs.some(x=>x[0]===k))S.pv.tab=k;};
+
+/* ---------- shared helpers ---------- */
+/* clock time from minutes since midnight: 2:30 PM in English, 14:30 in Hebrew */
+const pvClock=m=>{m=Math.round(m/5)*5;const h=Math.floor(m/60)%24,mm=String(m%60).padStart(2,'0');
+  return S.lang==='en'?`${(h%12)||12}:${mm} ${h<12?'AM':'PM'}`:`${String(h).padStart(2,'0')}:${mm}`;};
+const pvKind=n=>/coach|depart|return|transfer|drive|flight|airport|check-in|check-out|train|ferry/i.test(n)?'travel':/breakfast|lunch|dinner|meal|buffet|supper/i.test(n)?'meal':/free|leisure/i.test(n)?'free':'visit';
+const PV_KIC={travel:'bus',meal:'dining',free:'free',visit:'pin'};
+/* the trip day by day with clock times: day 1 starts at the 07:00 departure, other days at 08:00; 15 minutes between stops */
+function pvDays(t){
+  if(!t)return [];const n=(t.nights||0)+1,out=[];
+  for(let i=1;i<=n;i++){let cur=i===1?7*60:8*60;
+    const items=(t.items||[]).filter(x=>x.day===i).map(x=>{const s=cur,e=cur+Math.round((+x.hrs||0)*60);cur=e+15;
+      return {id:x.id,name:x.name,hrs:+x.hrs||0,start:s,end:e,kind:pvKind(x.name)};});
+    out.push({i,date:addDays(t.dep,i-1),items,hotel:i<n&&t.room?t.room.hotel:''});}
+  return out;
+}
+/* one day as a card. o.done: Set of item ids, o.tick: data-act for a done button, o.hl: highlight, o.extra(item)=>html */
+function pvDayCard(t,d,o){o=o||{};
+  const dt=D(d.date).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'});
+  return `<div class="card hc-card pv-day${o.hl?' pv-today':''}" data-day="${d.i}">
+   <div class="hc-h"><h3>${L('יום','Day')} ${d.i} <span class="muted small">· ${dt}</span></h3>${d.hotel?`<span class="muted small pv-hot">${ic('bed')} <bdi>${esc(d.hotel)}</bdi></span>`:''}</div>
+   ${d.items.length?`<ol class="pv-tl">${d.items.map(x=>{const dn=o.done&&o.done.has(x.id);
+     return `<li class="pv-st k-${x.kind}${dn?' done':''}"><span class="pv-tm"><b>${pvClock(x.start)}</b><small>${pvClock(x.end)}</small></span>
+      <span class="pv-dot">${ic(PV_KIC[x.kind])}</span><span class="pv-tx"><b>${esc(x.name)}</b>${o.extra?o.extra(x):''}</span>
+      ${o.tick?`<button class="btn sm${dn?' pri':''} pv-tick" data-act="${o.tick}" data-v="${t.id}|${d.i}|${x.id}" aria-pressed="${!!dn}">${ic(dn?'done':'check')} ${dn?L('בוצע','Done'):L('סמן','Mark done')}</button>`:''}</li>`;}).join('')}</ol>`
+     :`<p class="muted small">${L('יום חופשי, בלי תוכנית קבוצתית.','A free day with no group program.')}</p>`}</div>`;
+}
+/* the household a traveler belongs to, with its billing row (groupsCalc) */
+function pvHousehold(t,i){const x=t&&t.trav[i];if(!x)return null;const gi=t.groups.findIndex(g=>g.name===x.g);if(gi<0)return null;
+  const row=groupsCalc(t).rows[gi];return {gi,g:t.groups[gi],row,members:t.trav.map((y,j)=>({y,j})).filter(z=>z.y.g===x.g)};}
+const pvTripsOfClient=c=>c?TRIPS.filter(t=>t.client===c.name&&!(t.stage==='Quote'&&t.qst==='Lost')):[];
+/* suppliers that may appear in the supplier portal: fictional only (real-brand rule), and on at least one trip line */
+function pvFictionalSuppliers(){const used=new Set();TRIPS.forEach(t=>t.lines.forEach(l=>used.add(l.sup)));
+  return SUPPLIERS.filter(s=>s.fictional===true&&s.real!==true&&used.has(s.name));}
+const pvSupLines=name=>TRIPS.reduce((a,t)=>a.concat(t.lines.filter(l=>l.sup===name).map(l=>({t,l}))),[]);
+const pvMoneyNote=()=>L('תשלום לדוגמה. לא הועבר כסף.','Simulated payment. No money moved.');
+const pvPayLink=(t,g)=>`https://pay.redbudtours.example/${t.id}/${String(g&&g.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}`;
+const pvDaysTo=t=>Math.round((D(t.dep)-TODAY)/DAY);
+/* a "Back to agency" note shown on portal cards that link agency screens */
+const pvAgencyBadge=()=>`<span class="pv-ag"><i class="pv-agb" aria-hidden="true">${esc(AGENCY.charAt(0))}</i><b>${esc(AGENCY)}</b></span>`;
+
+/* ---------- the frame ---------- */
+function pvShell(){
+  const P=pvP(),p=pvPerson(),tab=S.pv.tab,tabs=P.tabs;
+  const f=P.feat&&typeof FEAT!=='undefined'?FEAT.find(x=>x[0]===P.feat):null;
+  const people=P.people();
+  let body='';try{body=P.view(tab,p);}catch(e){if(typeof console!=='undefined')console.error(e);body=`<div class="card"><p class="muted">${L('המסך לא נטען.','This screen could not load.')}</p></div>`;}
+  const theme=themeGet();
+  return `<div class="pv pv-${P.k}${tabs.length>1?' pv-hastabs':''}">
+   <header class="pv-top">${pvAgencyBadge()}<span class="pv-pn">${L(P.label[0],P.label[1])}</span>${f?stPill(f[1]):''}<span class="grow"></span>
+    <button class="iconb themeb" data-act="theme" aria-label="${theme==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}" title="${theme==='dark'?L('מצב יום','Day mode'):L('מצב לילה','Night mode')}">${ic(theme==='dark'?'sun':'moon')}</button>
+    <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
+    ${p?avatarOf(p.name):''}</header>
+   <div class="pv-rib" role="note"><span class="pv-rt">${ic('show')} ${L('צפייה בתור','You are viewing as')} <b><bdi>${esc(p?p.name:'')}</bdi></b> · ${L(P.role[0],P.role[1])}</span>
+    ${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
+    <span class="pv-sw">${viewAsSelect('pvrole')}</span>
+    <button class="hc-btn mint pv-back" data-act="pv-exit">${ic('left','flip')} ${L('חזרה לסוכנות','Back to agency')}</button></div>
+   ${tabs.length>1?`<nav class="pv-tabs" aria-label="${L('מסכים','Screens')}">${tabs.map(x=>`<button class="pv-tb${x[0]===tab?' on':''}" data-act="pv-tab" data-v="${x[0]}" ${x[0]===tab?'aria-current="page"':''}>${ic(x[3])}<span>${L(x[1],x[2])}</span></button>`).join('')}</nav>`:''}
+   <main class="pv-main" id="view">${body}</main>
+   <footer class="pv-foot small muted">${L('נתוני הדמו פיקטיביים: הסוכנות, האנשים והתשלומים. הפורטל הזה הוא תצוגה מקדימה.','Demo data: the agency, the people and the payments are fictional. This portal is a preview.')}</footer>
+  </div>`;
+}
+function pvRender(){
+  const y=window.scrollY,app=document.getElementById('app'),key=[S.pv.k,S.pv.id,S.pv.tab,S.lang].join('|');
+  PV_ANIM=PV_PREV!==key;
+  app.setAttribute('dir',S.lang==='en'?'ltr':'rtl');app.setAttribute('lang',S.lang==='en'?'en':'he');
+  try{app.style.zoom=S.zoom===1?'':String(S.zoom);}catch(e){}
+  app.innerHTML=heDataIf(trHtml(pvShell()));
+  PV_PREV=key;window.scrollTo(0,y);save();
+}
+let PV_ANIM=false;
+/* the portal home hero: the shared command-center hero with the portal person's name */
+function pvHero(o){const p=pvPerson();return hcShell(Object.assign({name:p?String(p.first||p.name).split(' ')[0]:'',anim:PV_ANIM},o));}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,v=b.dataset.v||'';
+  if(a==='pv-tab'){pvTab(v);try{window.scrollTo(0,0);}catch(err){}render();}
+  else if(a==='pv-exit'){pvExit();render();}
+  else if(a==='pv-open'){const [k,id,tab]=v.split('|');pvOpen(k,id,tab);render();}
+});
+document.addEventListener('change',e=>{const el=e.target;if(!el.dataset||el.dataset.ch!=='pv-person'||!S.pv)return;S.pv.id=el.value;render();});
+
+/* ---------- developer notes and tests for the frame ---------- */
+if(typeof SPEC!=='undefined')SPEC['portal:frame']={title:'Portal frame (external viewpoints)',
+  purpose:'One minimal, mobile-first shell for every external viewpoint: who you are viewing as, a way back to the agency, and the portal tabs.',
+  roles:{view:['leader','traveler','supplier','guide'],act:['leader','traveler','supplier','guide']},perms:[],
+  data:['S.pv {k,id,tab}','PORTALS registry'],
+  actions:[{label:'Person picker',does:'Switches the person inside the portal',rule:'PORTALS[k].people()'},{label:'View as',does:'Switches to any agency role or portal',rule:'Grouped: Agency team, Client side, Suppliers and field'},
+    {label:'Back to agency',does:'Leaves the portal (S.pv=null) and opens Home',rule:'Always available'}],
+  rules:['External people are not agency roles (not in ROLE_KEYS); access is by invitation link (proposed)','Bottom tab bar under 721 px, top tabs above','No Maya, tour or meeting buttons inside portals'],
+  states:{empty:'A portal with no people shows its first tab with an empty-state card.',loading:'Not applicable (local data).',error:'A view that throws shows "This screen could not load."'},
+  status:'roadmap',api:['GET /v1/portal/{token}/me (proposed)'],tests:['TEST pv portal frame'],code:['v6/s13_portal.js: pvRegister, pvOpen, pvShell, pvRender, pvDays, pvDayCard, pvHousehold','v6/m_portal.css']};
+TESTS.push({name:'pv portal frame',run:h=>{const out=[];
+  const ks=Object.keys(PORTALS);if(PV_STRICT&&ks.length<4)out.push('portals registered: '+ks.join(','));
+  for(const lang of ['en','he']){S.lang=lang;
+    ks.forEach(k=>{const P=PORTALS[k];const ps=P.people();if(!ps.length){out.push('no people '+k);return;}
+      [P.def,ps[ps.length-1].id].forEach(id=>P.tabs.forEach(([tab])=>{pvOpen(k,id,tab);
+        try{render();const hh=h.els.app.innerHTML;h.chk(hh,`pv ${k} ${id} ${tab} ${lang}`);if(lang==='en')h.scan(hh,`pv ${k} ${tab}`);
+          if(hh.includes('class="side"'))out.push('agency sidebar inside portal '+k);if(!hh.includes('pv-rib'))out.push('no ribbon '+k);
+          if(typeof specKey==='function'&&specKey()!=='portal:'+k+':'+tab)out.push('specKey '+k+' '+tab+' '+specKey());
+          if(typeof SPEC!=='undefined'&&!SPEC['portal:'+k+':'+tab])out.push('no SPEC entry portal:'+k+':'+tab);
+        }catch(e){out.push(`pv ${k} ${tab} threw ${e.message}`);}}));});}
+  S.lang='en';if(ks.length){pvOpen(ks[0]);render();const sel2=h.els.app.innerHTML;ks.forEach(k=>{if(!sel2.includes(`value="pv:${k}"`))out.push('switcher lacks pv:'+k);});}
+  pvExit();render();if(S.pv||!h.els.app.innerHTML.includes('class="side"'))out.push('exit did not return to the agency');
+  /* days: times increase, every item placed once */
+  TRIPS.filter(t=>t.stage!=='Quote').forEach(t=>{const ds=pvDays(t);if(ds.length!==t.nights+1)out.push('days '+t.id);
+    if(ds.reduce((a,d)=>a+d.items.length,0)!==t.items.filter(x=>x.day>=1&&x.day<=t.nights+1).length)out.push('items '+t.id);
+    ds.forEach(d=>d.items.forEach((x,i)=>{if(x.end<x.start||(i&&x.start<d.items[i-1].end))out.push('times '+t.id+' d'+d.i);}));});
+  if(pvFictionalSuppliers().some(s=>s.real))out.push('real supplier in the portal list');
+  return out;}});
+
 /* ---------- meeting mode: the 3-minute booth story (v7) ----------
    Presenter drives with the arrow keys (or the buttons). Easy process first (studio),
    then high value (leaks, invoices, dispute, Maya), then the close. R restarts with clean data. */
@@ -12014,7 +12233,7 @@ meetSetCut(3);
 const meetIs=id=>S.meet>=0&&!!MEET[S.meet]&&MEET[S.meet].id===id;
 const meetLen=()=>MEET_CUT===10?'10:00':MEET_CUT===1?'1:00':'3:00';
 function meetGo(i){MEET_LAST_SCROLL=-1;
-  S.meet=Math.max(0,Math.min(MEET.length-1,i));S.menu=false;S.chen=false;S.tour=-1;
+  S.meet=Math.max(0,Math.min(MEET.length-1,i));S.menu=false;S.chen=false;S.tour=-1;S.pv=null;
   MEET[S.meet].go();window.scrollTo(0,0);render();
 }
 function meetStart(c){if(c)meetSetCut(c);resetDemo();S.meet=0;MEET_T0=Date.now();clearInterval(MEET_TICK);MEET_TICK=setInterval(meetClock,1000);meetGo(0);}
@@ -12133,6 +12352,8 @@ function runTripInit(){TRIPS.forEach((t,i)=>TRIP_INIT.forEach(f=>{try{f(t,i);}ca
 {const z1=resetDemo;resetDemo=function(){z1();runTripInit();};}
 if(typeof winQuote==='function'){const w0=winQuote;winQuote=function(){const r=w0.apply(this,arguments);runTripInit();return r;};}
 if(typeof blankQuote==='function'){const b0=blankQuote;blankQuote=function(){const r=b0.apply(this,arguments);runTripInit();return r;};}
+/* v8.4: finance-stage trip tabs need fin.view (the operations coordinator does not have it) */
+{const v0=vTrip;vTrip=function(){const t=T();if(t&&typeof can==='function'&&!can('fin.view')&&stageOf(S.ptab)==='f')return noAccess(L('כספי הטיול','Trip finance'));return v0.apply(this,arguments);};}
 /* v8: permission-gated pages */
 Object.keys(NAV_PERM).forEach(k=>{const v0=VIEWS[k];if(v0)VIEWS[k]=function(){return typeof can==='function'&&!can(NAV_PERM[k])?noAccess():v0.apply(this,arguments);};});
 runTripInit();
