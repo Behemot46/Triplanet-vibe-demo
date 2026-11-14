@@ -13,7 +13,8 @@ It is **not production code**: one offline HTML file, no backend, no logins, sim
 - **Demo website:** https://triplanet-viewpoints-demo.vercel.app. Public, no account needed. It is deployed from `main` by hand (Vercel project `triplanet-viewpoints-demo`, not connected to GitHub), so after a merge it must be redeployed.
 - **Demo on claude.ai:** https://claude.ai/artifact/77KubhecPayYdD4gcVSQCi. Private until the owner shares it; the only copy with the spoken morning brief.
 - **Demo (offline):** open `v6/triplanet-booth.html` in Chrome or Edge. No install, no internet needed.
-- **Ideas backlog for the team (rate and prioritize, Hebrew and English):** https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka. Its source is `docs/pitch/ideas-backlog.html`.
+- **Ideas backlog, public link (read, then open each item in the demo):** https://triplanet-viewpoints-demo.vercel.app/ideas
+- **Ideas backlog, team page (shared ratings, Hebrew and English):** https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka. Its source is `docs/pitch/ideas-backlog.html`.
 - Use **View as** (top bar; in the ☰ menu on phones) to switch person:
   - **Agency team:** owner, accountant, operations coordinator, 6 agents;
   - **Client side:** group leader, traveler;

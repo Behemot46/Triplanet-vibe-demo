@@ -139,6 +139,8 @@ html[dir="rtl"] .det{padding:4px calc(14px + 72px + 12px) 16px 14px}
 .det .who li{display:flex;justify-content:space-between;gap:10px}
 .det .who li span:last-child{color:var(--muted);white-space:nowrap}
 .cmt{justify-self:start;font:600 13px/1 var(--f-body);padding:7px 11px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink2);cursor:pointer}
+.ratenote{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;background:var(--work-bg);color:var(--ink);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:14.5px}
+.ratenote[hidden]{display:none}
 .empty{padding:28px 16px;text-align:center;color:var(--muted)}
 .state{font-size:13.5px;color:var(--muted);margin-top:10px}
 .next{padding-block:8px 48px}
@@ -201,6 +203,7 @@ footer .wrap{display:grid;gap:6px}
   <div><span class="eyebrow" data-t="bl_eb">Backlog</span><h2 data-t="bl_h">Features and specifications from the demo</h2></div>
   <div class="prog"><div id="prog"></div><div class="bar" aria-hidden="true"><i id="progbar" style="width:0%"></i></div></div>
  </div>
+ <div class="ratenote" id="ratenote" hidden></div>
  <div class="tools">
   <input class="search" id="q" type="search" autocomplete="off">
   <label class="sr" for="sort" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" data-t="sortl">Sort</label>
@@ -250,7 +253,8 @@ const T={
  nx_p:['Once a few people have rated, I would be glad to sit with Samuel and the team for half an hour, go over the top of the list together, and see which items could fit into the coming development plan. The decisions are Samuel\'s and the team\'s; I am here to help.','כשיהיו כמה דירוגים, אשמח לשבת חצי שעה עם שמואל והצוות, לעבור יחד על הראש של הרשימה ולראות אילו פריטים יכולים להיכנס לתוכנית הפיתוח הקרובה. ההחלטות של שמואל והצוות, ואני כאן כדי לעזור.'],
  ft1:['Sources: the demo itself (build of 14 Nov 2026) and a read-only walkthrough of dev.triplanet.io from September 2026, not verified with the team. Every figure in the demo is fictional.','מקורות: הדמו עצמו (גרסה מ-14 בנובמבר 2026) ומעבר לקריאה בלבד על dev.triplanet.io מספטמבר 2026, שלא אומת מול הצוות. כל המספרים בדמו בדויים.'],
  ft2:['Fonts: Heebo, Public Sans, Barlow, JetBrains Mono (SIL Open Font License).','גופנים: Heebo, Public Sans, Barlow, JetBrains Mono (רישיון SIL Open Font).']};
-const UI={godemo:['Open in the demo','לראות בדמו'],df_all:['All items','כל הפריטים'],search:['Search the list…','חיפוש ברשימה…'],all:['All','הכול'],
+const UI={rate_note:['Shared team ratings live on the team page on claude.ai. Here you can read the list, try the demo and mark your own picks; they are saved in this browser only.','הדירוג המשותף של הצוות נמצא בעמוד הצוות ב-claude.ai. כאן אפשר לקרוא את הרשימה, לנסות את הדמו ולסמן לעצמכם; הסימונים נשמרים רק בדפדפן הזה.'],
+ rate_go:['Open the team rating page','לעמוד הדירוג של הצוות'],godemo:['Open in the demo','לראות בדמו'],df_all:['All items','כל הפריטים'],search:['Search the list…','חיפוש ברשימה…'],all:['All','הכול'],
  s_team:['Team priority','לפי עדיפות הצוות'],s_key:['Key','לפי מפתח'],s_epic:['Area','לפי תחום'],
  none:['Not rated','לא דורג'],rated:n=>[n===1?'1 rating':`${n} ratings`,n===1?'דירוג אחד':`${n} דירוגים`],me:['Me','אני'],
  story:['User story','סיפור משתמש'],why:['Why it matters','למה זה חשוב'],where:['Where to see it','איפה רואים את זה'],prod:['In the product','במוצר'],
@@ -444,7 +448,11 @@ function draw(){
 }
 function setState(k){stKey=k;document.getElementById('state').textContent=k?X(UI[k]):'';
   if(k==='st_saved'){clearTimeout(stTimer);stTimer=setTimeout(()=>{if(stKey==='st_saved')setState('');},2200);}}
-function full(){staticText();drawEpics();draw();setState(stKey);}
+let LOCAL=false;const MYKEY='backlog-my-ratings';
+function showRateNote(){const el=document.getElementById('ratenote');if(!LOCAL){el.hidden=true;return;}el.hidden=false;
+  el.innerHTML=`<span>${X(UI.rate_note)}</span><a class="go" href="https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka" target="_blank" rel="noopener">${X(UI.rate_go)}</a>`;}
+function goLocal(){LOCAL=true;try{const v=JSON.parse(localStorage.getItem(MYKEY)||'{}');if(v&&typeof v==='object')my=v;}catch(e){}setState('');showRateNote();draw();}
+function full(){staticText();drawEpics();draw();setState(stKey);showRateNote();}
 
 /* ---------- events ---------- */
 document.getElementById('lang').addEventListener('click',()=>{LANG=LANG==='he'?'en':'he';try{localStorage.setItem('backlog-lang',LANG);}catch(e){}full();});
@@ -464,7 +472,7 @@ document.addEventListener('click',async e=>{
   const c=e.target.closest('[data-cmt]');if(c){const t=document.getElementById(c.dataset.cmt);try{const cm=await window.claude?.use?.('comments');if(cm&&t){await cm.openComposer({element:t});return;}}catch(err){}setState('nocmt');}
 });
 /* one write at a time; the latest choice wins */
-async function persist(){if(!db||!meId||ro)return;if(saving){pending=true;return;}
+async function persist(){if(LOCAL){try{localStorage.setItem(MYKEY,JSON.stringify(my));}catch(e){}return;}if(!db||!meId||ro)return;if(saving){pending=true;return;}
   saving=true;try{do{pending=false;await db.collection('ratings').doc(meId).set({r:JSON.parse(JSON.stringify(my))});}while(pending);setState('st_saved');}
   catch(err){if(err&&err.code==='not_granted'){ro=true;setState('st_ro');draw();}else setState('st_fail');}
   saving=false;}
@@ -472,18 +480,18 @@ async function resolveNames(){if(!user)return;const ids=Object.keys(all).filter(
   try{const ps=await user.profiles(ids);let ch=false;ids.forEach(id=>{const n=ps&&ps[id]&&ps[id].name;if(n){names[id]=n;ch=true;}});if(ch)draw();}catch(e){}}
 full();
 (async()=>{
-  if(!window.claude||typeof window.claude.use!=='function'){setState('st_local');return;}
+  if(!window.claude||typeof window.claude.use!=='function'){goLocal();return;}
   const timer=setTimeout(()=>{if(!live)setState('st_slow');},10000);
   try{
     db=await window.claude.use('db');user=await window.claude.use('user');
-    if(!db||!user){clearTimeout(timer);db=null;setState('st_local');return;}
-    meId=await user.id();if(!meId){clearTimeout(timer);db=null;setState('st_local');return;}
+    if(!db||!user){clearTimeout(timer);db=null;goLocal();return;}
+    meId=await user.id();if(!meId){clearTimeout(timer);db=null;goLocal();return;}
     db.collection('ratings').onSnapshot(snap=>{
       if(!snap.fromCache)clearTimeout(timer);
       const a={};snap.docs.forEach(d=>{const x=d.data()||{};if(x.r&&typeof x.r==='object')a[d.id]=x.r;});
       all=a;if(!live&&a[meId]&&!Object.keys(my).length)my=JSON.parse(JSON.stringify(a[meId]));
       live=true;if(stKey==='st_slow'||stKey==='st_local')setState('');draw();resolveNames();
     },()=>{clearTimeout(timer);setState('st_stop');});
-  }catch(err){clearTimeout(timer);db=null;setState('st_local');}
+  }catch(err){clearTimeout(timer);db=null;goLocal();}
 })();
 </script>
