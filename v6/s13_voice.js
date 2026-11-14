@@ -45,7 +45,7 @@ TESTS.push({name:'vo morning brief narration',run:h=>{const out=[];const r0=S.ro
   for(const lang of ['en','he']){S.lang=lang;const t=voBrief();if(!t||/NaN|undefined|null|<|>/.test(t))out.push('brief text '+lang+': '+t.slice(0,80));
     if(t.length>2000)out.push('brief too long '+t.length);if(lang==='en'&&/[֐-׿]/.test(t))out.push('Hebrew in the English brief');
     if(lang==='he'&&!/[֐-׿]/.test(t))out.push('no Hebrew in the Hebrew brief');
-    const m=hcModel();if(!t.includes(usd(m.M.rec))||!t.includes(usd(m.P.rev)))out.push('brief figures do not match the hero '+lang);}
+    const m=hcModel(),bare=x=>x.replace(/[\u2066-\u2069\u200e\u200f]/g,'');if(!t.includes(bare(usd(m.M.rec)))||!t.includes(bare(usd(m.P.rev))))out.push('brief figures do not match the hero '+lang);}
   S.lang='en';if(VIEWS.home().includes('vo-play'))out.push('button drawn without a voice');
   VO={speak:()=>Promise.resolve(),stop(){},onState(){}};if(!VIEWS.home().includes('vo-play'))out.push('button missing with a voice');
   S.role='accountant';if(VIEWS.home().includes('vo-play'))out.push('button on the accountant home');VO=null;S.role=r0;return out;}});
