@@ -109,8 +109,10 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents, an o
   - `s13_pt.js` - traveler app (Linda Garcia, `nas`); simulated payments move `collected` only.
   - `s13_ps.js` - supplier portal, fictional suppliers only (Morgan Pratt, Ozark Lakeside Lodge); supplier-side wording: difference, query, credit.
   - `s13_pg.js` - tour director run sheet (`GUIDES` in `s1e_people.js`: Wade Turner, Cody Harper).
+  - `s13_voice.js` - "Listen to the brief" on the owner's Home (owner decision 14 Nov 2026, option C): `voBrief()` builds a spoken brief from the hero's figures and the page capability `tts` (Claude's built-in voice) reads it. The button appears only on the published claude.ai page in a Chromium browser or the desktop app; offline, Safari and mobile apps show nothing. Publish the demo with capabilities `{downloads:true, tts:{}}`.
   - Avatars for the new people: `AV_NAMES` in `s3_shell.js` maps full names to `AVATARS` keys (Kelsey, Alan, Linda, Morgan, Wade).
 - Developer handoff package: `docs/handoff/` (README, screens, data model, business rules, design system). Start there.
+- `docs/pitch/head-start.html` - source of the "Triplanet Head Start" page for the product team (EN/HE, five-step plan with the time asked of them, product-vs-demo map with a shared "where to start" pick). Published as an artifact with capabilities db (votes), user and comments.
 - `v6/s9_meet.js` - meeting mode:
   - three cuts of one story, picked with the bar chips or keys 1 / 3 / 0: 1 min (4 beats: leaks, invoices, dispute, close), 3 min (9 beats), 10 min (14 beats, adds quote to operations, your numbers, the supplier's side of the query (supplier portal, v8.4), trip P&L, what's live);
   - beats are found by `id` (`meetIs('inbox')`), never by index;
