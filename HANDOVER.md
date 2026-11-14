@@ -10,7 +10,7 @@ A clickable demo of Triplanet for US group tour operators (3 to 20 agents), buil
 It is **not production code**: one offline HTML file, no backend, no logins, simulated payments and accounting sync, fictional agency data.
 
 ## 2. Open it
-- **Demo website:** https://triplanet-viewpoints-demo.vercel.app. Public, no account needed; it redeploys automatically from `main` (Vercel project `triplanet-viewpoints-demo`).
+- **Demo website:** https://triplanet-viewpoints-demo.vercel.app. Public, no account needed. It is deployed from `main` by hand (Vercel project `triplanet-viewpoints-demo`, not connected to GitHub), so after a merge it must be redeployed.
 - **Demo on claude.ai:** https://claude.ai/artifact/77KubhecPayYdD4gcVSQCi. Private until the owner shares it; the only copy with the spoken morning brief.
 - **Demo (offline):** open `v6/triplanet-booth.html` in Chrome or Edge. No install, no internet needed.
 - **Ideas backlog for the team (rate and prioritize, Hebrew and English):** https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka. Its source is `docs/pitch/ideas-backlog.html`.
