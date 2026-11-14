@@ -1852,7 +1852,26 @@ button.pj-status{border:0;cursor:pointer}
   .pl-m{max-width:96%}
   .pl-chip{width:100%}
   .pl-flt .pl-chip{width:auto}
-  .pl-hm{display:none}
+}
+
+.pl-dt{white-space:nowrap}
+.pl-stc{white-space:nowrap;min-width:150px}
+.pl-tbl .pill{white-space:nowrap}
+.pl-pri{font-weight:600}
+@media (max-width:720px){
+  .pl-tbl,.pl-tbl tbody,.pl-tbl tfoot{display:block;min-width:0}
+  .pl-tbl thead{display:none}
+  .pl-tbl tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .pl-tbl tfoot tr{border-top:2px solid var(--line);background:var(--recess);padding:12px 8px;border-radius:8px;margin-top:6px}
+  .pl-tbl td{display:flex;flex-direction:column;gap:1px;border:0;padding:0;background:none;text-align:start;min-width:0}
+  .pl-tbl td.n{text-align:start}
+  .pl-tbl td:first-child{grid-column:1/-1;font-size:15px}
+  .pl-tbl td[data-l]::before{content:attr(data-l);color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  .pl-tbl td.pl-act-c{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+  .pl-tbl td.pl-act-c .pl-rm{margin-top:0}
+  .pl-tbl td.pl-act-c>div{display:inline}
+  .pl-tbl td.pl-stc{min-width:0}
+  .pl-tbl td[colspan]{grid-column:1/-1}
 }
 
 /* ---------- v8.4 portal frame (s13_portal.js): minimal, mobile-first shell for external viewpoints ---------- */
@@ -12746,7 +12765,7 @@ const plAgent=t=>STAFF.find(s=>s.key===t.agent)||{en:AGE[t.agent]||t.agent,he:AG
 const plAgentName=t=>{const a=plAgent(t);return L(a.he,a.en);};
 const plIntl=t=>!!(DESTS[t.dest]&&DESTS[t.dest].intl);
 const plFormsDone=x=>!!(x.form&&OP_FORMS.every(f=>x.form[f[0]]==='done'));
-const plPP=t=>{const c=calc(t);return t.pax?Math.ceil(c.rev/t.pax):0;};
+const plPP=t=>{const c=calc(t);return t.pax?r2(c.rev/t.pax):0;};
 /* one set of numbers for the hero, the pay tab and the tests */
 function plMoney(t){
   if(plIsQ(t)||!t.groups.length)return null;
@@ -12826,7 +12845,7 @@ function plHome(p,c,t){
         {lab:L('הצעד הבא','Next step'),text:plNext(t),cls:'hc-next',sub:miss?L(`${miss} נוסעים חסרים טפסים`,`${miss} travelers still owe forms`):L('הכל מסודר','All set'),act:'pv-tab',v:m.openN?'pay':'people'}]});
     if(m.openN)steps.push({sev:late?'urgent':'todo',tx:L(`${m.openN} משקי בית עם יתרה פתוחה`,`${m.openN} ${m.openN===1?'household has':'households have'} a balance open`),sub:L(`סך ${usd(m.outstanding)}`,`${usd(m.outstanding)} in total`),b:L('לתשלומים','Payments'),a:'pv-tab',v:'pay'});
     if(miss)steps.push({sev:'todo',tx:L(`${miss} נוסעים צריכים להשלים טפסים`,`${miss} ${miss===1?'traveler needs':'travelers need'} to finish forms`),sub:L('רישום, רפואה וכתב ויתור','Registration, medical and waiver'),b:L('לנוסעים','Travelers'),a:'pv-tab',v:'people'});
-    steps.push({sev:'ok',tx:L('שלחו לסוכן את רשימת החדרים','Send your agent the rooming list'),sub:L(`עד ${fmtDate(addDays(t.dep,-30))}`,`by ${fmtDate(addDays(t.dep,-30))}`),b:L('להודעות','Messages'),a:'pv-tab',v:'msgs'});
+    {const rd=addDays(t.dep,-30),past=D(rd)<TODAY;steps.push({sev:past?'urgent':'ok',tx:past?L('רשימת החדרים הייתה אמורה להישלח','The rooming list was due'):L('שלחו לסוכן את רשימת החדרים','Send your agent the rooming list'),sub:past?L(`הייתה אמורה להישלח עד ${fmtDate(rd)}`,`was due ${fmtDate(rd)}`):L(`עד ${fmtDate(rd)}`,`by ${fmtDate(rd)}`),b:L('להודעות','Messages'),a:'pv-tab',v:'msgs'});}
   }else{
     const pp=plPP(t),dep$=r2(cn.rev*t.pct/100);
     const prog=st==='draft'?20:st==='sent'?50:80;
@@ -12843,7 +12862,7 @@ function plHome(p,c,t){
       kpis:st==='draft'?[
         Object.assign(dayK,{act:'pv-tab',v:'trip'}),{lab:L('נוסעים','Travelers'),val:t.pax,sub:dn(t.dest)},
         {lab:L('לילות','Nights'),val:t.nights,sub:`${fmtDate(t.dep)} - ${fmtDate(endOf(t))}`,act:'pv-tab',v:'trip'},{lab:L('הסוכן שלכם','Your agent'),text:ag,sub:L('עונה בדוא"ל','replies by email'),act:'pv-tab',v:'msgs'}]
-      :[{lab:L('מחיר לנוסע','Price per traveler'),val:pp,money:1,cls:'pf',sub:L(`סך ${usd(cn.rev)} ל-${t.pax}`,`${usd(cn.rev)} for ${t.pax}`),act:'pv-tab',v:'trip'},
+      :[{lab:L('מחיר לנוסע','Price per traveler'),text:usd(pp,2),cls:'pf',sub:L(`סך ${usd(cn.rev)} ל-${t.pax}`,`${usd(cn.rev)} for ${t.pax}`),act:'pv-tab',v:'trip'},
         {lab:L('מקדמה','Deposit'),val:dep$,money:1,sub:L(`${t.pct}% · עד ${fmtDate(t.depDue)}`,`${t.pct}% · due ${fmtDate(t.depDue)}`),act:'pv-tab',v:'pay'},
         Object.assign(dayK,{act:'pv-tab',v:'trip'}),{lab:L('נוסעים','Travelers'),val:t.pax,sub:dn(t.dest)}]});
     if(st==='sent')steps.push({sev:'todo',tx:L('לעבור על ההצעה ולאשר','Review the proposal and accept it'),sub:L(`מקדמה ${usd(dep$)} אחרי האישור`,`A ${usd(dep$)} deposit follows acceptance`),b:L('לאשר','Accept'),a:'pl-accept',v:t.id});
@@ -12870,7 +12889,7 @@ function plTrip(p,c,t){
     else{
       const pp=plPP(t),dep$=r2(cn.rev*t.pct/100),inc=plIncluded(t);
       prop=`<div class="card hc-card pl-prop"><div class="hc-h"><h3>${L('סיכום ההצעה','Proposal summary')}</h3>${st==='sent'?`<span class="hc-pill blue">${L('ממתינה לאישור שלכם','Waiting for you')}</span>`:`<span class="hc-pill green">${L('אושרה','Accepted')}</span>`}</div>
-       <div class="pl-price"><div><span class="muted small">${L('מחיר לנוסע','Price per traveler')}</span><b>${usd(pp)}</b></div><div><span class="muted small">${L(`סך הכל ל-${t.pax}`,`Total for ${t.pax}`)}</span><b>${usd(cn.rev)}</b></div><div><span class="muted small">${L(`מקדמה ${t.pct}%`,`Deposit ${t.pct}%`)}</span><b>${usd(dep$)}</b><small class="muted">${L('עד','due')} ${fmtDate(t.depDue)}</small></div></div>
+       <div class="pl-price"><div><span class="muted small">${L('מחיר לנוסע','Price per traveler')}</span><b>${usd(pp,2)}</b></div><div><span class="muted small">${L(`סך הכל ל-${t.pax}`,`Total for ${t.pax}`)}</span><b>${usd(cn.rev)}</b></div><div><span class="muted small">${L(`מקדמה ${t.pct}%`,`Deposit ${t.pct}%`)}</span><b>${usd(dep$)}</b><small class="muted">${L('עד','due')} ${fmtDate(t.depDue)}</small></div></div>
        <h4>${L('כלול במחיר','Included')}</h4><ul class="pl-inc">${inc.map(x=>`<li>${ic('check')} ${x}</li>`).join('')}</ul>
        <div class="pl-act">${st==='sent'?`<button class="hc-btn mint" data-act="pl-accept" data-v="${t.id}">${ic('check')} ${L('אישור ההצעה','Accept proposal')}</button>`:''}
         <button class="btn" data-act="pl-land" aria-pressed="${!!S.plLand}">${ic('link')} ${S.plLand?L('הסתרת דף ההצעה','Hide proposal page'):L('דף ההצעה','Open proposal page')}</button></div>
@@ -12900,12 +12919,12 @@ function plPay(p,c,t){
   const cnt=k=>k==='open'?m.openN:k==='late'?m.lateN:m.rows.length;
   return `<div class="hc">${plChips(c,t)}<div class="card hc-card"><div class="hc-h"><h3>${L('תשלומים לפי משק בית','Payments by household')}</h3><span class="muted small">${L('מחיר לנוסע','Per traveler')} ${usd(m.g.perHead,2)}</span></div>
    <div class="pl-chips pl-flt" role="group" aria-label="${L('סינון','Filter')}">${[['all',L('הכל','All')],['open',L('פתוח','Open')],['late',L('באיחור','Late')]].map(x=>`<button class="pl-chip${f===x[0]?' on':''}" data-act="pl-flt" data-v="${x[0]}" aria-pressed="${f===x[0]}"><b>${x[1]}</b> <small>${cnt(x[0])}</small></button>`).join('')}</div>
-   <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th class="n">${L('סכום','Amount')}</th><th class="pl-hm">${L('מקדמה / יתרה','Deposit / balance')}</th><th class="n">${L('פתוח','Open')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
-    <tbody>${rows.map(r=>`<tr><td><b><bdi>${esc(r.name)}</bdi></b><div class="muted small">${r.size===1?L('נוסע אחד','1 traveler'):paxL(r.size)}</div></td><td class="n">${usd(r.amt,2)}</td>
-      <td class="small pl-hm">${r.depPaid?ic('check'):ic('clock')} ${L('מקדמה','Deposit')} ${usd(r.dep,2)}<br>${r.balPaid?ic('check'):ic('clock')} ${L('יתרה','Balance')} ${usd(r.bal,2)}</td>
-      <td class="n"><b>${usd(r.open,2)}</b></td>
-      <td>${plStatusPill(r)}${r.open>0.005?`<div><button class="btn sm pl-rm" data-act="pl-remind" data-v="${esc(r.name)}" ${plRem[t.id+'|'+r.name]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[t.id+'|'+r.name]?L('התזכורת נשלחה','Reminder sent'):L('שליחת תזכורת','Send reminder')}</button></div>`:''}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין משקי בית במסנן הזה.','No households in this filter.')}</td></tr>`}</tbody>
-    <tfoot><tr><td>${L('כל משקי הבית','All households')} <span class="muted small">(${m.rows.length})</span></td><td class="n">${usd(m.amt,2)}</td><td class="small pl-hm">${L('נגבה','Collected')} ${usd(m.paid,2)}</td><td class="n">${usd(m.open,2)}</td><td>${m.pct}%</td></tr></tfoot></table></div>
+   <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('מקדמה / יתרה','Deposit / balance')}</th><th class="n">${L('פתוח','Open')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td><b><bdi>${esc(r.name)}</bdi></b><div class="muted small">${r.size===1?L('נוסע אחד','1 traveler'):paxL(r.size)}</div></td><td class="n" data-l="${L('סכום','Amount')}">${usd(r.amt,2)}</td>
+      <td class="small" data-l="${L('מקדמה / יתרה','Deposit / balance')}">${r.depPaid?ic('check'):ic('clock')} ${L('מקדמה','Deposit')} ${usd(r.dep,2)}<br>${r.balPaid?ic('check'):ic('clock')} ${L('יתרה','Balance')} ${usd(r.bal,2)}</td>
+      <td class="n" data-l="${L('פתוח','Open')}"><b>${usd(r.open,2)}</b></td>
+      <td class="pl-act-c">${plStatusPill(r)}${r.open>0.005?`<div><button class="btn sm pl-rm" data-act="pl-remind" data-v="${esc(r.name)}" ${plRem[t.id+'|'+r.name]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[t.id+'|'+r.name]?L('התזכורת נשלחה','Reminder sent'):L('שליחת תזכורת','Send reminder')}</button></div>`:''}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין משקי בית במסנן הזה.','No households in this filter.')}</td></tr>`}</tbody>
+    <tfoot><tr><td>${L('כל משקי הבית','All households')} <span class="muted small">(${m.rows.length})</span></td><td class="n" data-l="${L('סכום','Amount')}">${usd(m.amt,2)}</td><td class="small" data-l="${L('נגבה','Collected')}">${L('נגבה','Collected')} ${usd(m.paid,2)}</td><td class="n" data-l="${L('פתוח','Open')}">${usd(m.open,2)}</td><td data-l="${L('נגבה','Collected')}">${m.pct}%</td></tr></tfoot></table></div>
    <p class="small muted">${L('תשלומים בכרטיס אשראי נעשים בקישור האישי של כל משק בית. הדגמה: לא מועבר כסף.','Households pay by card through their own link. Demo: no money moves.')}</p></div></div>`;
 }
 
@@ -12919,9 +12938,9 @@ function plPeople(p,c,t){
    <div class="pl-chips pl-flt" role="group" aria-label="${L('סינון','Filter')}">${[['all',L('כולם','Everyone'),t.pax],['todo',L('חסר משהו','Needs attention'),inc.length&&f!=='all'?inc.length:t.trav.filter(x=>!plFormsDone(x)||(intl&&x.pass==='Missing')).length]].map(x=>`<button class="pl-chip${f===x[0]?' on':''}" data-act="pl-pf" data-v="${x[0]}" aria-pressed="${f===x[0]}"><b>${x[1]}</b> <small>${x[2]}</small></button>`).join('')}</div>
    <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('נוסע','Traveler')}</th>${OP_FORMS.map(fm=>`<th>${L(fm[1][0],fm[1][1])}</th>`).join('')}${intl?`<th>${L('דרכון','Passport')}</th>`:''}<th></th></tr></thead>
     <tbody>${rows.map(({x,i})=>{const need=!plFormsDone(x)||(intl&&x.pass==='Missing'),k=t.id+'|t'+i;
-      return `<tr><td><b><bdi>${esc(x.n)}</bdi></b><div class="muted small"><bdi>${esc(x.g)}</bdi></div></td>${OP_FORMS.map(fm=>`<td>${plFormPill(x,fm[0])}</td>`).join('')}
-      ${intl?`<td>${x.pass==='Missing'?pillF(L('חסר','Missing'),'amber'):opPassWarn(t,x)?pillF(L('תוקף קצר','Check expiry'),'amber'):pillF(`${ic('check')} ${L('התקבל','Received')}`,'green')}</td>`:''}
-      <td>${need?`<button class="btn sm pl-rm" data-act="pl-rem-trav" data-v="${t.id}|${i}" ${plRem[k]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[k]?L('נשלח','Sent'):L('תזכורת','Remind')}</button>`:''}</td></tr>`;}).join('')||`<tr><td colspan="${5+(intl?1:0)}" class="muted">${L('כל הנוסעים השלימו הכל.','Everyone has finished everything.')}</td></tr>`}</tbody></table></div>
+      return `<tr><td><b><bdi>${esc(x.n)}</bdi></b><div class="muted small"><bdi>${esc(x.g)}</bdi></div></td>${OP_FORMS.map(fm=>`<td data-l="${L(fm[1][0],fm[1][1])}">${plFormPill(x,fm[0])}</td>`).join('')}
+      ${intl?`<td data-l="${L('דרכון','Passport')}">${x.pass==='Missing'?pillF(L('חסר','Missing'),'amber'):opPassWarn(t,x)?pillF(L('תוקף קצר','Check expiry'),'amber'):pillF(`${ic('check')} ${L('התקבל','Received')}`,'green')}</td>`:''}
+      <td class="pl-act-c">${need?`<button class="btn sm pl-rm" data-act="pl-rem-trav" data-v="${t.id}|${i}" ${plRem[k]?'aria-disabled="true"':''}>${ic('mail')} ${plRem[k]?L('נשלח','Sent'):L('תזכורת','Remind')}</button>`:''}</td></tr>`;}).join('')||`<tr><td colspan="${5+(intl?1:0)}" class="muted">${L('כל הנוסעים השלימו הכל.','Everyone has finished everything.')}</td></tr>`}</tbody></table></div>
    ${inc.length>lim?`<button class="hc-more" data-act="pl-all">${L(`ועוד ${inc.length-lim} נוסעים`,`and ${inc.length-lim} more`)} ${ic('chev','flip')}</button>`:S.plAll&&inc.length>12?`<button class="hc-more" data-act="pl-all">${L('פחות','Show fewer')} ${ic('chev','flip')}</button>`:''}
    <p class="small muted">${L('תזכורות נשלחות לנוסעים בדוא"ל (הדגמה).','Reminders go to travelers by email (simulated).')}</p></div></div>`;
 }
@@ -12930,13 +12949,13 @@ function plPeople(p,c,t){
 function plDocs(p,c,t){
   const cn=calc(t),st=plState(t),m=plMoney(t);
   const prop=`<div class="card hc-card"><div class="hc-h"><h3>${L('ההצעה','The proposal')}</h3><span class="hc-pill ${st==='accepted'||st==='booked'?'green':'blue'}">${st==='draft'?L('בהכנה','In preparation'):st==='sent'?L('נשלחה','Sent'):L('אושרה','Accepted')}</span></div>
-    <p><b><bdi>${esc(t.name)}</bdi></b><br><span class="muted small">${fmtDate(t.dep)} - ${fmtDate(endOf(t))} · ${paxL(t.pax)}${st==='draft'?'':` · ${usd(plPP(t))} ${L('לנוסע','per traveler')}`}</span></p>
+    <p><b><bdi>${esc(t.name)}</bdi></b><br><span class="muted small">${fmtDate(t.dep)} - ${fmtDate(endOf(t))} · ${paxL(t.pax)}${st==='draft'?'':` · ${usd(plPP(t),2)} ${L('לנוסע','per traveler')}`}</span></p>
     <div class="pl-act"><button class="btn" data-act="pl-print">${ic('printer')} ${L('מסלול להדפסה (PDF)','Itinerary, print as PDF')}</button>${st==='draft'?'':`<button class="btn" data-act="pv-tab" data-v="trip">${ic('document')} ${L('סיכום ההצעה','Proposal summary')}</button>`}</div></div>`;
   let inv='';
   if(m){const docs=incomeDocs(t).docs,lab={deal:L('חשבונית עסקה','Deal invoice'),receipt:L('קבלה','Receipt')},rs=docs.slice(0,8);
     inv=`<div class="card hc-card"><div class="hc-h"><h3>${L('חשבוניות וקבלות','Invoices and receipts')}</h3><span class="muted small">${docs.length}</span></div>
-     <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th>${L('מסמך','Document')}</th><th>${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th>${L('סטטוס','Status')}</th></tr></thead>
-     <tbody>${rs.map(d=>`<tr><td><bdi>${esc(d.name)}</bdi></td><td>${lab[d.type]} <span class="muted small">#${d.no} · ${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</span></td><td>${fmtDate(d.date)}</td><td class="n">${usd(d.amt,2)}</td><td>${d.st==='paid'?pillF(L('שולם','Paid'),'green'):pillF(L('ממתין לתשלום','Awaiting payment'),'amber')}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין מסמכים עדיין.','No documents yet.')}</td></tr>`}</tbody></table></div>
+     <div class="scroll"><table class="tbl pl-tbl"><thead><tr><th>${L('משק בית','Household')}</th><th>${L('מסמך','Document')}</th><th class="pl-dt">${L('תאריך','Date')}</th><th class="n">${L('סכום','Amount')}</th><th class="pl-stc">${L('סטטוס','Status')}</th></tr></thead>
+     <tbody>${rs.map(d=>`<tr><td><bdi>${esc(d.name)}</bdi></td><td>${lab[d.type]}<div class="muted small">#${d.no} · ${d.kind==='dep'?L('מקדמה','Deposit'):L('יתרה','Balance')}</div></td><td class="pl-dt" data-l="${L('תאריך','Date')}">${fmtDate(d.date)}</td><td class="n" data-l="${L('סכום','Amount')}">${usd(d.amt,2)}</td><td class="pl-stc">${d.st==='paid'?pillF(L('שולם','Paid'),'green'):pillF(L('ממתין לתשלום','Awaiting payment'),'amber')}</td></tr>`).join('')||`<tr><td colspan="5" class="muted">${L('אין מסמכים עדיין.','No documents yet.')}</td></tr>`}</tbody></table></div>
      ${docs.length>rs.length?`<p class="small muted">${L(`מוצגים ${rs.length} מתוך ${docs.length} מסמכים. השאר אצל הסוכן.`,`Showing ${rs.length} of ${docs.length}. Your agent has the rest.`)}</p>`:''}</div>`;}
   else inv=`<div class="card hc-card"><div class="hc-h"><h3>${L('חשבוניות וקבלות','Invoices and receipts')}</h3></div><p class="muted">${L('חשבוניות מופקות אחרי אישור ההזמנה.','Invoices are issued once the booking is confirmed.')}</p></div>`;
   const waiver=`<div class="card hc-card pl-waiver"><div class="hc-h"><h3>${L('כתב ויתור לדוגמה','Waiver template')}</h3><span class="hc-pill blue">${L('נוסח לדוגמה','Sample')}</span></div>
@@ -12944,7 +12963,7 @@ function plDocs(p,c,t){
     <blockquote>${L(`אני מאשר/ת שהבנתי את מסלול הטיול ואת הסיכונים הכרוכים בנסיעה קבוצתית, ושהמידע הרפואי שמסרתי מדויק. אני מסכים/ה לפעול לפי הנחיות מנהל/ת הקבוצה ומדריך/ת הטיול, ומשחרר/ת את ${AGENCY} מאחריות לאובדן או נזק שלא נגרמו ברשלנות.`,
       `I confirm that I understand the itinerary and the risks of group travel, that the medical information I gave is accurate, and that I will follow the directions of the group leader and tour director. I release ${AGENCY} from liability for loss or injury not caused by its negligence.`)}</blockquote>
     <p class="small muted">${L('כל נוסע חותם בנפרד דרך טופס כתב הוויתור שלו.','Each traveler signs separately through their own waiver form.')}</p></div>`;
-  return `<div class="hc">${plChips(c,t)}<div class="hc-grid"><div class="hc-c7">${prop}${inv}</div><div class="hc-c5">${waiver}</div></div></div>`;
+  return `<div class="hc">${plChips(c,t)}<div class="hc-grid"><div class="hc-c7">${prop}</div><div class="hc-c5">${waiver}</div><div class="hc-c12">${inv}</div></div></div>`;
 }
 
 /* ---------- messages ---------- */
@@ -12960,7 +12979,7 @@ function plMsgs(p,c,t){
 }
 
 /* ---------- registration ---------- */
-const PL_TABS=[['home',['בית','Home'],'home'],['trip',['הטיול','Trip'],'plane'],['pay',['תשלומים','Payments'],'wallet'],['people',['נוסעים','Travelers'],'users2'],['docs',['מסמכים','Documents'],'document'],['msgs',['הודעות','Messages'],'mail']];
+const PL_TABS=[['home',['בית','Home'],'home'],['trip',['הטיול','Trip'],'plane'],['pay',['תשלומים','Payments'],'wallet'],['people',['נוסעים','Travelers'],'users2'],['docs',['מסמכים','Docs'],'document'],['msgs',['הודעות','Messages'],'mail']];
 pvRegister('leader',{role:['ראש/ת קבוצה','Group leader'],label:['פורטל ראש הקבוצה','Group leader portal'],kind:'client',feat:'pleader',
   people:()=>plClients().map(c=>({id:c.id,name:c.contact.name,sub:c.name})),
   def:(()=>{const t=TRIPS.find(x=>x.id==='nas'),c=t&&CLIENTS.find(x=>x.name===t.client);return c?c.id:'';})(),

@@ -12,10 +12,10 @@ The same text shows in the demo: Settings menu, "Show developer notes". API path
 | Trip tabs: Quotation | 6 | 6 |
 | Trip tabs: Operation | 5 | 5 |
 | Trip tabs: Finance | 4 | 4 |
-| Drawers and modals | 10 | 10 |
-| **Total** | **46** | **46 (100%)** |
+| Drawers and modals | 33 | 33 |
+| **Total** | **69** | **69 (100%)** |
 
-Status of the documented screens: 22 Live, 23 Pilot, 0 Roadmap (as in `FEAT`, `v6/s9b_status.js`).
+Status of the documented screens: 22 Live, 24 Pilot, 22 Roadmap (as in `FEAT`, `v6/s9b_status.js`).
 
 ## Contents
 
@@ -71,6 +71,29 @@ Status of the documented screens: 22 Live, 23 Pilot, 0 Roadmap (as in `FEAT`, `v
   - [Proposal: Agents table](#trip-quote-table) (`trip:quote:table`)
   - [Proposal: Landing page](#trip-quote-landing) (`trip:quote:landing`)
   - [undefined](#trip-ops) (`trip:ops`)
+  - [Portal frame (external viewpoints)](#portal-frame) (`portal:frame`)
+  - [Home, operations coordinator](#home-ops) (`home:ops`)
+  - [Group leader portal: home](#portal-leader-home) (`portal:leader:home`)
+  - [Group leader portal: trip](#portal-leader-trip) (`portal:leader:trip`)
+  - [Group leader portal: payments](#portal-leader-pay) (`portal:leader:pay`)
+  - [Group leader portal: travelers](#portal-leader-people) (`portal:leader:people`)
+  - [Group leader portal: documents](#portal-leader-docs) (`portal:leader:docs`)
+  - [Group leader portal: messages](#portal-leader-msgs) (`portal:leader:msgs`)
+  - [Traveler app: home](#portal-traveler-home) (`portal:traveler:home`)
+  - [Traveler app: pay](#portal-traveler-pay) (`portal:traveler:pay`)
+  - [Traveler app: forms](#portal-traveler-forms) (`portal:traveler:forms`)
+  - [Traveler app: plan](#portal-traveler-plan) (`portal:traveler:plan`)
+  - [Traveler app: help](#portal-traveler-help) (`portal:traveler:help`)
+  - [Supplier portal: home](#portal-supplier-home) (`portal:supplier:home`)
+  - [Supplier portal: booking requests](#portal-supplier-req) (`portal:supplier:req`)
+  - [Supplier portal: rooming lists](#portal-supplier-list) (`portal:supplier:list`)
+  - [Supplier portal: invoices](#portal-supplier-inv) (`portal:supplier:inv`)
+  - [Supplier portal: queries](#portal-supplier-disp) (`portal:supplier:disp`)
+  - [Supplier portal: payments](#portal-supplier-pay) (`portal:supplier:pay`)
+  - [Run sheet: day](#portal-guide-day) (`portal:guide:day`)
+  - [Run sheet: passengers](#portal-guide-pax) (`portal:guide:pax`)
+  - [Run sheet: vouchers](#portal-guide-vouch) (`portal:guide:vouch`)
+  - [Run sheet: notes](#portal-guide-notes) (`portal:guide:notes`)
 
 ## Role homes
 
@@ -2010,3 +2033,852 @@ Preview what the client sees at the public link and let the client accept.
 `trip:ops` · Status: -
 
 **Roles.** View: -. Act: -.
+
+<a id="portal-frame"></a>
+
+### Portal frame (external viewpoints)
+
+`portal:frame` · Status: Roadmap
+
+One minimal, mobile-first shell for every external viewpoint: who you are viewing as, a way back to the agency, and the portal tabs.
+
+**Roles.** View: leader, traveler, supplier, guide. Act: leader, traveler, supplier, guide.
+
+**Data.** `S.pv {k,id,tab}`, `PORTALS registry`
+
+| Control | Does | Guard |
+|---|---|---|
+| Person picker | Switches the person inside the portal | PORTALS[k].people() |
+| View as | Switches to any agency role or portal | Grouped: Agency team, Client side, Suppliers and field |
+| Back to agency | Leaves the portal (S.pv=null) and opens Home | Always available |
+
+**Rules**
+- External people are not agency roles (not in ROLE_KEYS); access is by invitation link (proposed)
+- Bottom tab bar under 721 px, top tabs above
+- No Maya, tour or meeting buttons inside portals
+
+**States**
+- empty: A portal with no people shows its first tab with an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/me (proposed)`
+
+**Tests**
+- `TEST pv portal frame`
+
+**Code**
+- `v6/s13_portal.js: pvRegister, pvOpen, pvShell, pvRender, pvDays, pvDayCard, pvHousehold`
+- `v6/m_portal.css`
+
+<a id="home-ops"></a>
+
+### Home, operations coordinator
+
+`home:ops` · Status: Pilot
+
+Give the operations coordinator one screen that shows which departures are ready, and the tasks, suppliers, room blocks and documents that still need her.
+
+**Roles.** View: ops, manager. Act: ops. Permissions: `proj.viewAll`, `ops.tasks`, `ops.suppliers`, `ops.manifest`, `forms.build`.
+
+**Data.** `Trip.stage`, `Trip.dep`, `Trip.tasks`, `Trip.sups`, `Trip.room`, `Trip.trav.form`, `Trip.trav.pass`, `Group.depPaid`
+
+| Control | Does | Guard |
+|---|---|---|
+| Open next departure | Opens the operation dashboard of the nearest Operations trip | First Operations trip with dep >= today |
+| Tasks this week / tile | Scrolls to the Tasks due card | Open tasks with due <= today + 7 days, overdue first |
+| Done (task) | Marks the task done (opToggleTask) | Requires ops.tasks (matrix only) |
+| Send request (supplier) | Moves the supplier to Pending (spSetFlow) and toasts | Requires ops.suppliers; contact-stage suppliers only |
+| Send forms | Marks "not sent" traveler forms as sent (opSendForms), copies the link | Per trip |
+
+**Rules**
+- `Gauge = mean dbReadiness(t).overall of Operations trips departing within 90 days`
+- `Suppliers to confirm = t.sups with spFlow(s) !== "approved"`
+- `Blocks releasing = blockOf(t).cutoff within 45 days of today`
+- `Forms missing = traveler form values (registration, medical, waiver) that are not "done"`
+- `Vouchers to issue = approved suppliers on Operations trips`
+- Real hotels and venues never appear next to negative wording; exposure shows only after the release date and only for fictional hotels
+
+**States**
+- empty: No Operations trips: a card says approved quotes appear here.
+- loading: Not applicable (local data).
+- error: Cards with nothing to do are hidden.
+
+**Suggested API**
+- `GET /v1/t/{tenantId}/dashboard/operations (proposed)`
+- `PATCH /v1/t/{tenantId}/trips/{id}/suppliers/{n} (proposed)`
+
+**Tests**
+- `TEST oc operations home`
+
+**Code**
+- `v6/s13_oc.js: hcOps, ocModel, ocBoard, ocTasks, ocSups, ocBlocks, ocDocs`
+- `v6/m_oc.css`
+
+<a id="portal-leader-home"></a>
+
+### Group leader portal: home
+
+`portal:leader:home` · Status: Roadmap
+
+The leader sees how much of the group price is collected, who still owes forms, and the one next step. For a quote it shows the proposal state and, when Sent, an Accept button.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `CLIENTS[].contact`, `TRIPS where t.client===c.name and not Lost`, `groupsCalc(t)`, `calc(t)`, `t.trav[].form`
+
+| Control | Does | Guard |
+|---|---|---|
+| Accept proposal | Calls prAccept(t): Sent becomes Negotiating, stage stays Quote | Only for qst Sent; never winQuote |
+| Remind unpaid households | Simulated toast, no email sent | Only when a balance is open |
+
+**Rules**
+- Default trip is the nearest upcoming non-Lost trip, else the most recent
+- `Gauge = collected / group price`
+- Draft: no accept, "being prepared"; Negotiating and Approval: "Accepted"
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-leader-trip"></a>
+
+### Group leader portal: trip
+
+`portal:leader:trip` · Status: Roadmap
+
+The day-by-day itinerary with clock times, hotel and departure point. For a quote, the proposal summary: price per traveler, deposit, inclusions and the public proposal page.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `pvDays(t)`, `t.room.hotel`, `calc(t).byType`, `prLanding(t) (preview)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Open proposal page | Shows the public proposal page inline | Quotes that are not Draft |
+
+**Rules**
+- Departure point is a fixed demo placeholder at 7:00 AM
+- Commissions and margins never appear
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-leader-pay"></a>
+
+### Group leader portal: payments
+
+`portal:leader:pay` · Status: Roadmap
+
+Payment status per household with a totals footer that ties to the agency books.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `groupsCalc(t).rows`, `calc(t).rev`
+
+| Control | Does | Guard |
+|---|---|---|
+| Send reminder | Simulated toast per household | Only rows with a balance open |
+| Filter | All / Open / Late | Footer always shows all households |
+
+**Rules**
+- `Footer amount = group price; collected = sum of paid; open = amount - collected`
+- Quotes show the deposit and balance schedule instead
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-leader-people"></a>
+
+### Group leader portal: travelers
+
+`portal:leader:people` · Status: Roadmap
+
+Which travelers have finished registration, medical and waiver forms, and passports for international trips.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `t.trav[].form`, `t.trav[].pass`, `opPassWarn(t,x)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Remind | Simulated toast per traveler | Only when something is missing |
+
+**Rules**
+- `Complete = all three forms done`
+- Passport column only on international trips
+- The rooming-preference form has no per-traveler data here
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-leader-docs"></a>
+
+### Group leader portal: documents
+
+`portal:leader:docs` · Status: Roadmap
+
+The proposal, the household invoices and receipts, the printable itinerary and a sample waiver.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `incomeDocs(t).docs`, `calc(t)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Itinerary, print as PDF | window.print() in a try/catch | Always |
+
+**Rules**
+- Waiver wording is a sample and says it must be reviewed by counsel
+- Quote-stage trips have no invoices
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-leader-msgs"></a>
+
+### Group leader portal: messages
+
+`portal:leader:msgs` · Status: Roadmap
+
+A thread with the trip agent. The seed is deterministic per trip; the leader can add messages.
+
+**Roles.** View: leader. Act: leader.
+
+**Data.** `PVMSG[tripId] (PERSIST pv-msgs)`, `agn(t.agent)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Send | Appends {from:"leader",at,text} to the thread | Non-empty text, 1000 characters |
+
+**Rules**
+- The agent does not reply automatically; the note says "Your agent replies by email."
+- Messages live on this laptop only
+
+**States**
+- empty: A client with no non-Lost trip is not listed. A quote has no households, so Pay and Travelers explain what opens after acceptance.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/trips (proposed)`
+
+**Tests**
+- `TEST pl group leader portal`
+
+**Code**
+- `v6/s13_pl.js`
+- `v6/m_pl.css`
+
+<a id="portal-traveler-home"></a>
+
+### Traveler app: home
+
+`portal:traveler:home` · Status: Roadmap
+
+The traveler's own readiness, balance and what is left to do before departure.
+
+**Roles.** View: traveler. Act: traveler.
+
+**Data.** `t.trav[i]`, `groupsCalc(t).rows`, `t.dep`, `pt-room`
+
+| Control | Does | Guard |
+|---|---|---|
+| Pay balance | Opens the Pay tab | Shown only when the household has an open amount |
+| Fill forms | Opens the Forms tab | Always available |
+
+**Rules**
+- Portal access is by invitation link (proposed); the traveler sees only their own household
+- Simulated payment: no card data, no money moves
+- Phone-width column on desktop, full width on phones
+- `Readiness = equal parts: forms done (reg, medical, waiver), household paid, passport received (international only)`
+
+**States**
+- empty: A trip with no travelers shows an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/me (proposed)`
+
+**Tests**
+- `TEST pt traveler app`
+
+**Code**
+- `v6/s13_pt.js`
+- `v6/m_pt.css`
+
+<a id="portal-traveler-pay"></a>
+
+### Traveler app: pay
+
+`portal:traveler:pay` · Status: Roadmap
+
+The household amount, deposit and balance, and a simulated card payment.
+
+**Roles.** View: traveler. Act: traveler.
+
+**Data.** `t.groups[gi].depPaid`, `t.groups[gi].balPaid`, `t.depDue`, `t.balDue`, `pvPayLink`
+
+| Control | Does | Guard |
+|---|---|---|
+| Pay now | Opens the simulated card step | Deposit first if unpaid, else balance |
+| Confirm and pay | Sets depPaid or balPaid on the household | Collected rises by the amount; revenue and profit do not change |
+| Copy link | Copies the household payment link | pay.redbudtours.example placeholder |
+
+**Rules**
+- Portal access is by invitation link (proposed); the traveler sees only their own household
+- Simulated payment: no card data, no money moves
+- Phone-width column on desktop, full width on phones
+
+**States**
+- empty: A trip with no travelers shows an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `POST /v1/portal/{token}/payments (proposed)`
+
+**Tests**
+- `TEST pt traveler app`
+
+**Code**
+- `v6/s13_pt.js`
+- `v6/m_pt.css`
+
+<a id="portal-traveler-forms"></a>
+
+### Traveler app: forms
+
+`portal:traveler:forms` · Status: Roadmap
+
+The four traveler forms (registration, medical, waiver, rooming), filled in inline.
+
+**Roles.** View: traveler. Act: traveler.
+
+**Data.** `x.form.reg|med|waiver`, `pt-room (4th form)`, `FB forms (published fields)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Fill in / Review | Opens the form inline | Fields come from the form builder |
+| Submit | Sets the form status to done | Required fields checked; waiver needs acceptance |
+
+**Rules**
+- Portal access is by invitation link (proposed); the traveler sees only their own household
+- Simulated payment: no card data, no money moves
+- Phone-width column on desktop, full width on phones
+- Waiver wording is a sample, to be reviewed by counsel
+- The rooming form is not counted in "forms missing"
+
+**States**
+- empty: A trip with no travelers shows an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `PUT /v1/portal/{token}/forms/{form} (proposed)`
+
+**Tests**
+- `TEST pt traveler app`
+
+**Code**
+- `v6/s13_pt.js`
+- `v6/m_pt.css`
+
+<a id="portal-traveler-plan"></a>
+
+### Traveler app: plan
+
+`portal:traveler:plan` · Status: Roadmap
+
+The trip day by day with clock times, hotel and meeting point.
+
+**Roles.** View: traveler. Act: traveler.
+
+**Data.** `pvDays(t)`, `t.room.hotel`
+
+**Rules**
+- Portal access is by invitation link (proposed); the traveler sees only their own household
+- Simulated payment: no card data, no money moves
+- Phone-width column on desktop, full width on phones
+- Day 1 starts at the 07:00 demo departure; the meeting point is a fixed placeholder
+- Today's day is highlighted only while the trip is running
+
+**States**
+- empty: A trip with no travelers shows an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/itinerary (proposed)`
+
+**Tests**
+- `TEST pt traveler app`
+
+**Code**
+- `v6/s13_pt.js`
+- `v6/m_pt.css`
+
+<a id="portal-traveler-help"></a>
+
+### Traveler app: help
+
+`portal:traveler:help` · Status: Roadmap
+
+Who to call, the traveler's emergency contact, diet and passport status.
+
+**Roles.** View: traveler. Act: traveler.
+
+**Data.** `GUIDES`, `STAFF`, `x.emerg`, `x.diet`, `x.passNo`, `opPassWarn`
+
+| Control | Does | Guard |
+|---|---|---|
+| Call | Dials the number (tel: link) | Agency 24/7 line, tour director, agent |
+
+**Rules**
+- Portal access is by invitation link (proposed); the traveler sees only their own household
+- Simulated payment: no card data, no money moves
+- Phone-width column on desktop, full width on phones
+- Passport shown masked; warning when valid under 6 months after return
+
+**States**
+- empty: A trip with no travelers shows an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/contacts (proposed)`
+
+**Tests**
+- `TEST pt traveler app`
+
+**Code**
+- `v6/s13_pt.js`
+- `v6/m_pt.css`
+
+<a id="portal-supplier-home"></a>
+
+### Supplier portal: home
+
+`portal:supplier:home` · Status: Roadmap
+
+What needs the supplier today: bookings to confirm, arrivals, invoices awaiting payment and open queries.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `SUPPLIERS (fictional)`, `t.sups`, `tripGaps(t)`, `effAmt(inv)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Confirm bookings | Opens the requests tab | Always available |
+| Invoices | Opens the invoices tab | Always available |
+
+**Rules**
+- `Gauge = invoiced amount paid, approved or credited, over all invoiced`
+- KPI tiles open the matching tab
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-supplier-req"></a>
+
+### Supplier portal: booking requests
+
+`portal:supplier:req` · Status: Roadmap
+
+Every booking the agency asked this supplier for, with Confirm and Decline.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `t.sups entry (st, flow)`, `t.lines`
+
+| Control | Does | Guard |
+|---|---|---|
+| Confirm | flow=approved, st=Confirmed (same writes as spSetFlow) | The agency sees it in the trip Suppliers tab |
+| Decline | flow=contact, st=Not sent | Agency is notified (simulated) |
+
+**Rules**
+- Supplier acts as the supplier: no agency permission gate (A1)
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-supplier-list"></a>
+
+### Supplier portal: rooming lists
+
+`portal:supplier:list` · Status: Roadmap
+
+Rooming list for lodging and head count, dietary counts and service times for other services.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `t.trav`, `blockOf(t)`, `pvDays(t)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Print | Prints the page | window.print in try/catch |
+| Show all rooms | Expands the room table | First 8 rooms shown |
+
+**Rules**
+- Upcoming trips only
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-supplier-inv"></a>
+
+### Supplier portal: invoices
+
+`portal:supplier:inv` · Status: Roadmap
+
+Invoices the supplier submitted, in neutral words, with the expected payment date.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `l.inv`, `invStatus(l)`, `terms.balDays`
+
+**Rules**
+- Status order: Credit issued, Approved, Paid, Matched, Query open, Received, Not invoiced
+- `Expected payment = trip end + terms.balDays`
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-supplier-disp"></a>
+
+### Supplier portal: queries
+
+`portal:supplier:disp` · Status: Roadmap
+
+Differences the agency found between the invoice and the agreed price, with two answers.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `tripGaps(t)`, `l.inv.st`, `l.inv.reply`
+
+| Control | Does | Guard |
+|---|---|---|
+| Issue credit | inv.credit += effAmt(inv) - planC(l); inv.st=credited (gapCredit) | Only for open or sent queries above zero |
+| Reply with documents | inv.reply=true and a toast | Query stays open |
+
+**Rules**
+- Wording: difference, query, credit; never overbilling or dispute
+- `Finance identity planProfit - amtDiff - fx - fcProfit = 0 still holds`
+- Meeting beat selects .ps-disp
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-supplier-pay"></a>
+
+### Supplier portal: payments
+
+`portal:supplier:pay` · Status: Roadmap
+
+Deposit and balance dates from the supplier terms, and the remittance history.
+
+**Roles.** View: supplier. Act: supplier.
+
+**Data.** `SUPPLIERS[].terms`, `l.inv.paid`, `l.inv.credit`
+
+**Rules**
+- `Deposit due = arrival - depDays; balance due = trip end + balDays`
+- Payments are simulated: no money moved
+- Fictional suppliers only: a real hotel or venue is never listed or shown
+- Portal access is by invitation link (proposed), so no agency permissions apply
+
+**States**
+- empty: A supplier with nothing to show gets a short explanation card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/supplier (proposed)`
+
+**Tests**
+- `TEST ps supplier portal`
+
+**Code**
+- `v6/s13_ps.js`
+- `v6/m_ps.css`
+
+<a id="portal-guide-day"></a>
+
+### Run sheet: day
+
+`portal:guide:day` · Status: Roadmap
+
+The day for the tour director: stops with clock times, a done tick per stop and the supplier contact per stop.
+
+**Roles.** View: guide. Act: guide.
+
+**Data.** `t.items (day, hrs) through pvDays`, `t.lines and SUPPLIERS contact`, `PVRUN (PERSIST pv-run)`, `GUIDES`
+
+| Control | Does | Guard |
+|---|---|---|
+| Trip and day chips | Pick the trip (default: nearest departure) and the day (default day 1) | S.pgTrip, S.pgDay |
+| Mark done | Ticks a stop; survives reload | PVRUN[tripId|day] |
+| Call supplier | Opens the phone dialer | Fictional suppliers only; real venues show the name and a neutral desk label |
+
+**Rules**
+- Access is by invitation link (proposed); the tour director is not an agency role
+- Real hotels and venues show their name and neutral wording only
+- Phone-first: large tap targets, high contrast, one column
+
+**States**
+- empty: A guide with no Operations trips sees an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/run/{trip}/day/{n} (proposed)`
+- `PUT /v1/portal/{token}/run/{trip}/stops/{id}/done (proposed)`
+
+**Tests**
+- `TEST pg tour director run sheet`
+
+**Code**
+- `v6/s13_pg.js: pgDay, pgPax, pgVouch, pgNotes, pgContact, pgLineFor`
+- `v6/m_pg.css`
+
+<a id="portal-guide-pax"></a>
+
+### Run sheet: passengers
+
+`portal:guide:pax` · Status: Roadmap
+
+The manifest with dietary and medical flags, emergency contacts to call, passport status on international trips and a local head count.
+
+**Roles.** View: guide. Act: guide.
+
+**Data.** `t.trav (diet, form.med, emerg, pass, passExp)`, `opPassWarn`
+
+| Control | Does | Guard |
+|---|---|---|
+| Flags only | Filters the manifest to travelers with a dietary or medical flag | diet is not None, or the medical form is not done |
+| Count heads | Ticks each traveler on board; the count stays on this device | Not saved |
+| Emergency contact | Calls the emergency contact | tel: link |
+
+**Rules**
+- Access is by invitation link (proposed); the tour director is not an agency role
+- Real hotels and venues show their name and neutral wording only
+- Phone-first: large tap targets, high contrast, one column
+
+**States**
+- empty: A guide with no Operations trips sees an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/run/{trip}/manifest (proposed)`
+
+**Tests**
+- `TEST pg tour director run sheet`
+
+**Code**
+- `v6/s13_pg.js: pgDay, pgPax, pgVouch, pgNotes, pgContact, pgLineFor`
+- `v6/m_pg.css`
+
+<a id="portal-guide-vouch"></a>
+
+### Run sheet: vouchers
+
+`portal:guide:vouch` · Status: Roadmap
+
+Vouchers for suppliers that are approved on the trip, with the number to show at the desk.
+
+**Roles.** View: guide. Act: guide.
+
+**Data.** `t.sups (spFlow approved)`, `spLine(t,s)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Show number | Read the number to the supplier desk | RB-<t.no>-<l.id> |
+
+**Rules**
+- Voucher number is RB-<trip no>-<component id>
+- A voucher appears only for an approved supplier
+
+**States**
+- empty: A guide with no Operations trips sees an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `GET /v1/portal/{token}/run/{trip}/vouchers (proposed)`
+
+**Tests**
+- `TEST pg tour director run sheet`
+
+**Code**
+- `v6/s13_pg.js: pgDay, pgPax, pgVouch, pgNotes, pgContact, pgLineFor`
+- `v6/m_pg.css`
+
+<a id="portal-guide-notes"></a>
+
+### Run sheet: notes
+
+`portal:guide:notes` · Status: Roadmap
+
+Notes from the road: incidents, changes to the plan and guest requests, per trip.
+
+**Roles.** View: guide. Act: guide.
+
+**Data.** `PVNOTE[tripId] (PERSIST pv-notes)`
+
+| Control | Does | Guard |
+|---|---|---|
+| Save note | Adds a note with type and day | Up to 500 characters |
+| Delete note | Removes the note | Local to the demo |
+
+**Rules**
+- Access is by invitation link (proposed); the tour director is not an agency role
+- Real hotels and venues show their name and neutral wording only
+- Phone-first: large tap targets, high contrast, one column
+
+**States**
+- empty: A guide with no Operations trips sees an empty-state card.
+- loading: Not applicable (local data).
+- error: A view that throws shows "This screen could not load."
+
+**Suggested API**
+- `POST /v1/portal/{token}/run/{trip}/notes (proposed)`
+- `DELETE /v1/portal/{token}/run/{trip}/notes/{id} (proposed)`
+
+**Tests**
+- `TEST pg tour director run sheet`
+
+**Code**
+- `v6/s13_pg.js: pgDay, pgPax, pgVouch, pgNotes, pgContact, pgLineFor`
+- `v6/m_pg.css`
