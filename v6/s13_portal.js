@@ -69,9 +69,9 @@ function pvShell(){
     <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
     ${p?avatarOf(p.name):''}</header>
    <div class="pv-rib" role="note"><span class="pv-rt">${ic('show')} ${L('צפייה בתור','You are viewing as')} <b><bdi>${esc(p?p.name:'')}</bdi></b> · ${L(P.role[0],P.role[1])}</span>
-    ${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
-    <span class="pv-sw">${viewAsSelect('pvrole')}</span>
-    <button class="hc-btn mint pv-back" data-act="pv-exit">${ic('left','flip')} ${L('חזרה לסוכנות','Back to agency')}</button></div>
+    <span class="pv-sel">${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
+    <span class="pv-sw">${viewAsSelect('pvrole')}</span></span>
+    <button class="hc-btn mint pv-back" data-act="pv-exit" aria-label="${L('חזרה לסוכנות','Back to agency')}">${ic('left','flip')} <span>${L('חזרה לסוכנות','Back to agency')}</span></button></div>
    ${tabs.length>1?`<nav class="pv-tabs" aria-label="${L('מסכים','Screens')}">${tabs.map(x=>`<button class="pv-tb${x[0]===tab?' on':''}" data-act="pv-tab" data-v="${x[0]}" ${x[0]===tab?'aria-current="page"':''}>${ic(x[3])}<span>${L(x[1],x[2])}</span></button>`).join('')}</nav>`:''}
    <main class="pv-main" id="view">${body}</main>
    <footer class="pv-foot small muted">${L('נתוני הדמו פיקטיביים: הסוכנות, האנשים והתשלומים. הפורטל הזה הוא תצוגה מקדימה.','Demo data: the agency, the people and the payments are fictional. This portal is a preview.')}</footer>

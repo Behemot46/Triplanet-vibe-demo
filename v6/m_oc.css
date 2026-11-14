@@ -1,0 +1,16 @@
+/* v8.4 operations coordinator home (s13_oc.js) */
+.hc-gl .oc-r svg{color:#FFAC82}.hc-gl .oc-a svg{color:#FFD666}.hc-gl .oc-f svg{color:var(--hero-mute)}
+.oc-tbl td,.oc-tbl th{vertical-align:middle}.oc-tbl .n{white-space:nowrap}
+.oc-rd{display:inline-flex;align-items:center;gap:6px}.oc-rd b{font-family:var(--f-num)}
+.oc-rd.ok .hc-ring .br{stroke:var(--green)}.oc-rd.mid .hc-ring .br{stroke:var(--amber)}.oc-rd.low .hc-ring .br{stroke:var(--red)}
+.oc-ov{color:var(--red);font-weight:600}
+.oc-fl{font-weight:600}
+.oc-docs .hc-steps li.info .hc-dot{background:var(--primary)}
+.oc-docs .hc-steps b,.oc-sups .hc-steps b{overflow-wrap:anywhere}
+.oc-docs .hc-steps div span.muted{display:block}
+.oc-bk{display:grid;gap:6px;padding:12px 0;border-bottom:1px dashed var(--line)}.oc-bk:last-child{border-bottom:0}
+.oc-bh{display:flex;flex-direction:column;gap:2px}.oc-bh b{overflow-wrap:anywhere}
+.oc-bn{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.oc-bn b{color:var(--ink);font-family:var(--f-num)}
+.oc-bw{color:var(--muted)}
+.oc .hc-card{min-width:0}
+@media (max-width:720px){.oc-tbl{min-width:640px}}

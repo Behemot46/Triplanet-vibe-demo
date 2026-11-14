@@ -1654,6 +1654,23 @@ button.pj-status{border:0;cursor:pointer}
 .stm-card{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 .rate-ro{display:inline-flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 
+/* v8.4 operations coordinator home (s13_oc.js) */
+.hc-gl .oc-r svg{color:#FFAC82}.hc-gl .oc-a svg{color:#FFD666}.hc-gl .oc-f svg{color:var(--hero-mute)}
+.oc-tbl td,.oc-tbl th{vertical-align:middle}.oc-tbl .n{white-space:nowrap}
+.oc-rd{display:inline-flex;align-items:center;gap:6px}.oc-rd b{font-family:var(--f-num)}
+.oc-rd.ok .hc-ring .br{stroke:var(--green)}.oc-rd.mid .hc-ring .br{stroke:var(--amber)}.oc-rd.low .hc-ring .br{stroke:var(--red)}
+.oc-ov{color:var(--red);font-weight:600}
+.oc-fl{font-weight:600}
+.oc-docs .hc-steps li.info .hc-dot{background:var(--primary)}
+.oc-docs .hc-steps b,.oc-sups .hc-steps b{overflow-wrap:anywhere}
+.oc-docs .hc-steps div span.muted{display:block}
+.oc-bk{display:grid;gap:6px;padding:12px 0;border-bottom:1px dashed var(--line)}.oc-bk:last-child{border-bottom:0}
+.oc-bh{display:flex;flex-direction:column;gap:2px}.oc-bh b{overflow-wrap:anywhere}
+.oc-bn{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}.oc-bn b{color:var(--ink);font-family:var(--f-num)}
+.oc-bw{color:var(--muted)}
+.oc .hc-card{min-width:0}
+@media (max-width:720px){.oc-tbl{min-width:640px}}
+
 /* v8 module op: tasks, master list, room blocks */
 .op-stats{margin-bottom:14px}
 .op-filters{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
@@ -1695,6 +1712,74 @@ button.pj-status{border:0;cursor:pointer}
 .op-btbl td{vertical-align:top}
 @media (max-width:600px){.op-fg>.small{min-width:100%}.op-tot{align-items:flex-start}}
 
+/* ---------- v8.4 tour director run sheet (s13_pg.js): phone first, high contrast, big tap targets ---------- */
+.pg-run{display:flex;flex-direction:column;gap:14px;font-size:16px;color:var(--ink)}
+.pg-run>*{margin:0!important}
+.pg-run label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:14px;color:var(--ink2)}
+.pg-run select,.pg-run textarea{font:400 16px var(--f-ui);padding:12px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);min-height:48px;box-sizing:border-box;width:100%}
+.pg-run textarea{resize:vertical;min-height:96px}
+/* trip and day chips */
+.pg-sel{display:flex;flex-direction:column;gap:8px}
+.pg-chips{display:flex;gap:8px;overflow-x:auto;padding-block-end:4px;scrollbar-width:thin}
+.pg-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-height:52px;padding:8px 16px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);font:inherit;cursor:pointer;text-align:start}
+.pg-chip b{font-size:15px;font-weight:700;white-space:nowrap}
+.pg-chip small{font-size:12.5px;color:var(--muted)}
+.pg-chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pg-chip.on small{color:var(--bg);opacity:.8}
+.pg-d{min-width:64px;align-items:center}
+.pg-one{margin:0}
+/* hero: compact on phones */
+.pg-hero .hc-gauge{transform-origin:center}
+.pg-run .pg-kflag b{color:var(--mint)}
+.pg-mp{display:flex;align-items:center;gap:4px;color:var(--ink2);font-size:13.5px}
+.pg-ct{display:block;color:var(--ink2);font-size:13.5px;line-height:1.5}
+.pg-tel{color:var(--primary);font-weight:700;text-decoration:underline;text-underline-offset:2px;padding-block:6px;display:inline-block}
+[data-theme="dark"] .pg-tel{color:var(--primary-light)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pg-tel{color:var(--primary-light)}}
+.pg-run .pv-tick{min-height:48px;min-width:120px;font-size:15px;justify-content:center}
+.pg-run .pv-st{padding-block:12px}
+.pg-run .pv-tm b{font-size:16px}
+.pg-run .pv-tx b{font-size:16px;line-height:1.3}
+/* manifest */
+.pg-pl{list-style:none;margin:0;padding:0}
+.pg-px{display:grid;grid-template-columns:52px 1fr;gap:6px 12px;align-items:start;padding:12px 0;border-top:1px dashed var(--line2)}
+.pg-px:first-child{border-top:0}
+.pg-px.on{background:var(--recess);margin-inline:-12px;padding-inline:12px;border-radius:10px}
+.pg-px .pg-call{grid-column:2}
+.pg-hb{inline-size:52px;block-size:52px;border-radius:12px;border:2px solid var(--line2);background:var(--panel);color:var(--muted);display:grid;place-items:center;font-size:24px;cursor:pointer;padding:0}
+.pg-hb.on{background:var(--green);border-color:var(--green);color:#fff}
+.pg-pi{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pg-pi>b{font-size:17px}
+.pg-fl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pg-call{min-height:48px;justify-content:flex-start;gap:10px;font-size:15px;text-align:start;width:100%;box-sizing:border-box}
+.pg-call span{display:flex;flex-direction:column;line-height:1.25}
+.pg-call small{color:var(--muted);font-family:var(--f-num);font-size:13.5px}
+.pg-hcn{font-size:18px}
+.pg-hcn b{font:700 38px/1 var(--f-num);color:var(--ink)}
+.pg-bar{block-size:10px;border-radius:99px;background:var(--recess);overflow:hidden;margin-block:8px}
+.pg-bar i{display:block;block-size:100%;background:var(--green);border-radius:99px;transition:inline-size .25s}
+.pg-filt .pg-f{min-width:120px}
+/* vouchers */
+.pg-vs{font-weight:600;margin:6px 0}
+.pg-vn{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;background:var(--recess);margin-block:8px}
+.pg-vn b{font:700 26px/1.1 var(--f-num);letter-spacing:.02em;color:var(--ink)}
+/* notes */
+.pg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-block-end:10px}
+.pg-add{margin-block-start:12px;width:100%;min-height:52px;justify-content:center;font-size:16px}
+.pg-nf .hc-btn.mint{color:var(--primary-darker)}
+.pg-nl{list-style:none;margin:0;padding:0}
+.pg-nt{padding:12px 0;border-top:1px dashed var(--line2)}
+.pg-nt:first-child{border-top:0}
+.pg-nt p{margin:6px 0 0;font-size:16px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.pg-nh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pg-del{margin-inline-start:auto;inline-size:44px;block-size:44px}
+@media (max-width:720px){
+  .pg-hero .hc-gauge{transform:scale(.8);margin-block:-14px}
+  .pg-row{grid-template-columns:1fr}
+  .pg-run .pv-st{grid-template-columns:60px 26px 1fr}
+  .pg-run .pv-st .pv-tick{width:100%}
+}
+
 /* ---------- v8.4 portal frame (s13_portal.js): minimal, mobile-first shell for external viewpoints ---------- */
 .pv{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--f-ui);display:flex;flex-direction:column}
 .pv .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -1710,7 +1795,7 @@ button.pj-status{border:0;cursor:pointer}
 .pv-rib .pv-rt .ic,.pv-rib .pv-rt svg{color:var(--mint)}
 .pv-rib select{max-width:240px;background:rgba(255,255,255,.1);color:var(--hero-ink);border:1px solid rgba(255,255,255,.28);border-radius:8px;padding:5px 8px;font:inherit;font-size:13px}
 .pv-rib select option,.pv-rib select optgroup{color:var(--ink);background:var(--panel)}
-.pv-rib .pv-sw{margin-inline-start:auto}
+.pv-rib .pv-sel{display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto}
 .pv-rib .pv-back{padding:6px 12px;font-size:13px}
 .pv-tabs{display:flex;gap:4px;padding:8px 20px 0;max-width:960px;width:100%;margin:0 auto;box-sizing:border-box;border-bottom:1px solid var(--line)}
 .pv-tb{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
@@ -1737,8 +1822,13 @@ button.pj-status{border:0;cursor:pointer}
   .pv-top{padding:8px 12px;gap:8px}
   .pv-pn{display:none}
   .pv-rib{padding:8px 12px;font-size:12.5px}
-  .pv-rib .pv-sw{margin-inline-start:0}
-  .pv-rib select{max-width:100%}
+  .pv-rib{display:grid;grid-template-columns:1fr auto;gap:6px 8px}
+  .pv-rib .pv-rt{min-width:0}
+  .pv-rib .pv-sel{grid-column:1/-1;grid-row:2;margin:0;flex-wrap:nowrap}
+  .pv-rib .pv-sel>*{flex:1;min-width:0}
+  .pv-rib select{width:100%;max-width:100%}
+  .pv-rib .pv-back{grid-column:2;grid-row:1;padding:5px 10px}
+  .pv-rib .pv-back span{display:none}
   .pv-hastabs .pv-main{padding:14px 12px 92px}
   .pv-main{padding:14px 12px 24px}
   .pv-tabs{position:fixed;inset-inline:0;bottom:0;z-index:40;margin:0;max-width:none;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);border-bottom:0;justify-content:space-around;box-shadow:0 -6px 18px -12px rgba(0,0,0,.3)}
@@ -12134,9 +12224,9 @@ function pvShell(){
     <button class="iconb" data-act="lang" aria-label="${L('Switch to English','החלפה לעברית')}" title="${L('English','עברית')}">${FLAG[S.lang]}</button>
     ${p?avatarOf(p.name):''}</header>
    <div class="pv-rib" role="note"><span class="pv-rt">${ic('show')} ${L('צפייה בתור','You are viewing as')} <b><bdi>${esc(p?p.name:'')}</bdi></b> · ${L(P.role[0],P.role[1])}</span>
-    ${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
-    <span class="pv-sw">${viewAsSelect('pvrole')}</span>
-    <button class="hc-btn mint pv-back" data-act="pv-exit">${ic('left','flip')} ${L('חזרה לסוכנות','Back to agency')}</button></div>
+    <span class="pv-sel">${people.length>1?`<label class="pv-pk"><span class="sr">${L('בחירת אדם','Choose a person')}</span><select data-ch="pv-person" aria-label="${L('בחירת אדם','Choose a person')}">${people.map(x=>`<option value="${esc(x.id)}" ${p&&x.id===p.id?'selected':''}>${esc(x.name)}${x.sub?' · '+esc(x.sub):''}</option>`).join('')}</select></label>`:''}
+    <span class="pv-sw">${viewAsSelect('pvrole')}</span></span>
+    <button class="hc-btn mint pv-back" data-act="pv-exit" aria-label="${L('חזרה לסוכנות','Back to agency')}">${ic('left','flip')} <span>${L('חזרה לסוכנות','Back to agency')}</span></button></div>
    ${tabs.length>1?`<nav class="pv-tabs" aria-label="${L('מסכים','Screens')}">${tabs.map(x=>`<button class="pv-tb${x[0]===tab?' on':''}" data-act="pv-tab" data-v="${x[0]}" ${x[0]===tab?'aria-current="page"':''}>${ic(x[3])}<span>${L(x[1],x[2])}</span></button>`).join('')}</nav>`:''}
    <main class="pv-main" id="view">${body}</main>
    <footer class="pv-foot small muted">${L('נתוני הדמו פיקטיביים: הסוכנות, האנשים והתשלומים. הפורטל הזה הוא תצוגה מקדימה.','Demo data: the agency, the people and the payments are fictional. This portal is a preview.')}</footer>
@@ -12191,6 +12281,428 @@ TESTS.push({name:'pv portal frame',run:h=>{const out=[];
     ds.forEach(d=>d.items.forEach((x,i)=>{if(x.end<x.start||(i&&x.start<d.items[i-1].end))out.push('times '+t.id+' d'+d.i);}));});
   if(pvFictionalSuppliers().some(s=>s.real))out.push('real supplier in the portal list');
   return out;}});
+
+/* ---------- v8.4 Operations coordinator home (module oc, spec-v8.4-viewpoints.md §3.1 + §8) ----------
+   Kelsey Dawson (role 'ops') sees every Operations trip and works the queue that keeps departures on track:
+   1. Hero: % ready (mean dbReadiness of trips departing in 90 days), brief, open-next-departure and tasks buttons,
+      four KPI tiles that scroll to their card.
+   2. Departure readiness board, Tasks due, Suppliers to confirm, Rooming and blocks, Documents to send.
+   Real-brand rule: a card that shows a real hotel or venue never carries negative wording (A11).
+   Actions: oc-tick (task), oc-req (supplier request, through spSetFlow), oc-forms (opSendForms), oc-jump (scroll). */
+const OC_WIN=90,OC_BRIEF=60,OC_BLOCK=45;
+const ocByDep=(a,b)=>a.dep<b.dep?-1:a.dep>b.dep?1:0;
+let OC_REAL=null;
+function ocReal(name){
+  if(!OC_REAL){OC_REAL=new Set();try{CATALOG.hotels.concat(CATALOG.venues).forEach(x=>OC_REAL.add(String(x.name).toLowerCase()));}catch(e){}}
+  const k=String(name||'').toLowerCase();
+  if(OC_REAL.has(k))return true;
+  try{const s=supByName(name);return !!(s&&s.real);}catch(e){return false;}
+}
+const ocFormN=t=>(t.trav||[]).reduce((a,x)=>a+(x.form?['reg','med','waiver'].filter(k=>x.form[k]!=='done').length:0),0);
+const ocFormTrav=t=>(t.trav||[]).filter(x=>x.form&&['reg','med','waiver'].some(k=>x.form[k]!=='done')).length;
+const ocFormNotSent=t=>(t.trav||[]).reduce((a,x)=>a+(x.form?['reg','med','waiver'].filter(k=>x.form[k]==='not sent').length:0),0);
+const ocSupsOpen=t=>(t.sups||[]).map((s,i)=>({t,s,i,f:spFlow(s)})).filter(z=>z.f!=='approved');
+const ocRoomList=t=>{const r=(t.tasks||[]).filter(x=>/rooming list/i.test(x.t||''));return r.length?r.every(x=>x.done):false;};
+/* every figure on the page comes from here, so the tests can recompute it */
+function ocModel(){
+  const today=iso(TODAY),ops=visibleTrips().filter(t=>t.stage==='Operations').sort(ocByDep);
+  const hi=addDays(today,OC_WIN),win=ops.filter(t=>t.dep>=today&&t.dep<=hi);
+  const gauge=win.length?Math.round(win.reduce((a,t)=>a+dbReadiness(t).overall,0)/win.length):100;
+  const tasks=dbTasks(ops,7),overdue=tasks.filter(z=>z.over).length;
+  const sups=ops.reduce((a,t)=>a.concat(ocSupsOpen(t)),[]);
+  const blocks=ops.filter(t=>t.room).map(t=>({t,b:blockOf(t),rr:releaseRisk(t),sent:ocRoomList(t)})).sort((a,b)=>a.b.cutoff<b.b.cutoff?-1:1);
+  const hi45=addDays(today,OC_BLOCK),rel=blocks.filter(z=>z.b.cutoff>=today&&z.b.cutoff<=hi45);
+  const forms=ops.reduce((a,t)=>a+ocFormN(t),0),formsTrav=ops.reduce((a,t)=>a+ocFormTrav(t),0);
+  const hi60=addDays(today,OC_BRIEF),soon=ops.filter(t=>t.dep>=today&&t.dep<=hi60);
+  const nx=ops.find(t=>t.dep>=today)||ops[0]||null;
+  const fRows=ops.map(t=>({t,n:ocFormNotSent(t),miss:ocFormN(t),trav:ocFormTrav(t)})).filter(r=>r.miss>0);
+  const vRows=ops.map(t=>({t,n:(t.sups||[]).filter(s=>spFlow(s)==='approved').length})).filter(r=>r.n>0);
+  return {ops,win,gauge,tasks,overdue,sups,blocks,rel,forms,formsTrav,soon,nx,fRows,vRows,today};
+}
+const ocDays=t=>Math.round((D(t.dep)-TODAY)/DAY);
+
+function ocHero(m){
+  const nx=m.nx,first=m.soon[0]||nx,fs=first?ocSupsOpen(first).length:0;
+  const brief=m.soon.length
+    ?L(`${hlKey(m.soon.length)} יציאות ב-${OC_BRIEF} הימים הקרובים. ${esc(first.name)} יוצאת ${hcIn(ocDays(first))}${fs?`, ו-${hlWarn(fs)} ספקים עוד לאישור`:', וכל הספקים מאושרים'}.`,
+       `${hlKey(m.soon.length)} ${m.soon.length===1?'departure':'departures'} in the next ${OC_BRIEF} days. ${esc(first.name)} leaves ${hcIn(ocDays(first))}${fs?` with ${hlWarn(fs)} ${PLN(fs,'supplier','suppliers')} to confirm`:' and every supplier is approved'}.`)
+    :nx?L(`אין יציאות ב-${OC_BRIEF} הימים הקרובים. היציאה הבאה: ${esc(nx.name)}, ${hcIn(ocDays(nx))}.`,`No departures in the next ${OC_BRIEF} days. Next up: ${esc(nx.name)}, ${hcIn(ocDays(nx))}.`)
+    :L('אין כרגע קבוצות בתפעול.','No groups are in operations right now.');
+  const cta=[];
+  if(nx)cta.push(hcCta('mint','arrup',L('לפתוח את היציאה הבאה','Open next departure'),`data-act="open" data-v="${nx.id}" data-pt="odash"`));
+  cta.push(hcCta('ghost','checklist',L('משימות השבוע','Tasks this week'),'data-act="oc-jump" data-v="tasks"'));
+  const supTrips=new Set(m.sups.map(z=>z.t.id)).size;
+  return hcShell({cls:'oc-hero',role:L('תפעול','Operations'),aria:L('תמונת מצב תפעולית','Operations overview'),brief,ctas:cta,
+    gauge:{pct:m.gauge,label:L('מוכנות ליציאות ב-90 יום','ready, departures in 90 days'),lines:[
+      {cls:'oc-r',icon:'clock',lab:L('משימות באיחור','Tasks overdue'),val:m.overdue},
+      {cls:'oc-a',icon:'hourglass',lab:L('ספקים לאישור','Suppliers to confirm'),val:m.sups.length},
+      {cls:'oc-f',icon:'document',lab:L('טפסים חסרים','Forms missing'),val:m.forms}]},
+    kpis:[{lab:L('משימות השבוע','Tasks due this week'),val:m.tasks.length,sub:m.overdue?L(`${m.overdue} באיחור`,`${m.overdue} overdue`):L('כולן בזמן','all on time'),cls:m.overdue?'warn':'',act:'oc-jump',v:'tasks'},
+      {lab:L('ספקים לאישור','Suppliers to confirm'),val:m.sups.length,sub:L(`ב-${supTrips} קבוצות`,`across ${supTrips} ${PLN(supTrips,'group','groups')}`),act:'oc-jump',v:'sups'},
+      {lab:L(`בלוקי חדרים לשחרור ב-${OC_BLOCK} יום`,`Room blocks releasing in ${OC_BLOCK} days`),val:m.rel.length,sub:m.rel.length?L(`הראשון ב-${fmtDate(m.rel[0].b.cutoff)}`,`first on ${fmtDate(m.rel[0].b.cutoff)}`):L('אין בקרוב','none soon'),act:'oc-jump',v:'blocks'},
+      {lab:L('טפסי נוסעים חסרים','Traveler forms missing'),val:m.forms,sub:L(`אצל ${m.formsTrav} נוסעים`,`for ${m.formsTrav} ${PLN(m.formsTrav,'traveler','travelers')}`),act:'oc-jump',v:'docs'}]});
+}
+
+function ocBoard(m){
+  if(!m.ops.length)return '';
+  const rows=m.ops.map(t=>{const r=dbReadiness(t),d=ocDays(t),over=(t.tasks||[]).filter(x=>!x.done&&x.due<m.today).length,su=ocSupsOpen(t).length,fm=ocFormTrav(t),b=blockOf(t);
+    const cls=r.overall>=75?'ok':r.overall>=50?'mid':'low';
+    return `<tr><td><b><bdi>${esc(t.name)}</bdi></b><div class="muted small">${fmtDate(t.dep)} · ${dn(t.dest)}</div></td>
+     <td><span class="oc-rd ${cls}">${hcRing(r.overall,40,'sm')}<b>${r.overall}%</b></span></td>
+     <td class="n">${d>=0?hcIn(d):L('יצאה','departed')}</td><td class="n">${t.pax}</td>
+     <td class="n">${r.nOpen}${over?` <span class="oc-ov">${L(`(${over} באיחור)`,`(${over} overdue)`)}</span>`:''}</td>
+     <td class="n">${su}</td><td class="n">${fm}</td>
+     <td class="small">${b?(b.cutoff>=m.today?L(`שחרור ${fmtDate(b.cutoff)}`,`Releases ${fmtDate(b.cutoff)}`):L('מועד השחרור עבר','Release date passed')):'–'}</td>
+     <td><button class="btn sm" data-act="open" data-v="${t.id}" data-pt="odash">${L('פתיחה','Open')}</button></td></tr>`;}).join('');
+  return `<div class="card hc-card oc-board" id="oc-board"><div class="hc-h"><h3>${L('לוח מוכנות ליציאות','Departure readiness board')}</h3><span class="muted small">${L('הטבעת: משימות, דרכונים, ספקים ומקדמות','Ring: tasks, passports, suppliers and deposits')}</span></div>
+   <div class="scroll"><table class="tbl oc-tbl"><thead><tr><th>${L('קבוצה','Group')}</th><th>${L('מוכנות','Ready')}</th><th>${L('יציאה','Departs')}</th><th>${L('נוסעים','Pax')}</th><th>${L('משימות פתוחות','Open tasks')}</th><th>${L('ספקים לאישור','Suppliers')}</th><th>${L('טפסים','Forms')}</th><th>${L('שחרור בלוק','Block')}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+function ocTasks(m){
+  if(!m.tasks.length)return '';
+  const rows=m.tasks.slice(0,8).map((z,i)=>`<li class="${z.over?'urgent':'todo'}" style="--d:${i*50}ms"><span class="hc-dot"></span><div><b>${esc(opTaskName(z.x))}</b>
+    <button class="hc-trip" data-act="open" data-v="${z.t.id}" data-pt="optasks"><bdi>${esc(z.t.name)}</bdi> · ${z.over?`<span class="oc-ov">${L('באיחור','overdue')} · </span>`:''}${fmtDate(z.x.due)} · ${opWhoL(z.x)}</button></div>
+    <button class="btn sm" data-act="oc-tick" data-v="${z.t.id}|${z.x.id}" aria-label="${L('סימון כבוצע','Mark done')}">${ic('check')} ${L('בוצע','Done')}</button></li>`).join('');
+  return `<div class="card hc-card oc-tasks" id="oc-tasks"><div class="hc-h"><h3>${L('משימות לביצוע','Tasks due')}</h3>${m.overdue?`<span class="hc-pill red">${L(`${m.overdue} באיחור`,`${m.overdue} overdue`)}</span>`:`<span class="hc-pill blue">${L('השבוע','This week')}</span>`}</div>
+   <ol class="hc-steps">${rows}</ol>${m.tasks.length>8?`<p class="muted small">${L(`ועוד ${m.tasks.length-8} משימות`,`and ${m.tasks.length-8} more`)}</p>`:''}</div>`;
+}
+
+function ocSups(m){
+  if(!m.sups.length)return '';
+  const perm=spCan('ops.suppliers');
+  const rows=m.sups.slice(0,10).map(z=>{
+    const act=z.f==='contact'?`<button class="btn sm" data-act="oc-req" data-v="${z.t.id}|${z.i}" ${perm?'':'disabled'}>${ic('mail')} ${L('שליחת בקשה','Send request')}</button>`:`<span class="muted small">${L('הבקשה נשלחה','Request sent')}</span>`;
+    return `<li class="todo"><span class="hc-dot"></span><div><b>${esc(z.s.n)}</b><button class="hc-trip" data-act="open" data-v="${z.t.id}" data-pt="spm"><bdi>${esc(z.t.name)}</bdi> · ${esc(z.s.cat||'')} · <span class="oc-fl">${spFlowL(z.f)}</span></button></div>${act}</li>`;}).join('');
+  return `<div class="card hc-card oc-sups" id="oc-sups"><div class="hc-h"><h3>${L('ספקים לאישור','Suppliers to confirm')}</h3><span class="hc-pill blue">${m.sups.length}</span></div>
+   <ol class="hc-steps">${rows}</ol>${m.sups.length>10?`<p class="muted small">${L(`ועוד ${m.sups.length-10} ספקים`,`and ${m.sups.length-10} more`)}</p>`:''}</div>`;
+}
+
+function ocBlocks(m){
+  if(!m.blocks.length)return '';
+  const rows=m.blocks.map(z=>{const b=z.b,real=ocReal(b.hotel),past=b.cutoff<m.today;
+    const when=past?L('מועד השחרור עבר','Release date passed'):L(`שחרור ב-${fmtDate(b.cutoff)}`,`Releases on ${fmtDate(b.cutoff)}`);
+    const expo=z.rr&&!real?` · ${hlNeg(L('עלות חדרים שלא נוצלו ','Unused rooms cost ')+usd(z.rr.amt))}`:'';
+    return `<div class="oc-bk"><div class="oc-bh"><b><bdi>${esc(b.hotel)}</bdi></b><span class="muted small"><bdi>${esc(z.t.name)}</bdi></span></div>
+     <div class="oc-bn"><span>${L('בלוק','Held')} <b>${b.held}</b></span><span>${L('נבחרו','Picked')} <b>${b.picked}</b></span><span>${L('פנויים','Open')} <b>${b.open}</b></span></div>
+     <div class="oc-bw small">${when}${expo}</div>
+     <div>${pillF(z.sent?L('רשימת חדרים נשלחה','Rooming list sent'):L('רשימת חדרים לא נשלחה','Rooming list not sent'),z.sent?'green':'')}</div></div>`;}).join('');
+  return `<div class="card hc-card oc-blocks" id="oc-blocks"><div class="hc-h"><h3>${L('חדרים ובלוקים','Rooming and blocks')}</h3><span class="muted small">${L('מועד שחרור = 30 יום לפני היציאה','Release date = 30 days before departure')}</span></div>${rows}</div>`;
+}
+
+function ocDocs(m){
+  if(!m.fRows.length&&!m.vRows.length)return '';
+  const fr=m.fRows.map(r=>`<li class="${r.n?'todo':'info'}"><span class="hc-dot"></span><div><b><bdi>${esc(r.t.name)}</bdi></b><span class="muted small">${r.n?L(`${r.n} טפסים טרם נשלחו`,`${r.n} ${PLN(r.n,'form','forms')} not sent yet`):L(`${r.miss} טפסים נשלחו וממתינים לנוסעים`,`${r.miss} ${PLN(r.miss,'form','forms')} sent, with the travelers`)}</span></div>
+    ${r.n?`<button class="btn sm" data-act="oc-forms" data-v="${r.t.id}">${ic('mail')} ${L('שליחת טפסים','Send forms')}</button>`:`<button class="btn sm" data-act="open" data-v="${r.t.id}" data-pt="manifest">${L('לרשימת הנוסעים','Master list')}</button>`}</li>`).join('');
+  const vr=m.vRows.map(r=>`<li class="info"><span class="hc-dot"></span><div><b><bdi>${esc(r.t.name)}</bdi></b><span class="muted small">${L(`${r.n} שוברים להנפקה`,`${r.n} ${PLN(r.n,'voucher','vouchers')} to issue`)}</span></div>
+    <button class="btn sm" data-act="open" data-v="${r.t.id}" data-pt="vouch">${L('לשוברים','Vouchers')}</button></li>`).join('');
+  return `<div class="card hc-card oc-docs" id="oc-docs"><div class="hc-h"><h3>${L('מסמכים לשליחה','Documents to send')}</h3><span class="hc-pill blue">${m.forms} ${L('טפסים','forms')}</span></div>
+   <ol class="hc-steps">${fr}${vr}</ol></div>`;
+}
+
+function hcOps(){
+  const m=ocModel();
+  if(!m.ops.length)return `<div class="hc${hpAnim()?' anim':''}">${ocHero(m)}<div class="card hc-card"><p class="muted">${L('אין כרגע קבוצות בתפעול. כשהצעה מאושרת, היא תופיע כאן.','No groups are in operations right now. An approved quote shows up here.')}</p></div></div>`;
+  return `<div class="hc oc${hpAnim()?' anim':''}">${ocHero(m)}
+   <div class="hc-grid"><div class="hc-c12">${ocBoard(m)}</div>
+    <div class="hc-c7">${ocTasks(m)}${ocSups(m)}</div><div class="hc-c5">${ocBlocks(m)}${ocDocs(m)}</div></div></div>`;
+}
+
+{const h1=VIEWS.home;VIEWS.home=function(){return isOps()?hcOps():h1.apply(this,arguments);};}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act^="oc-"]');if(!b)return;const a=b.dataset.act,v=b.dataset.v||'';
+  if(a==='oc-jump'){const el=document.getElementById('oc-'+v)||document.getElementById('oc-board');if(el){let rm=false;try{rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(x){}
+    try{el.scrollIntoView({block:'start',behavior:rm?'auto':'smooth'});}catch(x){}}return;}
+  const p=v.split('|'),t=byId(p[0]);if(!t)return;
+  if(a==='oc-tick'){const x=t.tasks.find(y=>y.id===+p[1]),r=opToggleTask(t,p[1]);render();if(r!=null)toast(L(`סומן כבוצע: ${opTaskName(x)}`,`Marked done: ${opTaskName(x)}`));}
+  else if(a==='oc-req'){if(!spCan('ops.suppliers')){toast(L('התפקיד שלך לא כולל אישור ספקים','Your role cannot change suppliers'));return;}
+    const s=t.sups[+p[1]];if(s&&spSetFlow(t,+p[1],'pending')){render();toast(L(`בקשה נשלחה ל-${s.n} (הדגמה)`,`Request sent to ${s.n} (demo)`));}}
+  else if(a==='oc-forms'){opSendForms(t);render();}
+});
+
+/* ---------- tests ---------- */
+TESTS.push({name:'oc operations home',run:h=>{const out=[],S=h.S,r0=S.role,l0=S.lang;
+  const recompute=()=>{const today=iso(TODAY),ops=TRIPS.filter(t=>t.stage==='Operations');
+    const win=ops.filter(t=>t.dep>=today&&t.dep<=addDays(today,90));
+    const tk=ops.reduce((a,t)=>a+t.tasks.filter(x=>!x.done&&x.due<=addDays(today,7)).length,0);
+    const su=ops.reduce((a,t)=>a+t.sups.filter(s=>spFlow(s)!=='approved').length,0);
+    const bl=ops.filter(t=>{if(!t.room)return false;const c=addDays(t.dep,-30);return c>=today&&c<=addDays(today,45);}).length;
+    const fm=ops.reduce((a,t)=>a+(t.trav||[]).reduce((b,x)=>b+(x.form?['reg','med','waiver'].filter(k=>x.form[k]!=='done').length:0),0),0);
+    return {g:win.length?Math.round(win.reduce((a,t)=>a+dbReadiness(t).overall,0)/win.length):100,tk,su,bl,fm,n:ops.length};};
+  S.role='ops';
+  try{
+    const m=ocModel(),c=recompute();
+    if(m.gauge!==c.g)out.push('oc gauge '+m.gauge+' vs '+c.g);
+    if(m.tasks.length!==c.tk)out.push('oc tasks '+m.tasks.length+' vs '+c.tk);
+    if(m.sups.length!==c.su)out.push('oc suppliers '+m.sups.length+' vs '+c.su);
+    if(m.rel.length!==c.bl)out.push('oc blocks '+m.rel.length+' vs '+c.bl);
+    if(m.forms!==c.fm)out.push('oc forms '+m.forms+' vs '+c.fm);
+    if(m.ops.length!==c.n)out.push('oc trip set');
+    if(!m.ops.length)out.push('oc: no Operations trips');
+    const BAD=/unconfirmed|overdue|exposure|\blate\b|risk|query|\bgap\b|dispute|overbill/i;
+    const names=[...new Set([...(typeof CATALOG!=='undefined'?CATALOG.hotels.concat(CATALOG.venues).map(x=>x.name):[]),...TRIPS.map(t=>t.room&&t.room.hotel).filter(Boolean),...TRIPS.reduce((a,t)=>a.concat((t.sups||[]).map(s=>s.n)),[])])].filter(n=>ocReal(n));
+    let realSeen=0;
+    for(const lang of ['en','he']){S.lang=lang;
+      const hh=VIEWS.home();h.chk(hh,'oc '+lang);if(lang==='en')h.scan(hh,'oc home');
+      if(!hh.includes('oc-hero'))out.push('oc hero missing '+lang);
+      if(!hh.includes('hc-kpis'))out.push('oc kpis missing '+lang);
+      /* real-brand guard (A11): no real name in a card or table row that carries negative wording */
+      if(lang==='en'){hh.split('<div class="card hc-card').slice(1).forEach(cd=>{
+        (cd.includes('<table')?cd.split('</tr>'):[cd]).forEach(pc=>{const txt=pc.replace(/<[^>]+>/g,' ');
+          names.forEach(n=>{if(txt.includes(esc(n))||txt.includes(n)){realSeen++;const mm=txt.match(BAD);if(mm)out.push('oc real brand "'+n+'" next to "'+mm[0]+'"');}});});});}
+    }
+    if(!realSeen)out.push('oc guard saw no real name (guard is not testing anything)');
+    S.lang='en';
+    /* the Finance page is closed to ops and hidden from the sidebar */
+    S.tab='home';S.menu=true;render();const app=h.els.app.innerHTML;S.menu=false;
+    if(/<button[^>]*data-v="finance"/.test(app)&&/class="[^"]*\bnav\b[^"]*"[^>]*data-v="finance"|data-v="finance"[^>]*class="[^"]*\bnav\b/.test(app))out.push('oc: Finance is in the ops sidebar');
+    if(!/No access/.test(VIEWS.finance()))out.push('oc: VIEWS.finance() is not noAccess for ops');
+    /* the supplier request goes through spSetFlow and lands on Pending */
+    const z=m.sups.find(q=>q.f==='contact');
+    if(z){const s=z.t.sups[z.i],st=s.st,fl=s.flow;spSetFlow(z.t,z.i,'pending');if(spFlow(s)!=='pending')out.push('oc request does not move the flow to pending');s.st=st;s.flow=fl;}
+  }catch(e){out.push('oc '+e.stack.split('\n').slice(0,3).join('|'));}
+  S.role=r0;S.lang=l0;return out;}});
+
+/* developer notes */
+SPEC['home:ops']={title:'Home, operations coordinator',
+  purpose:'Give the operations coordinator one screen that shows which departures are ready, and the tasks, suppliers, room blocks and documents that still need her.',
+  roles:{view:['ops','manager'],act:['ops']},perms:['proj.viewAll','ops.tasks','ops.suppliers','ops.manifest','forms.build'],
+  data:['Trip.stage','Trip.dep','Trip.tasks','Trip.sups','Trip.room','Trip.trav.form','Trip.trav.pass','Group.depPaid'],
+  actions:[{label:'Open next departure',does:'Opens the operation dashboard of the nearest Operations trip',rule:'First Operations trip with dep >= today'},
+    {label:'Tasks this week / tile',does:'Scrolls to the Tasks due card',rule:'Open tasks with due <= today + 7 days, overdue first'},
+    {label:'Done (task)',does:'Marks the task done (opToggleTask)',rule:'Requires ops.tasks (matrix only)'},
+    {label:'Send request (supplier)',does:'Moves the supplier to Pending (spSetFlow) and toasts',rule:'Requires ops.suppliers; contact-stage suppliers only'},
+    {label:'Send forms',does:'Marks "not sent" traveler forms as sent (opSendForms), copies the link',rule:'Per trip'}],
+  rules:['Gauge = mean dbReadiness(t).overall of Operations trips departing within 90 days','Suppliers to confirm = t.sups with spFlow(s) !== "approved"','Blocks releasing = blockOf(t).cutoff within 45 days of today','Forms missing = traveler form values (registration, medical, waiver) that are not "done"','Vouchers to issue = approved suppliers on Operations trips','Real hotels and venues never appear next to negative wording; exposure shows only after the release date and only for fictional hotels'],
+  states:{empty:'No Operations trips: a card says approved quotes appear here.',loading:'Not applicable (local data).',error:'Cards with nothing to do are hidden.'},
+  status:'pilot',api:['GET /v1/t/{tenantId}/dashboard/operations (proposed)','PATCH /v1/t/{tenantId}/trips/{id}/suppliers/{n} (proposed)'],
+  tests:['TEST oc operations home'],code:['v6/s13_oc.js: hcOps, ocModel, ocBoard, ocTasks, ocSups, ocBlocks, ocDocs','v6/m_oc.css']};
+
+/* ---------- v8.4 module "pg": the tour director run sheet (spec-v8.4-viewpoints.md §3.5, amendments A7 A8 A9 A11) ----------
+   A field portal for the tour director or driver-guide. It is read on a phone, on a coach, in sunlight: big tap targets,
+   high contrast, one column. Tabs: day (schedule with done ticks and the supplier contact per stop), pax (manifest, flags,
+   emergency calls, head count), vouch (vouchers for approved suppliers) and notes (incident / change / guest request).
+   State: S.pgTrip / S.pgDay / S.pgFilter (view only), PVRUN (done stops) and PVNOTE (notes) are saved through PERSIST.
+   Real hotels and venues appear with their name and neutral wording only (real-brand rule, A11). */
+Object.assign(S,{pgTrip:null,pgDay:1,pgFilter:'all'});
+const PVRUN={},PVNOTE={},PG_HEAD={};
+PERSIST.push({key:'pv-run',get:()=>JSON.parse(JSON.stringify(PVRUN)),
+  set:v=>{Object.keys(PVRUN).forEach(k=>delete PVRUN[k]);if(v&&typeof v==='object')Object.keys(v).forEach(k=>{if(Array.isArray(v[k]))PVRUN[k]=v[k].slice();});},
+  reset:()=>{Object.keys(PVRUN).forEach(k=>delete PVRUN[k]);Object.keys(PG_HEAD).forEach(k=>delete PG_HEAD[k]);S.pgTrip=null;S.pgDay=1;S.pgFilter='all';}});
+PERSIST.push({key:'pv-notes',get:()=>JSON.parse(JSON.stringify(PVNOTE)),
+  set:v=>{Object.keys(PVNOTE).forEach(k=>delete PVNOTE[k]);if(v&&typeof v==='object')Object.keys(v).forEach(k=>{if(Array.isArray(v[k]))PVNOTE[k]=v[k].slice();});},
+  reset:()=>{Object.keys(PVNOTE).forEach(k=>delete PVNOTE[k]);}});
+
+const PG_NK=[['incident',['אירוע','Incident'],'red'],['change',['שינוי בתוכנית','Change to plan'],'amber'],['guest',['בקשת אורח','Guest request'],'blue']];
+const pgTel=p=>'tel:'+String(p||'').replace(/[^0-9+]/g,'');
+const pgIsReal=n=>{const s=supByName(n);return !!(s&&s.real)||(typeof SD_CATNAMES!=='undefined'&&SD_CATNAMES.has(String(n).toLowerCase()));};
+const pgIntl=t=>!!(DESTS[t.dest]&&DESTS[t.dest].intl);
+const pgFlags=x=>({diet:!!(x.diet&&x.diet!=='None'),med:!!(x.form&&x.form.med&&x.form.med!=='done')});
+const pgHasFlag=x=>{const f=pgFlags(x);return f.diet||f.med;};
+
+/* the guide's trips (Operations), the selected trip and the selected day */
+function pgTripsOf(g){return (g?g.trips:[]).map(id=>TRIPS.find(t=>t.id===id)).filter(t=>t&&t.stage!=='Quote');}
+function pgDefTrip(ts){const up=ts.filter(t=>t.dep>=iso(TODAY)).sort((a,b)=>a.dep<b.dep?-1:1);
+  return (up[0]||ts.slice().sort((a,b)=>a.dep<b.dep?1:-1)[0]||null);}
+function pgSel(g){const ts=pgTripsOf(g);let t=ts.find(x=>x.id===S.pgTrip)||pgDefTrip(ts);
+  if(t&&S.pgTrip!==t.id)S.pgTrip=t.id;
+  const n=t?t.nights+1:1;S.pgDay=Math.max(1,Math.min(n,+S.pgDay||1));return {ts,t,day:S.pgDay};}
+
+/* match a plan item to the trip line that serves it: by kind first, then by shared words. No match: null (show nothing) */
+const PG_STOPW=new Set(['with','and','the','tour','group','days','day','free','entry','city','guide']);
+function pgLineFor(t,item){
+  const nm=String(item.name||'').toLowerCase(),ty=re=>t.lines.find(l=>re.test(l.type));
+  if(/free|leisure/.test(nm))return null;
+  if(/coach|depart|return|transfer/.test(nm))return ty(/Transport/i)||null;
+  if(/flight|airport/.test(nm))return ty(/Transport|Flight|Air/i)||null;
+  if(/check-?in|check-?out/.test(nm))return ty(/Lodging/i)||null;
+  if(/breakfast|lunch|dinner|meal|buffet|supper/.test(nm))return ty(/Meals/i)||null;
+  const w=s=>String(s).toLowerCase().split(/[^a-z0-9]+/).filter(x=>x.length>2&&!PG_STOPW.has(x));
+  const iw=w(item.name);let best=null,bs=0;
+  t.lines.forEach(l=>{const lw=w(l.name),sc=iw.filter(x=>lw.includes(x)).length;if(sc>bs){bs=sc;best=l;}});
+  if(!bs&&/guide/.test(nm))return ty(/Guide/i)||null;
+  return best;
+}
+/* the contact block for one stop: fictional suppliers show person and phone; real venues show the name and a neutral desk label */
+function pgContact(t,item){
+  const l=pgLineFor(t,item);if(!l||!l.sup)return '';const s=supByName(l.sup);
+  if(pgIsReal(l.sup))return `<small class="pg-ct"><bdi>${esc(l.sup)}</bdi> · ${L('מוקד קבוצות','Groups desk')}</small>`;
+  const c=s&&s.contact;
+  return `<small class="pg-ct"><bdi>${esc(l.sup)}</bdi>${c?` · <bdi>${esc(c.name)}</bdi> <a class="pg-tel" href="${pgTel(c.phone)}"><bdi dir="ltr">${esc(c.phone)}</bdi></a>`:''}</small>`;
+}
+
+/* ---------- chips ---------- */
+function pgChips(g,sel,withDays){
+  const t=sel.t,tr=sel.ts.length>1?`<div class="pg-chips" role="group" aria-label="${L('בחירת טיול','Choose a trip')}">${sel.ts.map(x=>`<button class="pg-chip${x.id===t.id?' on':''}" data-act="pg-trip" data-v="${x.id}" aria-pressed="${x.id===t.id}"><b><bdi>${esc(x.name)}</bdi></b><small>${fmtDate(x.dep)}</small></button>`).join('')}</div>`:
+    `<p class="pg-one small muted"><b><bdi>${esc(t.name)}</bdi></b> · ${fmtDate(t.dep)}</p>`;
+  const dy=withDays?`<div class="pg-chips pg-days" role="group" aria-label="${L('בחירת יום','Choose a day')}">${pvDays(t).map(d=>`<button class="pg-chip pg-d${d.i===sel.day?' on':''}" data-act="pg-day" data-v="${d.i}" aria-pressed="${d.i===sel.day}"><b>${L('יום','Day')} ${d.i}</b><small>${D(d.date).toLocaleDateString(LOC(),{weekday:'short',day:'numeric'})}</small></button>`).join('')}</div>`:'';
+  return `<div class="pg-sel">${tr}${dy}</div>`;
+}
+const pgEmpty=()=>`<div class="card hc-card"><p class="muted">${L('אין טיולים בתפעול לדף הריצה הזה.','No trips in Operations for this run sheet.')}</p></div>`;
+
+/* ---------- day ---------- */
+function pgDay(g,p){
+  const sel=pgSel(g),t=sel.t;if(!t)return pgEmpty();
+  const ds=pvDays(t),d=ds[sel.day-1],key=t.id+'|'+d.i,run=new Set((PVRUN[key]||[]).map(Number));
+  const done=d.items.filter(x=>run.has(x.id)).length,pctDone=d.items.length?Math.round(done/d.items.length*100):0;
+  const fl=(t.trav||[]).filter(pgHasFlag).length,pax=(t.trav||[]).length||t.pax||0;
+  const first=d.items[0],last=d.i===ds.length;
+  const brief=L(`יום ${hlKey(d.i)} מתוך ${ds.length} ב-<bdi>${esc(t.name)}</bdi>: ${hlKey(d.items.length)} עצירות, ${hlPos(done)} בוצעו. ${fl?`${hlWarn(fl)} נוסעים עם סימון תזונה או רפואי.`:'אין סימונים לנוסעים.'}`,
+    `Day ${hlKey(d.i)} of ${ds.length} on <bdi>${esc(t.name)}</bdi>: ${hlKey(d.items.length)} ${d.items.length===1?'stop':'stops'}, ${hlPos(done)} done. ${fl?`${hlWarn(fl)} ${fl===1?'traveler has':'travelers have'} a dietary or medical flag.`:'No traveler flags.'}`);
+  const hero=pvHero({cls:'pg-hero',role:L(P_ROLE()[0],P_ROLE()[1]),brief,
+    ctas:[hcCta('mint','users2',L('ספירת נוסעים','Count heads'),'data-act="pv-tab" data-v="pax"'),hcCta('ghost','pen',L('הערה חדשה','Add a note'),'data-act="pv-tab" data-v="notes"')],
+    gauge:{pct:pctDone,label:L('מעצירות היום בוצעו','of today\'s stops done'),lines:[{cls:'ok',icon:'check',lab:L('בוצעו','Done'),val:done},{cls:'op',icon:'hourglass',lab:L('נותרו','To go'),val:d.items.length-done}]},
+    kpis:[{lab:L('נוסעים','Passengers'),val:pax,sub:t.client?esc(t.client):''},
+      {lab:L('איסוף ראשון','First pickup'),text:first?pvClock(first.start):'-',sub:d.i===1?L('משרד Redbud Group Tours, טולסה','Redbud Group Tours office, Tulsa'):L('מהמלון','From the hotel')},
+      {lab:L('מלון הלילה','Hotel tonight'),text:d.hotel||(last?L('יום חזרה','Return day'):'-'),sub:d.hotel?L('לינה לפי התוכנית','Per the plan'):''},
+      {lab:L('סימונים','Flags'),val:fl,cls:fl?'pg-kflag':'',act:'pv-tab',v:'pax',sub:L('תזונה או רפואי','Dietary or medical')}]});
+  const card=pvDayCard(t,d,{done:run,tick:'pg-tick',extra:x=>(d.i===1&&first&&x.id===first.id&&x.kind==='travel'?`<small class="pg-mp">${ic('pin')} ${L('נקודת מפגש: משרד Redbud Group Tours, טולסה','Meeting point: Redbud Group Tours office, Tulsa')}</small>`:'')+pgContact(t,x)});
+  return `${pgChips(g,sel,true)}${hero}<div class="pg-card">${card}</div>`;
+}
+const P_ROLE=()=>PORTALS.guide.role;
+
+/* ---------- pax ---------- */
+function pgPax(g,p){
+  const sel=pgSel(g),t=sel.t;if(!t)return pgEmpty();
+  const tr=(t.trav||[]).map((x,i)=>({x,i})),intl=pgIntl(t),flagOnly=S.pgFilter==='flags';
+  const rows=flagOnly?tr.filter(o=>pgHasFlag(o.x)):tr,hc=PG_HEAD[t.id]||{},n=tr.length,on=tr.filter(o=>hc[o.i]).length,nf=tr.filter(o=>pgHasFlag(o.x)).length;
+  const chip=(k,lab,c)=>`<button class="pg-chip pg-f${S.pgFilter===k?' on':''}" data-act="pg-filter" data-v="${k}" aria-pressed="${S.pgFilter===k}"><b>${lab}</b><small>${c}</small></button>`;
+  const row=o=>{const x=o.x,f=pgFlags(x),hit=!!hc[o.i];
+    const med=x.form&&x.form.med!=='done'?pillF(L('טופס רפואי חסר','Medical form open'),'amber'):'';
+    const diet=f.diet?pillF(`${L('תזונה','Diet')}: ${esc(x.diet)}`,'blue'):'';
+    const pp=intl?(x.pass==='Missing'?pillF(L('דרכון חסר','Passport missing'),'red'):`${opPassWarn(t,x)?pillF(L('תוקף דרכון קצר','Short passport validity'),'amber'):pillF(L('דרכון התקבל','Passport on file'),'green')}${x.passNo?` <span class="muted small" dir="ltr">${esc(x.passNo)}</span>`:''}`):'';
+    const em=x.emerg&&x.emerg.phone?`<a class="btn sm pg-call" href="${pgTel(x.emerg.phone)}" aria-label="${L('חיוג לאיש קשר לחירום','Call emergency contact')} ${esc(x.emerg.name)}">${ic('shield')} <span><b><bdi>${esc(x.emerg.name)}</bdi></b><small dir="ltr">${esc(x.emerg.phone)}</small></span></a>`:'';
+    return `<li class="pg-px${hit?' on':''}${pgHasFlag(x)?' flag':''}"><button class="pg-hb${hit?' on':''}" data-act="pg-head" data-v="${t.id}|${o.i}" aria-pressed="${hit}" aria-label="${L('על האוטובוס','On board')}: ${esc(x.n)}">${ic('check')}</button>
+      <div class="pg-pi"><b><bdi>${esc(x.n)}</bdi></b><span class="muted small">${L('חדר','Room')} <bdi>${esc(x.room)}</bdi>${x.roomType?` · ${esc(x.roomType)}`:''}</span>
+       ${diet||med||pp?`<span class="pg-fl">${diet}${med}${pp}</span>`:''}</div>${em}</li>`;};
+  const bar=`<div class="card hc-card pg-hcbar"><div class="hc-h"><h3>${L('ספירת נוסעים','Head count')}</h3><button class="btn sm" data-act="pg-head-reset" data-v="${t.id}">${ic('restart')} ${L('איפוס','Reset')}</button></div>
+    <div class="pg-hcn"><b>${on}</b> <span>${L('מתוך','of')} ${n} ${L('על האוטובוס','on board')}</span></div><div class="pg-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${on}"><i style="inline-size:${n?Math.round(on/n*100):0}%"></i></div>
+    <p class="muted small">${L('הספירה נשמרת במכשיר הזה בלבד.','The count stays on this device only.')}</p></div>`;
+  return `${pgChips(g,sel,false)}${bar}<div class="pg-chips pg-filt" role="group" aria-label="${L('סינון','Filter')}">${chip('all',L('הכל','All'),n)}${chip('flags',L('רק עם סימונים','Flags only'),nf)}</div>
+   <div class="card hc-card pg-man">${rows.length?`<ul class="pg-pl">${rows.map(row).join('')}</ul>`:`<p class="muted">${L('אין נוסעים עם סימונים.','No travelers with flags.')}</p>`}</div>`;
+}
+
+/* ---------- vouchers ---------- */
+const pgVouchNo=(t,l)=>`RB-${t.no}-${l.id}`;
+function pgVouch(g,p){
+  const sel=pgSel(g),t=sel.t;if(!t)return pgEmpty();
+  const all=(t.sups||[]).map(s=>({s,l:spLine(t,s)})).filter(o=>o.l);
+  const ok=all.filter(o=>spFlow(o.s)==='approved'),rest=all.length-ok.length,pax=(t.trav||[]).length||t.pax||0;
+  const card=o=>{const l=o.l,real=pgIsReal(l.sup),sp=supByName(l.sup),c=!real&&sp&&sp.contact;
+    return `<div class="card hc-card pg-vo"><div class="hc-h"><h3><bdi>${esc(l.sup)}</bdi></h3>${pillF(L('שובר מוכן','Voucher ready'),'green')}</div>
+     <p class="pg-vs">${esc(l.name)}<span class="muted small"> · ${esc(l.type)} · ${pax} ${L('נוסעים','travelers')}</span></p>
+     <div class="pg-vn"><span class="muted small">${L('מספר שובר','Voucher number')}</span><b dir="ltr">${pgVouchNo(t,l)}</b></div>
+     ${c?`<p class="small pg-ct"><bdi>${esc(c.name)}</bdi> <a class="pg-tel" href="${pgTel(c.phone)}"><bdi dir="ltr">${esc(c.phone)}</bdi></a></p>`:`<p class="small muted">${L('להציג את המספר בקבלה.','Show this number at the desk.')}</p>`}</div>`;};
+  return `${pgChips(g,sel,false)}
+   <div class="card hc-card"><div class="hc-h"><h3>${L('שוברים','Vouchers')}</h3><span class="muted small">${ok.length} ${L('מוכנים','ready')}${rest?` · ${rest} ${L('עדיין בלי שובר','with no voucher yet')}`:''}</span></div>
+    <p class="muted small">${L('שובר מופיע כשהספק מאושר. מספר השובר: RB-מספר הטיול-מספר הרכיב.','A voucher appears once the supplier is approved. Voucher number: RB-trip number-component number.')}</p></div>
+   ${ok.length?ok.map(card).join(''):`<div class="card hc-card"><p class="muted">${L('עדיין אין שוברים לטיול הזה.','No vouchers for this trip yet.')}</p></div>`}`;
+}
+
+/* ---------- notes ---------- */
+function pgNotes(g,p){
+  const sel=pgSel(g),t=sel.t;if(!t)return pgEmpty();
+  const list=(PVNOTE[t.id]||[]).slice().reverse(),n=t.nights+1,kl=k=>(PG_NK.find(x=>x[0]===k)||PG_NK[0]);
+  const form=`<form class="card hc-card pg-nf" data-form="pg-note" autocomplete="off"><div class="hc-h"><h3>${L('הערה חדשה','New note')}</h3></div>
+    <div class="pg-row"><label>${L('סוג','Type')}<select name="kind">${PG_NK.map(k=>`<option value="${k[0]}">${L(k[1][0],k[1][1])}</option>`).join('')}</select></label>
+     <label>${L('יום','Day')}<select name="day">${Array.from({length:n},(_,i)=>`<option value="${i+1}" ${i+1===sel.day?'selected':''}>${L('יום','Day')} ${i+1}</option>`).join('')}</select></label></div>
+    <label>${L('מה קרה','What happened')}<textarea name="txt" rows="3" maxlength="500" required placeholder="${L('למשל: אורחת הרגישה לא טוב, ישבה באוטובוס.','For example: a guest felt unwell and stayed on the coach.')}"></textarea></label>
+    <button class="hc-btn mint pg-add" type="submit">${ic('check')} ${L('שמירת הערה','Save note')}</button></form>`;
+  const item=x=>{const k=kl(x.kind);return `<li class="pg-nt"><div class="pg-nh">${pillF(L(k[1][0],k[1][1]),k[2])}<span class="muted small">${L('יום','Day')} ${x.day} · ${fmtDate(x.d)}</span>
+      <button class="iconb pg-del" data-act="pg-note-del" data-v="${t.id}|${x.id}" aria-label="${L('מחיקת הערה','Delete note')}">${ic('x')}</button></div><p>${esc(x.txt)}</p></li>`;};
+  return `${pgChips(g,sel,false)}${form}<div class="card hc-card"><div class="hc-h"><h3>${L('הערות הטיול','Trip notes')}</h3><span class="muted small">${list.length}</span></div>
+    ${list.length?`<ul class="pg-nl">${list.map(item).join('')}</ul>`:`<p class="muted">${L('אין הערות עדיין. אירועים, שינויים ובקשות אורחים יופיעו כאן.','No notes yet. Incidents, changes and guest requests will show here.')}</p>`}</div>`;
+}
+
+/* ---------- register ---------- */
+pvRegister('guide',{role:['מנהל/ת טיול','Tour director'],label:['דף ריצה למדריך','Run sheet'],kind:'field',feat:'guide',
+  people:()=>GUIDES.map(g=>({id:g.id,name:L(g.he,g.en),sub:L(g.role.he,g.role.en)})),def:'wade',
+  tabs:[['day','יום','Day','calendar'],['pax','נוסעים','Passengers','users2'],['vouch','שוברים','Vouchers','ticket'],['notes','הערות','Notes','pen']],
+  view:(tab,p)=>{const g=GUIDE_BY[p&&p.id]||GUIDES[0];
+    return `<div class="pg-run">${tab==='pax'?pgPax(g,p):tab==='vouch'?pgVouch(g,p):tab==='notes'?pgNotes(g,p):pgDay(g,p)}</div>`;}});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-act]');if(!b||!b.dataset.act||b.dataset.act.slice(0,3)!=='pg-')return;
+  const a=b.dataset.act,v=b.dataset.v||'';
+  if(a==='pg-trip'){S.pgTrip=v;S.pgDay=1;render();}
+  else if(a==='pg-day'){S.pgDay=+v||1;render();}
+  else if(a==='pg-filter'){S.pgFilter=v==='flags'?'flags':'all';render();}
+  else if(a==='pg-tick'){const [tid,d,id]=v.split('|'),k=tid+'|'+d,arr=PVRUN[k]=PVRUN[k]||[],i=arr.indexOf(+id);
+    if(i<0){arr.push(+id);toast(L('העצירה סומנה כבוצעה','Stop marked done'));}else{arr.splice(i,1);toast(L('הסימון הוסר','Mark removed'));}
+    if(!arr.length)delete PVRUN[k];render();}
+  else if(a==='pg-head'){const [tid,i]=v.split('|'),h=PG_HEAD[tid]=PG_HEAD[tid]||{};if(h[i])delete h[i];else h[i]=1;render();}
+  else if(a==='pg-head-reset'){delete PG_HEAD[v];toast(L('הספירה אופסה','Head count reset'));render();}
+  else if(a==='pg-note-del'){const [tid,id]=v.split('|');PVNOTE[tid]=(PVNOTE[tid]||[]).filter(x=>String(x.id)!==id);if(!PVNOTE[tid].length)delete PVNOTE[tid];toast(L('ההערה נמחקה','Note deleted'));render();}
+});
+document.addEventListener('submit',e=>{const f=e.target;if(!f||!f.dataset||f.dataset.form!=='pg-note')return;e.preventDefault();
+  if(!S.pv||S.pv.k!=='guide'||!S.pgTrip)return;const fd=new FormData(f),txt=String(fd.get('txt')||'').trim().slice(0,500);
+  if(!txt){toast(L('כתבו מה קרה','Write what happened'));return;}
+  const arr=PVNOTE[S.pgTrip]=PVNOTE[S.pgTrip]||[];
+  arr.push({id:arr.reduce((m,x)=>Math.max(m,x.id),0)+1,kind:PG_NK.some(k=>k[0]===fd.get('kind'))?fd.get('kind'):'incident',day:Math.max(1,+fd.get('day')||1),txt,d:iso(TODAY)});
+  toast(L('ההערה נשמרה','Note saved'));render();});
+
+/* ---------- developer notes ---------- */
+(function(){if(typeof SPEC==='undefined')return;
+  const base={roles:{view:['guide'],act:['guide']},perms:[],
+    rules:['Access is by invitation link (proposed); the tour director is not an agency role','Real hotels and venues show their name and neutral wording only','Phone-first: large tap targets, high contrast, one column'],
+    states:{empty:'A guide with no Operations trips sees an empty-state card.',loading:'Not applicable (local data).',error:'A view that throws shows "This screen could not load."'},
+    status:'roadmap',tests:['TEST pg tour director run sheet'],code:['v6/s13_pg.js: pgDay, pgPax, pgVouch, pgNotes, pgContact, pgLineFor','v6/m_pg.css']};
+  const E=(k,o)=>{SPEC['portal:guide:'+k]=Object.assign({},base,o);};
+  E('day',{title:'Run sheet: day',purpose:'The day for the tour director: stops with clock times, a done tick per stop and the supplier contact per stop.',
+    data:['t.items (day, hrs) through pvDays','t.lines and SUPPLIERS contact','PVRUN (PERSIST pv-run)','GUIDES'],
+    actions:[{label:'Trip and day chips',does:'Pick the trip (default: nearest departure) and the day (default day 1)',rule:'S.pgTrip, S.pgDay'},{label:'Mark done',does:'Ticks a stop; survives reload',rule:'PVRUN[tripId|day]'},{label:'Call supplier',does:'Opens the phone dialer',rule:'Fictional suppliers only; real venues show the name and a neutral desk label'}],
+    api:['GET /v1/portal/{token}/run/{trip}/day/{n} (proposed)','PUT /v1/portal/{token}/run/{trip}/stops/{id}/done (proposed)']});
+  E('pax',{title:'Run sheet: passengers',purpose:'The manifest with dietary and medical flags, emergency contacts to call, passport status on international trips and a local head count.',
+    data:['t.trav (diet, form.med, emerg, pass, passExp)','opPassWarn'],
+    actions:[{label:'Flags only',does:'Filters the manifest to travelers with a dietary or medical flag',rule:'diet is not None, or the medical form is not done'},{label:'Count heads',does:'Ticks each traveler on board; the count stays on this device',rule:'Not saved'},{label:'Emergency contact',does:'Calls the emergency contact',rule:'tel: link'}],
+    api:['GET /v1/portal/{token}/run/{trip}/manifest (proposed)']});
+  E('vouch',{title:'Run sheet: vouchers',purpose:'Vouchers for suppliers that are approved on the trip, with the number to show at the desk.',
+    data:['t.sups (spFlow approved)','spLine(t,s)'],rules:['Voucher number is RB-<trip no>-<component id>','A voucher appears only for an approved supplier'],
+    actions:[{label:'Show number',does:'Read the number to the supplier desk',rule:'RB-<t.no>-<l.id>'}],api:['GET /v1/portal/{token}/run/{trip}/vouchers (proposed)']});
+  E('notes',{title:'Run sheet: notes',purpose:'Notes from the road: incidents, changes to the plan and guest requests, per trip.',
+    data:['PVNOTE[tripId] (PERSIST pv-notes)'],
+    actions:[{label:'Save note',does:'Adds a note with type and day',rule:'Up to 500 characters'},{label:'Delete note',does:'Removes the note',rule:'Local to the demo'}],
+    api:['POST /v1/portal/{token}/run/{trip}/notes (proposed)','DELETE /v1/portal/{token}/run/{trip}/notes/{id} (proposed)']});
+})();
+
+/* ---------- tests ---------- */
+TESTS.push({name:'pg tour director run sheet',run:h=>{const out=[];
+  const NEG=/unconfirmed|overdue|exposure|\blate\b|\brisk|query|\bgap|dispute|overbilling/i;
+  const guard=(html,lab)=>{html.split(/(?=<div class="card|<li class="pg-px|<tr)/).forEach(seg=>{if(!NEG.test(seg))return;
+    const low=seg.toLowerCase();for(const nm of SD_CATNAMES){if(low.includes(esc(nm).toLowerCase())){out.push(`real brand ${nm} near negative wording in ${lab}`);break;}}});};
+  const run0=PERSIST.find(p=>p.key==='pv-run'),notes0=PERSIST.find(p=>p.key==='pv-notes');
+  for(const lang of ['en','he']){S.lang=lang;
+    GUIDES.forEach(g=>{pgTripsOf(g).forEach(t=>{S.pgTrip=t.id;
+      const days=t.id==='nas'?t.nights+1:1;
+      ['day','pax','vouch','notes'].forEach(tab=>{for(let d=1;d<=(tab==='day'?days:1);d++){S.pgDay=d;
+        try{pvOpen('guide',g.id,tab);render();const hh=h.els.app.innerHTML,lab=`pg ${g.id} ${t.id} ${tab} d${d} ${lang}`;
+          h.chk(hh,lab);if(lang==='en'){h.scan(hh,lab);guard(hh,lab);}
+          if(!hh.includes('pg-chip')&&pgTripsOf(g).length>1)out.push('no chips '+lab);
+          if(tab==='pax'&&hh.includes('href="tel:')===false)out.push('no tel link '+lab);
+          if(tab==='vouch'){const ok=(t.sups||[]).filter(s=>spFlow(s)==='approved'&&spLine(t,s));ok.forEach(s=>{if(!hh.includes(pgVouchNo(t,spLine(t,s))))out.push('voucher missing '+lab);});}
+        }catch(e){out.push('threw '+g.id+' '+t.id+' '+tab+' '+e.message);}}});});});}
+  S.lang='en';
+  /* times increase within a day, contacts match at least one nas stop */
+  const nas=TRIPS.find(t=>t.id==='nas');
+  pvDays(nas).forEach(d=>d.items.forEach((x,i)=>{if(x.end<x.start||(i&&x.start<d.items[i-1].end))out.push('times nas d'+d.i);}));
+  if(!nas.items.some(x=>pgContact(nas,x)))out.push('no supplier contact matched on nas');
+  if(pgLineFor(nas,{name:'Free morning'}))out.push('free stop matched a line');
+  if(pgLineFor(nas,{name:'Zzzz unknown'}))out.push('unknown stop matched a line');
+  /* a done tick survives the persistence round trip and shows as pressed */
+  S.pgTrip='nas';S.pgDay=1;PVRUN['nas|1']=[1];pvOpen('guide','wade','day');render();
+  if(!/pv-st[^"]*done/.test(h.els.app.innerHTML))out.push('done tick not rendered');
+  const snap=JSON.stringify(run0.get());run0.reset();if(Object.keys(PVRUN).length)out.push('reset left ticks');
+  run0.set(JSON.parse(snap));if(JSON.stringify(PVRUN['nas|1'])!=='[1]')out.push('done tick lost through get/set');
+  /* notes round trip */
+  PVNOTE.nas=[{id:1,kind:'incident',day:1,txt:'Test note',d:iso(TODAY)}];const ns=JSON.stringify(notes0.get());notes0.reset();notes0.set(JSON.parse(ns));
+  if(!PVNOTE.nas||PVNOTE.nas[0].txt!=='Test note')out.push('note lost through get/set');
+  S.pgTrip='nas';pvOpen('guide','wade','notes');render();if(!h.els.app.innerHTML.includes('Test note'))out.push('note not rendered');
+  /* the flag filter narrows the manifest */
+  S.pgFilter='flags';pvOpen('guide','wade','pax');render();const fl=(h.els.app.innerHTML.match(/class="pg-px/g)||[]).length;
+  if(fl!==nas.trav.filter(pgHasFlag).length)out.push('flag filter count '+fl);
+  S.pgFilter='all';
+  run0.reset();notes0.reset();pvExit();S.lang='en';return out;}});
 
 /* ---------- meeting mode: the 3-minute booth story (v7) ----------
    Presenter drives with the arrow keys (or the buttons). Easy process first (studio),
