@@ -115,4 +115,4 @@ document.addEventListener('submit',e=>{const f=e.target;if(!(f.dataset&&f.datase
   const k=(new FormData(f).get('key')||'').trim();if(!k)return;const ok=liveSave({key:k,on:true});
   S.liveStat=ok?L('המפתח נשמר במחשב הזה. תשובות חיות פעילות.','Key saved on this laptop. Live answers are on.'):L('לא ניתן לשמור בדפדפן הזה.','This browser cannot store the key.');render();});
 document.addEventListener('change',e=>{const el=e.target;if(!(el.dataset&&el.dataset.ch==='liveon'))return;const c=liveCfg();c.on=el.checked;liveSave(c);render();});
-{const r0=render;render=function(){r0();try{liveMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{liveMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}

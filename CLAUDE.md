@@ -7,6 +7,9 @@ The story for a short meeting is easy process plus high value. The Trip studio b
 
 Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents, an owner, an accountant and (since v8.4) an operations coordinator. Since v8.4 the demo can also be seen from outside the agency: the group leader, a traveler, a supplier and the tour director, each in their own portal. Since v7, hotel and venue names are REAL (owner decision, Nov 2026); see the brand rule below.
 
+## Purpose (owner decision, 15 Nov 2026)
+The demo presents the direction I recommend for the product. The team decides, in this order: (1) what to adopt going forward (finance dashboard, invoice check, profit leaks and other new capabilities); (2) how much of the plan to apply to the existing product; (3) only then how, and the team leads that. Nothing addressed to the team may read as a build plan or assume a rewrite. The ideas backlog, the handover guide, `HANDOVER.md` and `docs/handoff/README.md` §6 follow this order.
+
 ## Hard constraints
 - Output is ONE self-contained HTML file. No frameworks, no CDN calls. The font (IBM Plex Sans Hebrew) and the map geometry are embedded.
 - The file starts with `<meta charset="utf-8">`. Without it, Chromium mis-detects the encoding of the large file and every `$` and symbol turns into garbage.
@@ -82,7 +85,7 @@ Agency data is fictional: "Redbud Group Tours" (Tulsa), 20 trips, 6 agents, an o
   - the "Your numbers" card on Profit leaks;
   - Maya questions 26-28.
 - `v6/s8_gen.js` - Trip studio (`genPlan`, `genRun`, `genCreate`), brand badges, `brandSwap`, catalog Hotels screen
-- `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens; Pilot = working in the demo, offered to pilot customers; Roadmap = not available.
+- `v6/s9b_status.js` - Phase 3 honesty layer: one `FEAT` table marks every feature Live, Pilot or Roadmap. It drives the "What's live" screen, the badge on page headers (studio, leaks, invoice check, accounting sync, Maya) and the 10-minute beat. **The owner confirms the statuses before each show.** Live = seen on app.triplanet.io screens (my reading, to be confirmed by the product team); Proposed (key `pilot`) = working in the demo, proposed to adopt now; Later (key `roadmap`) = a preview proposed for later. Neither claims the product offers it (owner decision, 15 Nov 2026). The screen is "Live and proposed".
 - `v6/s9c_live.js` - Maya live mode (see Hard constraints): settings card, `liveSnapshot()`, `liveSystem()`, streaming `liveAsk()`, scripted fallback. `check6.js` checks the snapshot (no NaN, no real brand in a gap, leak total ties).
 - `v6/s9d_maya.js` - Maya always at hand (her chat closes from the Close button, the backdrop or Esc; the panel sits above the header) (since 13 Nov 2026): her AI-generated face (`AVATARS.Maya`) with an "AI" badge, one proactive tip per page computed from the data on screen (scripted logic, never labeled live), a one-tap fix for an overloaded trip-plan day (nearest day that fits, arrival and departure days last), "/" or Ctrl/Cmd+K to open her, and page-aware suggested questions. Tips are off in meeting mode, the tour, the attract screen and while her panel is open. check6 covers the tips in both languages and every plan fix.
 - v8 feature modules (spec `docs/spec-v8-parity.md`, builder rules `docs/v8-builder-brief.md`). Each module owns `v6/s10_<code>.js` + `v6/m_<code>.css`, plugs in through the hooks below, and registers its own tests:

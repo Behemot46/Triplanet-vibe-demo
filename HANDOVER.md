@@ -5,7 +5,12 @@ Start here. This page tells the team what is in the package, how to open it, and
 Prepared by Gabi, consultant to Samuel, 14 Nov 2026. Also published as a page: https://claude.ai/artifact/4HzoztxGfo2R4U6Qnqe7F6 (private until shared).
 
 ## 1. What this is
-A clickable demo of Triplanet for US group tour operators (3 to 20 agents), built for trade-show booths (NTA 2026; next IITA, 31 Jan 2027, and ABA, 6 Feb 2027). It doubles as a specification: every screen has developer notes, the data model and business rules are written down, and the money rules run as automated checks.
+A clickable demo of the direction I recommend for Triplanet, for US group tour operators (3 to 20 agents). It is a proposal for the team to decide on, not a build plan. The team decides, in this order:
+1. **What to adopt going forward**: new capabilities such as the finance dashboard, invoice check and profit leaks (marked Proposed or Later on the demo's *Live and proposed* screen).
+2. **How much of the plan to apply to the existing product**: proposals on screens the product already has. The default is to keep what exists.
+3. **Only then, how**: architecture, order and estimates are the team's call, and the team leads the process.
+
+The demo was first built for trade-show booths (NTA 2026; next IITA, 31 Jan 2027, and ABA, 6 Feb 2027). Every screen has developer notes, the data model and business rules are written down, and the money rules run as automated checks, so whatever the team adopts comes with its rules. The "Live" column is my reading of dev.triplanet.io from September 2026, not verified with the team.
 
 It is **not production code**: one offline HTML file, no backend, no logins, simulated payments and accounting sync, fictional agency data.
 
@@ -22,7 +27,7 @@ It is **not production code**: one offline HTML file, no backend, no logins, sim
 - The gear menu has the guided tour, meeting mode (1, 3 or 10 minutes), Hebrew/English, day/night, and **developer notes**, which show the specification of the screen you are on.
 
 ## 3. Read in this order
-1. `docs/handoff/README.md`: module map, what is simulated and what is real, open decisions, suggested build order.
+1. `docs/handoff/README.md`: module map, what is simulated and what is real, open decisions, and how to use the package for the three decisions (§6).
 2. `docs/handoff/screens.md`: all 69 screens with purpose, roles, data, actions and rules, states and a proposed API.
 3. `docs/handoff/data-model.md`: every entity and field, marked real or demo-only (§28 covers the v8.4 portals).
 4. `docs/handoff/business-rules.md`: finance identities, the invoice-gap model, permissions, known inconsistencies.

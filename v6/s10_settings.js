@@ -146,7 +146,7 @@ function stForms(){
 function stInteg(){
   const ok=typeof can!=='function'||can('fin.sync');
   return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
-   <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (פיילוט).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (Pilot).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
+   <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (מוצע).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (proposed).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
    ${ok?`<button class="btn pri" data-act="go" data-v="books">${L('פתיחת הסנכרון','Open accounting sync')}</button>`:pillF(L('אין הרשאה','No access'),'warn')}</div>`;
 }
 function vSettings(){

@@ -34,7 +34,7 @@ function specKey(){
 }
 
 /* ---------- panel ---------- */
-const DV_ST={live:['green','Live'],pilot:['info','Pilot'],roadmap:['amber','Roadmap']};
+const DV_ST={live:['green','Live'],pilot:['info','Proposed'],roadmap:['amber','Later']};
 const dvPill=st=>{const x=DV_ST[st];return x?`<span class="pill ${x[0]}">${x[1]}</span>`:'';};
 const dvRoles=r=>!r?'-':(r==='all'?'all roles':[].concat(r).join(', '));
 const dvChips=a=>(a||[]).map(x=>`<code class="dv-chip">${esc(x)}</code>`).join('');
@@ -337,12 +337,12 @@ dvAdd('ai',{title:'Maya, AI assistant',
   tests:['check6.js: all 25 Maya routes, live snapshot checks, Maya tips'],
   code:['v6/s6_rest.js: vAI, QS','v6/s9c_live.js: liveAsk, liveSnapshot','v6/s9d_maya.js: mayaTip']});
 
-dvAdd('status',{title:"What's live",
-  purpose:'Honesty layer: every feature marked Live, Pilot or Roadmap. A demo-only screen, not a product page.',
+dvAdd('status',{title:"Live and proposed",
+  purpose:'Honesty layer: every feature marked Live, Proposed or Later. A demo-only screen, not a product page.',
   roles:{view:'all',act:'all'},perms:[],
   data:['FEAT.id','FEAT.status','FEAT.view'],
   actions:[{label:'Open (feature row)',does:'Jumps to the screen that shows the feature.',rule:'Only rows with a view key that exists'}],
-  rules:['Live = seen on app.triplanet.io screens; Pilot = working in the demo and offered to pilot customers; Roadmap = not available','statuses are confirmed by the owner before each show; income, vouchers, trip P&L and currencies are Pilot since 13 Nov 2026'],
+  rules:['Live = seen on app.triplanet.io screens (to be confirmed by the product team); Proposed = working in the demo, proposed to adopt now; Later = a preview proposed for a later stage. Neither Proposed nor Later claims the product offers it','statuses are confirmed by the owner before each show; income, vouchers, trip P&L and currencies are Pilot since 13 Nov 2026'],
   states:{empty:'Not applicable: static table',loading:'None',error:'None'},status:'live',
   api:[],tests:['check6.js: status screen in EN and HE'],code:['v6/s9b_status.js: FEAT, vStatus']});
 

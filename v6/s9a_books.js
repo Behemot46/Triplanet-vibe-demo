@@ -21,7 +21,7 @@ const acctOrder=()=>S.lang==='he'?['priority','hash','qbo','xero']:['qbo','xero'
 const A=()=>S.acct||(S.acct={sys:null,phase:'idle',step:-1,opt:{auto:true,tag:true,credit:true},log:[]});
 const an=(k,i)=>{const p=ACCT[k];return L(p[i||'name'][0],p[i||'name'][1]);};
 const acBadge=k=>{const i=ACCT[k].ini;return `<span class="acb" style="--bc:${ACCT[k].color}">${esc(Array.isArray(i)?L(i[0],i[1]):i)}</span>`;};
-const PILOT=()=>pillF(L('פיילוט','Pilot'),'info');
+const PILOT=()=>pillF(L('מוצע','Proposed'),'info');
 function acStats(){const ts=visibleTrips(),G=gapStats(ts),vend=new Set();ts.filter(t=>t.stage!=='Quote').forEach(t=>t.lines.forEach(l=>{if(l.inv)vend.add(l.sup);}));
   return {bills:G.received,matched:G.matched,vend:vend.size,trips:ts.filter(t=>t.stage!=='Quote').length,gapN:G.openN+G.dispN,gap:r2(G.open+G.disp)};}
 const AC_STEPS=[k=>L(`מתחבר ל${an(k,'short')} (קובץ חברה לדוגמה)`,`Signing in to ${an(k,'short')} (sample company file)`),
@@ -72,7 +72,7 @@ function vBooks(){
        {lab:L('תואמות בלי מגע יד','Matched with no touch'),val:pct(rate),sub:`${G.matched} ${L('מתוך','of')} ${G.received} ${L('חשבוניות','bills')}`},
        {lab:L('הוחזר העונה','Recovered this season'),val:usd(G.rec),sub:`${G.recN} ${L('זיכויים',G.recN===1?'credit':'credits')}`,cls:'pf',act:'fn-gf',v:'credited'}])
     +gridOpen+`<div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('בחרו את מערכת הנהלת החשבונות','Choose your accounting system')}</h3><span class="muted small">${L('טריפלאנט קוראת חשבוניות, מתאימה לשורות ההצעה, ומחזירה חשבוניות מאושרות וזיכויים מתויגים לפי טיול.','Triplanet reads bills, matches them to quote lines, and writes approved bills and credits back, tagged to the trip.')}</span></div>
-     <div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p></div></div></div>`;
+     <div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> מוצעים למוצר ועוד לא קיימים.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are proposed and do not exist yet.')}</p></div></div></div>`;
   }
   const k=a.sys,p=ACCT[k],pctm=s.bills?s.matched/s.bills:0;
   const opt=(key,he,en)=>`<label class="ac-opt"><input type="checkbox" data-acopt="${key}" ${a.opt[key]?'checked':''}> <span>${L(he,en)}</span></label>`;
@@ -110,7 +110,7 @@ QS.push(
    return rs.length?{t:L(`${rs[0].label}: ${usd(rs[0].leak)} דלפו, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} מהרווח המתוכנן.\n`,`${rs[0].label}: ${usd(rs[0].leak)} leaked, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} of planned profit.\n`)+listL(rs.slice(1,4).map(r=>`${r.label}: ${usd(r.leak)}`))}:{t:L('אף סוג קבוצה לא איבד רווח.','No group type has lost profit.')};}},
  {g:0,he:'מה ייבאנו ממערכת הנהלת החשבונות?',en:'What did we import from our accounting system?',r:/(accounting|quickbooks|xero|priority|hashavshevet|books|הנהלת ה?חשבונות|פריוריטי|חשבשבת).*(import|sync|ייב|יבא|סנכר)|(import|ייב).*(accounting|books|הנהלת ה?חשבונות)/,f:()=>{const a=A(),s=acStats();
    return a.phase==='synced'?{t:L(`מ${an(a.sys,'short')}: ${s.bills} חשבוניות ספק, ${s.vend} ספקים ו-${s.trips} טיולים מתויגים. ${s.matched} חשבוניות תואמו בלי מגע יד, ונמצאו ${s.gapN} פערים בסך ${usd(s.gap)}.`,`From ${an(a.sys,'short')}: ${s.bills} supplier bills, ${s.vend} suppliers and ${s.trips} tagged trips. ${s.matched} bills matched with no touch, and ${s.gapN} gap${(s.gapN)===1?'':'s'} worth ${usd(s.gap)} were found.`),btn:{label:L('לסנכרון','Open accounting sync'),act:'go',v:'books'}}
-     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר את פריוריטי, חשבשבת, QuickBooks או Xero (פיילוט).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (pilot).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
+     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר את פריוריטי, חשבשבת, QuickBooks או Xero (מוצע).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (proposed).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
 QS.slice(-3).forEach((q,i)=>{q.id=QS.length-2+i;});
 QORDER.unshift(QS.length-2,QS.length-1,QS.length);
 /* wiring */

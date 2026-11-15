@@ -24,7 +24,7 @@ const MEET_ALL=[
      const by={};tripGaps(t).filter(x=>x.s.k==='gap'&&x.usd>0&&['','open','disputed'].includes(x.l.inv&&x.l.inv.st||'')).forEach(x=>{by[x.l.sup]=(by[x.l.sup]||0)+x.usd;});
      const best=Object.keys(by).map(n=>SUPPLIERS.find(s=>s.name===n&&s.fictional===true&&!s.real)).filter(Boolean).sort((a,b)=>by[b.name]-by[a.name])[0];
      if(best&&typeof pvOpen==='function'&&typeof PORTALS!=='undefined'&&PORTALS.supplier)pvOpen('supplier',best.id,'disp');else openTrip('nen','tfin');},
-   tx:()=>[L('הספק רואה את אותה שאלה (בתכנון)','The supplier sees the same query (roadmap)'),L('בפורטל הספקים ההפרש מגיע כשאלה מסודרת, עם השורה מההצעה ומהחשבונית. לחיצה אחת של הספק מנפיקה זיכוי, והוא חוזר ישר לספרים שלכם.','In the supplier portal the difference arrives as a clear query, with the quoted line next to the billed one. One tap by the supplier issues the credit, and it lands straight back in your books.')]},
+   tx:()=>[L('הספק רואה את אותה שאלה (מוצע להמשך)','The supplier sees the same query (proposed for later)'),L('בפורטל הספקים ההפרש מגיע כשאלה מסודרת, עם השורה מההצעה ומהחשבונית. לחיצה אחת של הספק מנפיקה זיכוי, והוא חוזר ישר לספרים שלכם.','In the supplier portal the difference arrives as a clear query, with the quoted line next to the billed one. One tap by the supplier issues the credit, and it lands straight back in your books.')]},
   {id:'maya',sel:'.chat',go:()=>{S.tab='ai';S.chat=[];askQ(QS[1]);},
    tx:()=>[L('שואלים את מאיה','Ask Maya'),L(`מאיה עונה מהנתונים של הסוכנות. ${QS.length} שאלות מוכנות על פערים, רווחיות, תשלומים ומשימות.`,`Maya answers from the agency's own data: ${QS.length} ready questions on gaps, margins, payments and tasks.`)]},
   {id:'close',sel:'',close:true,go:()=>{S.tab='leaks';},
@@ -36,7 +36,7 @@ const MEET_ALL=[
   {id:'fin',sel:'.stats',go:()=>{openTrip('nen','fdash');},
    tx:()=>{const t=byId('nen'),c=t?calc(t):{planProfit:0,fcProfit:0,rev:1};return [L('דוח רווח והפסד לטיול, חי','A live P&L for every trip'),L(`ניו אינגלנד: רווח מתוכנן ${usd(c.planProfit)}, צפוי ${usd(c.fcProfit)}. גבייה, תשלומים לספקים ופערים פתוחים באותו מסך.`,`New England: planned profit ${usd(c.planProfit)}, expected ${usd(c.fcProfit)}. Collections, supplier payments and open gaps on one screen.`)];}},
   {id:'status',sel:'.rm-grid',go:()=>{S.tab='status';},
-   tx:()=>[L('מה זמין היום','What is live today'),L('כל מה שראיתם, ואיפה הוא עומד: במוצר, בפיילוט או בתכנון.','Everything you saw, and where it stands: in the product, in pilot or on the roadmap.')]}
+   tx:()=>[L('מה במוצר ומה מוצע','Live and proposed'),L('כל מה שראיתם, ואיפה הוא עומד: כבר במוצר, מוצע לאימוץ עכשיו או מוצע להמשך. הצוות מחליט.','Everything you saw, and where it stands: in the product, proposed now or proposed for later. The team decides.')]}
 ];
 /* three cuts of the same story: 60 seconds, 3 minutes, 10 minutes */
 const MEET_CUTS={1:['leaks','inbox','dispute','close'],3:['studio','swap','quote','books','leaks','inbox','dispute','maya','close'],10:['studio','swap','quote','ops','books','leaks','numbers','inbox','dispute','supplier','fin','maya','status','close']};
@@ -62,7 +62,7 @@ function closingHtml(){
    <div class="pts"><div><b>${usd(a1)}</b>${L('נמצאו בטיול אחד, תוך שניות','found on one trip, in seconds')}</div><div><b>${pct(M.pp?M.leak/M.pp:0)}</b>${L('מהרווח המתוכנן דלף העונה','of planned profit leaked this season')}</div><div><b>${nh}</b>${L(`מלונות מ-${nf} רשתות, מוכנים בסטודיו`,`hotels from ${nf} brands, ready in the studio`)}</div></div>
    <form class="leadf" data-form="lead"><input name="name" type="text" required placeholder="${L('שם','Name')}" aria-label="${L('שם','Name')}"><input name="agency" type="text" placeholder="${L('סוכנות','Agency')}" aria-label="${L('סוכנות','Agency')}"><input name="email" type="text" inputmode="email" required placeholder="${L('אימייל','Email')}" aria-label="${L('אימייל','Email')}">
     <select name="sys" aria-label="${L('מערכת הנהלת חשבונות','Accounting system')}">${acctOrder().map(k=>`<option value="${k}">${an(k,'short')}</option>`).join('')}<option value="other">${L('אחר','Other')}</option></select><button class="btn" type="submit">${L('אני רוצה בדיקה','I want the audit')}</button></form>
-   <p class="fine">${L('נתוני הסוכנות בדמו פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה. החיבורים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> בפיילוט.','The agency data in this demo is fictional. Hotel and venue names are real; rates are illustrative. QuickBooks, Xero, Priority and Hashavshevet connections are in pilot.')}</p></div></div>`;
+   <p class="fine">${L('נתוני הסוכנות בדמו פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה. החיבורים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> מוצעים ועוד לא קיימים.','The agency data in this demo is fictional. Hotel and venue names are real; rates are illustrative. QuickBooks, Xero, Priority and Hashavshevet connections are proposed and do not exist yet.')}</p></div></div>`;
 }
 function meetBar(){
   const st=MEET[S.meet],[ti,tx]=st.tx(),last=S.meet===MEET.length-1;
@@ -151,4 +151,4 @@ function attractMenu(){
   m.insertBefore(b,m.querySelector('[data-act="reset"]'));
 }
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="attract"]');if(!b)return;S.menu=false;render();setTimeout(attractShow,50);});
-{const r0=render;render=function(){r0();try{attractMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{attractMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}

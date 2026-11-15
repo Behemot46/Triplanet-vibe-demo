@@ -45,7 +45,7 @@ const pct=Math.round(covered/allKeys.length*100);
 const out=[];
 out.push('# Screens: developer notes','',
  'Generated from the `SPEC` registry by `node tools/spec/export_spec.js`. Do not edit by hand: edit `v6/s11_spec.js` (global pages, role homes, drawers, modals) or `v6/s11_spec_trip.js` (trip tabs) and run the export again.',
- 'The same text shows in the demo: Settings menu, "Show developer notes". API paths are suggestions that follow `docs/backend-plan/03-api.md`; a path marked (proposed) is not in that plan yet.','',
+ 'The same text shows in the demo: Settings menu, "Show developer notes". These notes describe the demo so the team can decide what to adopt (see `README.md` §6). API paths are illustrative only; they follow my earlier, unmerged backend sketch (`docs/backend-plan/03-api.md` on branch `claude/fervent-babbage-bkgptx`), and a path marked (proposed) is not in it. The team decides the real API.','',
  '## Coverage','',
  '| Group | Screens | With a spec |','|---|---|---|',
  ...groups.map(([n,ks])=>`| ${n} | ${ks.length} | ${ks.filter(has).length} |`),

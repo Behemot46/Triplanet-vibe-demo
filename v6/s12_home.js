@@ -77,9 +77,10 @@ const hcCta=(cls,icon,label,attrs)=>`<button class="hc-btn ${cls}" ${attrs}>${ic
 
 function hcHero(m){
   const {P,M}=m,nx=m.dep[0],margin=P.rev?P.fp/P.rev:0,files=m.ts.filter(t=>t.stage!=='Quote').length;
+  const gross=r2(Math.max(0,P.pp-P.fp)+M.got),grossPct=P.pp>0?gross/P.pp:0; /* what supplier gaps and FX took before recoveries */
   return hcShell({cls:'ptiles',
-    brief:L(`העונה נסגרו ${hlKey(usd(P.rev))} ב-${files} תיקים, ברווח צפוי של ${hlPos(pct(margin))}. עוד ${hlWarn(usd(M.rec))} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${hlNeg(m.urgent+' דברים דחופים')} מחכים לך היום`:''}.`,
-      `This season you booked ${hlKey(usd(P.rev))} across ${files} files at ${hlPos(pct(margin))} expected margin. ${hlWarn(usd(M.rec))} is still recoverable from supplier invoices${m.urgent?`, and ${hlNeg(m.urgent+' urgent '+(m.urgent===1?'item':'items'))} ${m.urgent===1?'needs':'need'} you today`:''}.`),
+    brief:L(`העונה נסגרו ${hlKey(usd(P.rev))} ב-${files} תיקים, ברווח צפוי של ${hlPos(pct(margin))}. חשבוניות ספקים ושערי מטבע לקחו ${hlNeg(usd(gross))} (${pct(grossPct)} מהרווח המתוכנן); ${hlPos(usd(M.got))} כבר הוחזרו ועוד ${hlWarn(usd(M.rec))} אפשר להחזיר${m.urgent?`, ו-${hlNeg(m.urgent+' דברים דחופים')} מחכים לך היום`:''}.`,
+      `This season you booked ${hlKey(usd(P.rev))} across ${files} files at ${hlPos(pct(margin))} expected margin. Supplier invoices and FX took ${hlNeg(usd(gross))} (${pct(grossPct)} of planned profit); ${hlPos(usd(M.got))} is back and ${hlWarn(usd(M.rec))} is still recoverable${m.urgent?`, and ${hlNeg(m.urgent+' urgent '+(m.urgent===1?'item':'items'))} ${m.urgent===1?'needs':'need'} you today`:''}.`),
     ctas:[hcCta('mint','cash',L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`),'data-act="go" data-v="gaps"'),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'data-act="go" data-v="studio"')],
     gauge:{pct:m.kept,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(M.got)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(M.rec)}]},
     kpis:[{lab:L('הכנסות שנסגרו','Booked revenue'),val:P.rev,money:1,sub:L(`${P.pax} נוסעים`,`${P.pax} travelers`)},

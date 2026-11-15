@@ -1,7 +1,7 @@
 # Screens: developer notes
 
 Generated from the `SPEC` registry by `node tools/spec/export_spec.js`. Do not edit by hand: edit `v6/s11_spec.js` (global pages, role homes, drawers, modals) or `v6/s11_spec_trip.js` (trip tabs) and run the export again.
-The same text shows in the demo: Settings menu, "Show developer notes". API paths are suggestions that follow `docs/backend-plan/03-api.md`; a path marked (proposed) is not in that plan yet.
+The same text shows in the demo: Settings menu, "Show developer notes". These notes describe the demo so the team can decide what to adopt (see `README.md` §6). API paths are illustrative only; they follow my earlier, unmerged backend sketch (`docs/backend-plan/03-api.md` on branch `claude/fervent-babbage-bkgptx`), and a path marked (proposed) is not in it. The team decides the real API.
 
 ## Coverage
 
@@ -38,7 +38,7 @@ Status of the documented screens: 22 Live, 24 Pilot, 22 Roadmap (as in `FEAT`, `
   - [Finance dashboard](#finance) (`finance`)
   - [Accounting sync](#books) (`books`)
   - [Maya, AI assistant](#ai) (`ai`)
-  - [What's live](#status) (`status`)
+  - [Live and proposed](#status) (`status`)
   - [Photo credits](#credits) (`credits`)
   - [Form builder and traveler forms](#page-forms) (`page:forms`)
   - [UI kit](#page-uikit) (`page:uikit`)
@@ -101,7 +101,7 @@ Status of the documented screens: 22 Live, 24 Pilot, 22 Roadmap (as in `FEAT`, `
 
 ### Home, owner (command center)
 
-`home:manager` · Status: Pilot
+`home:manager` · Status: Proposed
 
 Tell the owner in one screen how the season stands, what needs them today, and where profit is leaking or can be recovered.
 
@@ -117,6 +117,7 @@ Tell the owner in one screen how the season stands, what needs them today, and w
 | Departure card | Opens the trip (dashboard, or general for quotes) | Next 8 departures from today, Lost quotes excluded |
 | Stage card | Opens Projects on the matching tab | Quotation→quotes, Operation and Finance→files, Closed→archive |
 | Recovered / Still open / At risk | Open Invoice check or Profit leaks | From leakModel(): got, rec, late+release |
+| Listen to the brief | Reads a short spoken brief aloud in the viewer's built-in Claude voice (claude.ai page capability tts) | Shown only when the voice is available (published page, Chromium or desktop app); hidden offline. Text = voBrief(), same figures as the hero |
 
 **Rules**
 - `kept % = expected profit / planned profit = P.fp / P.pp`
@@ -144,12 +145,13 @@ Tell the owner in one screen how the season stands, what needs them today, and w
 **Code**
 - `v6/s12_home.js: hcHome, hcModel, hcHero, hcToday, hcProfit, hcDepartures, hcPipeline, hcCash, hcTeam, hcStudio`
 - `v6/m_home.css`
+- `v6/s13_voice.js: voBrief, voBtn (narration, option C)`
 
 <a id="home-accountant"></a>
 
 ### Home, accountant
 
-`home:accountant` · Status: Pilot
+`home:accountant` · Status: Proposed
 
 The money to collect and pay: receivables, payables schedule, documents to issue, FX exposure and a month-end checklist.
 
@@ -198,7 +200,7 @@ The money to collect and pay: receivables, payables schedule, documents to issue
 
 ### Home, sales agent
 
-`home:agent` · Status: Pilot
+`home:agent` · Status: Proposed
 
 One agent: own quote pipeline, next departures with readiness, tasks due this week, numbers against the annual target and pending traveler forms.
 
@@ -368,7 +370,7 @@ Real hotel catalog (65) by brand and destination, with group rates and the files
 
 ### Suppliers
 
-`suppliers` · Status: Pilot
+`suppliers` · Status: Proposed
 
 The supplier bank (344 suppliers) with terms, rate cards and alternatives; plus the price list and the price-list import.
 
@@ -576,7 +578,7 @@ Every group the agency serves, with trips, booked revenue and last trip; opens t
 
 ### Trip studio
 
-`studio` · Status: Pilot
+`studio` · Status: Proposed
 
 Turns a client request into a priced, mapped, day-by-day trip in seconds, then into an ordinary quote.
 
@@ -618,7 +620,7 @@ Turns a client request into a priced, mapped, day-by-day trip in seconds, then i
 
 ### Profit leaks
 
-`leaks` · Status: Pilot
+`leaks` · Status: Proposed
 
 Where planned profit went: a bridge from planned to expected profit by gap kind and FX, cut by trip, agent, group type or supplier.
 
@@ -660,7 +662,7 @@ Where planned profit went: a bridge from planned to expected profit by gap kind 
 
 ### Invoice check
 
-`gaps` · Status: Pilot
+`gaps` · Status: Proposed
 
 Every supplier bill line matched to what was quoted; differences are found, explained and chased until credited.
 
@@ -704,7 +706,7 @@ Every supplier bill line matched to what was quoted; differences are found, expl
 
 ### Finance dashboard
 
-`finance` · Status: Pilot
+`finance` · Status: Proposed
 
 All booked trips in one place: planned vs expected profit, receivables, 12-month cash flow, FX scenario and profit per traveler.
 
@@ -747,7 +749,7 @@ All booked trips in one place: planned vs expected profit, receivables, 12-month
 
 ### Accounting sync
 
-`books` · Status: Pilot
+`books` · Status: Proposed
 
 Connects an accounting system, imports supplier bills, maps objects, posts bills, holds and credits, and logs every sync (simulated).
 
@@ -789,7 +791,7 @@ Connects an accounting system, imports supplier bills, maps objects, posts bills
 
 ### Maya, AI assistant
 
-`ai` · Status: Pilot
+`ai` · Status: Proposed
 
 Ask the data in plain language: 28 scripted questions, plus optional live answers from Claude for typed questions.
 
@@ -828,11 +830,11 @@ Ask the data in plain language: 28 scripted questions, plus optional live answer
 
 <a id="status"></a>
 
-### What's live
+### Live and proposed
 
 `status` · Status: Live
 
-Honesty layer: every feature marked Live, Pilot or Roadmap. A demo-only screen, not a product page.
+Honesty layer: every feature marked Live, Proposed or Later. A demo-only screen, not a product page.
 
 **Roles.** View: all roles. Act: all roles.
 
@@ -843,7 +845,7 @@ Honesty layer: every feature marked Live, Pilot or Roadmap. A demo-only screen, 
 | Open (feature row) | Jumps to the screen that shows the feature. | Only rows with a view key that exists |
 
 **Rules**
-- `Live = seen on app.triplanet.io screens; Pilot = working in the demo and offered to pilot customers; Roadmap = not available`
+- `Live = seen on app.triplanet.io screens (to be confirmed by the product team); Proposed = working in the demo, proposed to adopt now; Later = a preview proposed for a later stage. Neither Proposed nor Later claims the product offers it`
 - statuses are confirmed by the owner before each show; income, vouchers, trip P&L and currencies are Pilot since 13 Nov 2026
 
 **States**
@@ -892,7 +894,7 @@ Author, license and source for every embedded photo (open licenses require it). 
 
 ### Form builder and traveler forms
 
-`page:forms` · Status: Pilot
+`page:forms` · Status: Proposed
 
 Build registration, medical, waiver and room-preference forms, preview on desktop or phone, and send them to travelers; also entity custom fields.
 
@@ -1199,7 +1201,7 @@ Move the quote from draft to manager approval, to the client, and open the file 
 
 ### Versions
 
-`trip:tbver` · Status: Pilot
+`trip:tbver` · Status: Proposed
 
 Save snapshots of the quote, compare any two and restore an earlier one.
 
@@ -1245,7 +1247,7 @@ Save snapshots of the quote, compare any two and restore an earlier one.
 
 ### Billing
 
-`trip:people` · Status: Pilot
+`trip:people` · Status: Proposed
 
 See what each household owes, what is paid and who is late, and copy their payment link.
 
@@ -1331,7 +1333,7 @@ See what needs attention before departure and jump to tasks, suppliers or financ
 
 ### Suppliers
 
-`trip:spm` · Status: Pilot
+`trip:spm` · Status: Proposed
 
 Move each supplier from contact to approved and compare prices before choosing.
 
@@ -1474,7 +1476,7 @@ Keep every traveler record complete: rooms, passports, forms and custom columns.
 
 ### Expenses and invoice check
 
-`trip:tfin` · Status: Pilot
+`trip:tfin` · Status: Proposed
 
 Match each supplier invoice line to what was quoted and recover the difference.
 
@@ -1530,7 +1532,7 @@ Match each supplier invoice line to what was quoted and recover the difference.
 
 ### Finance dashboard
 
-`trip:fdash` · Status: Pilot
+`trip:fdash` · Status: Proposed
 
 See the trip money at a glance: planned versus expected profit and what is still to collect.
 
@@ -1573,7 +1575,7 @@ See the trip money at a glance: planned versus expected profit and what is still
 
 ### Income
 
-`trip:income` · Status: Pilot
+`trip:income` · Status: Proposed
 
 See the deal invoices and receipts for each household and how much is billed, received and remaining.
 
@@ -1618,7 +1620,7 @@ See the deal invoices and receipts for each household and how much is billed, re
 
 ### Vouchers and documents
 
-`trip:vouch` · Status: Pilot
+`trip:vouch` · Status: Proposed
 
 Produce the household payment request and the supplier voucher.
 
@@ -1658,7 +1660,7 @@ Produce the household payment request and the supplier voucher.
 
 ### Supplier card
 
-`drawer:supplier` · Status: Pilot
+`drawer:supplier` · Status: Proposed
 
 One supplier: contact, payment terms, cancellation policy, documents, performance, rate card and trips with spend.
 
@@ -1737,7 +1739,7 @@ One client: contact, details, open lead, notes, trips, and a finance tab with bi
 
 ### Entity form (modal)
 
-`modal:form` · Status: Pilot
+`modal:form` · Status: Proposed
 
 One schema-driven form for supplier, client, user, activity and hotel: validation, dirty check, save to the local dataset.
 
@@ -1779,7 +1781,7 @@ One schema-driven form for supplier, client, user, activity and hotel: validatio
 
 ### Trip plan: By day
 
-`trip:plan:day` · Status: Pilot
+`trip:plan:day` · Status: Proposed
 
 Edit one day: description, photo, and what it costs globally and per participant.
 
@@ -1825,7 +1827,7 @@ Edit one day: description, photo, and what it costs globally and per participant
 
 ### Trip plan: By components
 
-`trip:plan:comp` · Status: Pilot
+`trip:plan:comp` · Status: Proposed
 
 See every cost line by service type and compare or swap the supplier, with the profit impact.
 
@@ -1872,7 +1874,7 @@ See every cost line by service type and compare or swap the supplier, with the p
 
 ### Trip plan: Map
 
-`trip:plan:map` · Status: Pilot
+`trip:plan:map` · Status: Proposed
 
 See the route of the trip on a map and the order of the days.
 
@@ -2038,7 +2040,7 @@ Preview what the client sees at the public link and let the client accept.
 
 ### Portal frame (external viewpoints)
 
-`portal:frame` · Status: Roadmap
+`portal:frame` · Status: Later
 
 One minimal, mobile-first shell for every external viewpoint: who you are viewing as, a way back to the agency, and the portal tabs.
 
@@ -2076,7 +2078,7 @@ One minimal, mobile-first shell for every external viewpoint: who you are viewin
 
 ### Home, operations coordinator
 
-`home:ops` · Status: Pilot
+`home:ops` · Status: Proposed
 
 Give the operations coordinator one screen that shows which departures are ready, and the tasks, suppliers, room blocks and documents that still need her.
 
@@ -2120,7 +2122,7 @@ Give the operations coordinator one screen that shows which departures are ready
 
 ### Group leader portal: home
 
-`portal:leader:home` · Status: Roadmap
+`portal:leader:home` · Status: Later
 
 The leader sees how much of the group price is collected, who still owes forms, and the one next step. For a quote it shows the proposal state and, when Sent, an Accept button.
 
@@ -2157,7 +2159,7 @@ The leader sees how much of the group price is collected, who still owes forms, 
 
 ### Group leader portal: trip
 
-`portal:leader:trip` · Status: Roadmap
+`portal:leader:trip` · Status: Later
 
 The day-by-day itinerary with clock times, hotel and departure point. For a quote, the proposal summary: price per traveler, deposit, inclusions and the public proposal page.
 
@@ -2192,7 +2194,7 @@ The day-by-day itinerary with clock times, hotel and departure point. For a quot
 
 ### Group leader portal: payments
 
-`portal:leader:pay` · Status: Roadmap
+`portal:leader:pay` · Status: Later
 
 Payment status per household with a totals footer that ties to the agency books.
 
@@ -2228,7 +2230,7 @@ Payment status per household with a totals footer that ties to the agency books.
 
 ### Group leader portal: travelers
 
-`portal:leader:people` · Status: Roadmap
+`portal:leader:people` · Status: Later
 
 Which travelers have finished registration, medical and waiver forms, and passports for international trips.
 
@@ -2264,7 +2266,7 @@ Which travelers have finished registration, medical and waiver forms, and passpo
 
 ### Group leader portal: documents
 
-`portal:leader:docs` · Status: Roadmap
+`portal:leader:docs` · Status: Later
 
 The proposal, the household invoices and receipts, the printable itinerary and a sample waiver.
 
@@ -2299,7 +2301,7 @@ The proposal, the household invoices and receipts, the printable itinerary and a
 
 ### Group leader portal: messages
 
-`portal:leader:msgs` · Status: Roadmap
+`portal:leader:msgs` · Status: Later
 
 A thread with the trip agent. The seed is deterministic per trip; the leader can add messages.
 
@@ -2334,7 +2336,7 @@ A thread with the trip agent. The seed is deterministic per trip; the leader can
 
 ### Traveler app: home
 
-`portal:traveler:home` · Status: Roadmap
+`portal:traveler:home` · Status: Later
 
 The traveler's own readiness, balance and what is left to do before departure.
 
@@ -2372,7 +2374,7 @@ The traveler's own readiness, balance and what is left to do before departure.
 
 ### Traveler app: pay
 
-`portal:traveler:pay` · Status: Roadmap
+`portal:traveler:pay` · Status: Later
 
 The household amount, deposit and balance, and a simulated card payment.
 
@@ -2410,7 +2412,7 @@ The household amount, deposit and balance, and a simulated card payment.
 
 ### Traveler app: forms
 
-`portal:traveler:forms` · Status: Roadmap
+`portal:traveler:forms` · Status: Later
 
 The four traveler forms (registration, medical, waiver, rooming), filled in inline.
 
@@ -2449,7 +2451,7 @@ The four traveler forms (registration, medical, waiver, rooming), filled in inli
 
 ### Traveler app: plan
 
-`portal:traveler:plan` · Status: Roadmap
+`portal:traveler:plan` · Status: Later
 
 The trip day by day with clock times, hotel and meeting point.
 
@@ -2483,7 +2485,7 @@ The trip day by day with clock times, hotel and meeting point.
 
 ### Traveler app: help
 
-`portal:traveler:help` · Status: Roadmap
+`portal:traveler:help` · Status: Later
 
 Who to call, the traveler's emergency contact, diet and passport status.
 
@@ -2520,7 +2522,7 @@ Who to call, the traveler's emergency contact, diet and passport status.
 
 ### Supplier portal: home
 
-`portal:supplier:home` · Status: Roadmap
+`portal:supplier:home` · Status: Later
 
 What needs the supplier today: bookings to confirm, arrivals, invoices awaiting payment and open queries.
 
@@ -2558,7 +2560,7 @@ What needs the supplier today: bookings to confirm, arrivals, invoices awaiting 
 
 ### Supplier portal: booking requests
 
-`portal:supplier:req` · Status: Roadmap
+`portal:supplier:req` · Status: Later
 
 Every booking the agency asked this supplier for, with Confirm and Decline.
 
@@ -2595,7 +2597,7 @@ Every booking the agency asked this supplier for, with Confirm and Decline.
 
 ### Supplier portal: rooming lists
 
-`portal:supplier:list` · Status: Roadmap
+`portal:supplier:list` · Status: Later
 
 Rooming list for lodging and head count, dietary counts and service times for other services.
 
@@ -2632,7 +2634,7 @@ Rooming list for lodging and head count, dietary counts and service times for ot
 
 ### Supplier portal: invoices
 
-`portal:supplier:inv` · Status: Roadmap
+`portal:supplier:inv` · Status: Later
 
 Invoices the supplier submitted, in neutral words, with the expected payment date.
 
@@ -2665,7 +2667,7 @@ Invoices the supplier submitted, in neutral words, with the expected payment dat
 
 ### Supplier portal: queries
 
-`portal:supplier:disp` · Status: Roadmap
+`portal:supplier:disp` · Status: Later
 
 Differences the agency found between the invoice and the agreed price, with two answers.
 
@@ -2704,7 +2706,7 @@ Differences the agency found between the invoice and the agreed price, with two 
 
 ### Supplier portal: payments
 
-`portal:supplier:pay` · Status: Roadmap
+`portal:supplier:pay` · Status: Later
 
 Deposit and balance dates from the supplier terms, and the remittance history.
 
@@ -2737,7 +2739,7 @@ Deposit and balance dates from the supplier terms, and the remittance history.
 
 ### Run sheet: day
 
-`portal:guide:day` · Status: Roadmap
+`portal:guide:day` · Status: Later
 
 The day for the tour director: stops with clock times, a done tick per stop and the supplier contact per stop.
 
@@ -2776,7 +2778,7 @@ The day for the tour director: stops with clock times, a done tick per stop and 
 
 ### Run sheet: passengers
 
-`portal:guide:pax` · Status: Roadmap
+`portal:guide:pax` · Status: Later
 
 The manifest with dietary and medical flags, emergency contacts to call, passport status on international trips and a local head count.
 
@@ -2814,7 +2816,7 @@ The manifest with dietary and medical flags, emergency contacts to call, passpor
 
 ### Run sheet: vouchers
 
-`portal:guide:vouch` · Status: Roadmap
+`portal:guide:vouch` · Status: Later
 
 Vouchers for suppliers that are approved on the trip, with the number to show at the desk.
 
@@ -2849,7 +2851,7 @@ Vouchers for suppliers that are approved on the trip, with the number to show at
 
 ### Run sheet: notes
 
-`portal:guide:notes` · Status: Roadmap
+`portal:guide:notes` · Status: Later
 
 Notes from the road: incidents, changes to the plan and guest requests, per trip.
 
