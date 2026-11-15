@@ -53,7 +53,7 @@ function mayaFab(){
   b.setAttribute('aria-label',trHe(L('שאלו את מאיה (/)','Ask Maya (/)')));b.dataset.tip=trHe(L('שאלו את מאיה (/)','Ask Maya (/)'));
   const s=b.querySelector('span:not(.chenav)');if(s)s.innerHTML=`${L('שאלו את מאיה','Ask Maya')}<kbd>/</kbd>`;
 }
-{const r0=render;render=function(){r0();try{mayaFab();mayaSchedule();}catch(e){}};}
+{const r0=render;render=function(){r0();try{mayaFab();mayaSchedule();}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 /* actions: run a tip, apply the plan fix, dismiss */
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act="mayanx"],[data-act="mayafix"],.maya-nudge [data-act="ask"]');if(!b)return;

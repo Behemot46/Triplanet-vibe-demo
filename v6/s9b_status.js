@@ -1,4 +1,4 @@
-/* ---------- Phase 3: honesty layer. Every feature carries Live, Pilot or Roadmap ----------
+/* ---------- Phase 3: honesty layer. Every feature carries Live, Proposed (key 'pilot') or Later (key 'roadmap') ----------
    One table drives the "What's live" screen, the badge on each page header and the 10-minute
    meeting beat. The owner confirms the statuses before each show (see CLAUDE.md). */
 const FEAT=[
@@ -12,7 +12,7 @@ const FEAT=[
   ['props','live','invoice',['הצעה בשלושה פורמטים','Proposal in three formats'],['PDF, טבלת מחירים לסוכנים עם מחיר לפי גודל קבוצה, ודף נחיתה עם קישור ציבורי.','PDF, an agents table with group-size pricing, and a landing page with a public link.'],null],
   ['opsx','live','checklist',['משימות ורשימת נוסעים','Tasks and master list'],['צ׳קליסט לפי חלונות זמן, רשימת נוסעים עם ייבוא וייצוא.','A checklist by time window, and a master list with import and export.'],null],
   ['roles','live','users',['תפקידים והרשאות','Roles and permissions'],['ארבעה תפקידים ו-40 הרשאות.','Four roles and 40 permissions.'],'settings'],
-  // Pilot: working, offered to pilot customers
+  // Proposed (key 'pilot'): working in this demo, proposed for the product now. Not a claim that the product offers it.
   ['alts','pilot','suppliers',['ספקים חלופיים ומחירונים','Supplier alternatives and rate cards'],['השוואה והחלפת ספק עם ההשפעה על הרווח, מחירון לפי עונה וגודל קבוצה.','Compare and swap suppliers with the profit impact; rates by season and group size.'],'suppliers'],
   ['vers','pilot','document',['גרסאות הצעה','Quote versions'],['שמירה, השוואה ושחזור של גרסאות.','Save, compare and restore versions.'],null],
   ['forms','pilot','draft',['מחולל טפסים וטפסי נוסעים','Form builder and traveler forms'],['רישום, מידע רפואי, הצהרת אחריות והעדפת חדר, עם מעקב השלמה.','Registration, medical, waiver and rooming preference, with completion tracking.'],'forms'],
@@ -27,7 +27,7 @@ const FEAT=[
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
   // v8.4 (14 Nov 2026): the ops coordinator works on existing data; the external portals are previews until the product team confirms
   ['opsrole','pilot','checklist',['תצוגה לרכז/ת התפעול','Operations coordinator view'],['מוכנות יציאות, משימות, ספקים לאישור, בלוקים של חדרים וטפסים חסרים, במסך אחד.','Departure readiness, tasks, suppliers to confirm, room blocks and missing forms, on one screen.'],null],
-  // Roadmap: planned, not available yet
+  // Later (key 'roadmap'): proposed for a later stage; a preview, not a commitment.
   
   ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
   ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
@@ -37,26 +37,26 @@ const FEAT=[
   ['psup','roadmap','suppliers',['פורטל לספקים','Supplier portal'],['אישור הזמנות, רשימת חדרים, חשבוניות ומענה לשאלות על חשבונית.','Confirm bookings, rooming lists, invoices and answers to invoice queries.'],null],
   ['guide','roadmap','users2',['אפליקציה למדריך','Guide mobile app'],['מסלול, רשימת נוסעים ושוברים בטלפון.','Itinerary, passenger list and vouchers on the phone.'],null],
 ];
-const ST_META={live:[['זמין','Live'],'green'],pilot:[['פיילוט','Pilot'],'info'],roadmap:[['בתכנון','Roadmap'],'amber']};
+const ST_META={live:[['במוצר','Live'],'green'],pilot:[['מוצע','Proposed'],'info'],roadmap:[['בהמשך','Later'],'amber']};
 const stPill=st=>pillF(L(ST_META[st][0][0],ST_META[st][0][1]),ST_META[st][1]);
 const featOf=v=>FEAT.find(f=>f[5]===v);
 function vStatus(){
-  const sub={live:L('במוצר היום','In the product today'),pilot:L('עובד, פתוח ללקוחות פיילוט','Working, open to pilot customers'),roadmap:L('מתוכנן, עוד לא זמין','Planned, not available yet')};
+  const sub={live:L('במוצר היום, לפי קריאה שלי. הצוות יאשר','In the product today, as I read it; the team confirms'),pilot:L('עובד בדמו, מוצע לאימוץ עכשיו','Works in this demo; proposed to adopt now'),roadmap:L('תצוגה מקדימה, מוצע לשלב מאוחר יותר','A preview; proposed for a later stage')};
   const n=st=>FEAT.filter(f=>f[1]===st).length;
   const col=st=>`<div class="card hc-card rm-col rm-${st}"><div class="rm-h">${stPill(st)}<span class="small muted">${sub[st]}</span><b class="rm-n">${n(st)}</b></div>
     ${FEAT.filter(f=>f[1]===st).map(f=>`<div class="rm-f"><span class="rm-ic">${ic(f[2])}</span><div><strong>${L(f[3][0],f[3][1])}</strong><div class="small muted">${L(f[4][0],f[4][1])}</div></div>${f[5]&&VIEWS[f[5]]?`<button class="btn sm" data-act="go" data-v="${f[5]}" aria-label="${L('פתיחה','Open')}">${ic('chev','flip')}</button>`:''}</div>`).join('')}</div>`;
-  return hcPage({eyebrow:L('עזרה','Help'),title:L('מה זמין היום','What\'s live'),aria:L('מה זמין היום','What\'s live'),
-    brief:L(`כל מה שמוצג בדמו, ומה מצבו במוצר: ${hlKey(n('live')+' זמינים')}, ${hlKey(n('pilot')+' בפיילוט')} ו-${hlKey(n('roadmap')+' בתכנון')}. מה שעוד לא במוצר מסומן בבירור.`,`Everything in this demo and where it stands in the product: ${hlKey(n('live')+' live')}, ${hlKey(n('pilot')+' in pilot')} and ${hlKey(n('roadmap')+' on the roadmap')}. Anything not in the product yet is clearly marked.`),
-    kpis:[{lab:L('זמין','Live'),val:n('live'),sub:sub.live},{lab:L('פיילוט','Pilot'),val:n('pilot'),sub:sub.pilot},{lab:L('בתכנון','Roadmap'),val:n('roadmap'),sub:sub.roadmap}]})+
+  return hcPage({eyebrow:L('עזרה','Help'),title:L('מה במוצר ומה מוצע','Live and proposed'),aria:L('מה במוצר ומה מוצע','Live and proposed'),
+    brief:L(`הדמו הוא הצעה לכיוון התפתחות: ${hlKey(n('live')+' כבר במוצר')}, ${hlKey(n('pilot')+' מוצעים לאימוץ עכשיו')} ו-${hlKey(n('roadmap')+' מוצעים להמשך')}. הצוות מחליט מה לאמץ ואיך.`,`This demo proposes a direction: ${hlKey(n('live')+' already in the product')}, ${hlKey(n('pilot')+' proposed to adopt now')} and ${hlKey(n('roadmap')+' proposed for later')}. The team decides what to adopt and how.`),
+    kpis:[{lab:L('במוצר','Live'),val:n('live'),sub:sub.live},{lab:L('מוצע','Proposed'),val:n('pilot'),sub:sub.pilot},{lab:L('בהמשך','Later'),val:n('roadmap'),sub:sub.roadmap}]})+
    `<div class="rm-grid">${['live','pilot','roadmap'].map(col).join('')}</div>`;
 }
 VIEWS.status=vStatus;
-NAV2.push(['status',['מה זמין היום','What\'s live'],ic('checklist')]);
+NAV2.push(['status',['מה במוצר ומה מוצע','Live and proposed'],ic('checklist')]);
 /* a status badge on every page header that shows a Pilot or Roadmap feature */
 ['gaps','books','leaks','studio','ai','finance'].forEach(v=>{const f0=VIEWS[v];if(!f0)return;VIEWS[v]=function(){const h=f0.apply(this,arguments),f=featOf(v);
   if(f&&h.indexOf('<section class="hc-hero hc-page')===0&&!/hc-st"/.test(h))return h.replace(/(<span class="hc-eye">.*?<\/span>)/,'$1<span class="hc-st">'+stPill(f[1])+'</span>');
   if(!f||h.indexOf('<div class="ph">')!==0)return h;const tag=stPill(f[1]);
-  const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
+  const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot|מוצע|Proposed)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
   return hd+h.slice(e);};});
 /* photo credits: every embedded photo with author, license and source (CC BY / BY-SA need this) */
 function vCredits(){
@@ -71,4 +71,4 @@ function creditsMenu(){
   const b=document.createElement('button');b.setAttribute('role','menuitem');b.dataset.act='go';b.dataset.v='credits';b.innerHTML=ic('document')+' '+trHe(L('קרדיט לתמונות','Photo credits'));
   m.insertBefore(b,m.querySelector('[data-act="reset"]'));
 }
-{const r0=render;render=function(){r0();try{creditsMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{creditsMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}

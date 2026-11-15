@@ -1,5 +1,7 @@
 # Business rules
 
+> **Note.** References to `docs/backend-plan/` (`02-data-model.md`, `03-api.md`, `04-finance-engine.md`) point to my earlier backend sketch on the unmerged branch `claude/fervent-babbage-bkgptx`. It is reference material, not a design the team is asked to follow; architecture is the team's decision (see `README.md` §6).
+
 What a backend must implement so the real product gives the same answers as this demo. Each rule has: what it does, the formula, the inputs, edge cases, the test that guards it, and a worked example with numbers computed from the built demo (`python3 build.py`, then the same node `vm` loader as `check6.js`).
 
 Every statement is true to `v6/*.js` at commit `a9fdf77`. Citation format is `file: function` (files are under `v6/`). Test citations are `check6.js:<line>` or `TEST <name>` (the names printed by `node check6.js`). Where the backend plan (`origin/claude/fervent-babbage-bkgptx`, `docs/backend-plan/04-finance-engine.md`) says the same thing, it is cited as `04 §x`; where it differs, **Difference** says so. The plan's own line numbers (e.g. `:78`) are from an older commit and have shifted; use function names.

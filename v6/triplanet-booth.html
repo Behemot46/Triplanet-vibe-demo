@@ -6347,7 +6347,7 @@ const acctOrder=()=>S.lang==='he'?['priority','hash','qbo','xero']:['qbo','xero'
 const A=()=>S.acct||(S.acct={sys:null,phase:'idle',step:-1,opt:{auto:true,tag:true,credit:true},log:[]});
 const an=(k,i)=>{const p=ACCT[k];return L(p[i||'name'][0],p[i||'name'][1]);};
 const acBadge=k=>{const i=ACCT[k].ini;return `<span class="acb" style="--bc:${ACCT[k].color}">${esc(Array.isArray(i)?L(i[0],i[1]):i)}</span>`;};
-const PILOT=()=>pillF(L('פיילוט','Pilot'),'info');
+const PILOT=()=>pillF(L('מוצע','Proposed'),'info');
 function acStats(){const ts=visibleTrips(),G=gapStats(ts),vend=new Set();ts.filter(t=>t.stage!=='Quote').forEach(t=>t.lines.forEach(l=>{if(l.inv)vend.add(l.sup);}));
   return {bills:G.received,matched:G.matched,vend:vend.size,trips:ts.filter(t=>t.stage!=='Quote').length,gapN:G.openN+G.dispN,gap:r2(G.open+G.disp)};}
 const AC_STEPS=[k=>L(`מתחבר ל${an(k,'short')} (קובץ חברה לדוגמה)`,`Signing in to ${an(k,'short')} (sample company file)`),
@@ -6398,7 +6398,7 @@ function vBooks(){
        {lab:L('תואמות בלי מגע יד','Matched with no touch'),val:pct(rate),sub:`${G.matched} ${L('מתוך','of')} ${G.received} ${L('חשבוניות','bills')}`},
        {lab:L('הוחזר העונה','Recovered this season'),val:usd(G.rec),sub:`${G.recN} ${L('זיכויים',G.recN===1?'credit':'credits')}`,cls:'pf',act:'fn-gf',v:'credited'}])
     +gridOpen+`<div class="hc-c12"><div class="card hc-card"><div class="hc-h"><h3>${L('בחרו את מערכת הנהלת החשבונות','Choose your accounting system')}</h3><span class="muted small">${L('טריפלאנט קוראת חשבוניות, מתאימה לשורות ההצעה, ומחזירה חשבוניות מאושרות וזיכויים מתויגים לפי טיול.','Triplanet reads bills, matches them to quote lines, and writes approved bills and credits back, tagged to the trip.')}</span></div>
-     <div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> נמצאים בפיילוט.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are in pilot.')}</p></div></div></div>`;
+     <div class="ac-grid">${cards}</div><p class="st-note">${L('בדמו החיבור רץ מול קובץ חברה לדוגמה. החיבורים החיים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> מוצעים למוצר ועוד לא קיימים.','In the demo the connection runs against a sample company file. Live connections to QuickBooks, Xero, Priority and Hashavshevet are proposed and do not exist yet.')}</p></div></div></div>`;
   }
   const k=a.sys,p=ACCT[k],pctm=s.bills?s.matched/s.bills:0;
   const opt=(key,he,en)=>`<label class="ac-opt"><input type="checkbox" data-acopt="${key}" ${a.opt[key]?'checked':''}> <span>${L(he,en)}</span></label>`;
@@ -6436,7 +6436,7 @@ QS.push(
    return rs.length?{t:L(`${rs[0].label}: ${usd(rs[0].leak)} דלפו, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} מהרווח המתוכנן.\n`,`${rs[0].label}: ${usd(rs[0].leak)} leaked, ${pct(rs[0].pp?rs[0].leak/rs[0].pp:0)} of planned profit.\n`)+listL(rs.slice(1,4).map(r=>`${r.label}: ${usd(r.leak)}`))}:{t:L('אף סוג קבוצה לא איבד רווח.','No group type has lost profit.')};}},
  {g:0,he:'מה ייבאנו ממערכת הנהלת החשבונות?',en:'What did we import from our accounting system?',r:/(accounting|quickbooks|xero|priority|hashavshevet|books|הנהלת ה?חשבונות|פריוריטי|חשבשבת).*(import|sync|ייב|יבא|סנכר)|(import|ייב).*(accounting|books|הנהלת ה?חשבונות)/,f:()=>{const a=A(),s=acStats();
    return a.phase==='synced'?{t:L(`מ${an(a.sys,'short')}: ${s.bills} חשבוניות ספק, ${s.vend} ספקים ו-${s.trips} טיולים מתויגים. ${s.matched} חשבוניות תואמו בלי מגע יד, ונמצאו ${s.gapN} פערים בסך ${usd(s.gap)}.`,`From ${an(a.sys,'short')}: ${s.bills} supplier bills, ${s.vend} suppliers and ${s.trips} tagged trips. ${s.matched} bills matched with no touch, and ${s.gapN} gap${(s.gapN)===1?'':'s'} worth ${usd(s.gap)} were found.`),btn:{label:L('לסנכרון','Open accounting sync'),act:'go',v:'books'}}
-     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר את פריוריטי, חשבשבת, QuickBooks או Xero (פיילוט).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (pilot).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
+     :{t:L('עוד לא חיברתם מערכת הנהלת חשבונות. אפשר לחבר את פריוריטי, חשבשבת, QuickBooks או Xero (מוצע).','No accounting system is connected yet. You can connect QuickBooks, Xero, Priority or Hashavshevet (proposed).'),btn:{label:L('לחיבור','Connect'),act:'go',v:'books'}};}});
 QS.slice(-3).forEach((q,i)=>{q.id=QS.length-2+i;});
 QORDER.unshift(QS.length-2,QS.length-1,QS.length);
 /* wiring */
@@ -6457,7 +6457,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{const el=e.target;if(el.dataset&&el.dataset.acopt){A().opt[el.dataset.acopt]=el.checked;render();}
   else if(el.dataset&&el.dataset.yn){S[el.dataset.yn]=Math.max(1,+el.value||1);render();}});
 
-/* ---------- Phase 3: honesty layer. Every feature carries Live, Pilot or Roadmap ----------
+/* ---------- Phase 3: honesty layer. Every feature carries Live, Proposed (key 'pilot') or Later (key 'roadmap') ----------
    One table drives the "What's live" screen, the badge on each page header and the 10-minute
    meeting beat. The owner confirms the statuses before each show (see CLAUDE.md). */
 const FEAT=[
@@ -6471,7 +6471,7 @@ const FEAT=[
   ['props','live','invoice',['הצעה בשלושה פורמטים','Proposal in three formats'],['PDF, טבלת מחירים לסוכנים עם מחיר לפי גודל קבוצה, ודף נחיתה עם קישור ציבורי.','PDF, an agents table with group-size pricing, and a landing page with a public link.'],null],
   ['opsx','live','checklist',['משימות ורשימת נוסעים','Tasks and master list'],['צ׳קליסט לפי חלונות זמן, רשימת נוסעים עם ייבוא וייצוא.','A checklist by time window, and a master list with import and export.'],null],
   ['roles','live','users',['תפקידים והרשאות','Roles and permissions'],['ארבעה תפקידים ו-40 הרשאות.','Four roles and 40 permissions.'],'settings'],
-  // Pilot: working, offered to pilot customers
+  // Proposed (key 'pilot'): working in this demo, proposed for the product now. Not a claim that the product offers it.
   ['alts','pilot','suppliers',['ספקים חלופיים ומחירונים','Supplier alternatives and rate cards'],['השוואה והחלפת ספק עם ההשפעה על הרווח, מחירון לפי עונה וגודל קבוצה.','Compare and swap suppliers with the profit impact; rates by season and group size.'],'suppliers'],
   ['vers','pilot','document',['גרסאות הצעה','Quote versions'],['שמירה, השוואה ושחזור של גרסאות.','Save, compare and restore versions.'],null],
   ['forms','pilot','draft',['מחולל טפסים וטפסי נוסעים','Form builder and traveler forms'],['רישום, מידע רפואי, הצהרת אחריות והעדפת חדר, עם מעקב השלמה.','Registration, medical, waiver and rooming preference, with completion tracking.'],'forms'],
@@ -6486,7 +6486,7 @@ const FEAT=[
   ['studio','pilot','studio',['סטודיו לטיולים','Trip studio'],['מסלול יום אחר יום ותמחור מבקשת הלקוח.','A day-by-day plan and price from the client request.'],'studio'],
   // v8.4 (14 Nov 2026): the ops coordinator works on existing data; the external portals are previews until the product team confirms
   ['opsrole','pilot','checklist',['תצוגה לרכז/ת התפעול','Operations coordinator view'],['מוכנות יציאות, משימות, ספקים לאישור, בלוקים של חדרים וטפסים חסרים, במסך אחד.','Departure readiness, tasks, suppliers to confirm, room blocks and missing forms, on one screen.'],null],
-  // Roadmap: planned, not available yet
+  // Later (key 'roadmap'): proposed for a later stage; a preview, not a commitment.
   
   ['mail','roadmap','mail',['חשבוניות ישר מתיבת המייל','Bills straight from your inbox'],['היום: העלאה ידנית או ייבוא מהנהלת החשבונות.','Today: manual upload or import from your books.'],null],
   ['comm','roadmap','percent',['דרישת עמלות אוטומטית מספקים','Automatic commission claims'],['היום: עמלה שלא נגבתה מסומנת בדליפות רווח.','Today: uncollected commission is flagged in Profit leaks.'],null],
@@ -6496,26 +6496,26 @@ const FEAT=[
   ['psup','roadmap','suppliers',['פורטל לספקים','Supplier portal'],['אישור הזמנות, רשימת חדרים, חשבוניות ומענה לשאלות על חשבונית.','Confirm bookings, rooming lists, invoices and answers to invoice queries.'],null],
   ['guide','roadmap','users2',['אפליקציה למדריך','Guide mobile app'],['מסלול, רשימת נוסעים ושוברים בטלפון.','Itinerary, passenger list and vouchers on the phone.'],null],
 ];
-const ST_META={live:[['זמין','Live'],'green'],pilot:[['פיילוט','Pilot'],'info'],roadmap:[['בתכנון','Roadmap'],'amber']};
+const ST_META={live:[['במוצר','Live'],'green'],pilot:[['מוצע','Proposed'],'info'],roadmap:[['בהמשך','Later'],'amber']};
 const stPill=st=>pillF(L(ST_META[st][0][0],ST_META[st][0][1]),ST_META[st][1]);
 const featOf=v=>FEAT.find(f=>f[5]===v);
 function vStatus(){
-  const sub={live:L('במוצר היום','In the product today'),pilot:L('עובד, פתוח ללקוחות פיילוט','Working, open to pilot customers'),roadmap:L('מתוכנן, עוד לא זמין','Planned, not available yet')};
+  const sub={live:L('במוצר היום, לפי קריאה שלי. הצוות יאשר','In the product today, as I read it; the team confirms'),pilot:L('עובד בדמו, מוצע לאימוץ עכשיו','Works in this demo; proposed to adopt now'),roadmap:L('תצוגה מקדימה, מוצע לשלב מאוחר יותר','A preview; proposed for a later stage')};
   const n=st=>FEAT.filter(f=>f[1]===st).length;
   const col=st=>`<div class="card hc-card rm-col rm-${st}"><div class="rm-h">${stPill(st)}<span class="small muted">${sub[st]}</span><b class="rm-n">${n(st)}</b></div>
     ${FEAT.filter(f=>f[1]===st).map(f=>`<div class="rm-f"><span class="rm-ic">${ic(f[2])}</span><div><strong>${L(f[3][0],f[3][1])}</strong><div class="small muted">${L(f[4][0],f[4][1])}</div></div>${f[5]&&VIEWS[f[5]]?`<button class="btn sm" data-act="go" data-v="${f[5]}" aria-label="${L('פתיחה','Open')}">${ic('chev','flip')}</button>`:''}</div>`).join('')}</div>`;
-  return hcPage({eyebrow:L('עזרה','Help'),title:L('מה זמין היום','What\'s live'),aria:L('מה זמין היום','What\'s live'),
-    brief:L(`כל מה שמוצג בדמו, ומה מצבו במוצר: ${hlKey(n('live')+' זמינים')}, ${hlKey(n('pilot')+' בפיילוט')} ו-${hlKey(n('roadmap')+' בתכנון')}. מה שעוד לא במוצר מסומן בבירור.`,`Everything in this demo and where it stands in the product: ${hlKey(n('live')+' live')}, ${hlKey(n('pilot')+' in pilot')} and ${hlKey(n('roadmap')+' on the roadmap')}. Anything not in the product yet is clearly marked.`),
-    kpis:[{lab:L('זמין','Live'),val:n('live'),sub:sub.live},{lab:L('פיילוט','Pilot'),val:n('pilot'),sub:sub.pilot},{lab:L('בתכנון','Roadmap'),val:n('roadmap'),sub:sub.roadmap}]})+
+  return hcPage({eyebrow:L('עזרה','Help'),title:L('מה במוצר ומה מוצע','Live and proposed'),aria:L('מה במוצר ומה מוצע','Live and proposed'),
+    brief:L(`הדמו הוא הצעה לכיוון התפתחות: ${hlKey(n('live')+' כבר במוצר')}, ${hlKey(n('pilot')+' מוצעים לאימוץ עכשיו')} ו-${hlKey(n('roadmap')+' מוצעים להמשך')}. הצוות מחליט מה לאמץ ואיך.`,`This demo proposes a direction: ${hlKey(n('live')+' already in the product')}, ${hlKey(n('pilot')+' proposed to adopt now')} and ${hlKey(n('roadmap')+' proposed for later')}. The team decides what to adopt and how.`),
+    kpis:[{lab:L('במוצר','Live'),val:n('live'),sub:sub.live},{lab:L('מוצע','Proposed'),val:n('pilot'),sub:sub.pilot},{lab:L('בהמשך','Later'),val:n('roadmap'),sub:sub.roadmap}]})+
    `<div class="rm-grid">${['live','pilot','roadmap'].map(col).join('')}</div>`;
 }
 VIEWS.status=vStatus;
-NAV2.push(['status',['מה זמין היום','What\'s live'],ic('checklist')]);
+NAV2.push(['status',['מה במוצר ומה מוצע','Live and proposed'],ic('checklist')]);
 /* a status badge on every page header that shows a Pilot or Roadmap feature */
 ['gaps','books','leaks','studio','ai','finance'].forEach(v=>{const f0=VIEWS[v];if(!f0)return;VIEWS[v]=function(){const h=f0.apply(this,arguments),f=featOf(v);
   if(f&&h.indexOf('<section class="hc-hero hc-page')===0&&!/hc-st"/.test(h))return h.replace(/(<span class="hc-eye">.*?<\/span>)/,'$1<span class="hc-st">'+stPill(f[1])+'</span>');
   if(!f||h.indexOf('<div class="ph">')!==0)return h;const tag=stPill(f[1]);
-  const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
+  const e=h.indexOf('</div></div>')+12,hd=h.slice(0,e).replace(/<span class="pill (green|info)">(חדש|New|פיילוט|Pilot|מוצע|Proposed)<\/span>/,'').replace('<div class="row">','<div class="row">'+tag);
   return hd+h.slice(e);};});
 /* photo credits: every embedded photo with author, license and source (CC BY / BY-SA need this) */
 function vCredits(){
@@ -6530,7 +6530,7 @@ function creditsMenu(){
   const b=document.createElement('button');b.setAttribute('role','menuitem');b.dataset.act='go';b.dataset.v='credits';b.innerHTML=ic('document')+' '+trHe(L('קרדיט לתמונות','Photo credits'));
   m.insertBefore(b,m.querySelector('[data-act="reset"]'));
 }
-{const r0=render;render=function(){r0();try{creditsMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{creditsMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 
 /* ---------- Maya live mode (pilot): typed questions answered by Claude ----------
    - The ready-made question buttons stay scripted, so meeting mode is predictable.
@@ -6649,7 +6649,7 @@ document.addEventListener('submit',e=>{const f=e.target;if(!(f.dataset&&f.datase
   const k=(new FormData(f).get('key')||'').trim();if(!k)return;const ok=liveSave({key:k,on:true});
   S.liveStat=ok?L('המפתח נשמר במחשב הזה. תשובות חיות פעילות.','Key saved on this laptop. Live answers are on.'):L('לא ניתן לשמור בדפדפן הזה.','This browser cannot store the key.');render();});
 document.addEventListener('change',e=>{const el=e.target;if(!(el.dataset&&el.dataset.ch==='liveon'))return;const c=liveCfg();c.on=el.checked;liveSave(c);render();});
-{const r0=render;render=function(){r0();try{liveMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{liveMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 
 /* ---------- Maya, always at hand (v7.2) ----------
    - a face: AI-generated headshot (AVATARS.Maya) with an "AI" badge, so she is never mistaken for staff;
@@ -6706,7 +6706,7 @@ function mayaFab(){
   b.setAttribute('aria-label',trHe(L('שאלו את מאיה (/)','Ask Maya (/)')));b.dataset.tip=trHe(L('שאלו את מאיה (/)','Ask Maya (/)'));
   const s=b.querySelector('span:not(.chenav)');if(s)s.innerHTML=`${L('שאלו את מאיה','Ask Maya')}<kbd>/</kbd>`;
 }
-{const r0=render;render=function(){r0();try{mayaFab();mayaSchedule();}catch(e){}};}
+{const r0=render;render=function(){r0();try{mayaFab();mayaSchedule();}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 /* actions: run a tip, apply the plan fix, dismiss */
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-act="mayanx"],[data-act="mayafix"],.maya-nudge [data-act="ask"]');if(!b)return;
@@ -9327,7 +9327,7 @@ function stForms(){
 function stInteg(){
   const ok=typeof can!=='function'||can('fin.sync');
   return `<div class="card hc-card st-card st-link"><span class="st-ico">${ic('sync')}</span><div><h3>${L('סנכרון הנהלת חשבונות','Accounting sync')}</h3>
-   <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (פיילוט).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (Pilot).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
+   <p class="muted">${L('חיבור ל-QuickBooks, Xero, פריוריטי או חשבשבת: מיפוי, כללי רישום ויומן סנכרון (מוצע).','Connect QuickBooks, Xero, Priority or Hashavshevet: mapping, posting rules and a sync log (proposed).')}${ok?'':' '+L('התפקיד שלך לא כולל הרשאת סנכרון.','Your role does not have the sync permission.')}</p></div>
    ${ok?`<button class="btn pri" data-act="go" data-v="books">${L('פתיחת הסנכרון','Open accounting sync')}</button>`:pillF(L('אין הרשאה','No access'),'warn')}</div>`;
 }
 function vSettings(){
@@ -11162,7 +11162,7 @@ function specKey(){
 }
 
 /* ---------- panel ---------- */
-const DV_ST={live:['green','Live'],pilot:['info','Pilot'],roadmap:['amber','Roadmap']};
+const DV_ST={live:['green','Live'],pilot:['info','Proposed'],roadmap:['amber','Later']};
 const dvPill=st=>{const x=DV_ST[st];return x?`<span class="pill ${x[0]}">${x[1]}</span>`:'';};
 const dvRoles=r=>!r?'-':(r==='all'?'all roles':[].concat(r).join(', '));
 const dvChips=a=>(a||[]).map(x=>`<code class="dv-chip">${esc(x)}</code>`).join('');
@@ -11465,12 +11465,12 @@ dvAdd('ai',{title:'Maya, AI assistant',
   tests:['check6.js: all 25 Maya routes, live snapshot checks, Maya tips'],
   code:['v6/s6_rest.js: vAI, QS','v6/s9c_live.js: liveAsk, liveSnapshot','v6/s9d_maya.js: mayaTip']});
 
-dvAdd('status',{title:"What's live",
-  purpose:'Honesty layer: every feature marked Live, Pilot or Roadmap. A demo-only screen, not a product page.',
+dvAdd('status',{title:"Live and proposed",
+  purpose:'Honesty layer: every feature marked Live, Proposed or Later. A demo-only screen, not a product page.',
   roles:{view:'all',act:'all'},perms:[],
   data:['FEAT.id','FEAT.status','FEAT.view'],
   actions:[{label:'Open (feature row)',does:'Jumps to the screen that shows the feature.',rule:'Only rows with a view key that exists'}],
-  rules:['Live = seen on app.triplanet.io screens; Pilot = working in the demo and offered to pilot customers; Roadmap = not available','statuses are confirmed by the owner before each show; income, vouchers, trip P&L and currencies are Pilot since 13 Nov 2026'],
+  rules:['Live = seen on app.triplanet.io screens (to be confirmed by the product team); Proposed = working in the demo, proposed to adopt now; Later = a preview proposed for a later stage. Neither Proposed nor Later claims the product offers it','statuses are confirmed by the owner before each show; income, vouchers, trip P&L and currencies are Pilot since 13 Nov 2026'],
   states:{empty:'Not applicable: static table',loading:'None',error:'None'},status:'live',
   api:[],tests:['check6.js: status screen in EN and HE'],code:['v6/s9b_status.js: FEAT, vStatus']});
 
@@ -12214,9 +12214,10 @@ const hcCta=(cls,icon,label,attrs)=>`<button class="hc-btn ${cls}" ${attrs}>${ic
 
 function hcHero(m){
   const {P,M}=m,nx=m.dep[0],margin=P.rev?P.fp/P.rev:0,files=m.ts.filter(t=>t.stage!=='Quote').length;
+  const gross=r2(Math.max(0,P.pp-P.fp)+M.got),grossPct=P.pp>0?gross/P.pp:0; /* what supplier gaps and FX took before recoveries */
   return hcShell({cls:'ptiles',
-    brief:L(`העונה נסגרו ${hlKey(usd(P.rev))} ב-${files} תיקים, ברווח צפוי של ${hlPos(pct(margin))}. עוד ${hlWarn(usd(M.rec))} אפשר להחזיר מחשבוניות ספקים${m.urgent?`, ו-${hlNeg(m.urgent+' דברים דחופים')} מחכים לך היום`:''}.`,
-      `This season you booked ${hlKey(usd(P.rev))} across ${files} files at ${hlPos(pct(margin))} expected margin. ${hlWarn(usd(M.rec))} is still recoverable from supplier invoices${m.urgent?`, and ${hlNeg(m.urgent+' urgent '+(m.urgent===1?'item':'items'))} ${m.urgent===1?'needs':'need'} you today`:''}.`),
+    brief:L(`העונה נסגרו ${hlKey(usd(P.rev))} ב-${files} תיקים, ברווח צפוי של ${hlPos(pct(margin))}. חשבוניות ספקים ושערי מטבע לקחו ${hlNeg(usd(gross))} (${pct(grossPct)} מהרווח המתוכנן); ${hlPos(usd(M.got))} כבר הוחזרו ועוד ${hlWarn(usd(M.rec))} אפשר להחזיר${m.urgent?`, ו-${hlNeg(m.urgent+' דברים דחופים')} מחכים לך היום`:''}.`,
+      `This season you booked ${hlKey(usd(P.rev))} across ${files} files at ${hlPos(pct(margin))} expected margin. Supplier invoices and FX took ${hlNeg(usd(gross))} (${pct(grossPct)} of planned profit); ${hlPos(usd(M.got))} is back and ${hlWarn(usd(M.rec))} is still recoverable${m.urgent?`, and ${hlNeg(m.urgent+' urgent '+(m.urgent===1?'item':'items'))} ${m.urgent===1?'needs':'need'} you today`:''}.`),
     ctas:[hcCta('mint','cash',L(`להחזיר ${usd(M.rec)}`,`Recover ${usd(M.rec)}`),'data-act="go" data-v="gaps"'),hcCta('ghost','magic',L('לבנות טיול','Build a trip'),'data-act="go" data-v="studio"')],
     gauge:{pct:m.kept,label:L('מהרווח המתוכנן נשמר','of planned profit kept'),lines:[{cls:'ok',icon:'check',lab:L('הוחזרו','Recovered'),val:usd(M.got)},{cls:'op',icon:'hourglass',lab:L('פתוח','Still open'),val:usd(M.rec)}]},
     kpis:[{lab:L('הכנסות שנסגרו','Booked revenue'),val:P.rev,money:1,sub:L(`${P.pax} נוסעים`,`${P.pax} travelers`)},
@@ -14064,7 +14065,7 @@ const MEET_ALL=[
      const by={};tripGaps(t).filter(x=>x.s.k==='gap'&&x.usd>0&&['','open','disputed'].includes(x.l.inv&&x.l.inv.st||'')).forEach(x=>{by[x.l.sup]=(by[x.l.sup]||0)+x.usd;});
      const best=Object.keys(by).map(n=>SUPPLIERS.find(s=>s.name===n&&s.fictional===true&&!s.real)).filter(Boolean).sort((a,b)=>by[b.name]-by[a.name])[0];
      if(best&&typeof pvOpen==='function'&&typeof PORTALS!=='undefined'&&PORTALS.supplier)pvOpen('supplier',best.id,'disp');else openTrip('nen','tfin');},
-   tx:()=>[L('הספק רואה את אותה שאלה (בתכנון)','The supplier sees the same query (roadmap)'),L('בפורטל הספקים ההפרש מגיע כשאלה מסודרת, עם השורה מההצעה ומהחשבונית. לחיצה אחת של הספק מנפיקה זיכוי, והוא חוזר ישר לספרים שלכם.','In the supplier portal the difference arrives as a clear query, with the quoted line next to the billed one. One tap by the supplier issues the credit, and it lands straight back in your books.')]},
+   tx:()=>[L('הספק רואה את אותה שאלה (מוצע להמשך)','The supplier sees the same query (proposed for later)'),L('בפורטל הספקים ההפרש מגיע כשאלה מסודרת, עם השורה מההצעה ומהחשבונית. לחיצה אחת של הספק מנפיקה זיכוי, והוא חוזר ישר לספרים שלכם.','In the supplier portal the difference arrives as a clear query, with the quoted line next to the billed one. One tap by the supplier issues the credit, and it lands straight back in your books.')]},
   {id:'maya',sel:'.chat',go:()=>{S.tab='ai';S.chat=[];askQ(QS[1]);},
    tx:()=>[L('שואלים את מאיה','Ask Maya'),L(`מאיה עונה מהנתונים של הסוכנות. ${QS.length} שאלות מוכנות על פערים, רווחיות, תשלומים ומשימות.`,`Maya answers from the agency's own data: ${QS.length} ready questions on gaps, margins, payments and tasks.`)]},
   {id:'close',sel:'',close:true,go:()=>{S.tab='leaks';},
@@ -14076,7 +14077,7 @@ const MEET_ALL=[
   {id:'fin',sel:'.stats',go:()=>{openTrip('nen','fdash');},
    tx:()=>{const t=byId('nen'),c=t?calc(t):{planProfit:0,fcProfit:0,rev:1};return [L('דוח רווח והפסד לטיול, חי','A live P&L for every trip'),L(`ניו אינגלנד: רווח מתוכנן ${usd(c.planProfit)}, צפוי ${usd(c.fcProfit)}. גבייה, תשלומים לספקים ופערים פתוחים באותו מסך.`,`New England: planned profit ${usd(c.planProfit)}, expected ${usd(c.fcProfit)}. Collections, supplier payments and open gaps on one screen.`)];}},
   {id:'status',sel:'.rm-grid',go:()=>{S.tab='status';},
-   tx:()=>[L('מה זמין היום','What is live today'),L('כל מה שראיתם, ואיפה הוא עומד: במוצר, בפיילוט או בתכנון.','Everything you saw, and where it stands: in the product, in pilot or on the roadmap.')]}
+   tx:()=>[L('מה במוצר ומה מוצע','Live and proposed'),L('כל מה שראיתם, ואיפה הוא עומד: כבר במוצר, מוצע לאימוץ עכשיו או מוצע להמשך. הצוות מחליט.','Everything you saw, and where it stands: in the product, proposed now or proposed for later. The team decides.')]}
 ];
 /* three cuts of the same story: 60 seconds, 3 minutes, 10 minutes */
 const MEET_CUTS={1:['leaks','inbox','dispute','close'],3:['studio','swap','quote','books','leaks','inbox','dispute','maya','close'],10:['studio','swap','quote','ops','books','leaks','numbers','inbox','dispute','supplier','fin','maya','status','close']};
@@ -14102,7 +14103,7 @@ function closingHtml(){
    <div class="pts"><div><b>${usd(a1)}</b>${L('נמצאו בטיול אחד, תוך שניות','found on one trip, in seconds')}</div><div><b>${pct(M.pp?M.leak/M.pp:0)}</b>${L('מהרווח המתוכנן דלף העונה','of planned profit leaked this season')}</div><div><b>${nh}</b>${L(`מלונות מ-${nf} רשתות, מוכנים בסטודיו`,`hotels from ${nf} brands, ready in the studio`)}</div></div>
    <form class="leadf" data-form="lead"><input name="name" type="text" required placeholder="${L('שם','Name')}" aria-label="${L('שם','Name')}"><input name="agency" type="text" placeholder="${L('סוכנות','Agency')}" aria-label="${L('סוכנות','Agency')}"><input name="email" type="text" inputmode="email" required placeholder="${L('אימייל','Email')}" aria-label="${L('אימייל','Email')}">
     <select name="sys" aria-label="${L('מערכת הנהלת חשבונות','Accounting system')}">${acctOrder().map(k=>`<option value="${k}">${an(k,'short')}</option>`).join('')}<option value="other">${L('אחר','Other')}</option></select><button class="btn" type="submit">${L('אני רוצה בדיקה','I want the audit')}</button></form>
-   <p class="fine">${L('נתוני הסוכנות בדמו פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה. החיבורים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> בפיילוט.','The agency data in this demo is fictional. Hotel and venue names are real; rates are illustrative. QuickBooks, Xero, Priority and Hashavshevet connections are in pilot.')}</p></div></div>`;
+   <p class="fine">${L('נתוני הסוכנות בדמו פיקטיביים. שמות המלונות והאטרקציות אמיתיים, התעריפים להמחשה. החיבורים לפריוריטי, לחשבשבת, ל-<bdi>QuickBooks</bdi> ול-<bdi>Xero</bdi> מוצעים ועוד לא קיימים.','The agency data in this demo is fictional. Hotel and venue names are real; rates are illustrative. QuickBooks, Xero, Priority and Hashavshevet connections are proposed and do not exist yet.')}</p></div></div>`;
 }
 function meetBar(){
   const st=MEET[S.meet],[ti,tx]=st.tx(),last=S.meet===MEET.length-1;
@@ -14191,7 +14192,7 @@ function attractMenu(){
   m.insertBefore(b,m.querySelector('[data-act="reset"]'));
 }
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="attract"]');if(!b)return;S.menu=false;render();setTimeout(attractShow,50);});
-{const r0=render;render=function(){r0();try{attractMenu();}catch(e){}};}
+{const r0=render;render=function(){r0();try{attractMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}
 
 /* ---------- boot: runs last, after every module has registered its views ---------- */
 {const r0=render;render=function(){r0();try{countUp();meetButton();meetAfter();leadsMenu();}catch(e){if(typeof console!=='undefined')console.error(e);}};}

@@ -1,6 +1,12 @@
 # Developer handoff package
 
-For the developers who will build the real Triplanet product (React + MUI front end, Java / Spring back end). The booth demo in this repository is the **specification you can click**: every screen, rule and number in it is real behaviour you can check against the code. These documents explain what is real, what is simulated, and in what order to build it.
+For the Triplanet team. This package and the demo are **a recommended direction for the product, not a build plan**. I (Gabi, consultant to Samuel) propose what I think the product should grow into; the team decides what to adopt, in this order:
+
+1. **What to adopt going forward**: new capabilities such as the finance dashboard, invoice check and profit leaks (the "Proposed" and "Later" rows on the demo's *Live and proposed* screen).
+2. **How much of the plan to apply to the existing product**: which proposals for screens the product already has (projects, quotes, suppliers, tasks, roles) are worth taking, and which the product already does well enough.
+3. **Only then, how**: architecture, order, estimates and design are the team's call. Nothing here assumes a rewrite.
+
+The demo is the **specification you can click**: every screen, rule and number in it can be checked against the code, so whatever the team adopts comes with its rules and tests. Section 6 explains how to use it for those three decisions.
 
 The demo is a single offline HTML file for trade shows: Triplanet is an AI-assisted SaaS for group tour operators. The agency in it, "Redbud Group Tours" (Tulsa), 20 trips and 6 agents, is fictional. Hotel and venue names are real; their rates are illustrative.
 
@@ -26,7 +32,7 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 
 ### What to look at first (clarity features)
 
-- **Sidebar by job**: Home, then Sales, Catalog, Money, Help, Admin (`s3_shell.js: NAV_SECTIONS`). "New" pills mark the features the product does not have yet.
+- **Sidebar by job**: Home, then Sales, Catalog, Money, Help, Admin (`s3_shell.js: NAV_SECTIONS`). "New" pills mark the features the product does not have yet; the *Live and proposed* screen marks each as Live, Proposed or Later.
 - **Next step on every file**: a bar under the project header says what to do now, from the data, with one primary button (`s11_next.js: nextSteps`, `nxBar`). The agent home lists the agent's next steps across files.
 - **Stage moves**: the status chip in the project header opens a menu (Mark as lost, Move to financial close, Close the file). Each move has a guard that says why it is blocked, the same guard drives a card on the Operation dashboard and the next-step bar, and a lost quote leaves every open-quote total (`s11_next.js: stmCheck, advanceStage, markLost`; rules in `business-rules.md` §28).
 - **Global search**: the header magnifier (or Ctrl/Cmd+Shift+F) finds projects, clients, suppliers, hotels and pages (`s11_search.js: gsSearch`).
@@ -37,7 +43,7 @@ To explore: use **View as** (header) to switch between the owner (Ella Brooks), 
 
 | File | What it is | Read it for |
 |---|---|---|
-| `README.md` (this) | The map, simulated-vs-real, build order, open decisions | Start here |
+| `README.md` (this) | The map, simulated-vs-real, open decisions, the three decisions (§6) | Start here |
 | `data-model.md` | Every entity as tables (field, type, meaning, example, where set or read, origin) and a Mermaid ER diagram. Mapping to `docs/backend-plan` tables | Schema design |
 | `business-rules.md` | 30 rules with formulas, inputs, edge cases, the test that guards each, and a worked example with real demo numbers. A list of code inconsistencies (§32; seven of the twelve are marked resolved) | Finance engine, services, tests |
 | `design-system.md` | Tokens (light and dark), typography, spacing, layout, components, RTL, dark mode, mobile, accessibility, content rules | Front end, MUI theme |
@@ -51,7 +57,7 @@ Other documents in the repository:
 | `docs/spec-v8-parity.md` | The v8 spec (parity with the live product, amendments A1 to A19) |
 | `docs/spec-v8.1-clarity.md` | The v8.1 spec (clarity, developer notes, this package) |
 | `docs/v8-builder-brief.md` | How modules plug into the demo (hooks, rules) |
-| `origin/claude/fervent-babbage-bkgptx`: `docs/backend-plan/` | The backend plan (Postgres, API, finance engine, AI, integrations, security). `04-finance-engine.md` is the closest sibling of `business-rules.md`; differences are called out in both documents |
+| `origin/claude/fervent-babbage-bkgptx`: `docs/backend-plan/` | My earlier backend sketch, unmerged and for reference only (Postgres, API, finance engine, AI, integrations, security); the team decides the architecture. `04-finance-engine.md` is the closest sibling of `business-rules.md`; differences are called out in both documents |
 
 Naming: the demo says "traveler" (US spelling); the backend plan says `traveller`. The demo's "household" is the plan's `booking_group`. The demo's "invoice check" is the plan's gap workflow. Section 1 of `data-model.md` maps every name.
 
@@ -147,30 +153,20 @@ From `CLAUDE.md` and the code. These are decisions for the owner, not for you, b
 
 Code inconsistencies found while writing these documents are in `business-rules.md` §32. Fixed in a9fdf77 (permissions list and the two unchecked permissions, credit not marking paid, swap permission by screen, receipt label, free "locked" rate, no stage moves after win) and marked so there. Still open: partial credits, `byType` vs overhead and brokerage, `Trip.ctype` and the join by client name, `qdays` as a counter, `themeGet()` and `prefers-color-scheme`.
 
-## 6. Suggested build order for the real product
+## 6. How to use this package: three decisions, in this order
 
-Order by risk and by how much each step unlocks. Each step names the screens (view keys and trip tabs) and the rules to implement, and the demo tests to port as acceptance tests.
+The team leads. The demo and these documents are inputs to its decisions, not a plan it has to follow.
 
-**Step 0. Foundations (before step 1).** Tenancy and users, roles and permissions server-side (rules §25; `02-data-model.md` §3.1 and §4), audit trail, money as integer minor units, `asOf` date instead of a fixed "today". Screens: Users, Settings > Roles and permissions. Entities: `data-model.md` §2 to §5.
+**Decision 1. What to adopt going forward.** Open the demo's *Live and proposed* screen (sidebar, Help) and the ideas backlog (https://claude.ai/artifact/LPuRt9btXgJdFjpJaa5Mka). For each "Proposed" or "Later" item, decide: adopt, adopt later, or drop. My recommendation is to look first at the money layer, because it is where the demo differs most from the product today:
+- the finance dashboard and trip P&L (`fdash`, `finance`);
+- invoice check and the dispute flow (`gaps`, trip tab `tfin`);
+- profit leaks (`leaks`) and the accounting sync it would need (`books`).
 
-**Step 1. Finance engine first.** It is the product's value and the part that must be exact.
-- Rules: pricing §2 to §4; planned vs expected profit and identity §5; FX §6; commission §7; invoice status and gaps §8 to §10; leak bridge and at-risk §11, §12; billing groups, late, aging §13, §14; cash calendar §15; income documents §16.
-- Screens: trip tabs Pricing (`costs`), Expenses (`tfin`), Finance dashboard (`fdash`), Income (`income`), Vouchers (`vouch`), Billing (`people`); pages Invoice check (`gaps`), Finance (`finance`), Profit leaks (`leaks`); the leak bridge SVG.
-- Acceptance: export the demo's 20 trips after `resetDemo()` as golden fixtures and port `check6.js:12-14, 37-40, 51-57` (identities I1 to I4) with tolerance 0. Plan: `04-finance-engine.md` §5 (T1 to T12).
-- Replace on the way: generated gap `kind` by a matcher (`04` §3.3), one-to-many invoice allocation, `commPaid` by real receipts, one FX lock per (trip, currency).
+The rules behind them are in `business-rules.md` (§2 to §16) and the screen specs in `screens.md`.
 
-**Step 2. Suppliers and rates.**
-- Rules: supplier rates §18; alternatives §19 (skip the market anchor; it only exists because the demo relabels hotels); swap and undo §20; versions §21; room-block exposure §22.
-- Screens: Suppliers list and card (`suppliers`), in-trip Suppliers tab (`spm`: Contact / Pending / Approved / Price comparison), Trip plan By components (`plan`), Versions (`tbver`), Hotels, Activities, Clients and client card, Templates.
-- Entities: supplier, rate, rate band, variant, block, version (`data-model.md` §14 to §16, §18).
+**Decision 2. How much of the plan to apply to the existing product.** For screens the product already has (the "Live" column: projects and stages, quotes, catalog, clients, proposals, tasks and master list, roles), the demo shows proposals on top of them: next-step bars, supplier alternatives, quote versions, role homes, forms. The team decides which of these improve the existing product and which add nothing. The default is to keep what exists.
 
-**Step 3. Forms and operations.**
-- Rules: task generation and overdue §23; form completion §24.
-- Screens: Operation dashboard (`odash`), Tasks (`optasks`), Master list (`manifest`), form builder (`forms`, from Settings), traveler forms and responses, room blocks card, Proposal formats (`quote`: PDF, agents table, landing page; tier pricing §17).
-- Replace: derived responses by a real `form_response` store; public form pages and links; import preview by real import.
-
-**Step 4. Dashboards and assistants.**
-- Rules: AR next 30 and AP schedule §15; dashboard definitions §29.
-- Screens: Home for owner, accountant and agent (`home`), Accounting sync (`books`), Maya (`ai`, grounded on a server snapshot like `s9c_live.js: liveSnapshot`), Trip studio (`studio`; planner package separate from the finance engine), global search, next-step bar.
-
-**Throughout.** Build the design system once (`design-system.md`): MUI theme from the tokens, Public Sans and Barlow, Solar icons, RTL and dark mode from day one, empty states with an action. Port the demo's tests as you go; check6's identity checks and the real-brand wording rule (as a content lint) are cheap to keep.
+**Decision 3. How.** Only after decisions 1 and 2. Architecture, sequencing, estimates and design choices belong to the team. Material that may help, if the team wants it:
+- `check6.js` holds the finance identities as tests (`check6.js:12-14, 37-40, 51-57`); the demo's 20 trips after `resetDemo()` can serve as golden fixtures for any finance logic the team builds;
+- `design-system.md` lists the tokens the demo took from the live interface;
+- my earlier backend sketch is on branch `claude/fervent-babbage-bkgptx` (`docs/backend-plan/`). It is an unmerged exploration, not a recommendation; the references to it in `data-model.md`, `business-rules.md` and `screens.md` are cross-references only.

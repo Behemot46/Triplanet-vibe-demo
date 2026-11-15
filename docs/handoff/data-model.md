@@ -1,5 +1,7 @@
 # Data model
 
+> **Note.** References to `docs/backend-plan/` (`02-data-model.md`, `03-api.md`, `04-finance-engine.md`) point to my earlier backend sketch on the unmerged branch `claude/fervent-babbage-bkgptx`. It is reference material, not a design the team is asked to follow; architecture is the team's decision (see `README.md` §6).
+
 What this is: every record the booth demo keeps, as the demo actually stores it, so the real product can model the same things. It is written from the code in `v6/*.js` (commit `a9fdf77`). When this file and the code disagree, the code is right; tell us.
 
 Read first: `README.md` in this folder. Rules (formulas, edge cases, tests) are in `business-rules.md`. Screens are in `screens.md` (generated).

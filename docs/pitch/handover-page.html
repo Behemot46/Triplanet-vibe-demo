@@ -64,10 +64,10 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px
 
 <header class="top">
  <div class="wrap">
-  <span class="eyebrow">Triplanet demo v8.4 · handover</span>
+  <span class="eyebrow">Triplanet demo v8.4 · a recommended direction</span>
   <h1>Start here</h1>
-  <p>A clickable demo of Triplanet for US group tour operators (3 to 20 agents). It doubles as a specification: every screen has developer notes, the data model and business rules are written down, and the money rules run as automated checks. This page says what is in the package, how to open it and what to read first.</p>
-  <p class="by">Prepared by Gabi, consultant to Samuel · 14 Nov 2026</p>
+  <p>A clickable demo of the direction I recommend for Triplanet. It is a proposal for the team to decide on, not a build plan: first what to adopt going forward, then how much of it to apply to the existing product, and only then how, which the team leads. This page says how to make those decisions, how to open the demo and what is in the package.</p>
+  <p class="by">Prepared by Gabi, consultant to Samuel · 15 Nov 2026</p>
  </div>
 </header>
 
@@ -80,13 +80,23 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px
 
  <div class="layout">
   <nav class="idx" aria-label="On this page"><b>On this page</b>
-   <a href="#what">What this is</a><a href="#open">Open it</a><a href="#read">Read in this order</a><a href="#build">Build and check</a><a href="#inside">What is in v8.4</a><a href="#excluded">Not included</a><a href="#licenses">Licenses</a><a href="#open-decisions">Open decisions</a>
+   <a href="#what">What this is</a><a href="#decide">Three decisions</a><a href="#open">Open it</a><a href="#read">Read in this order</a><a href="#build">Build and check</a><a href="#inside">What is in v8.4</a><a href="#excluded">Not included</a><a href="#licenses">Licenses</a><a href="#open-decisions">Open decisions</a>
   </nav>
   <main>
    <section id="what">
     <h2>What this is</h2>
-    <p>The demo was built for trade-show meetings with group tour operators. The story for a short meeting is an easy process plus visible money: the Trip studio builds a priced, mapped trip in seconds, and the invoice check and profit leaks show where planned profit went and how to recover it.</p>
+    <p>The demo shows a recommended direction for the product, built on the live product's look so the proposals are easy to picture. It was first built for trade-show meetings with group tour operators. The story for a short meeting is an easy process plus visible money: the Trip studio builds a priced, mapped trip in seconds, and the invoice check and profit leaks show where planned profit went and how to recover it.</p>
     <p class="note"><b>It is not production code.</b> One offline HTML file, no backend, no logins, simulated payments and accounting sync, and a fictional agency (Redbud Group Tours, Tulsa).</p>
+   </section>
+
+   <section id="decide">
+    <h2>Three decisions, in this order</h2>
+    <ol class="read">
+     <li><div><b>What to adopt going forward.</b><p>New capabilities the product does not have today: the finance dashboard and trip P&amp;L, supplier invoice check and dispute, profit leaks, accounting sync, the trip studio, the portals. For each: adopt, later, or drop. In the demo they are marked <b>Proposed</b> or <b>Later</b> on the <i>Live and proposed</i> screen (sidebar, Help); in the ideas backlog, filter <i>1 · Going forward</i>.</p></div></li>
+     <li><div><b>How much of the plan to apply to the existing product.</b><p>Proposals on top of screens the product already has (projects, quotes, suppliers, tasks, roles): quote versions and supplier alternatives, planning on tablets, a readiness board, the next step on every file, a home per role. The default is to keep what exists and take only what improves it. In the ideas backlog, filter <i>2 · On the existing product</i>.</p></div></li>
+     <li><div><b>Then how. The team leads.</b><p>Architecture, order, estimates and design are the team's decisions, after the first two. Nothing in this package assumes a rewrite. The demo's rules, tests and screen specs are there as reference if they help.</p></div></li>
+    </ol>
+    <p class="note">The "Live" column is my reading of dev.triplanet.io from September 2026 and is not verified. The team knows better; please correct it.</p>
    </section>
 
    <section id="open">
@@ -107,8 +117,8 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px
    <section id="read">
     <h2>Read in this order</h2>
     <ol class="read">
-     <li><div><span class="path">docs/handoff/README.md</span><p>Module map, what is simulated and what is real, open decisions, a suggested build order.</p></div></li>
-     <li><div><span class="path">docs/handoff/screens.md</span><p>All 69 screens: purpose, roles, data, actions and rules, states, and a proposed API.</p></div></li>
+     <li><div><span class="path">docs/handoff/README.md</span><p>Module map, what is simulated and what is real, open decisions, and how to use the package for the three decisions (§6).</p></div></li>
+     <li><div><span class="path">docs/handoff/screens.md</span><p>All 69 screens: purpose, roles, data, actions and rules, states. API paths there are illustrative only.</p></div></li>
      <li><div><span class="path">docs/handoff/data-model.md</span><p>Every entity and field, marked real or demo-only. Section 28 covers the v8.4 portals.</p></div></li>
      <li><div><span class="path">docs/handoff/business-rules.md</span><p>Finance identities, the invoice-gap model, permissions, and known inconsistencies.</p></div></li>
      <li><div><span class="path">docs/handoff/design-system.md</span><p>Tokens, type and icons, light and dark, taken from the live Triplanet interface.</p></div></li>
@@ -167,7 +177,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px
    <section id="open-decisions">
     <h2>Open decisions</h2>
     <ul>
-     <li>Which features are live in the product today. The "In the product" column in the backlog and the demo's "What's live" screen are a reading from September 2026, not verified with the team.</li>
+     <li>Which features are live in the product today. The "In the product" column in the backlog and the "Live" column on the demo's "Live and proposed" screen are a reading from September 2026, not verified with the team.</li>
      <li>Review of the fictional supplier names (<span class="path">SUP_FICT</span>).</li>
      <li>Counsel's wording for the sample waiver.</li>
      <li>The demo's fixed "today", which stays 20 Oct 2026.</li>
@@ -178,7 +188,7 @@ footer{border-top:1px solid var(--line);padding-block:24px 40px;font-size:13.5px
  </div>
 </div>
 
-<footer><div class="wrap">Source: <span class="path">HANDOVER.md</span> in the repository, merged to main on 14 Nov 2026.</div></footer>
+<footer><div class="wrap">Source: <span class="path">HANDOVER.md</span> in the repository, updated 15 Nov 2026.</div></footer>
 
 <script>
 document.addEventListener('click',async e=>{const b=e.target.closest('button[data-c]');if(!b)return;const el=document.getElementById(b.dataset.c);

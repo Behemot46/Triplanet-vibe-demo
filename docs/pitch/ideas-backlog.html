@@ -77,6 +77,12 @@ button,select,input{font:inherit;color:inherit}
 .how .c{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:4px 12px;align-items:start}
 .how .c i{grid-row:1/3;font-style:normal;font-family:var(--f-display);font-weight:700;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--work-bg);color:var(--work)}
 .how .c p{font-size:14.5px;color:var(--ink2)}
+.how button.c{font:inherit;color:inherit;text-align:start;cursor:pointer;width:100%}
+.how button.c:hover{border-color:var(--work)}
+.how button.c:focus-visible{outline:2px solid var(--work);outline-offset:2px}
+.how .howrate{margin-top:12px;font-size:14.5px;color:var(--ink2)}
+.trk{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--work-bg);color:var(--work)}
+.trk.ext{background:var(--win-bg);color:var(--win)}
 .how .fine{font-size:13.5px;color:var(--muted);margin-top:12px;max-width:90ch}
 /* gallery */
 .gal{padding-block:20px 8px}
@@ -181,10 +187,11 @@ footer .wrap{display:grid;gap:6px}
 <main>
 <section class="how"><div class="wrap">
  <div class="grid3">
-  <div class="c"><i>1</i><h3 data-t="h1t">Open an item</h3><p data-t="h1p"></p></div>
-  <div class="c"><i>2</i><h3 data-t="h2t">Give it a priority</h3><p data-t="h2p"></p></div>
-  <div class="c"><i>3</i><h3 data-t="h3t">See where the team lands</h3><p data-t="h3p"></p></div>
+  <button type="button" class="c dec" data-trk="new"><i>1</i><h3 data-t="h1t">What to adopt going forward</h3><p data-t="h1p"></p></button>
+  <button type="button" class="c dec" data-trk="ext"><i>2</i><h3 data-t="h2t">How much to apply to the existing product</h3><p data-t="h2p"></p></button>
+  <div class="c"><i>3</i><h3 data-t="h3t">Then how: the team leads</h3><p data-t="h3p"></p></div>
  </div>
+ <p class="howrate" data-t="hrate"></p>
  <p class="fine" data-t="fine"></p>
 </div></section>
 
@@ -210,6 +217,8 @@ footer .wrap{display:grid;gap:6px}
   <select class="sel" id="sort"></select>
   <button class="chip" id="f-mine" aria-pressed="false" data-t="fmine">Not rated by me</button>
   <button class="chip" id="f-win" aria-pressed="false" data-t="fwin">Quick wins</button>
+  <button class="chip" id="f-new" data-trk="new" aria-pressed="false" data-t="tk_new">1 · Going forward</button>
+  <button class="chip" id="f-ext" data-trk="ext" aria-pressed="false" data-t="tk_ext">2 · On the existing product</button>
  </div>
  <div class="chips" id="epics" role="group"></div>
  <div class="list" id="list" role="list">
@@ -231,8 +240,8 @@ footer .wrap{display:grid;gap:6px}
 const T={
  eb:['A proposal for the Triplanet team · by Gabi','הצעה לצוות של טריפלאנט · מאת גבי'],
  h1:['Ideas backlog for Triplanet','רשימת כיוונים לטריפלאנט'],
- lede:["This is an interactive demo, built to explore where the product could go. This list is my proposal: the specifications and features from the demo that I think fit the product's development plan. It is a suggested direction and an invitation to discuss, not a decision. The team is welcome to go through the items, try each one in the demo, and rate what matters, how big it looks and what should come first.",
-  'זה דמו אינטראקטיבי שנבנה כדי לבדוק לאן המוצר יכול להתקדם. הרשימה הזו היא ההצעה שלי: האפיונים והפיצ׳רים מהדמו שלדעתי מתאימים לתוכנית הפיתוח של המוצר. זו הצעה לכיוון והזמנה לדיון, ולא החלטה. הצוות מוזמן לעבור על הפריטים, לנסות כל אחד בדמו, ולדרג מה חשוב, כמה הוא נראה גדול ומה כדאי קודם.'],
+ lede:["This interactive demo shows the direction I recommend for the product. It is a proposal, not a decision and not a build plan. I am asking the team to decide two things, in this order: first, which new capabilities to adopt going forward (the finance dashboard, invoice check, profit leaks and more); second, how much of the plan to apply to the product you already have. Only after that comes how to do it, and that is the team's to lead.",
+  'הדמו האינטראקטיבי הזה מציג את כיוון ההתפתחות שאני ממליץ עליו למוצר. זו הצעה, לא החלטה ולא תוכנית עבודה. אני מבקש מהצוות להחליט על שני דברים, בסדר הזה: קודם, אילו יכולות חדשות לאמץ קדימה (דשבורד פיננסי, בדיקת חשבוניות ספקים, דליפות רווח ועוד); אחר כך, כמה מהתוכנית ליישם על המוצר שכבר קיים. רק אחרי זה מגיעה השאלה איך עושים את זה, ואותה הצוות מוביל.'],
 
 
  cta1:['To the list','לרשימה'],cta2:['Try the demo','לנסות את הדמו'],
@@ -240,9 +249,11 @@ const T={
  dc_s:['The demo is the heart of this proposal. Every item below opens in the demo on its own screen, so you can see it working before you rate it. No install, no sign-up.','הדמו הוא לב ההצעה. כל פריט ברשימה נפתח בדמו בדיוק במסך שלו, כך שאפשר לראות אותו עובד לפני שמדרגים. בלי התקנה ובלי הרשמה.'],
  dc_go:['Open the demo','לפתוח את הדמו'],
  dc_small:['Then come back and <a href="#backlog">rate the list</a>.','ואז לחזור <a href="#backlog">ולדרג את הרשימה</a>.'],
- h1t:['Open an item','לפתוח פריט'],h1p:['Read what it gives the user and why it matters, then press "Open in the demo" to see it on its own screen.','לקרוא מה הוא נותן למשתמש ולמה זה חשוב, ואז ללחוץ ״לראות בדמו״ ולראות אותו במסך שלו.'],
- h2t:['Give it a priority','לתת עדיפות'],h2p:['Pick a priority, and if you like a rough size. You can change it any time.','לבחור עדיפות, ואם רוצים גם גודל משוער. אפשר לשנות בכל רגע.'],
- h3t:['See where the team lands','לראות איפה הצוות נוחת'],h3p:['The list sorts itself by the whole team\'s rating. Each item also takes comments.','הרשימה מסתדרת לבד לפי הדירוג של כל הצוות. על כל פריט אפשר גם להשאיר הערה.'],
+ h1t:['What to adopt going forward','מה לאמץ קדימה'],h1p:['New capabilities the product does not have today: the finance dashboard and trip P&L, supplier bill check and dispute, profit leaks, accounting sync, the trip studio, portals. For each: adopt, later, or drop. Tap to see these items.','יכולות חדשות שאין היום במוצר: דשבורד פיננסי ורווח והפסד לטיול, בדיקת חשבוניות ספקים ומחלוקת, דליפות רווח, חיבור להנהלת חשבונות, סטודיו לטיולים, פורטלים. לכל אחת: לאמץ, בהמשך, או לוותר. לחיצה מציגה את הפריטים האלה.'],
+ h2t:['How much to apply to the existing product','כמה ליישם על המוצר הקיים'],h2p:['Proposals on top of screens the product already has: versions and alternatives on quotes, planning on tablets, a readiness board on tasks, the next step on every file, a home screen per role. Keep what exists, take what improves it. Tap to see these items.','הצעות על גבי מסכים שכבר יש במוצר: גרסאות וחלופות בהצעת מחיר, תכנון גם בטאבלט, לוח מוכנות מעל המשימות, הצעד הבא בכל תיק, מסך בית לכל תפקיד. שומרים את מה שקיים ולוקחים את מה שמשפר. לחיצה מציגה את הפריטים האלה.'],
+ h3t:['Then how: the team leads','ואז איך: הצוות מוביל'],h3p:['Architecture, order, estimates and design are the team\'s call, after the first two decisions. Nothing here assumes a rewrite; the demo\'s rules and tests are there if they help.','ארכיטקטורה, סדר, הערכות ועיצוב הם החלטה של הצוות, אחרי שתי ההחלטות הראשונות. שום דבר כאן לא מניח כתיבה מחדש; הכללים והבדיקות של הדמו זמינים אם הם עוזרים.'],
+ hrate:['How to rate: open an item, try it in the demo, give it a priority and a rough size. The list sorts itself by the whole team\'s rating, and each item takes comments.','איך מדרגים: פותחים פריט, מנסים אותו בדמו, נותנים עדיפות וגודל משוער. הרשימה מסתדרת לפי הדירוג של כל הצוות, ועל כל פריט אפשר להשאיר הערה.'],
+ tk_new:['1 · Going forward','1 · קדימה'],tk_ext:['2 · On the existing product','2 · על המוצר הקיים'],
  fine:['"In the product" reflects my reading of dev.triplanet.io from September and is not verified; the team knows better, and a comment is the place to correct it. The demo is not production code: it runs on fictional data, with simulated payments and accounting sync.','״במוצר״ זו הקריאה שלי של dev.triplanet.io מספטמבר, והיא לא מאומתת. הצוות יודע יותר טוב, והערה על הפריט היא המקום לתקן. הדמו הוא לא קוד לייצור: הוא רץ על נתונים בדויים, עם תשלומים וחיבור להנהלת חשבונות בהדמיה.'],
  g1:['<b>Owner home.</b> The season and today, at a glance.','<b>מסך הבית של הבעלים.</b> העונה וההיום, במבט אחד.'],g2:['<b>Group leader.</b> Payments by household.','<b>ראש הקבוצה.</b> תשלומים לפי משפחה.'],
  g3:['<b>Traveler.</b> Pay, forms, plan.','<b>נוסעת.</b> תשלום, טפסים, תוכנית.'],g4:['<b>Supplier.</b> Answers a bill question.','<b>ספק.</b> עונה על שאלה בחשבונית.'],g5:['<b>Tour director.</b> Today\'s stops.','<b>מדריך.</b> התחנות של היום.'],
@@ -250,8 +261,8 @@ const T={
  sortl:['Sort','מיון'],fmine:['Not rated by me','מה שעוד לא דירגתי'],fwin:['Quick wins','ניצחונות מהירים'],
  c_key:['Key','מפתח'],c_sum:['Summary','תיאור'],c_demo:['In the demo','בדמו'],c_team:['Team priority','עדיפות הצוות'],c_mine:['My priority','העדיפות שלי'],c_size:['Size guess','גודל משוער'],
  nx_h:['What next','מה הלאה'],
- nx_p:['Once a few people have rated, I would be glad to sit with Samuel and the team for half an hour, go over the top of the list together, and see which items could fit into the coming development plan. The decisions are Samuel\'s and the team\'s; I am here to help.','כשיהיו כמה דירוגים, אשמח לשבת חצי שעה עם שמואל והצוות, לעבור יחד על הראש של הרשימה ולראות אילו פריטים יכולים להיכנס לתוכנית הפיתוח הקרובה. ההחלטות של שמואל והצוות, ואני כאן כדי לעזור.'],
- ft1:['Sources: the demo itself (build of 14 Nov 2026) and a read-only walkthrough of dev.triplanet.io from September 2026, not verified with the team. Every figure in the demo is fictional.','מקורות: הדמו עצמו (גרסה מ-14 בנובמבר 2026) ומעבר לקריאה בלבד על dev.triplanet.io מספטמבר 2026, שלא אומת מול הצוות. כל המספרים בדמו בדויים.'],
+ nx_p:['Once a few people have rated, I would be glad to sit with Samuel and the team for half an hour and go over the two decisions: what to adopt going forward, and how much to apply to the existing product. How to build it is then the team\'s plan, and the team leads it. I am here to help where asked.','כשיהיו כמה דירוגים, אשמח לשבת חצי שעה עם שמואל והצוות ולעבור על שתי ההחלטות: מה לאמץ קדימה, וכמה ליישם על המוצר הקיים. איך לבנות את זה זו כבר התוכנית של הצוות, והצוות מוביל אותה. אני כאן כדי לעזור איפה שיבקשו.'],
+ ft1:['Sources: the demo itself (build of 15 Nov 2026) and a read-only walkthrough of dev.triplanet.io from September 2026, not verified with the team. Every figure in the demo is fictional.','מקורות: הדמו עצמו (גרסה מ-15 בנובמבר 2026) ומעבר לקריאה בלבד על dev.triplanet.io מספטמבר 2026, שלא אומת מול הצוות. כל המספרים בדמו בדויים.'],
  ft2:['Fonts: Heebo, Public Sans, Barlow, JetBrains Mono (SIL Open Font License).','גופנים: Heebo, Public Sans, Barlow, JetBrains Mono (רישיון SIL Open Font).']};
 const UI={rate_note:['Shared team ratings live on the team page on claude.ai. Here you can read the list, try the demo and mark your own picks; they are saved in this browser only.','הדירוג המשותף של הצוות נמצא בעמוד הצוות ב-claude.ai. כאן אפשר לקרוא את הרשימה, לנסות את הדמו ולסמן לעצמכם; הסימונים נשמרים רק בדפדפן הזה.'],
  rate_go:['Open the team rating page','לעמוד הדירוג של הצוות'],godemo:['Open in the demo','לראות בדמו'],df_all:['All items','כל הפריטים'],search:['Search the list…','חיפוש ברשימה…'],all:['All','הכול'],
@@ -273,6 +284,8 @@ const DST={work:['Working','עובד'],prev:['Clickable preview','תצוגה מ�
 const PST={none:['Not seen','לא ראיתי'],unk:['Not checked','לא בדקתי']};
 const EPICS=[['money',['Money and profit','כסף ורווחיות'],'--e3'],['sell',['Selling and planning','מכירה ותכנון'],'--e1'],['ops',['Operations','תפעול'],'--e4'],['partners',['Clients, suppliers and the field','לקוחות, ספקים ושטח'],'--e2'],['insight',['Home screens and AI','מסכי בית ובינה מלאכותית'],'--e5']];
 /* [key, epic, demo status, product status, title[en,he], story[en,he], why[en,he], where[en,he]] */
+/* decision track: 'ext' = a proposal on a screen the product already has (decision 2); everything else is a new capability (decision 1) */
+const TRACK={'TP-202':'ext','TP-203':'ext','TP-204':'ext','TP-301':'ext','TP-303':'ext','TP-501':'ext'};const trkOf=k=>TRACK[k]||'new';
 const ITEMS=[
  ['TP-101','money','work','none',['Supplier bill check','בדיקת חשבוניות ספקים'],
   ['As an agency owner, I want every supplier bill line checked against what was quoted, so we never pay more than agreed.','כבעלת סוכנות, אני רוצה שכל שורה בחשבונית ספק תיבדק מול מה שתומחר, כדי לא לשלם יותר ממה שסוכם.'],
@@ -419,7 +432,7 @@ function drawEpics(){const c=e=>ITEMS.filter(i=>e==='all'||i[1]===e).length;
     EPICS.map(e=>`<button class="chip" data-ep="${e[0]}" aria-pressed="${epic===e[0]}"><i class="dot" style="background:var(${e[2]})"></i>${X(e[1])} <span class="n">${c(e[0])}</span></button>`).join('');}
 function draw(){
   const ql=q.trim().toLowerCase();
-  let rows=ITEMS.filter(i=>(epic==='all'||i[1]===epic)&&(dst==='all'||i[2]===dst)&&(!onlyMine||!(my[i[0]]&&my[i[0]].p))&&
+  let rows=ITEMS.filter(i=>(trk==='all'||trkOf(i[0])===trk)&&(epic==='all'||i[1]===epic)&&(dst==='all'||i[2]===dst)&&(!onlyMine||!(my[i[0]]&&my[i[0]].p))&&
     (!ql||[i[0],...i[4],...i[5],...i[6],...i[7]].join(' ').toLowerCase().includes(ql)));
   const A=Object.fromEntries(ITEMS.map(i=>[i[0],agg(i[0])]));
   if(onlyWin)rows=rows.filter(i=>A[i[0]].win);
@@ -432,7 +445,7 @@ function draw(){
     const who=a.rs.length?`<ul>${a.rs.sort((x,y)=>y.p-x.p).map(r=>`<li><span>${esc(r.id===meId||r.id==='me'?X(UI.me):(names[r.id]||'…'))}</span><span>${priLabel(r.p)}${r.s?' · '+SIZE[r.s-1][LANG==='he'?2:1].split(' · ')[0]:''}</span></li>`).join('')}</ul>`:`<p>${X(UI.nobody)}</p>`;
     return `<div class="it${op?' open':''}" id="it-${k}" role="listitem">
      <div class="rw"><span class="key">${k}</span>
-      <div class="ti"><b>${esc(X(i[4]))}</b><span class="meta">${goBtn(k)}<span class="ep"><i style="background:var(${e[2]})"></i>${esc(X(e[1]))}</span>${a.win?`<span class="win">${X(UI.win)}</span>`:''}</span></div>
+      <div class="ti"><b>${esc(X(i[4]))}</b><span class="meta">${goBtn(k)}<span class="ep"><i style="background:var(${e[2]})"></i>${esc(X(e[1]))}</span><span class="trk ${trkOf(k)}">${X(trkOf(k)==='ext'?T.tk_ext:T.tk_new)}</span>${a.win?`<span class="win">${X(UI.win)}</span>`:''}</span></div>
       <span class="dz"><span class="lab">${X(T.c_demo)}</span><span class="lz ${i[2]}">${X(DST[i[2]])}</span></span>
       <span class="team"><span class="lab">${X(T.c_team)}</span>${team}</span>
       <span class="mine"><span class="mp"><select data-k="${k}" data-f="p" aria-label="${esc(lp+': '+X(i[4]))}" class="${m.p?'set':''}" ${ro?'disabled':''}><option value="0">${lp} …</option>${PRI.map(p=>`<option value="${p[0]}" ${m.p===p[0]?'selected':''}>${LANG==='he'?p[2]:p[1]}</option>`).join('')}</select></span>
@@ -445,6 +458,7 @@ function draw(){
   document.getElementById('prog').innerHTML=LANG==='he'?`דירגת <b>${done}</b> מתוך <b>${ITEMS.length}</b> · <b>${raters}</b> ${raters===1?'אדם דירג':'אנשים דירגו'}`:`You rated <b>${done}</b> of <b>${ITEMS.length}</b> · <b>${raters}</b> ${raters===1?'person has':'people have'} rated`;
   document.getElementById('progbar').style.width=(done/ITEMS.length*100).toFixed(1)+'%';
   document.getElementById('f-mine').setAttribute('aria-pressed',String(onlyMine));document.getElementById('f-win').setAttribute('aria-pressed',String(onlyWin));
+  ['new','ext'].forEach(t=>document.getElementById('f-'+t).setAttribute('aria-pressed',String(trk===t)));
 }
 function setState(k){stKey=k;document.getElementById('state').textContent=k?X(UI[k]):'';
   if(k==='st_saved'){clearTimeout(stTimer);stTimer=setTimeout(()=>{if(stKey==='st_saved')setState('');},2200);}}
@@ -460,6 +474,9 @@ document.getElementById('q').addEventListener('input',e=>{q=e.target.value;draw(
 document.getElementById('sort').addEventListener('change',e=>{sortBy=e.target.value;draw();});
 document.getElementById('f-mine').addEventListener('click',()=>{onlyMine=!onlyMine;draw();});
 document.getElementById('f-win').addEventListener('click',()=>{onlyWin=!onlyWin;draw();});
+let trk='all';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-trk]');if(!b)return;const t=b.dataset.trk;const fromCard=b.classList.contains('dec');trk=(trk===t&&!fromCard)?'all':t;draw();
+  if(fromCard){const tgt=document.getElementById('backlog');try{tgt.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){tgt.scrollIntoView();}}});
 document.getElementById('facts').addEventListener('click',e=>{const b=e.target.closest('[data-df]');if(!b)return;const f=b.dataset.df;
   if(f==='areas'){epic='all';drawEpics();}else dst=(dst===f&&f!=='all')?'all':f;
   staticText();draw();const tgt=document.getElementById(f==='areas'?'epics':'backlog');try{tgt.scrollIntoView({behavior:'smooth',block:'start'});}catch(err){tgt.scrollIntoView();}});
